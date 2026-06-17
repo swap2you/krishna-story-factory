@@ -1,0 +1,7 @@
+profile_name,mode,text_enabled,audio_enabled,image_enabled,sender_type,notes
+local_test,test,false,false,false,web_test,No paid APIs; creates local package and local outbox
+prod_package_only,prod,true,true,true,manual,Generate package but do not send automatically
+prod_whatsapp_cloud,prod,true,true,true,cloud,Use WhatsApp Business Cloud API to send to configured target
+prod_telegram,prod,true,true,true,telegram,Easy fallback for channel-based delivery
+prod_slack,prod,true,true,true,slack,Internal team testing fallback
+prod_discord,prod,true,true,true,discord,Community testing fallback

@@ -1,0 +1,13 @@
+---
+description: Krishna Story Factory project rules
+alwaysApply: true
+---
+
+- Keep this project lightweight and Python-first.
+- Do not add Notion, React, FastAPI, PostgreSQL, Docker, Celery, or Redis unless explicitly requested.
+- CSV files in `input/` and `tracking/` are the source of truth.
+- CLI is the source of truth; Streamlit dashboard is optional UI only.
+- Never commit `.env`, API keys, generated outputs, logs, or local outboxes.
+- Test mode must not call paid APIs.
+- Every generated package must include all nine required outputs.
+- Use WhatsApp Business Cloud API for real WhatsApp delivery; do not implement unsafe personal WhatsApp group scraping.

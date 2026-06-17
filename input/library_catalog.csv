@@ -1,0 +1,7 @@
+library_id,library_name,source_type,allowed_usage,default_age_range,notes
+krishna_book,Krishna Book,scripture_summary,retell_child_friendly,7-11,Primary bedtime source; keep faithful to Srila Prabhupada's Krishna Book
+srimad_bhagavatam,Srimad Bhagavatam,scripture_summary,retell_child_friendly,7-11,Use canto/chapter/verse references where possible
+bhagavad_gita,Bhagavad-gita As It Is,scripture_teaching,lesson_story,7-11,Use one shloka or theme per story package
+ramayana,Ramayana,scripture_summary,retell_child_friendly,7-11,Use dharma-centered framing; avoid sectarian argument
+ramcharitmanas,Ramcharitmanas,scripture_summary,retell_child_friendly,7-11,Use doha/chaupai reference when available
+amar_chitra_katha,Amar Chitra Katha,commercial_book_reference,inspiration_only,7-11,Do not reproduce copyrighted wording, captions, panels, or layouts; create original retellings only

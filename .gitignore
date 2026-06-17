@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+output/*
+!output/.gitkeep
+whatsapp_test_outbox/
+logs/
+*.log
+.DS_Store
+krishna-story-factory-v1-buildpack/
