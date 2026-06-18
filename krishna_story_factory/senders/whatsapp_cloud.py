@@ -42,6 +42,7 @@ class WhatsAppCloudSender(BaseSender):
         slug = plan.slug if plan else paths.root.name.split("_", 1)[-1]
         link = package_link or _read_package_link(paths)
 
+        story_title = content.title if content else ""
         for recipient in recipients:
             body_params = None
             if template_name == "daily_krishna_story" and content:
@@ -66,8 +67,11 @@ class WhatsAppCloudSender(BaseSender):
                         "sender_type": "cloud",
                         "recipient_name": recipient.name,
                         "recipient_phone": recipient.phone_digits,
+                        "template_name": template_name,
+                        "story_title": story_title,
+                        "package_link": link,
                         "status": "SUCCESS",
-                        "detail": f"template={template_name} | language={language_code} | phone={recipient.phone_digits}",
+                        "detail": f"template={template_name} | language={language_code}",
                         "message_id": message_id,
                         "created_at": _now_iso(settings),
                     },
@@ -91,6 +95,9 @@ class WhatsAppCloudSender(BaseSender):
                         "sender_type": "cloud",
                         "recipient_name": recipient.name,
                         "recipient_phone": recipient.phone_digits,
+                        "template_name": template_name,
+                        "story_title": story_title,
+                        "package_link": link,
                         "status": "FAILED",
                         "detail": detail,
                         "message_id": "",

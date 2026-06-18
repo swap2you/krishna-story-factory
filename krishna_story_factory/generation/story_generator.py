@@ -43,34 +43,87 @@ class StoryGenerator:
 
         client = OpenAI(api_key=self.settings.openai_api_key)
         prompt = self._build_prompt(plan)
+        content = _apply_repetition_cleanup(self._fetch_openai_story(client, prompt, plan))
+        best = content
+
+        for attempt in range(2):
+            issues = _regeneration_issues(best)
+            if not issues:
+                return best
+            expand_prompt = f"""{prompt}
+
+REGENERATION REQUEST (attempt {attempt + 1}):
+Fix these issues without repeating closings or padding with filler:
+{chr(10).join(f"- {issue}" for issue in issues)}
+{_EXPAND_INSTRUCTION}
+Expand main_story toward 850 words and audio_script toward 600 words using source-faithful detail only.
+Return only valid JSON matching the schema.
+"""
+            candidate = _apply_repetition_cleanup(self._fetch_openai_story(client, expand_prompt, plan))
+            if _content_score(candidate) >= _content_score(best):
+                best = candidate
+
+        if _regeneration_issues(best):
+            expanded = _apply_repetition_cleanup(
+                self._expand_short_fields(client, plan, best)
+            )
+            if _content_score(expanded) >= _content_score(best):
+                best = expanded
+
+        remaining = _regeneration_issues(best)
+        if remaining:
+            raise StoryGenerationError(
+                "Generated story/audio is too short or still repetitive after regeneration: "
+                + " | ".join(remaining)
+            )
+        return best
+
+    def _expand_short_fields(self, client, plan: PlanRow, content: StoryContent) -> StoryContent:
+        payload = {
+            "title": content.title,
+            "recap": content.recap,
+            "main_story": content.main_story,
+            "moral": content.moral,
+            "takeaway": content.takeaway,
+            "five_star_challenge": content.five_star_challenge,
+            "audio_script": content.audio_script,
+            "parent_notes": content.parent_notes,
+            "hero_image_prompt": content.hero_image_prompt,
+            "story_card_square_prompt": content.story_card_square_prompt,
+            "coloring_page_prompt": content.coloring_page_prompt,
+            "activity_sheet": {
+                "recall_questions": content.recall_questions,
+                "thinking_questions": content.thinking_questions,
+                "word_search_words": content.word_search_words,
+                "draw_activity": content.draw_activity,
+                "family_activity": content.family_activity,
+            },
+        }
+        issues = _regeneration_issues(content)
+        prompt = f"""You are expanding a Krishna Book bedtime story package JSON.
+
+Fix ONLY these issues by lengthening main_story and/or audio_script:
+{chr(10).join(f"- {issue}" for issue in issues)}
+
+Rules:
+- main_story target: 800-950 words
+- audio_script target: 550-650 spoken words with <break time="1.0s" /> tags only
+- Add source-faithful scenes and gentle narration; do not repeat closings or morals
+- Keep title, recap, moral, takeaway, activity_sheet, and image prompts aligned with the story
+- Return only valid JSON with the same keys as the input
+
+Input JSON:
+{json.dumps(payload, ensure_ascii=False)}
+"""
+        return self._fetch_openai_story(client, prompt, plan)
+
+    def _fetch_openai_story(self, client, prompt: str, plan: PlanRow) -> StoryContent:
         response = client.responses.create(
             model=self.settings.openai_text_model,
             input=prompt,
         )
         raw_text = getattr(response, "output_text", "") or ""
-        content = self._from_dict(plan, self._parse_json(raw_text))
-        content = _apply_repetition_cleanup(content)
-
-        if _needs_regeneration(content):
-            expand_prompt = f"""{prompt}
-
-REGENERATION REQUEST:
-The first draft was too short or repetitive. {_EXPAND_INSTRUCTION}
-Return only valid JSON matching the schema.
-"""
-            response = client.responses.create(
-                model=self.settings.openai_text_model,
-                input=expand_prompt,
-            )
-            raw_text = getattr(response, "output_text", "") or ""
-            content = self._from_dict(plan, self._parse_json(raw_text))
-            content = _apply_repetition_cleanup(content)
-
-        if _needs_regeneration(content):
-            raise StoryGenerationError(
-                "Generated story/audio is too short or still repetitive after regeneration."
-            )
-        return content
+        return self._from_dict(plan, self._parse_json(raw_text))
 
     def _build_prompt(self, plan: PlanRow) -> str:
         base = load_project_text(self.settings.project_root, "prompts/story_generation_prompt.md")
@@ -221,9 +274,25 @@ def _word_count(text: str) -> int:
     return len(re.findall(r"\b[\w']+\b", text))
 
 
+def _ensure_coloring_prompt(prompt: str) -> str:
+    text = prompt.strip()
+    if not text:
+        text = "Devotional Krishna coloring page scene."
+    lower = text.lower()
+    if not any(term in lower for term in ("thick", "outline")):
+        text += " Thick clean black outlines."
+    if "white background" not in lower and "white" not in lower:
+        text += " White background."
+    if not any(term in lower for term in ("cute", "sweet", "child-friendly", "child friendly")):
+        text += " Cute sweet child-friendly devotional coloring-book style."
+    return text.strip()
+
+
 def _apply_repetition_cleanup(content: StoryContent) -> StoryContent:
     main_story = clean_repetition(content.main_story, content_type="story")
     audio_script = clean_repetition(content.audio_script, content_type="audio")
+    line_art = _ensure_coloring_prompt(content.line_art_prompt)
+    coloring_page = _ensure_coloring_prompt(content.coloring_page_prompt or line_art)
     return StoryContent(
         title=content.title,
         recap=content.recap,
@@ -234,13 +303,13 @@ def _apply_repetition_cleanup(content: StoryContent) -> StoryContent:
         audio_script=audio_script,
         whatsapp_caption=content.whatsapp_caption,
         image_prompt=content.image_prompt,
-        line_art_prompt=content.line_art_prompt,
+        line_art_prompt=line_art,
         story_card_text=content.story_card_text,
         parent_notes=content.parent_notes,
         hero_image_prompt=content.hero_image_prompt,
         story_card_square_prompt=content.story_card_square_prompt,
         story_card_wide_prompt=content.story_card_wide_prompt,
-        coloring_page_prompt=content.coloring_page_prompt,
+        coloring_page_prompt=coloring_page,
         recall_questions=content.recall_questions,
         thinking_questions=content.thinking_questions,
         word_search_words=content.word_search_words,
@@ -263,16 +332,27 @@ def _finalize_content(content: StoryContent, plan: PlanRow) -> StoryContent:
     return content
 
 
-def _needs_regeneration(content: StoryContent) -> bool:
+def _content_score(content: StoryContent) -> int:
     story_words = _word_count(content.main_story)
     audio_words = _word_count(content.audio_script)
-    if story_words < _MIN_STORY_WORDS or audio_words < _MIN_AUDIO_WORDS:
-        return True
-    if detect_repetition(content.main_story, content_type="story").errors:
-        return True
-    if detect_repetition(content.audio_script, content_type="audio").errors:
-        return True
-    return False
+    return min(story_words, _MIN_STORY_WORDS) + min(audio_words, _MIN_AUDIO_WORDS)
+
+
+def _regeneration_issues(content: StoryContent) -> list[str]:
+    issues: list[str] = []
+    story_words = _word_count(content.main_story)
+    audio_words = _word_count(content.audio_script)
+    if story_words < _MIN_STORY_WORDS:
+        issues.append(f"main_story has {story_words} words; need at least {_MIN_STORY_WORDS}.")
+    if audio_words < _MIN_AUDIO_WORDS:
+        issues.append(f"audio_script has {audio_words} words; need at least {_MIN_AUDIO_WORDS}.")
+    issues.extend(detect_repetition(content.main_story, content_type="story").errors)
+    issues.extend(detect_repetition(content.audio_script, content_type="audio").errors)
+    return issues
+
+
+def _needs_regeneration(content: StoryContent) -> bool:
+    return bool(_regeneration_issues(content))
 
 
 def _mock_main_story(plan: PlanRow) -> str:

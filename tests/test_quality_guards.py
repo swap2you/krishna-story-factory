@@ -142,3 +142,36 @@ def test_story_002_fails_if_kamsa_is_called_king() -> None:
     )
     errors = run_source_guard(plan, content)
     assert errors
+
+
+def test_story_001_fails_unrelated_pastimes() -> None:
+    plan = PlanRow(
+        chapter_no="001",
+        slug="the-earth-prays-for-krishna",
+        title="The Earth Prays for Krishna to Come",
+        project="krishna_book_bedtime",
+        library_id="krishna_book",
+        source_reference="Krishna Book Chapter 1",
+        scripture_reference="SB 10.1",
+        summary_seed="seed",
+        age_range="6-12",
+        package_type="bedtime_story",
+        send_date="",
+        status="pending",
+    )
+    content = StoryContent(
+        title=plan.title,
+        recap="recap",
+        main_story="Then Putana came to Gokula and Damodara pastime appeared.",
+        moral="moral",
+        takeaway="takeaway",
+        five_star_challenge=["a"],
+        audio_script="audio",
+        whatsapp_caption="",
+        image_prompt="img",
+        line_art_prompt="line",
+        story_card_text=plan.title,
+        parent_notes="notes",
+    )
+    errors = run_source_guard(plan, content)
+    assert errors

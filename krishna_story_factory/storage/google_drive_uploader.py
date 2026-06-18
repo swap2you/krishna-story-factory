@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 
 from ..config import Settings
@@ -23,6 +24,7 @@ PACKAGE_FILES = [
     "line_art_prompt.txt",
     "coloring_page_prompt.txt",
     "story_card_square_prompt.txt",
+    "story_card_wide_prompt.txt",
     "parent_notes.md",
     "manifest.json",
     "narration.mp3",
@@ -37,6 +39,8 @@ class DriveUploadResult:
     folder_id: str = ""
     local_sync_path: str = ""
     detail: str = ""
+    folder_name: str = ""
+    uploaded_files: tuple[str, ...] = field(default_factory=tuple)
 
 
 def upload_story_package(
@@ -55,6 +59,7 @@ def upload_story_package(
         publish_mode="link_only",
         package_link=link,
         detail="Drive upload disabled; using configured folder URL only.",
+        folder_name=folder_name,
     )
 
 
@@ -66,12 +71,15 @@ def _upload_via_local_sync(settings: Settings, *, folder_name: str, source_dir: 
         shutil.rmtree(dest)
     shutil.copytree(source_dir, dest)
     link = settings.package_public_link or settings.google_drive_folder_url
+    uploaded = tuple(p.name for p in dest.iterdir() if p.is_file())
     return DriveUploadResult(
         status="LOCAL_SYNC",
         publish_mode="local_drive_sync",
         package_link=link,
         local_sync_path=str(dest),
         detail=f"Copied package to local Drive sync folder: {dest}",
+        folder_name=folder_name,
+        uploaded_files=uploaded,
     )
 
 
@@ -86,32 +94,49 @@ def _upload_via_api(settings: Settings, *, folder_name: str, source_dir: Path) -
             publish_mode="drive_api",
             package_link=settings.google_drive_folder_url,
             detail="GOOGLE_DRIVE_CREDENTIALS_FILE missing; upload skipped.",
+            folder_name=folder_name,
         )
+    if not token_file:
+        token_file = settings.project_root / "credentials" / "google_drive_token.json"
     if not parent_id:
         return DriveUploadResult(
             status="FAILED",
             publish_mode="drive_api",
             package_link=settings.google_drive_folder_url,
             detail="GOOGLE_DRIVE_FOLDER_ID missing; upload skipped.",
+            folder_name=folder_name,
         )
 
     try:
         service = _build_drive_service(creds_file, token_file)
-        child_folder_id = _ensure_child_folder(service, parent_id, folder_name)
-        uploaded = 0
+        resolved_name = _resolve_folder_name(
+            service,
+            parent_id,
+            folder_name,
+            overwrite=settings.google_drive_overwrite_existing,
+        )
+        child_folder_id = _ensure_child_folder(
+            service,
+            parent_id,
+            resolved_name,
+            overwrite=settings.google_drive_overwrite_existing,
+        )
+        uploaded: list[str] = []
         for filename in PACKAGE_FILES:
             path = source_dir / filename
             if not path.exists():
                 continue
             _upload_file(service, child_folder_id, path)
-            uploaded += 1
+            uploaded.append(filename)
         link = f"https://drive.google.com/drive/folders/{child_folder_id}?usp=sharing"
         return DriveUploadResult(
             status="UPLOADED",
             publish_mode="drive_api",
             package_link=link,
             folder_id=child_folder_id,
-            detail=f"Uploaded {uploaded} file(s) to Drive folder {folder_name}.",
+            detail=f"Uploaded {len(uploaded)} file(s) to Drive folder {resolved_name}.",
+            folder_name=resolved_name,
+            uploaded_files=tuple(uploaded),
         )
     except Exception as exc:
         logger.warning("Google Drive upload failed: %s", type(exc).__name__)
@@ -119,8 +144,27 @@ def _upload_via_api(settings: Settings, *, folder_name: str, source_dir: Path) -
             status="FAILED",
             publish_mode="drive_api",
             package_link=settings.google_drive_folder_url,
-            detail=f"Drive upload failed: {type(exc).__name__}",
+            detail=f"Drive upload failed: {type(exc).__name__}: {exc}",
+            folder_name=folder_name,
         )
+
+
+def _resolve_folder_name(service, parent_id: str, folder_name: str, *, overwrite: bool) -> str:
+    if overwrite:
+        return folder_name
+    if _folder_exists(service, parent_id, folder_name):
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        return f"{folder_name}_{stamp}"
+    return folder_name
+
+
+def _folder_exists(service, parent_id: str, folder_name: str) -> bool:
+    query = (
+        f"mimeType='application/vnd.google-apps.folder' and "
+        f"name='{folder_name}' and '{parent_id}' in parents and trashed=false"
+    )
+    result = service.files().list(q=query, fields="files(id)", pageSize=1).execute()
+    return bool(result.get("files"))
 
 
 def _build_drive_service(creds_file: Path, token_file: Path):
@@ -143,7 +187,7 @@ def _build_drive_service(creds_file: Path, token_file: Path):
     return build("drive", "v3", credentials=creds, cache_discovery=False)
 
 
-def _ensure_child_folder(service, parent_id: str, folder_name: str) -> str:
+def _ensure_child_folder(service, parent_id: str, folder_name: str, *, overwrite: bool) -> str:
     query = (
         f"mimeType='application/vnd.google-apps.folder' and "
         f"name='{folder_name}' and '{parent_id}' in parents and trashed=false"

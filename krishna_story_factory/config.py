@@ -56,6 +56,7 @@ class Settings:
     google_drive_credentials_file: Path | None
     google_drive_token_file: Path | None
     google_drive_share_role: str
+    google_drive_overwrite_existing: bool
     package_public_link: str
 
     whatsapp_sender_type: str
@@ -155,6 +156,7 @@ def load_settings(project_root: Path) -> Settings:
         google_drive_credentials_file=_optional_path(project_root, "GOOGLE_DRIVE_CREDENTIALS_FILE"),
         google_drive_token_file=_optional_path(project_root, "GOOGLE_DRIVE_TOKEN_FILE"),
         google_drive_share_role=os.getenv("GOOGLE_DRIVE_SHARE_ROLE", "reader"),
+        google_drive_overwrite_existing=str_to_bool(os.getenv("GOOGLE_DRIVE_OVERWRITE_EXISTING"), False),
         package_public_link=os.getenv("PACKAGE_PUBLIC_LINK", ""),
         whatsapp_sender_type=os.getenv("WHATSAPP_SENDER_TYPE", "manual").strip().lower(),
         whatsapp_graph_api_version=os.getenv("WHATSAPP_GRAPH_API_VERSION", "v25.0"),

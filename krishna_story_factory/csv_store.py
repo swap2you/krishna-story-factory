@@ -57,6 +57,9 @@ SEND_LOG_FIELDS = [
     "sender_type",
     "recipient_name",
     "recipient_phone",
+    "template_name",
+    "story_title",
+    "package_link",
     "status",
     "detail",
     "message_id",
@@ -161,7 +164,12 @@ def update_plan_status(project_root: Path, plan: PlanRow, status: str) -> None:
     if not rows[plan.row_index].get("created_at"):
         rows[plan.row_index]["created_at"] = datetime.now().isoformat(timespec="seconds")
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        writer = csv.DictWriter(
+            f,
+            fieldnames=fieldnames,
+            extrasaction="ignore",
+            quoting=csv.QUOTE_MINIMAL,
+        )
         writer.writeheader()
         writer.writerows(rows)
 

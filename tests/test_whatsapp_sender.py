@@ -197,6 +197,7 @@ def _settings(
         google_drive_credentials_file=None,
         google_drive_token_file=None,
         google_drive_share_role="reader",
+        google_drive_overwrite_existing=False,
         package_public_link="",
         whatsapp_sender_type="cloud",
         whatsapp_graph_api_version="v25.0",

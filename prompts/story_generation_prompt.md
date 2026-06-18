@@ -65,6 +65,30 @@ Return only valid JSON with these keys:
 - Do not make the guards sentimental unless source supports it.
 - Avoid repeating darkness/light clichés.
 
+## Story 001 The Earth Prays for Krishna to Come
+
+Cover only:
+- Earth feeling burdened by cruel rulers
+- Earth approaching Lord Brahma (cow form if source-appropriate)
+- Brahma and demigods going toward the Lord
+- prayers to Lord Vishnu / Kshirodakashayi Vishnu
+- the Lord’s promise to appear
+- gentle anticipation before Krishna’s appearance
+
+Do not include:
+- Devaki/Vasudeva wedding
+- Kamsa prophecy
+- Krishna birth or Gokula pastimes
+- Damodara, Fruit Seller, Gajendra, Prahlada
+
+Image direction:
+- Mother Earth as gentle cow or symbolic Earth figure with Brahma and demigods
+- celestial atmosphere, concern turning to hope
+- divine light representing Vishnu’s promise (reverential, child-safe)
+
+Activity word search words (example):
+EARTH, BRAHMA, PRAYER, VISHNU, DEVA, HOPE, COW, BURDEN, PROMISE, KRISHNA
+
 ## Audio script
 
 - No `[pause]` markers.

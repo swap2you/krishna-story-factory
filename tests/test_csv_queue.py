@@ -25,18 +25,15 @@ def _read_recipient_rows() -> list[dict[str, str]]:
 def test_series_plan_parses_ten_rows() -> None:
     rows = _read_series_rows()
     assert len(rows) == 10
-    assert rows[0]["chapter_no"] == "001"
-    assert rows[0]["status"] == "done"
-    assert any(row["status"] == "pending" for row in rows)
+    pending = [row for row in rows if row.get("status", "").strip().lower() == "pending"]
+    assert len(pending) == 9
 
 
-def test_next_pending_story_matches_csv() -> None:
-    rows = _read_series_rows()
-    expected = next(row for row in rows if row.get("status", "").strip().lower() == "pending")
+def test_next_pending_story_is_002_after_001_done() -> None:
     plan = read_next_pending(PROJECT_ROOT)
     assert plan is not None
-    assert plan.chapter_no == expected["chapter_no"]
-    assert plan.slug == expected["slug"]
+    assert plan.chapter_no == "002"
+    assert plan.slug == "devaki-and-vasudeva-wedding"
 
 
 def test_whatsapp_recipients_parses_two_rows() -> None:
