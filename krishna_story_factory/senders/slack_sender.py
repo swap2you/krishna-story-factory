@@ -8,7 +8,7 @@ from .base import BaseSender
 
 
 class SlackWebhookSender(BaseSender):
-    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None) -> SendResult:
+    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None, package_link: str = "") -> SendResult:
         if not settings.slack_webhook_url:
             return SendResult(status="FAILED", detail="Slack webhook URL is missing.")
         caption = paths.whatsapp_caption.read_text(encoding="utf-8", errors="ignore")

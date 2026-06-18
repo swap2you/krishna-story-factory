@@ -6,7 +6,7 @@ from .base import BaseSender
 
 
 class ManualSender(BaseSender):
-    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None) -> SendResult:
+    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None, package_link: str = "") -> SendResult:
         detail = (
             "Manual sender selected. Package generated locally. "
             f"Copy files from: {paths.root}"

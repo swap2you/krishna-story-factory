@@ -36,12 +36,23 @@ output/<chapter_no>_<slug>/
   whatsapp_caption.txt
   activity_sheet.pdf
   story_card.png
+  story_card_square.png
+  coloring_page.png (when image generation enabled)
   image_prompt.txt
+  hero_image_prompt.txt
+  story_card_square_prompt.txt
+  coloring_page_prompt.txt
   line_art_prompt.txt
   parent_notes.md
   manifest.json
   narration.mp3
 ```
+
+Activity sheet is a **3-page PDF** with word-search grid, drawing box, and coloring/craft page.
+
+## Google Drive package link
+
+Set `GOOGLE_DRIVE_FOLDER_URL` in local `.env` (see `.env.example`). Caption and `daily_krishna_story` template use this link.
 
 ## Project layout
 

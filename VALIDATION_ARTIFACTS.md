@@ -7,73 +7,70 @@ Date: 2026-06-18
 ```powershell
 pytest -q
 python run_daily_story.py --mode test --force
-python scripts/test_whatsapp_cloud.py
 python run_daily_story.py --mode prod --force
+.\scripts\diagnose_whatsapp_failure.ps1
 ```
 
 ## Pytest
 
 ```text
-15 passed
+28 passed
 ```
 
 ## CSV queue checks
 
 ```text
-series_plan.csv: 10 rows (001 done, 002–010 pending)
-next pending: 002_devaki-and-vasudeva-wedding
+series_plan.csv: 10 rows
+001 done, 002 done after prod validation, 003–010 pending
+next pending: 003_vasudevas-promise
 whatsapp_recipients.csv: 2 rows; Wife Test skipped (REPLACE phone)
 ```
 
 ## Latest prod output path (local)
 
 ```text
-output/001_the-earth-prays-for-krishna/
+output/002_devaki-and-vasudeva-wedding/
 ```
 
 ## Required file checklist
 
 ```text
 story.md
-audio_script.txt
-whatsapp_caption.txt
-activity_sheet.pdf
+audio_script.txt (no [pause]; uses <break time="..."/>)
+whatsapp_caption.txt (reply here, today, no group)
+activity_sheet.pdf (3 pages, word-search grid)
 story_card.png
-image_prompt.txt
-line_art_prompt.txt
+story_card_square.png
+coloring_page.png
+coloring_page_prompt.txt
+hero_image_prompt.txt
+story_card_square_prompt.txt
 parent_notes.md
 manifest.json
-narration.mp3
+narration.mp3 (> 500 KB in prod)
 ```
 
-## Manifest source fields (prod run)
+## Prod run summary
 
 ```text
+quality: PASS
 story_source: openai
 audio_source: elevenlabs
-image_source: openai or fallback
+image_source: openai
+activity: word_search_answer_key in manifest.json
+package_link: (empty — add GOOGLE_DRIVE_FOLDER_URL to local .env)
+whatsapp_status: FAILED_CLOUD
+whatsapp_failure_reason: TOKEN_EXPIRED
 ```
 
-Also verified: `source_reference`, `library_id`, `age_range`, `generated_at`, `project`
+## WhatsApp diagnostics
 
-## Quality result
-
-```text
-PASS
+```powershell
+Get-Content tracking\send_log.csv -Tail 10
+.\scripts\diagnose_whatsapp_failure.ps1
 ```
 
-## WhatsApp result
-
-```text
-SENT_CLOUD — hello_world to 1 active recipient (Swapnil Test)
-Wife Test skipped (REPLACE placeholder phone)
-```
-
-## Next queue row
-
-```text
-002_devaki-and-vasudeva-wedding (pending)
-```
+Latest send_log detail includes `reason=TOKEN_EXPIRED | template=hello_world | HTTP 401`.
 
 ## Regenerate
 

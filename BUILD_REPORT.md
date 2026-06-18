@@ -1,69 +1,51 @@
 # Build Report
 
-Version: Krishna Book Bedtime v1  
+Version: Krishna Book Bedtime v1.1 (parent-ready quality)  
 Date: 2026-06-18
 
-## What was cleaned
+## What changed in this upgrade
 
-- Archived legacy docs and build prompts to `docs/archive/initial_build_notes/`
-- Replaced main docs with systematic v1 guides `docs/01`–`docs/07`
-- Replaced prompt library with focused Krishna Book prompts under `prompts/`
-- Reset queue to Krishna Book chapters 001–010 (`krishna_book_bedtime`)
-- Removed old sample stories (Damodara, Fruit Seller, Gajendra, Prahlada, etc.) from active queue
-- Cleared generated `output/*` from repo commit (local prod output kept until push)
-
-## Docs that remain (main path)
-
-- `docs/01_DAILY_RUNBOOK.md`
-- `docs/02_SETUP_AND_KEYS.md`
-- `docs/03_WHATSAPP_CLOUD.md`
-- `docs/04_CONTENT_GUIDE_KRISHNA_BOOK.md`
-- `docs/05_DASHBOARD_GUIDE.md`
-- `docs/06_TESTING_AND_VALIDATION.md`
-- `docs/07_TROUBLESHOOTING.md`
-
-## Queue reset
-
-- Project: `krishna_book_bedtime`
-- Library: `krishna_book`
-- Age range: `6-12`
-- Chapters 001–010 from Krishna Book opening pastimes
-- Sample state in repo: `001` done, `002`–`010` pending
-- RFC-style CSV quoting on `summary_seed` and `notes` fields (one row per line)
-
-## Code improvements
-
-- Plan-specific mock/prod generation tied to queue row
-- Two-page story-specific activity sheet PDF
-- `line_art_prompt.txt` and `coloring_page_prompt.txt` outputs
-- Manifest fields: `story_source`, `audio_source`, `image_source`
-- Prod ElevenLabs required unless `ALLOW_PLACEHOLDER_AUDIO=true`
-- WhatsApp CSV broadcast with REPLACE-phone skip and `daily_krishna_story` prep
-- Dashboard shows project, flags, logs
+- Audio script sanitizer removes `[pause]` and unsupported bracket tags before ElevenLabs
+- Bedtime audio targets 650–850 words with `<break time="..."/>` pacing
+- Prod quality gates: story >= 800 words, audio script >= 600 words, MP3 > 500 KB
+- 3-page activity sheet with real 12x12 word-search grid and answer key in manifest
+- Separate image prompts: hero, square card, wide card, coloring page, line art
+- Optional `coloring_page.png` and `story_card_square.png` generation
+- Google Drive package link support via `.env` (`GOOGLE_DRIVE_FOLDER_URL`, optional local sync)
+- WhatsApp caption template: reply here, today, package link, no group wording
+- WhatsApp failure diagnostics with structured reasons (`TOKEN_EXPIRED`, etc.)
+- `daily_krishna_story` template body params: name, title, package link
+- Story 002 source guard blocks “King Kamsa” and unrelated pastimes
 
 ## Validation commands and results
 
 ```powershell
 pytest -q
 python run_daily_story.py --mode test --force
-python scripts/test_whatsapp_cloud.py
 python run_daily_story.py --mode prod --force
+.\scripts\diagnose_whatsapp_failure.ps1
 ```
 
 | Check | Result |
 |-------|--------|
-| `pytest -q` | **15 passed** |
-| Test pipeline | **SUCCESS** → `output/001_the-earth-prays-for-krishna/` |
-| WhatsApp smoke | **SUCCESS** (hello_world, Meta wamid) |
-| Prod pipeline | **SUCCESS**, quality **PASS**, WhatsApp **SENT_CLOUD** (1 recipient) |
+| `pytest -q` | **28 passed** |
+| Test pipeline | **SUCCESS** |
+| Prod pipeline | **SUCCESS**, quality **PASS** |
+| Prod output | `output/002_devaki-and-vasudeva-wedding/` |
+| narration.mp3 size | **3,809,324 bytes (~3.8 MB)** |
+| Images generated | `story_card.png`, `story_card_square.png`, `coloring_page.png` (OpenAI) |
+| Activity sheet | **3 pages** with word-search grid |
+| Drive link | Empty in prod (set `GOOGLE_DRIVE_FOLDER_URL` in local `.env`) |
+| WhatsApp | **FAILED_CLOUD** — `TOKEN_EXPIRED` (Meta OAuth 401); generation still succeeded |
 
-## Real prod generation
+## Queue state after prod validation
 
-Yes — prod run generated OpenAI story, ElevenLabs audio, OpenAI/fallback image, PDF, and sent `hello_world` to Swapnil Test only (wife placeholder skipped).
+- `001` done, `002` done (prod run), `003`–`010` pending
+- Next prod story: `003_vasudevas-promise`
 
 ## Known limitations
 
-- No WhatsApp group sending in v1
-- No direct MP3/PDF/image WhatsApp upload yet
-- `daily_krishna_story` template requires Meta approval
-- Recommended production path: approved template + Google Drive package link
+- WhatsApp token must be refreshed locally when expired
+- Drive link requires local `.env` configuration (not committed)
+- Ambient audio mix is config-ready but not fully implemented
+- v1 sends individual CSV recipients only, not WhatsApp groups

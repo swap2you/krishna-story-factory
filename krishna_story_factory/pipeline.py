@@ -5,13 +5,16 @@ from zoneinfo import ZoneInfo
 
 from .audio.tts import AudioGenerator
 from .config import Settings
+from .content.caption import format_whatsapp_caption
 from .csv_store import already_sent_today, append_story_log, read_next_pending, update_plan_status
+from .generation.source_guard import run_source_guard
 from .generation.story_generator import StoryGenerator
 from .image.story_card import StoryCardGenerator
 from .manifest import write_manifest
 from .models import SendResult
 from .paths import make_package_paths
 from .pdf.activity_sheet import ActivitySheetGenerator
+from .publish.drive_sync import publish_package, resolve_package_link
 from .quality.checks import run_quality_checks
 from .senders import build_sender
 
@@ -31,21 +34,65 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
     quality_status = "UNKNOWN"
     send_result = SendResult(status="NOT_ATTEMPTED", detail="WhatsApp send disabled.")
     story_source = "deterministic_test" if mode == "test" or not settings.openai_text_enabled else "openai"
+    package_link = resolve_package_link(settings)
+    word_search_answer_key: dict[str, str] = {}
+    image_outputs: dict[str, str] = {}
 
     try:
         content = StoryGenerator(settings, mode).generate(plan)
 
+        guard_errors = run_source_guard(plan, content)
+        if guard_errors:
+            raise PipelineError(" | ".join(guard_errors))
+
+        package_link = resolve_package_link(settings)
+        caption = format_whatsapp_caption(story_title=content.title, package_link=package_link)
+
         paths.story_md.write_text(content.to_markdown(), encoding="utf-8")
         paths.audio_script.write_text(content.audio_script, encoding="utf-8")
-        paths.whatsapp_caption.write_text(content.whatsapp_caption, encoding="utf-8")
+        paths.whatsapp_caption.write_text(caption, encoding="utf-8")
         paths.image_prompt.write_text(content.image_prompt, encoding="utf-8")
+        paths.hero_image_prompt.write_text(content.hero_image_prompt or content.image_prompt, encoding="utf-8")
+        paths.story_card_square_prompt.write_text(
+            content.story_card_square_prompt or content.image_prompt,
+            encoding="utf-8",
+        )
+        paths.story_card_wide_prompt.write_text(
+            content.story_card_wide_prompt or content.story_card_square_prompt or content.image_prompt,
+            encoding="utf-8",
+        )
         paths.line_art_prompt.write_text(content.line_art_prompt, encoding="utf-8")
-        paths.coloring_page_prompt.write_text(content.line_art_prompt, encoding="utf-8")
+        paths.coloring_page_prompt.write_text(
+            content.coloring_page_prompt or content.line_art_prompt,
+            encoding="utf-8",
+        )
         paths.parent_notes.write_text(content.parent_notes, encoding="utf-8")
 
+        if settings.enable_ambient_audio and settings.elevenlabs_sfx_enabled:
+            ambient_prompt = (
+                f"Soft peaceful night ambience for Krishna Book bedtime story: {content.title}. "
+                "Gentle temple bells far away, calm night breeze, no voices, child-safe."
+            )
+            paths.ambient_prompt.write_text(ambient_prompt, encoding="utf-8")
+
         audio_source = AudioGenerator(settings, mode).generate_mp3(content.audio_script, paths.narration_mp3)
-        image_source = StoryCardGenerator(settings, mode).generate(content, paths.story_card, plan=plan)
-        ActivitySheetGenerator().generate(plan, content, paths.activity_sheet)
+        image_outputs = StoryCardGenerator(settings, mode).generate_all(content, paths, plan=plan)
+        image_source = image_outputs.get("story_card", "fallback")
+
+        puzzle = ActivitySheetGenerator().generate(
+            plan,
+            content,
+            paths.activity_sheet,
+            coloring_page_path=paths.coloring_page if paths.coloring_page.exists() else None,
+        )
+        word_search_answer_key = puzzle.answer_key
+
+        publish_result = publish_package(settings, plan, paths)
+        package_link = publish_result.package_link or package_link
+        paths.whatsapp_caption.write_text(
+            format_whatsapp_caption(story_title=content.title, package_link=package_link),
+            encoding="utf-8",
+        )
 
         write_manifest(
             settings=settings,
@@ -58,9 +105,19 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             story_source=story_source,
             audio_source=audio_source,
             image_source=image_source,
+            package_publish_mode=publish_result.publish_mode,
+            package_link=package_link,
+            local_sync_path=publish_result.local_sync_path,
+            word_search_answer_key=word_search_answer_key,
+            image_outputs=image_outputs,
         )
 
-        ok, quality_errors = run_quality_checks(paths, mode=mode, settings=settings)
+        ok, quality_errors = run_quality_checks(
+            paths,
+            mode=mode,
+            settings=settings,
+            word_search_answer_key=word_search_answer_key,
+        )
         quality_status = "PASS" if ok else "FAIL"
         if quality_errors:
             errors.extend(quality_errors)
@@ -76,6 +133,11 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             story_source=story_source,
             audio_source=audio_source,
             image_source=image_source,
+            package_publish_mode=publish_result.publish_mode,
+            package_link=package_link,
+            local_sync_path=publish_result.local_sync_path,
+            word_search_answer_key=word_search_answer_key,
+            image_outputs=image_outputs,
         )
 
         if not ok:
@@ -94,6 +156,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
                     mode=mode,
                     plan=plan,
                     content=content,
+                    package_link=package_link,
                 )
 
         update_plan_status(settings.project_root, plan, "done")
@@ -121,18 +184,25 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
     )
 
     if status == "FAILED":
-        return {
+        result = {
             "status": status,
             "output_dir": str(paths.root),
             "quality_status": quality_status,
             "whatsapp_status": send_result.status,
             "errors": " | ".join(errors),
         }
+        if send_result.failure_reason:
+            result["whatsapp_failure_reason"] = send_result.failure_reason
+        return result
 
-    return {
+    result = {
         "status": status,
         "output_dir": str(paths.root),
         "quality_status": quality_status,
         "whatsapp_status": send_result.status,
         "detail": send_result.detail,
+        "package_link": package_link,
     }
+    if send_result.failure_reason:
+        result["whatsapp_failure_reason"] = send_result.failure_reason
+    return result

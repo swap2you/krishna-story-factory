@@ -9,6 +9,7 @@ import pytest
 from krishna_story_factory.config import Settings
 from krishna_story_factory.senders.whatsapp_cloud import WhatsAppCloudSender
 from krishna_story_factory.whatsapp.cloud_client import WhatsAppCloudClient, WhatsAppCloudError, build_template_payload
+from krishna_story_factory.whatsapp.errors import classify_whatsapp_error, format_whatsapp_log_detail
 from krishna_story_factory.whatsapp.phone import normalize_phone_e164
 from krishna_story_factory.whatsapp.recipients import load_active_recipients
 
@@ -27,6 +28,19 @@ def test_build_template_payload_shape() -> None:
         "type": "template",
         "template": {"name": "hello_world", "language": {"code": "en_US"}},
     }
+    assert "components" not in payload["template"]
+
+
+def test_daily_krishna_story_has_three_params() -> None:
+    payload = build_template_payload(
+        to_phone="17143074266",
+        template_name="daily_krishna_story",
+        language_code="en_US",
+        body_parameters=["Swapnil", "Story Title", "https://drive.example/pkg"],
+    )
+    params = payload["template"]["components"][0]["parameters"]
+    assert len(params) == 3
+    assert params[2]["text"].startswith("https://")
 
 
 def test_missing_cloud_token_fails_cleanly(tmp_path: Path) -> None:
@@ -93,6 +107,23 @@ def test_no_token_in_error_output(mock_post: MagicMock, tmp_path: Path, capsys: 
     assert "super-secret-token" not in captured
 
 
+def test_whatsapp_error_logging_does_not_include_token(tmp_path: Path) -> None:
+    exc = WhatsAppCloudError(
+        "fail",
+        status_code=401,
+        response_body='{"error":{"message":"Invalid OAuth access token - Cannot parse access token"}}',
+    )
+    detail = format_whatsapp_log_detail(
+        exc,
+        template_name="hello_world",
+        language_code="en_US",
+        recipient_phone="17143074266",
+    )
+    assert classify_whatsapp_error(exc) == "TOKEN_EXPIRED"
+    assert "super-secret-token" not in detail
+    assert "Bearer" not in detail or "[REDACTED]" in detail
+
+
 def test_replace_phone_recipient_skipped(tmp_path: Path) -> None:
     csv_path = tmp_path / "recipients.csv"
     csv_path.write_text(
@@ -142,9 +173,21 @@ def _settings(
         openai_image_model="gpt-image-1",
         openai_image_size="1024x1024",
         openai_image_quality="medium",
+        image_generate_coloring_page=True,
+        image_generate_wide_card=False,
+        image_size_story_card="1024x1024",
+        image_size_coloring_page="1024x1024",
         elevenlabs_api_key="",
         elevenlabs_voice_id="",
         elevenlabs_model_id="eleven_multilingual_v2",
+        enable_ambient_audio=False,
+        elevenlabs_sfx_enabled=False,
+        ambient_audio_mix_level=0.12,
+        package_publish_mode="local",
+        google_drive_folder_id="",
+        google_drive_folder_url="",
+        google_drive_local_sync_root=None,
+        package_public_link="",
         whatsapp_sender_type="cloud",
         whatsapp_graph_api_version="v25.0",
         whatsapp_business_account_id="1484151732955311",
@@ -177,9 +220,16 @@ def _package_paths(tmp_path: Path):
         whatsapp_caption=root / "whatsapp_caption.txt",
         activity_sheet=root / "activity_sheet.pdf",
         story_card=root / "story_card.png",
+        story_card_square=root / "story_card_square.png",
+        story_card_wide=root / "story_card_wide.png",
+        coloring_page=root / "coloring_page.png",
         image_prompt=root / "image_prompt.txt",
+        hero_image_prompt=root / "hero_image_prompt.txt",
+        story_card_square_prompt=root / "story_card_square_prompt.txt",
+        story_card_wide_prompt=root / "story_card_wide_prompt.txt",
         line_art_prompt=root / "line_art_prompt.txt",
         coloring_page_prompt=root / "coloring_page_prompt.txt",
+        ambient_prompt=root / "ambient_prompt.txt",
         parent_notes=root / "parent_notes.md",
         manifest=root / "manifest.json",
         narration_mp3=root / "narration.mp3",

@@ -22,13 +22,15 @@ cd C:\Development\Workspace\DevotionalRepo\krishna-story-factory
 Import-Csv input\series_plan.csv | Where-Object { $_.status -eq 'pending' } | Select-Object -First 1 chapter_no,slug,title,source_reference
 ```
 
-Expected first story: `001_the-earth-prays-for-krishna`
+Expected first pending story: `002_devaki-and-vasudeva-wedding`
 
 ## 5. Optional local test (no paid APIs)
 
 ```powershell
 python run_daily_story.py --mode test --force
 ```
+
+Check audio script has no `[pause]` markers and activity sheet PDF has three pages with a word-search grid.
 
 ## 6. Run real production generation
 
@@ -44,13 +46,27 @@ This generates the full package and sends WhatsApp template messages when cloud 
 Get-ChildItem output | Sort-Object Name -Descending | Select-Object -First 3
 ```
 
-Expected: `output/001_the-earth-prays-for-krishna/` with all nine core files plus `line_art_prompt.txt`.
+Expected: `output/002_devaki-and-vasudeva-wedding/` with story, audio, 3-page activity sheet, story card images, and manifest `package.package_link`.
+
+Check audio size:
+
+```powershell
+(Get-Item output\002_devaki-and-vasudeva-wedding\narration.mp3).Length
+```
+
+Prod target: narration.mp3 > 500 KB when ElevenLabs is enabled.
 
 ## 8. Confirm logs
 
 ```powershell
 Get-Content tracking\story_log.csv
-Get-Content tracking\send_log.csv
+Get-Content tracking\send_log.csv -Tail 10
+```
+
+Diagnose WhatsApp failures:
+
+```powershell
+.\scripts\diagnose_whatsapp_failure.ps1
 ```
 
 ## 9. If WhatsApp token expires

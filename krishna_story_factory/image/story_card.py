@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import base64
+import shutil
 import textwrap
+from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
 from ..config import Settings
-from ..models import PlanRow, StoryContent
+from ..models import PackagePaths, PlanRow, StoryContent
 
 
 class ImageGenerationError(RuntimeError):
@@ -18,24 +20,86 @@ class StoryCardGenerator:
         self.settings = settings
         self.mode = mode
 
+    def generate_all(
+        self,
+        content: StoryContent,
+        paths: PackagePaths,
+        *,
+        plan: PlanRow | None = None,
+    ) -> dict[str, str]:
+        sources: dict[str, str] = {}
+        square_prompt = content.story_card_square_prompt or content.image_prompt
+        square_source = self._generate_one(
+            square_prompt,
+            paths.story_card_square,
+            size=self.settings.image_size_story_card,
+            content=content,
+            plan=plan,
+        )
+        sources["story_card_square"] = square_source
+        if paths.story_card_square.exists():
+            shutil.copy2(paths.story_card_square, paths.story_card)
+        sources["story_card"] = square_source
+
+        if self.settings.image_generate_wide_card:
+            wide_prompt = content.story_card_wide_prompt or square_prompt
+            sources["story_card_wide"] = self._generate_one(
+                wide_prompt,
+                paths.story_card_wide,
+                size=self.settings.openai_image_size,
+                content=content,
+                plan=plan,
+            )
+
+        if self.settings.image_generate_coloring_page:
+            coloring_prompt = content.coloring_page_prompt or content.line_art_prompt
+            if coloring_prompt:
+                sources["coloring_page"] = self._generate_one(
+                    coloring_prompt,
+                    paths.coloring_page,
+                    size=self.settings.image_size_coloring_page,
+                    content=content,
+                    plan=plan,
+                )
+
+        return sources
+
     def generate(self, content: StoryContent, output_path, *, plan: PlanRow | None = None) -> str:
-        if self.mode != "test" and self.settings.openai_image_enabled and self.settings.openai_api_key:
+        source = self._generate_one(
+            content.story_card_square_prompt or content.image_prompt,
+            output_path,
+            size=self.settings.image_size_story_card,
+            content=content,
+            plan=plan,
+        )
+        return source
+
+    def _generate_one(
+        self,
+        prompt: str,
+        output_path: Path,
+        *,
+        size: str,
+        content: StoryContent,
+        plan: PlanRow | None,
+    ) -> str:
+        if self.mode != "test" and self.settings.openai_image_enabled and self.settings.openai_api_key and prompt:
             try:
-                self._openai_image(content.image_prompt, output_path)
+                self._openai_image(prompt, output_path, size=size)
                 return "openai"
             except Exception:
                 pass
         self._local_card(content, output_path, plan=plan)
         return "fallback"
 
-    def _openai_image(self, prompt: str, output_path) -> None:
+    def _openai_image(self, prompt: str, output_path: Path, *, size: str) -> None:
         from openai import OpenAI
 
         client = OpenAI(api_key=self.settings.openai_api_key)
         response = client.images.generate(
             model=self.settings.openai_image_model,
             prompt=prompt,
-            size=self.settings.openai_image_size,
+            size=size,
             quality=self.settings.openai_image_quality,
             n=1,
         )
@@ -45,7 +109,7 @@ class StoryCardGenerator:
             raise ImageGenerationError("OpenAI image response did not include base64 image data.")
         output_path.write_bytes(base64.b64decode(b64))
 
-    def _local_card(self, content: StoryContent, output_path, *, plan: PlanRow | None = None) -> None:
+    def _local_card(self, content: StoryContent, output_path: Path, *, plan: PlanRow | None = None) -> None:
         width, height = 1024, 1024
         image = Image.new("RGB", (width, height), "#fff8e7")
         draw = ImageDraw.Draw(image)

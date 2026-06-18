@@ -8,7 +8,7 @@ from .base import BaseSender
 
 
 class TelegramSender(BaseSender):
-    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None) -> SendResult:
+    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None, package_link: str = "") -> SendResult:
         if not settings.telegram_bot_token or not settings.telegram_chat_id:
             return SendResult(status="FAILED", detail="Telegram bot token or chat id is missing.")
         caption = paths.whatsapp_caption.read_text(encoding="utf-8", errors="ignore")

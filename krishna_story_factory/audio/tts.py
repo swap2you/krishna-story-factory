@@ -7,6 +7,9 @@ import requests
 from ..config import Settings
 
 
+from .sanitize import sanitize_audio_script
+
+
 class AudioGenerationError(RuntimeError):
     pass
 
@@ -33,6 +36,8 @@ class AudioGenerator:
         if not self.settings.elevenlabs_voice_id:
             raise AudioGenerationError("ELEVENLABS_VOICE_ID is required when ELEVENLABS_ENABLED=true.")
 
+        narration_text = sanitize_audio_script(text, model_id=self.settings.elevenlabs_model_id)
+
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.settings.elevenlabs_voice_id}"
         params = {"output_format": "mp3_44100_128"}
         headers = {
@@ -41,7 +46,7 @@ class AudioGenerator:
             "Content-Type": "application/json",
         }
         payload = {
-            "text": text,
+            "text": narration_text,
             "model_id": self.settings.elevenlabs_model_id,
             "voice_settings": {
                 "stability": 0.55,

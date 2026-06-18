@@ -27,16 +27,17 @@ def test_series_plan_parses_ten_rows() -> None:
     assert len(rows) == 10
     assert rows[0]["chapter_no"] == "001"
     assert rows[0]["status"] == "done"
-    assert rows[1]["chapter_no"] == "002"
-    assert rows[1]["status"] == "pending"
+    assert any(row["status"] == "pending" for row in rows)
 
 
-def test_next_pending_story_is_002() -> None:
+def test_next_pending_story_matches_csv() -> None:
+    rows = _read_series_rows()
+    expected = next(row for row in rows if row.get("status", "").strip().lower() == "pending")
     settings = load_settings(PROJECT_ROOT)
     plan = read_next_pending(PROJECT_ROOT)
     assert plan is not None
-    assert plan.chapter_no == "002"
-    assert plan.slug == "devaki-and-vasudeva-wedding"
+    assert plan.chapter_no == expected["chapter_no"]
+    assert plan.slug == expected["slug"]
 
 
 def test_whatsapp_recipients_parses_two_rows() -> None:

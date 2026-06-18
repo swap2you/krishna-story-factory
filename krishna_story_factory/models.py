@@ -39,6 +39,10 @@ class StoryContent:
     line_art_prompt: str
     story_card_text: str
     parent_notes: str
+    hero_image_prompt: str = ""
+    story_card_square_prompt: str = ""
+    story_card_wide_prompt: str = ""
+    coloring_page_prompt: str = ""
     recall_questions: list[str] = field(default_factory=list)
     thinking_questions: list[str] = field(default_factory=list)
     word_search_words: list[str] = field(default_factory=list)
@@ -65,9 +69,16 @@ class PackagePaths:
     whatsapp_caption: Path
     activity_sheet: Path
     story_card: Path
+    story_card_square: Path
+    story_card_wide: Path
+    coloring_page: Path
     image_prompt: Path
+    hero_image_prompt: Path
+    story_card_square_prompt: Path
+    story_card_wide_prompt: Path
     line_art_prompt: Path
     coloring_page_prompt: Path
+    ambient_prompt: Path
     parent_notes: Path
     manifest: Path
     narration_mp3: Path
@@ -77,5 +88,6 @@ class PackagePaths:
 class SendResult:
     status: str
     detail: str = ""
+    failure_reason: str = ""
     provider_ids: list[str] = field(default_factory=list)
     raw: dict[str, Any] = field(default_factory=dict)

@@ -13,7 +13,7 @@ class WhatsAppGroupSender(BaseSender):
     depends on unsupported browser automation or unofficial libraries.
     """
 
-    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None) -> SendResult:
+    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None, package_link: str = "") -> SendResult:
         return SendResult(
             status="UNSUPPORTED",
             detail=(

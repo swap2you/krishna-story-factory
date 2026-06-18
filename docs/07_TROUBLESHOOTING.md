@@ -13,7 +13,23 @@ Paste fresh token into `WHATSAPP_CLOUD_TOKEN` in `.env`, then:
 
 ```powershell
 python scripts/test_whatsapp_cloud.py
+.\scripts\diagnose_whatsapp_failure.ps1
+Get-Content tracking\send_log.csv -Tail 10
 ```
+
+Look for `reason=TOKEN_EXPIRED` in send_log detail.
+
+## Audio says "pause"
+
+Regenerate with updated prompts. Pipeline sanitizes `[pause]` to `<break time="1.2s" />` before ElevenLabs.
+
+## Audio too short
+
+Prod quality fails if narration.mp3 is <= 500 KB. Target 650–850 spoken words in audio_script.txt.
+
+## Drive package link missing
+
+Set `GOOGLE_DRIVE_FOLDER_URL` in `.env`. Optionally set `GOOGLE_DRIVE_LOCAL_SYNC_ROOT` to auto-copy output folders.
 
 ## No pending story
 

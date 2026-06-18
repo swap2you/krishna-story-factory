@@ -26,11 +26,16 @@ See `input/content_quality_rules.md`.
 - `prompts/activity_sheet_prompt.md`
 - `prompts/quality_review_prompt.md`
 
-## Important
+## Audio and images
 
-- Generate only the current pending row
-- Do not mix unrelated pastimes
-- Stay faithful to Krishna Book sequence from chapter 1 onward
+- Audio script: 650–850 words, `<break time="..."/>` pacing, no `[pause]`
+- Story card: one clear focal scene, square 1080x1080 direction
+- Coloring page: thick outlines, no weapons
+- Story 002: do not call Kamsa "king"; use "Devaki's powerful brother"
+
+## Package link
+
+Parents receive the Google Drive parent folder link in `whatsapp_caption.txt` when `GOOGLE_DRIVE_FOLDER_URL` is configured.
 
 ## Reset queue
 

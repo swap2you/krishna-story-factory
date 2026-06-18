@@ -16,5 +16,6 @@ class BaseSender(ABC):
         mode: str,
         plan: PlanRow | None = None,
         content: StoryContent | None = None,
+        package_link: str = "",
     ) -> SendResult:
         raise NotImplementedError

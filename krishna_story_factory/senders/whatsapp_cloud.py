@@ -4,6 +4,7 @@ from ..config import Settings
 from ..csv_store import append_send_log
 from ..models import PackagePaths, PlanRow, SendResult, StoryContent
 from ..whatsapp.cloud_client import WhatsAppCloudClient, WhatsAppCloudError
+from ..whatsapp.errors import classify_whatsapp_error, format_whatsapp_log_detail
 from ..whatsapp.recipients import load_active_recipients
 from .base import BaseSender
 
@@ -17,6 +18,7 @@ class WhatsAppCloudSender(BaseSender):
         mode: str,
         plan: PlanRow | None = None,
         content: StoryContent | None = None,
+        package_link: str = "",
     ) -> SendResult:
         if mode == "test":
             return SendResult(status="SKIPPED_TEST_MODE", detail="WhatsApp Cloud send skipped in test mode.")
@@ -31,23 +33,25 @@ class WhatsAppCloudSender(BaseSender):
             return SendResult(status="NO_RECIPIENTS", detail="No active opted-in recipients found in whatsapp_recipients.csv.")
 
         template_name = settings.whatsapp_template_name
+        language_code = settings.whatsapp_template_language
         provider_ids: list[str] = []
         sent_count = 0
         failed_count = 0
-        skipped_template = False
+        last_failure_reason = ""
         chapter_no = plan.chapter_no if plan else _chapter_from_paths(paths)
         slug = plan.slug if plan else paths.root.name.split("_", 1)[-1]
+        link = package_link or _read_package_link(paths)
 
         for recipient in recipients:
             body_params = None
             if template_name == "daily_krishna_story" and content:
-                package_ref = str(paths.root)
-                body_params = [recipient.name or "Family", content.title, package_ref]
+                body_params = [recipient.name or "Family", content.title, link or "Package link pending"]
 
             try:
                 result = client.send_template(
                     to_phone=recipient.phone_digits,
                     template_name=template_name,
+                    language_code=language_code,
                     body_parameters=body_params,
                 )
                 message_id = result["message_ids"][0]
@@ -63,31 +67,21 @@ class WhatsAppCloudSender(BaseSender):
                         "recipient_name": recipient.name,
                         "recipient_phone": recipient.phone_digits,
                         "status": "SUCCESS",
-                        "detail": f"template={template_name}",
+                        "detail": f"template={template_name} | language={language_code} | phone={recipient.phone_digits}",
                         "message_id": message_id,
                         "created_at": _now_iso(settings),
                     },
                 )
             except WhatsAppCloudError as exc:
-                if template_name == "daily_krishna_story":
-                    skipped_template = True
-                    append_send_log(
-                        settings.project_root,
-                        {
-                            "date": _today(settings),
-                            "chapter_no": chapter_no,
-                            "slug": slug,
-                            "sender_type": "cloud",
-                            "recipient_name": recipient.name,
-                            "recipient_phone": recipient.phone_digits,
-                            "status": "SKIPPED",
-                            "detail": "daily_krishna_story template not enabled or not approved yet",
-                            "message_id": "",
-                            "created_at": _now_iso(settings),
-                        },
-                    )
-                    break
+                failure_reason = classify_whatsapp_error(exc)
+                last_failure_reason = failure_reason
                 failed_count += 1
+                detail = format_whatsapp_log_detail(
+                    exc,
+                    template_name=template_name,
+                    language_code=language_code,
+                    recipient_phone=recipient.phone_digits,
+                )
                 append_send_log(
                     settings.project_root,
                     {
@@ -98,30 +92,23 @@ class WhatsAppCloudSender(BaseSender):
                         "recipient_name": recipient.name,
                         "recipient_phone": recipient.phone_digits,
                         "status": "FAILED",
-                        "detail": _safe_error_detail(exc),
+                        "detail": detail,
                         "message_id": "",
                         "created_at": _now_iso(settings),
                     },
                 )
 
         if sent_count == 0:
-            if skipped_template:
-                return SendResult(
-                    status="SKIPPED_TEMPLATE",
-                    detail="Package generated. daily_krishna_story is not enabled/approved yet. Set WHATSAPP_TEMPLATE_NAME=hello_world for smoke tests.",
-                    provider_ids=provider_ids,
-                )
             return SendResult(
                 status="FAILED_CLOUD",
                 detail=f"WhatsApp template send failed for all {failed_count} recipient(s).",
+                failure_reason=last_failure_reason or "UNKNOWN_CLOUD_ERROR",
                 provider_ids=provider_ids,
             )
 
-        detail = f"Sent template '{template_name}' to {sent_count} recipient(s)."
+        detail = f"Sent template '{template_name}' ({language_code}) to {sent_count} recipient(s)."
         if failed_count:
             detail += f" {failed_count} failed."
-        if skipped_template:
-            detail += " daily_krishna_story not sent (not approved)."
         return SendResult(status="SENT_CLOUD", detail=detail, provider_ids=provider_ids)
 
 
@@ -132,14 +119,16 @@ def _chapter_from_paths(paths: PackagePaths) -> str:
     return ""
 
 
-def _safe_error_detail(exc: WhatsAppCloudError) -> str:
-    parts = [str(exc)]
-    if exc.status_code is not None:
-        parts.append(f"HTTP {exc.status_code}")
-    if exc.response_body:
-        parts.append(exc.response_body)
-    detail = " | ".join(parts)
-    return detail.replace("Bearer ", "Bearer [REDACTED] ")
+def _read_package_link(paths: PackagePaths) -> str:
+    import json
+
+    if not paths.manifest.exists():
+        return ""
+    try:
+        data = json.loads(paths.manifest.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return ""
+    return str(data.get("package", {}).get("package_link", "")).strip()
 
 
 def _today(settings: Settings) -> str:
