@@ -14,15 +14,29 @@ class WhatsAppCloudError(RuntimeError):
         self.response_body = response_body
 
 
-def build_template_payload(*, to_phone: str, template_name: str, language_code: str) -> dict[str, Any]:
+def build_template_payload(
+    *,
+    to_phone: str,
+    template_name: str,
+    language_code: str,
+    body_parameters: list[str] | None = None,
+) -> dict[str, Any]:
+    template: dict[str, Any] = {
+        "name": template_name,
+        "language": {"code": language_code},
+    }
+    if body_parameters:
+        template["components"] = [
+            {
+                "type": "body",
+                "parameters": [{"type": "text", "text": value} for value in body_parameters],
+            }
+        ]
     return {
         "messaging_product": "whatsapp",
         "to": to_phone,
         "type": "template",
-        "template": {
-            "name": template_name,
-            "language": {"code": language_code},
-        },
+        "template": template,
     }
 
 
@@ -58,7 +72,14 @@ class WhatsAppCloudClient:
             missing.append("WHATSAPP_TEMPLATE_LANGUAGE")
         return missing
 
-    def send_template(self, *, to_phone: str, template_name: str | None = None, language_code: str | None = None) -> dict[str, Any]:
+    def send_template(
+        self,
+        *,
+        to_phone: str,
+        template_name: str | None = None,
+        language_code: str | None = None,
+        body_parameters: list[str] | None = None,
+    ) -> dict[str, Any]:
         missing = self.validate_config()
         if missing:
             raise WhatsAppCloudError(f"Missing WhatsApp config: {', '.join(missing)}")
@@ -67,6 +88,7 @@ class WhatsAppCloudClient:
             to_phone=to_phone,
             template_name=template_name or self.settings.whatsapp_template_name,
             language_code=language_code or self.settings.whatsapp_template_language,
+            body_parameters=body_parameters,
         )
         response = requests.post(self.messages_url(), headers=self.headers(), json=payload, timeout=60)
         body = response.text[:2000]

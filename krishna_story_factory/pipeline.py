@@ -30,8 +30,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
     errors: list[str] = []
     quality_status = "UNKNOWN"
     send_result = SendResult(status="NOT_ATTEMPTED", detail="WhatsApp send disabled.")
-    audio_mode = "mock" if mode == "test" or not settings.elevenlabs_enabled else "elevenlabs"
-    image_mode = "local_card" if mode == "test" or not settings.openai_image_enabled else "openai_or_local_fallback"
+    story_source = "deterministic_test" if mode == "test" or not settings.openai_text_enabled else "openai"
 
     try:
         content = StoryGenerator(settings, mode).generate(plan)
@@ -40,10 +39,12 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
         paths.audio_script.write_text(content.audio_script, encoding="utf-8")
         paths.whatsapp_caption.write_text(content.whatsapp_caption, encoding="utf-8")
         paths.image_prompt.write_text(content.image_prompt, encoding="utf-8")
+        paths.line_art_prompt.write_text(content.line_art_prompt, encoding="utf-8")
+        paths.coloring_page_prompt.write_text(content.line_art_prompt, encoding="utf-8")
         paths.parent_notes.write_text(content.parent_notes, encoding="utf-8")
 
-        AudioGenerator(settings, mode).generate_mp3(content.audio_script, paths.narration_mp3)
-        StoryCardGenerator(settings, mode).generate(content, paths.story_card)
+        audio_source = AudioGenerator(settings, mode).generate_mp3(content.audio_script, paths.narration_mp3)
+        image_source = StoryCardGenerator(settings, mode).generate(content, paths.story_card, plan=plan)
         ActivitySheetGenerator().generate(plan, content, paths.activity_sheet)
 
         write_manifest(
@@ -54,11 +55,12 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             mode=mode,
             quality_status="PENDING",
             quality_errors=[],
-            image_mode=image_mode,
-            audio_mode=audio_mode,
+            story_source=story_source,
+            audio_source=audio_source,
+            image_source=image_source,
         )
 
-        ok, quality_errors = run_quality_checks(paths)
+        ok, quality_errors = run_quality_checks(paths, mode=mode, settings=settings)
         quality_status = "PASS" if ok else "FAIL"
         if quality_errors:
             errors.extend(quality_errors)
@@ -71,8 +73,9 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             mode=mode,
             quality_status=quality_status,
             quality_errors=quality_errors,
-            image_mode=image_mode,
-            audio_mode=audio_mode,
+            story_source=story_source,
+            audio_source=audio_source,
+            image_source=image_source,
         )
 
         if not ok:
@@ -85,7 +88,13 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
                     detail="A story was already sent today. Use --force to override.",
                 )
             else:
-                send_result = build_sender(settings).send(settings=settings, paths=paths, mode=mode)
+                send_result = build_sender(settings).send(
+                    settings=settings,
+                    paths=paths,
+                    mode=mode,
+                    plan=plan,
+                    content=content,
+                )
 
         update_plan_status(settings.project_root, plan, "done")
         status = "SUCCESS"

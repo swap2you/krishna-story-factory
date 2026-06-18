@@ -10,18 +10,18 @@ class PlanRow:
     chapter_no: str
     slug: str
     title: str
+    project: str
+    library_id: str
     source_reference: str
     scripture_reference: str
     summary_seed: str
+    age_range: str
+    package_type: str
+    send_date: str
     status: str
     created_at: str = ""
+    updated_at: str = ""
     notes: str = ""
-    library_id: str = "krishna_book"
-    age_range: str = "7-11"
-    package_type: str = "bedtime_story"
-    send_date: str = ""
-    devotional_focus: str = ""
-    activity_type: str = "auto"
     row_index: int | None = None
 
 
@@ -36,9 +36,14 @@ class StoryContent:
     audio_script: str
     whatsapp_caption: str
     image_prompt: str
+    line_art_prompt: str
+    story_card_text: str
     parent_notes: str
-    activity_questions: list[str] = field(default_factory=list)
-    vocabulary_words: list[str] = field(default_factory=list)
+    recall_questions: list[str] = field(default_factory=list)
+    thinking_questions: list[str] = field(default_factory=list)
+    word_search_words: list[str] = field(default_factory=list)
+    draw_activity: str = ""
+    family_activity: str = ""
 
     def to_markdown(self) -> str:
         challenge = "\n".join(f"{i + 1}. {item}" for i, item in enumerate(self.five_star_challenge))
@@ -61,6 +66,8 @@ class PackagePaths:
     activity_sheet: Path
     story_card: Path
     image_prompt: Path
+    line_art_prompt: Path
+    coloring_page_prompt: Path
     parent_notes: Path
     manifest: Path
     narration_mp3: Path

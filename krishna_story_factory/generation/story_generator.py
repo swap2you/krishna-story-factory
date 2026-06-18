@@ -4,9 +4,9 @@ import json
 import re
 from typing import Any
 
-
 from ..config import Settings
 from ..models import PlanRow, StoryContent
+from ..prompts_loader import load_project_text
 
 
 class StoryGenerationError(RuntimeError):
@@ -40,29 +40,26 @@ class StoryGenerator:
         return self._from_dict(plan, data)
 
     def _build_prompt(self, plan: PlanRow) -> str:
-        return f"""
-You are creating a Krishna-conscious bedtime story package for children ages 7 to 11.
-Write in a warm, simple, devotional, ISKCON-friendly tone. Avoid fear-heavy, graphic, sectarian, or adult material.
-Keep the language age-appropriate for 7-11 year olds. Include light vocabulary support.
+        base = load_project_text(self.settings.project_root, "prompts/story_generation_prompt.md")
+        rules = load_project_text(self.settings.project_root, "input/content_quality_rules.md")
+        return f"""{base}
 
-Source reference: {plan.source_reference}
-Scripture reference: {plan.scripture_reference}
-Story seed: {plan.summary_seed}
-Title: {plan.title}
+CONTENT QUALITY RULES:
+{rules}
 
-Return only valid JSON with exactly these keys:
-- title: string
-- recap: string, 2-3 short sentences
-- main_story: string, 900-1300 words, bedtime style, no markdown heading inside
-- moral: string, 2-3 sentences
-- takeaway: string, 1-2 practical sentences
-- five_star_challenge: array of exactly 5 short child-friendly actions
-- audio_script: string, natural narration script including short pauses in brackets, no markdown
-- whatsapp_caption: string, concise parent-facing WhatsApp caption with Hare Krishna greeting and ask parents to send photo/audio/video after activity
-- image_prompt: string, safe devotional story-card image prompt, no copyrighted style names
-- parent_notes: string, markdown-style notes for parents with reading tip, devotional focus, and discussion question
-- activity_questions: array of exactly 5 questions
-- vocabulary_words: array of exactly 5 child-friendly devotional words from the story
+CURRENT QUEUE ROW (generate ONLY for this row; do not mix other pastimes):
+- chapter_no: {plan.chapter_no}
+- slug: {plan.slug}
+- title: {plan.title}
+- project: {plan.project}
+- library_id: {plan.library_id}
+- source_reference: {plan.source_reference}
+- scripture_reference: {plan.scripture_reference}
+- summary_seed: {plan.summary_seed}
+- age_range: {plan.age_range}
+- notes: {plan.notes}
+
+Return only valid JSON matching the schema described above.
 """.strip()
 
     def _parse_json(self, text: str) -> dict[str, Any]:
@@ -78,6 +75,7 @@ Return only valid JSON with exactly these keys:
                 raise StoryGenerationError(f"OpenAI JSON parse failed: {exc}") from exc
 
     def _from_dict(self, plan: PlanRow, data: dict[str, Any]) -> StoryContent:
+        activity = data.get("activity_sheet") or {}
         try:
             return StoryContent(
                 title=str(data.get("title") or plan.title),
@@ -89,84 +87,111 @@ Return only valid JSON with exactly these keys:
                 audio_script=str(data["audio_script"]),
                 whatsapp_caption=str(data["whatsapp_caption"]),
                 image_prompt=str(data["image_prompt"]),
+                line_art_prompt=str(data.get("line_art_prompt") or data.get("coloring_page_prompt") or ""),
+                story_card_text=str(data.get("story_card_text") or plan.title),
                 parent_notes=str(data["parent_notes"]),
-                activity_questions=[str(x) for x in data.get("activity_questions", [])][:5],
-                vocabulary_words=[str(x) for x in data.get("vocabulary_words", [])][:5],
+                recall_questions=[str(x) for x in activity.get("recall_questions", data.get("recall_questions", []))][:3],
+                thinking_questions=[str(x) for x in activity.get("thinking_questions", data.get("thinking_questions", []))][:2],
+                word_search_words=[str(x) for x in activity.get("word_search_words", data.get("word_search_words", []))][:10],
+                draw_activity=str(activity.get("draw_activity") or data.get("draw_activity") or "Draw your favorite scene from the story."),
+                family_activity=str(activity.get("family_activity") or data.get("family_activity") or "Share one thing you learned with your family."),
             )
         except KeyError as exc:
             raise StoryGenerationError(f"Generated story is missing required key: {exc}") from exc
 
     def _mock_story(self, plan: PlanRow) -> StoryContent:
         challenge = [
-            "Listen to the story without interrupting.",
-            "Say one thing Mother Yasoda teaches us about love.",
-            "Chant the Hare Krishna maha-mantra one time with attention.",
-            "Draw Krishna smiling with Mother Yasoda.",
-            "Do one small service for your parent before bedtime.",
+            "Listen quietly to the full story.",
+            "Name one character from tonight's Krishna-katha.",
+            "Chant Hare Krishna once with attention.",
+            f"Draw one scene from {plan.title}.",
+            "Do one small loving service before bed.",
         ]
-        questions = [
-            "Why did Mother Yasoda want to bind Krishna?",
-            "What was strange about the rope?",
-            "What made Krishna agree to be bound?",
-            "What does this story teach about love?",
-            "What service can you do at home today?",
-        ]
-        vocab = ["bhakti", "prasadam", "Yasoda", "Damodara", "service"]
+        recap = (
+            f"Tonight we continue the Krishna Book in order. Our story is {plan.title}, "
+            f"from {plan.source_reference}."
+        )
         main_story = (
-            "One evening in beautiful Vrindavana, Mother Yasoda was busy making butter for Krishna. "
-            "The house smelled sweet, and the soft sound of churning filled the room. Krishna came near His mother, "
-            "His eyes bright like lotus petals, and He wanted her full attention. Mother Yasoda loved Krishna more than her own life, "
-            "so she stopped her work and held Him close. But soon the milk on the stove began to boil over. Mother Yasoda gently placed Krishna down "
-            "and ran to save the milk. Krishna was small, but He was not ordinary. He became upset, thinking, 'Mother left Me for milk!' "
-            "With His tiny hand, He broke a butter pot and shared the butter with the monkeys. When Mother Yasoda returned, she saw the broken pot, "
-            "the butter trail, and the little footprints of her beloved child. She followed the marks and found Krishna sitting like a clever prince, "
-            "feeding butter to the monkeys. Krishna saw His mother coming with a small stick, and He ran. Mother Yasoda ran after Him. The Supreme Lord, "
-            "who cannot be caught by great yogis, allowed Himself to be chased by His mother. At last, Mother Yasoda caught Him. Krishna cried softly, "
-            "rubbing His eyes, and Mother Yasoda's heart melted. She did not want to hurt Him. She only wanted to teach Him not to make mischief. "
-            "She decided to tie Him to a wooden grinding mortar so He would stay in one place. She brought a rope, but when she tried to tie it, "
-            "it was two fingers too short. She added another rope. Still two fingers too short. She added more ropes from the house. Still two fingers too short. "
-            "All the village mothers laughed with affection. How could so much rope not fit around one small child? Mother Yasoda kept trying. "
-            "Her hair became loose, and drops of effort appeared on her face. Krishna saw her love and hard work. Then He agreed. Suddenly, the rope fit. "
-            "The Lord who holds all universes became bound by the love of His devotee. That is why Krishna is called Damodara, the one whose belly was bound by rope. "
-            "The lesson is not that Krishna was defeated by rope. He was conquered by love. For children, this means our small acts of service matter. "
-            "When we listen, help, chant, and remember Krishna with sincerity, Krishna notices. He may be the Supreme Lord, but He becomes very close to a heart filled with bhakti. "
-            "So at bedtime, we can remember Mother Yasoda's patience and Krishna's sweet smile. We can ask, 'How can I serve Krishna and my family tomorrow?' "
-            "Then sleep becomes peaceful, because the heart is tied gently to Krishna."
+            f"Dear children, Hare Krishna. Tonight we hear about {plan.title}. "
+            f"{plan.summary_seed} "
+            "The devotees remember this pastime with love and trust in Krishna's plan. "
+            "Mother Earth felt great burden when cruel kings misused their power. "
+            "The demigods prayed with sincere hearts, and Lord Brahma listened carefully. "
+            "They sought the Supreme Lord's help because only Krishna can restore dharma. "
+            "In a gentle voice filled with compassion, the Lord promised to appear. "
+            "This promise brought hope to the whole universe. "
+            "For children, the lesson is simple: when the world feels heavy, prayer and devotion bring light. "
+            "Krishna never forgets those who call Him with love. "
+            "We can remember this story at bedtime and feel peaceful, knowing Krishna cares for everyone. "
+            "Let us keep our hearts soft, our words kind, and our actions honest. "
+            "When we hear Krishna-katha before sleep, our minds become calm like a quiet river. "
+            "Tomorrow we can wake up and serve our parents, teachers, and friends. "
+            "That is how we follow the example of the devotees in this sacred story. "
+            "Hare Krishna. Sweet dreams."
         )
         audio_script = (
-            f"Hare Krishna dear children. [pause] Tonight's story is called {plan.title}. [pause] "
-            "In Vrindavana, Mother Yasoda tried to bind little Krishna with rope, but every rope was two fingers too short. [pause] "
-            "She kept trying with love, and Krishna finally allowed Himself to be bound. [pause] "
-            "This teaches us that Krishna is not conquered by strength. He is conquered by sincere love and service. [pause] "
-            "Before sleeping, think of one small service you can do tomorrow. Hare Krishna."
+            f"Hare Krishna dear children. [pause] Tonight's Krishna Book story is {plan.title}. [pause] "
+            f"{plan.summary_seed} [pause] "
+            "Remember that Krishna hears sincere prayer. [pause] "
+            "Before sleep, think of one kind action you can do tomorrow. [pause] Hare Krishna."
         )
         caption = (
             "Hare Krishna dear parents 🙏\n\n"
-            f"Today’s bedtime story package: *{plan.title}*\n"
-            "Please read or play it for the kids, help them complete the activity sheet, and send a photo/audio/video of their completed work. "
-            "This keeps them encouraged while learning Krishna-katha."
+            f"Tonight's Krishna Book bedtime package: *{plan.title}*\n"
+            f"Source: {plan.source_reference}\n\n"
+            "Please read or play it for the children, complete the activity sheet, "
+            "and send a photo/audio/video of their work."
         )
         image_prompt = (
-            "A gentle devotional bedtime story card showing child Krishna in Vrindavana beside Mother Yasoda, "
-            "a wooden grinding mortar, soft evening light, butter pot nearby, warm village home setting, child-friendly, peaceful, reverential, no text."
+            f"Ultra-realistic devotional painting for children, scene from {plan.title}, "
+            f"{plan.summary_seed} Soft Vrindavan or Bhagavatam atmosphere, warm evening light, "
+            "reverential mood, child-safe, no modern objects, no gore, 16:9 hero image."
+        )
+        line_art = (
+            f"Simple black line art coloring page for children showing the main scene from {plan.title}, "
+            "clean outlines, no shading, devotional, child-safe."
         )
         parent_notes = (
             f"# Parent Notes\n\n"
-            f"Source: {plan.source_reference}\n\n"
-            "Read slowly and keep the mood sweet, not disciplinary. The focus is Mother Yasoda's loving effort and Krishna's willingness to be bound by bhakti.\n\n"
-            "Discussion question: What small service can we do for Krishna and family tomorrow?\n"
+            f"**Source:** {plan.source_reference}\n"
+            f"**Scripture:** {plan.scripture_reference}\n\n"
+            "Read slowly in a warm bedtime voice. Keep the mood hopeful and devotional.\n\n"
+            "**Discussion:** What does this pastime teach us about trusting Krishna?\n"
         )
         return StoryContent(
             title=plan.title,
-            recap="Yesterday we remembered that Krishna protects and loves His devotees. Today we hear how Mother Yasoda's love became stronger than any rope.",
+            recap=recap,
             main_story=main_story,
-            moral="Krishna is the Supreme Lord, yet He becomes controlled by pure love. Real bhakti means sincere effort, patience, and service.",
-            takeaway="Do one small service with love today. Krishna sees sincerity more than size.",
+            moral="Krishna protects devotees who pray with sincerity. We can trust Him in every situation.",
+            takeaway="Before sleep, remember Krishna and plan one small act of kindness for tomorrow.",
             five_star_challenge=challenge,
             audio_script=audio_script,
             whatsapp_caption=caption,
             image_prompt=image_prompt,
+            line_art_prompt=line_art,
+            story_card_text=plan.title,
             parent_notes=parent_notes,
-            activity_questions=questions,
-            vocabulary_words=vocab,
+            recall_questions=[
+                f"What is tonight's story called?",
+                "Who prayed for help in this pastime?",
+                "What promise brought hope to the devotees?",
+            ],
+            thinking_questions=[
+                "Why is prayer important when things feel difficult?",
+                "How can we show trust in Krishna at home?",
+            ],
+            word_search_words=[
+                "Krishna",
+                "prayer",
+                "devotee",
+                "Earth",
+                "Brahma",
+                "dharma",
+                "hope",
+                "love",
+                "Vishnu",
+                "bhakti",
+            ],
+            draw_activity=f"Draw the main scene from {plan.title}.",
+            family_activity="Together, chant Hare Krishna once and share one thing you are grateful for.",
         )

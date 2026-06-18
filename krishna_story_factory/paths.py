@@ -24,6 +24,8 @@ def make_package_paths(output_root: Path, plan: PlanRow) -> PackagePaths:
         activity_sheet=folder / "activity_sheet.pdf",
         story_card=folder / "story_card.png",
         image_prompt=folder / "image_prompt.txt",
+        line_art_prompt=folder / "line_art_prompt.txt",
+        coloring_page_prompt=folder / "coloring_page_prompt.txt",
         parent_notes=folder / "parent_notes.md",
         manifest=folder / "manifest.json",
         narration_mp3=folder / "narration.mp3",

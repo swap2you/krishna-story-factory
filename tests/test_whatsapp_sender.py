@@ -93,6 +93,16 @@ def test_no_token_in_error_output(mock_post: MagicMock, tmp_path: Path, capsys: 
     assert "super-secret-token" not in captured
 
 
+def test_replace_phone_recipient_skipped(tmp_path: Path) -> None:
+    csv_path = tmp_path / "recipients.csv"
+    csv_path.write_text(
+        "name,phone_e164,opt_in,status,notes\n"
+        "Wife,+1REPLACE_WITH_WIFE_NUMBER,true,active,placeholder\n",
+        encoding="utf-8",
+    )
+    assert load_active_recipients(csv_path) == []
+
+
 @patch("krishna_story_factory.senders.whatsapp_cloud.append_send_log")
 @patch("krishna_story_factory.senders.whatsapp_cloud.WhatsAppCloudClient.send_template")
 def test_sender_broadcast_logs_success(mock_send: MagicMock, mock_log: MagicMock, tmp_path: Path) -> None:
@@ -126,6 +136,7 @@ def _settings(
         openai_image_enabled=False,
         elevenlabs_enabled=False,
         whatsapp_send_enabled=True,
+        allow_placeholder_audio=False,
         openai_api_key="",
         openai_text_model="gpt-4.1",
         openai_image_model="gpt-image-1",
@@ -167,6 +178,8 @@ def _package_paths(tmp_path: Path):
         activity_sheet=root / "activity_sheet.pdf",
         story_card=root / "story_card.png",
         image_prompt=root / "image_prompt.txt",
+        line_art_prompt=root / "line_art_prompt.txt",
+        coloring_page_prompt=root / "coloring_page_prompt.txt",
         parent_notes=root / "parent_notes.md",
         manifest=root / "manifest.json",
         narration_mp3=root / "narration.mp3",

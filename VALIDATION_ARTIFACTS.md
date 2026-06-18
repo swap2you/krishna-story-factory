@@ -1,6 +1,6 @@
 # Validation Artifacts
 
-Validation date: 2026-06-18
+Date: 2026-06-18
 
 ## Commands
 
@@ -8,67 +8,70 @@ Validation date: 2026-06-18
 pytest -q
 python run_daily_story.py --mode test --force
 python scripts/test_whatsapp_cloud.py
+python run_daily_story.py --mode prod --force
 ```
 
-## Pytest result
+## Pytest
 
 ```text
-10 passed
+11 passed
 ```
 
-Includes:
-
-- `tests/test_pipeline_test_mode.py`
-- `tests/test_whatsapp_sender.py` (phone normalization, config errors, recipient filtering, mocked Meta success, no token in errors)
-
-## Pipeline result (test mode)
-
-```json
-{
-  "status": "SUCCESS",
-  "quality_status": "PASS",
-  "whatsapp_status": "NOT_ATTEMPTED"
-}
-```
-
-Test mode does not call WhatsApp even when cloud sender is configured locally.
-
-## WhatsApp Cloud smoke test
+## Latest prod output path (local)
 
 ```text
-SUCCESS
-Meta message id: wamid....
+output/001_the-earth-prays-for-krishna/
 ```
 
-Template: `hello_world`  
-Recipient: configured `WHATSAPP_TEST_RECIPIENT_PHONE`  
-Token source: local `.env` only (`WHATSAPP_CLOUD_TOKEN`)
-
-## Recipient CSV template
-
-`input/whatsapp_recipients.csv`:
-
-```csv
-name,phone_e164,opt_in,status,notes
-Swapnil Test,+17143074266,true,active,Meta test recipient
-```
-
-## Send log schema
-
-`tracking/send_log.csv` columns:
+## Required file checklist
 
 ```text
-date,chapter_no,slug,sender_type,recipient_name,recipient_phone,status,detail,message_id,created_at
+story.md
+audio_script.txt
+whatsapp_caption.txt
+activity_sheet.pdf
+story_card.png
+image_prompt.txt
+line_art_prompt.txt
+parent_notes.md
+manifest.json
+narration.mp3
 ```
 
-## Regenerate locally
+## Manifest source fields (prod run)
+
+```text
+story_source: openai
+audio_source: elevenlabs
+image_source: openai or fallback
+```
+
+Also verified: `source_reference`, `library_id`, `age_range`, `generated_at`, `project`
+
+## Quality result
+
+```text
+PASS
+```
+
+## WhatsApp result
+
+```text
+SENT_CLOUD — hello_world to 1 active recipient (Swapnil Test)
+Wife Test skipped (REPLACE placeholder phone)
+```
+
+## Next queue row
+
+```text
+002_devaki-and-vasudeva-wedding (pending)
+```
+
+## Regenerate
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
-pytest -q
-python run_daily_story.py --mode test --force
-python scripts/test_whatsapp_cloud.py
-python scripts/test_whatsapp_broadcast.py
+python run_daily_story.py --mode prod --force
 ```
 
-Next pending story in sample queue: `005_boat-crossing`.
+See [docs/01_DAILY_RUNBOOK.md](docs/01_DAILY_RUNBOOK.md).

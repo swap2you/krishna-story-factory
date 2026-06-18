@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -7,14 +8,21 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from krishna_story_factory.config import load_settings
+
 PROJECT_ROOT = Path(__file__).resolve().parent
 SERIES_PATH = PROJECT_ROOT / "input" / "series_plan.csv"
-LOG_PATH = PROJECT_ROOT / "tracking" / "story_log.csv"
+STORY_LOG = PROJECT_ROOT / "tracking" / "story_log.csv"
+SEND_LOG = PROJECT_ROOT / "tracking" / "send_log.csv"
+QUALITY_LOG = PROJECT_ROOT / "tracking" / "quality_log.csv"
 OUTPUT_ROOT = PROJECT_ROOT / "output"
 
-st.set_page_config(page_title="Krishna Story Factory", layout="wide")
+settings = load_settings(PROJECT_ROOT)
+
+st.set_page_config(page_title="Krishna Book Bedtime", layout="wide")
 st.title("Krishna Story Factory")
-st.caption("Local dashboard for queue, generation, quality status, and delivery mode.")
+st.subheader("Project: Krishna Book Bedtime")
+st.caption("CLI is source of truth. Dashboard is optional.")
 
 
 def read_csv(path: Path) -> pd.DataFrame:
@@ -34,73 +42,78 @@ def run_cli(args: list[str]) -> tuple[int, str]:
         cwd=PROJECT_ROOT,
         text=True,
         capture_output=True,
-        timeout=600,
+        timeout=900,
     )
     return proc.returncode, (proc.stdout + "\n" + proc.stderr).strip()
 
-series_df = read_csv(SERIES_PATH)
-log_df = read_csv(LOG_PATH)
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    pending_count = int((series_df.get("status", pd.Series(dtype=str)).astype(str).str.lower() == "pending").sum()) if not series_df.empty else 0
-    st.metric("Pending stories", pending_count)
-with col2:
-    generated_count = len(log_df) if not log_df.empty else 0
-    st.metric("Run log rows", generated_count)
-with col3:
-    latest_status = log_df.iloc[-1]["status"] if not log_df.empty and "status" in log_df.columns else "N/A"
-    st.metric("Latest run", latest_status)
+series_df = read_csv(SERIES_PATH)
+story_log_df = read_csv(STORY_LOG)
+send_log_df = read_csv(SEND_LOG)
+quality_log_df = read_csv(QUALITY_LOG)
+
+c1, c2, c3, c4 = st.columns(4)
+with c1:
+    st.metric("Library", "Krishna Book")
+with c2:
+    pending = int((series_df.get("status", pd.Series(dtype=str)).astype(str).str.lower() == "pending").sum()) if not series_df.empty else 0
+    st.metric("Pending", pending)
+with c3:
+    st.metric("Runs logged", len(story_log_df))
+with c4:
+    st.metric("Sender", settings.whatsapp_sender_type)
+
+st.header("Model flags")
+st.write(
+    {
+        "OPENAI_TEXT_ENABLED": settings.openai_text_enabled,
+        "OPENAI_IMAGE_ENABLED": settings.openai_image_enabled,
+        "ELEVENLABS_ENABLED": settings.elevenlabs_enabled,
+        "WHATSAPP_SEND_ENABLED": settings.whatsapp_send_enabled,
+        "WHATSAPP_SENDER_TYPE": settings.whatsapp_sender_type,
+    }
+)
 
 st.header("Next pending story")
 if series_df.empty:
-    st.warning("No series_plan.csv found or file is empty.")
+    st.warning("No series_plan.csv found.")
 else:
-    pending = series_df[series_df["status"].astype(str).str.lower() == "pending"] if "status" in series_df.columns else pd.DataFrame()
-    if pending.empty:
+    pending_rows = series_df[series_df["status"].astype(str).str.lower() == "pending"] if "status" in series_df.columns else pd.DataFrame()
+    if pending_rows.empty:
         st.info("No pending stories.")
     else:
-        st.dataframe(pending.head(1), use_container_width=True)
+        st.dataframe(pending_rows.head(1), use_container_width=True)
 
-st.header("Run controls")
-run_col1, run_col2, run_col3 = st.columns(3)
-with run_col1:
-    if st.button("Run test package"):
-        code, output = run_cli(["--mode", "test", "--force"])
-        st.code(output)
-        st.success("Test run completed." if code == 0 else "Test run failed.")
-with run_col2:
-    confirm_prod = st.checkbox("I understand prod can call paid APIs and sender APIs")
-    if st.button("Run prod package", disabled=not confirm_prod):
-        code, output = run_cli(["--mode", "prod"])
-        st.code(output)
-        st.success("Prod run completed." if code == 0 else "Prod run failed.")
-with run_col3:
-    confirm_force = st.checkbox("Allow --force override")
-    if st.button("Run prod with force", disabled=not (confirm_prod and confirm_force)):
-        code, output = run_cli(["--mode", "prod", "--force"])
-        st.code(output)
-        st.success("Forced prod run completed." if code == 0 else "Forced prod run failed.")
-
-st.header("Story queue editor")
+st.header("Queue")
 if not series_df.empty:
     edited = st.data_editor(series_df, use_container_width=True, num_rows="dynamic")
     if st.button("Save series_plan.csv"):
         save_csv(SERIES_PATH, edited)
-        st.success("Saved input/series_plan.csv")
-else:
-    st.info("Create input/series_plan.csv first by running the CLI once.")
+        st.success("Saved.")
+
+st.header("Run controls")
+b1, b2 = st.columns(2)
+with b1:
+    if st.button("Run test package"):
+        code, output = run_cli(["--mode", "test", "--force"])
+        st.code(output)
+        st.success("Done" if code == 0 else "Failed")
+with b2:
+    if st.checkbox("Confirm prod run") and st.button("Run prod with force"):
+        code, output = run_cli(["--mode", "prod", "--force"])
+        st.code(output)
+        st.success("Done" if code == 0 else "Failed")
 
 st.header("Story log")
-if log_df.empty:
-    st.info("No story log yet.")
-else:
-    st.dataframe(log_df.tail(50), use_container_width=True)
+st.dataframe(story_log_df.tail(30) if not story_log_df.empty else pd.DataFrame(), use_container_width=True)
 
-st.header("Generated output folders")
+st.header("Send log")
+st.dataframe(send_log_df.tail(30) if not send_log_df.empty else pd.DataFrame(), use_container_width=True)
+
+st.header("Quality log")
+st.dataframe(quality_log_df.tail(30) if not quality_log_df.empty else pd.DataFrame(), use_container_width=True)
+
+st.header("Generated outputs")
 if OUTPUT_ROOT.exists():
-    folders = sorted([p for p in OUTPUT_ROOT.iterdir() if p.is_dir()], reverse=True)
-    for folder in folders[:20]:
+    for folder in sorted([p for p in OUTPUT_ROOT.iterdir() if p.is_dir()], reverse=True)[:20]:
         st.write(str(folder.relative_to(PROJECT_ROOT)))
-else:
-    st.info("No output folder yet.")

@@ -1,23 +1,22 @@
 # Agent Instructions
 
-This repository is intentionally lightweight.
+Krishna Book Bedtime v1 — lightweight local Python automation.
 
-Rules for coding agents:
+Rules:
 
-1. Do not use Notion.
-2. Do not add a database unless explicitly requested.
-3. Keep CSV files as the source of truth.
-4. Keep CLI as the source of truth.
-5. Dashboard must call CLI or edit CSV only.
-6. Do not hardcode secrets.
-7. Do not commit `.env`.
-8. Do not build unsafe WhatsApp Web scraping automation.
-9. Use tests and deterministic test mode.
-10. Preserve all nine required output files.
+1. CSV files are source of truth (`input/series_plan.csv`, `input/whatsapp_recipients.csv`).
+2. CLI (`run_daily_story.py`) is source of truth.
+3. Dashboard is optional.
+4. Do not commit `.env`, output packages, or secrets.
+5. Krishna Book sequence only — do not mix unrelated pastimes.
+6. WhatsApp v1: individual CSV broadcast, templates only, no groups.
+7. Preserve required output files including `line_art_prompt.txt`.
 
-Before finishing, run:
+Before finishing:
 
-```bash
+```powershell
 pytest -q
 python run_daily_story.py --mode test --force
 ```
+
+Start with [docs/01_DAILY_RUNBOOK.md](docs/01_DAILY_RUNBOOK.md).

@@ -11,11 +11,11 @@ class AudioGenerationError(RuntimeError):
     pass
 
 
-# Small placeholder bytes. Test mode intentionally avoids external API calls.
-# Production narration should be generated through ElevenLabs.
 _TEST_MP3_PLACEHOLDER = base64.b64decode(
     "SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjIwLjEwMAAAAAAAAAAAAAAA//tQxAADBwAABpAAAACAAADSAAAA"
 )
+
+_PLACEHOLDER_MAX_BYTES = 512
 
 
 class AudioGenerator:
@@ -23,10 +23,10 @@ class AudioGenerator:
         self.settings = settings
         self.mode = mode
 
-    def generate_mp3(self, text: str, output_path) -> None:
+    def generate_mp3(self, text: str, output_path) -> str:
         if self.mode == "test" or not self.settings.elevenlabs_enabled:
             output_path.write_bytes(_TEST_MP3_PLACEHOLDER)
-            return
+            return "placeholder"
 
         if not self.settings.elevenlabs_api_key:
             raise AudioGenerationError("ELEVENLABS_API_KEY is required when ELEVENLABS_ENABLED=true.")
@@ -54,3 +54,10 @@ class AudioGenerator:
         if response.status_code >= 400:
             raise AudioGenerationError(f"ElevenLabs TTS failed: {response.status_code} {response.text[:500]}")
         output_path.write_bytes(response.content)
+        return "elevenlabs"
+
+    @staticmethod
+    def is_placeholder_mp3(path) -> bool:
+        if not path.exists():
+            return True
+        return path.stat().st_size <= _PLACEHOLDER_MAX_BYTES

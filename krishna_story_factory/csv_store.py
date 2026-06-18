@@ -21,6 +21,7 @@ SERIES_FIELDS = [
     "chapter_no",
     "slug",
     "title",
+    "project",
     "library_id",
     "source_reference",
     "scripture_reference",
@@ -28,10 +29,9 @@ SERIES_FIELDS = [
     "age_range",
     "package_type",
     "send_date",
-    "devotional_focus",
-    "activity_type",
     "status",
     "created_at",
+    "updated_at",
     "notes",
 ]
 
@@ -113,17 +113,17 @@ def read_next_pending(project_root: Path) -> PlanRow | None:
                     chapter_no=row.get("chapter_no", "").strip(),
                     slug=row.get("slug", "").strip(),
                     title=row.get("title", "").strip(),
+                    project=row.get("project", "krishna_book_bedtime").strip() or "krishna_book_bedtime",
                     library_id=row.get("library_id", "krishna_book").strip() or "krishna_book",
                     source_reference=row.get("source_reference", "").strip(),
                     scripture_reference=row.get("scripture_reference", "").strip(),
                     summary_seed=row.get("summary_seed", "").strip(),
-                    age_range=row.get("age_range", "7-11").strip() or "7-11",
+                    age_range=row.get("age_range", "6-12").strip() or "6-12",
                     package_type=row.get("package_type", "bedtime_story").strip() or "bedtime_story",
                     send_date=row.get("send_date", "").strip(),
-                    devotional_focus=row.get("devotional_focus", "").strip(),
-                    activity_type=row.get("activity_type", "auto").strip() or "auto",
                     status=row.get("status", "").strip(),
                     created_at=row.get("created_at", "").strip(),
+                    updated_at=row.get("updated_at", "").strip(),
                     notes=row.get("notes", "").strip(),
                     row_index=idx,
                 )
@@ -142,7 +142,10 @@ def update_plan_status(project_root: Path, plan: PlanRow, status: str) -> None:
         fieldnames.append("status")
     if "created_at" not in fieldnames:
         fieldnames.append("created_at")
+    if "updated_at" not in fieldnames:
+        fieldnames.append("updated_at")
     rows[plan.row_index]["status"] = status
+    rows[plan.row_index]["updated_at"] = datetime.now().isoformat(timespec="seconds")
     if not rows[plan.row_index].get("created_at"):
         rows[plan.row_index]["created_at"] = datetime.now().isoformat(timespec="seconds")
     with path.open("w", newline="", encoding="utf-8") as f:

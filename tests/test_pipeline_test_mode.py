@@ -55,6 +55,7 @@ def test_pipeline_generates_required_files_in_test_mode(tmp_path: Path, monkeypa
         "activity_sheet.pdf",
         "story_card.png",
         "image_prompt.txt",
+        "line_art_prompt.txt",
         "parent_notes.md",
         "manifest.json",
         "narration.mp3",

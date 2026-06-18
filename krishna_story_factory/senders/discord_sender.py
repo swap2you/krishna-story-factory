@@ -8,7 +8,7 @@ from .base import BaseSender
 
 
 class DiscordWebhookSender(BaseSender):
-    def send(self, *, settings: Settings, paths: PackagePaths, mode: str) -> SendResult:
+    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None) -> SendResult:
         if not settings.discord_webhook_url:
             return SendResult(status="FAILED", detail="Discord webhook URL is missing.")
         caption = paths.whatsapp_caption.read_text(encoding="utf-8", errors="ignore")

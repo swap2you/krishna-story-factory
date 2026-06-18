@@ -32,7 +32,10 @@ def load_active_recipients(csv_path: Path) -> list[WhatsAppRecipient]:
             status = str(row.get("status", "")).strip().lower()
             if not opt_in or status != "active":
                 continue
-            phone = normalize_phone_e164(str(row.get("phone_e164", "")).strip())
+            phone_raw = str(row.get("phone_e164", "")).strip()
+            if "REPLACE" in phone_raw.upper():
+                continue
+            phone = normalize_phone_e164(phone_raw)
             if not phone:
                 continue
             recipients.append(

@@ -17,7 +17,7 @@ class WhatsAppWebTestSender(BaseSender):
     outbox so you can manually forward it to a private test group.
     """
 
-    def send(self, *, settings: Settings, paths: PackagePaths, mode: str) -> SendResult:
+    def send(self, *, settings: Settings, paths: PackagePaths, mode: str, plan=None, content=None) -> SendResult:
         if mode != "test":
             return SendResult(status="BLOCKED", detail="WhatsAppWebTestSender is allowed only in --mode test.")
         target = settings.whatsapp_web_test_dir / paths.root.name

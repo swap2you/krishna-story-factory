@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import json
+from typing import TYPE_CHECKING
 
 from ..models import PackagePaths
+
+if TYPE_CHECKING:
+    from ..config import Settings
 
 REQUIRED_FILES = [
     "story_md",
@@ -11,13 +15,19 @@ REQUIRED_FILES = [
     "activity_sheet",
     "story_card",
     "image_prompt",
+    "line_art_prompt",
     "parent_notes",
     "manifest",
     "narration_mp3",
 ]
 
 
-def run_quality_checks(paths: PackagePaths) -> tuple[bool, list[str]]:
+def run_quality_checks(
+    paths: PackagePaths,
+    *,
+    mode: str = "test",
+    settings: Settings | None = None,
+) -> tuple[bool, list[str]]:
     errors: list[str] = []
     path_map = {name: getattr(paths, name) for name in REQUIRED_FILES}
 
@@ -34,10 +44,10 @@ def run_quality_checks(paths: PackagePaths) -> tuple[bool, list[str]]:
             if section not in story:
                 errors.append(f"story.md missing section: {section}")
         story_words = story.split()
-        if len(story_words) < 250:
-            errors.append("story.md appears too short for ages 7-11 bedtime story package.")
-        if len(story_words) > 2200:
-            errors.append("story.md appears too long for ages 7-11 bedtime story package.")
+        if len(story_words) < 200:
+            errors.append("story.md appears too short for ages 6-12 bedtime story package.")
+        if len(story_words) > 2400:
+            errors.append("story.md appears too long for ages 6-12 bedtime story package.")
         banned = ["graphic violence", "romantic detail", "adult theme"]
         for phrase in banned:
             if phrase in story:
@@ -53,6 +63,12 @@ def run_quality_checks(paths: PackagePaths) -> tuple[bool, list[str]]:
     if paths.narration_mp3.exists() and paths.narration_mp3.stat().st_size <= 0:
         errors.append("MP3 does not exist or is empty.")
 
+    if mode == "prod" and settings and settings.elevenlabs_enabled and not settings.allow_placeholder_audio:
+        from ..audio.tts import AudioGenerator
+
+        if AudioGenerator.is_placeholder_mp3(paths.narration_mp3):
+            errors.append("narration.mp3 is placeholder but ElevenLabs is enabled in prod mode.")
+
     if not paths.story_card.exists() and not paths.image_prompt.exists():
         errors.append("Either story_card.png or image_prompt.txt must exist.")
 
@@ -62,8 +78,12 @@ def run_quality_checks(paths: PackagePaths) -> tuple[bool, list[str]]:
             for field in ["source_reference", "library_id", "age_range", "generated_at"]:
                 if not data.get(field):
                     errors.append(f"manifest.json missing {field}.")
-            if data.get("age_range") != "7-11":
-                errors.append("manifest.json age_range must be 7-11.")
+            age = str(data.get("age_range", ""))
+            if age not in {"6-12", "7-11"}:
+                errors.append("manifest.json age_range must be 6-12 (or legacy 7-11).")
+            for src_field in ["story_source", "audio_source", "image_source"]:
+                if not data.get("generation", {}).get(src_field):
+                    errors.append(f"manifest.json missing generation.{src_field}.")
         except json.JSONDecodeError as exc:
             errors.append(f"manifest.json is invalid JSON: {exc}")
     else:
