@@ -29,11 +29,11 @@ def test_pipeline_generates_required_files_in_test_mode(tmp_path: Path, monkeypa
     source = Path(__file__).resolve().parents[1]
     project = tmp_path / "project"
     ignore = shutil.ignore_patterns(
-        ".venv",
         ".git",
         ".pytest_cache",
         ".codex_validation_tmp",
         ".cursor",
+        ".venv",
         "output",
         "__pycache__",
         ".env",
