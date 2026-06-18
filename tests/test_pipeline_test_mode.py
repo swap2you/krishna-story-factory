@@ -28,7 +28,17 @@ def _mark_first_story_pending(project: Path) -> None:
 def test_pipeline_generates_required_files_in_test_mode(tmp_path: Path, monkeypatch) -> None:
     source = Path(__file__).resolve().parents[1]
     project = tmp_path / "project"
-    ignore = shutil.ignore_patterns(".venv", "output", "__pycache__", ".env", "krishna-story-factory-v1-buildpack")
+    ignore = shutil.ignore_patterns(
+        ".venv",
+        ".git",
+        ".pytest_cache",
+        ".codex_validation_tmp",
+        ".cursor",
+        "output",
+        "__pycache__",
+        ".env",
+        "krishna-story-factory-v1-buildpack",
+    )
     shutil.copytree(source, project, ignore=ignore)
 
     ensure_csv_files(project)

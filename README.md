@@ -142,7 +142,7 @@ python run_daily_story.py --mode prod --force
 | `python run_daily_story.py --mode test --force` | Test run even if already sent today |
 | `python run_daily_story.py --mode prod` | Live OpenAI / ElevenLabs when enabled |
 | `python run_daily_story.py --mode prod --force` | Prod run with daily-send override |
-| `streamlit run dashboard.py` | Optional queue/log dashboard |
+| `python -m streamlit run dashboard.py` | Optional queue/log dashboard |
 | `pytest -q` | Run acceptance tests |
 
 ---
