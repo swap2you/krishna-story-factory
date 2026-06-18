@@ -57,7 +57,7 @@ def _story_md(words: int) -> str:
     )
 
 
-def test_story_below_800_words_fails_quality_in_prod(tmp_path: Path) -> None:
+def test_story_below_750_words_fails_quality_in_prod(tmp_path: Path) -> None:
     paths = _paths(tmp_path)
     paths.story_md.write_text(_story_md(100), encoding="utf-8")
     paths.manifest.write_text(
@@ -69,7 +69,7 @@ def test_story_below_800_words_fails_quality_in_prod(tmp_path: Path) -> None:
     assert any("too short" in e for e in errors)
 
 
-def test_audio_script_below_600_words_fails_quality_in_prod(tmp_path: Path) -> None:
+def test_audio_script_below_500_words_fails_quality_in_prod(tmp_path: Path) -> None:
     paths = _paths(tmp_path)
     paths.story_md.write_text(_story_md(900), encoding="utf-8")
     paths.audio_script.write_text("short script", encoding="utf-8")

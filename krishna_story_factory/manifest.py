@@ -23,6 +23,9 @@ def write_manifest(
     package_publish_mode: str = "",
     package_link: str = "",
     local_sync_path: str = "",
+    drive_status: str = "",
+    drive_detail: str = "",
+    drive_folder_id: str = "",
     word_search_answer_key: dict[str, str] | None = None,
     image_outputs: dict[str, str] | None = None,
 ) -> None:
@@ -83,6 +86,13 @@ def write_manifest(
             "package_link": package_link,
             "local_sync_path": local_sync_path,
             "google_drive_folder_id": settings.google_drive_folder_id,
+            "drive_status": drive_status,
+            "drive_detail": drive_detail,
+            "drive_folder_id": drive_folder_id,
+        },
+        "whatsapp": {
+            "template_name": settings.whatsapp_template_name,
+            "template_language": settings.whatsapp_template_language,
         },
         "activity": {
             "word_search_answer_key": word_search_answer_key or {},

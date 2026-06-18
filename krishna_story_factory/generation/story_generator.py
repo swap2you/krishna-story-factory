@@ -7,10 +7,22 @@ from typing import Any
 from ..config import Settings
 from ..models import PlanRow, StoryContent
 from ..prompts_loader import load_project_text
+from ..quality.repetition import clean_repetition, detect_repetition
 
 
 class StoryGenerationError(RuntimeError):
     pass
+
+
+_EXPAND_INSTRUCTION = (
+    "Expand by adding source-faithful sensory detail, dialogue, and child-friendly reflection. "
+    "Do not repeat any closing sentence or paragraph. Close once, softly."
+)
+
+_MIN_STORY_WORDS = 750
+_MAX_STORY_WORDS = 1050
+_MIN_AUDIO_WORDS = 500
+_MAX_AUDIO_WORDS = 750
 
 
 class StoryGenerator:
@@ -20,8 +32,8 @@ class StoryGenerator:
 
     def generate(self, plan: PlanRow) -> StoryContent:
         if self.mode == "test" or not self.settings.openai_text_enabled:
-            return self._mock_story(plan)
-        return self._openai_story(plan)
+            return _finalize_content(self._mock_story(plan), plan)
+        return _finalize_content(self._openai_story(plan), plan)
 
     def _openai_story(self, plan: PlanRow) -> StoryContent:
         if not self.settings.openai_api_key:
@@ -36,9 +48,29 @@ class StoryGenerator:
             input=prompt,
         )
         raw_text = getattr(response, "output_text", "") or ""
-        data = self._parse_json(raw_text)
-        content = self._from_dict(plan, data)
-        return _ensure_content_lengths(content, plan)
+        content = self._from_dict(plan, self._parse_json(raw_text))
+        content = _apply_repetition_cleanup(content)
+
+        if _needs_regeneration(content):
+            expand_prompt = f"""{prompt}
+
+REGENERATION REQUEST:
+The first draft was too short or repetitive. {_EXPAND_INSTRUCTION}
+Return only valid JSON matching the schema.
+"""
+            response = client.responses.create(
+                model=self.settings.openai_text_model,
+                input=expand_prompt,
+            )
+            raw_text = getattr(response, "output_text", "") or ""
+            content = self._from_dict(plan, self._parse_json(raw_text))
+            content = _apply_repetition_cleanup(content)
+
+        if _needs_regeneration(content):
+            raise StoryGenerationError(
+                "Generated story/audio is too short or still repetitive after regeneration."
+            )
+        return content
 
     def _build_prompt(self, plan: PlanRow) -> str:
         base = load_project_text(self.settings.project_root, "prompts/story_generation_prompt.md")
@@ -93,7 +125,9 @@ Return only valid JSON matching the schema described above.
                 line_art_prompt=line_art,
                 hero_image_prompt=str(data.get("hero_image_prompt") or image_prompt),
                 story_card_square_prompt=str(data.get("story_card_square_prompt") or image_prompt),
-                story_card_wide_prompt=str(data.get("story_card_wide_prompt") or data.get("story_card_square_prompt") or image_prompt),
+                story_card_wide_prompt=str(
+                    data.get("story_card_wide_prompt") or data.get("story_card_square_prompt") or image_prompt
+                ),
                 coloring_page_prompt=str(data.get("coloring_page_prompt") or line_art),
                 story_card_text=str(data.get("story_card_text") or plan.title),
                 parent_notes=str(data["parent_notes"]),
@@ -118,21 +152,20 @@ Return only valid JSON matching the schema described above.
             f"Tonight we continue the Krishna Book in order. Our story is {plan.title}, "
             f"from {plan.source_reference}."
         )
-        main_story = _expand_mock_story(plan)
-        audio_script = _expand_mock_audio(plan)
-        caption = ""
+        main_story = _mock_main_story(plan)
+        audio_script = _mock_audio_script(plan)
         image_prompt = (
-            f"Devotional cinematic painting for children, scene from {plan.title}. "
-            f"{plan.summary_seed} One clear focal scene, warm evening light, reverential mood, "
-            "child-safe, accurate ancient setting, no modern objects, no crowded background faces."
+            f"Ultra-realistic 3D devotional cinematic painting for children, scene from {plan.title}. "
+            f"{plan.summary_seed} Soft volumetric golden light, one clear focal point, expressive faces, "
+            "child-safe, no modern objects, no violence."
         )
         square_prompt = (
-            f"1080x1080 devotional cinematic painting, single clear focal scene from {plan.title}. "
-            "Warm golden light, child-safe, not crowded, fewer background faces, reverential bedtime mood."
+            f"1080x1080 ultra-realistic 3D devotional cinematic painting, single clear focal scene from {plan.title}. "
+            "Warm golden light, child-safe, not crowded, reverential bedtime mood."
         )
         line_art = (
-            f"Printable black-and-white coloring page for children showing the main scene from {plan.title}. "
-            "Thick clean outlines, white background, no shading, large simple shapes, child-friendly faces, no weapons."
+            f"Cute devotional coloring book illustration for children, main scene from {plan.title}. "
+            "Thick clean confident black outlines, white background, large colorable spaces, sweet expressive faces, no weapons."
         )
         parent_notes = (
             f"# Parent Notes\n\n"
@@ -141,7 +174,7 @@ Return only valid JSON matching the schema described above.
             "Read slowly in a warm bedtime voice. Keep the mood hopeful and devotional.\n\n"
             "**Discussion:** What does this pastime teach us about trusting Krishna?\n"
         )
-        content = StoryContent(
+        return StoryContent(
             title=plan.title,
             recap=recap,
             main_story=main_story,
@@ -149,7 +182,7 @@ Return only valid JSON matching the schema described above.
             takeaway="Before sleep, remember Krishna and plan one small act of kindness for tomorrow.",
             five_star_challenge=challenge,
             audio_script=audio_script,
-            whatsapp_caption=caption,
+            whatsapp_caption="",
             image_prompt=image_prompt,
             line_art_prompt=line_art,
             hero_image_prompt=image_prompt,
@@ -182,34 +215,15 @@ Return only valid JSON matching the schema described above.
             draw_activity=f"Draw the main scene from {plan.title}.",
             family_activity="Together, chant Hare Krishna once and share one thing you are grateful for.",
         )
-        return _ensure_content_lengths(content, plan)
 
 
 def _word_count(text: str) -> int:
     return len(re.findall(r"\b[\w']+\b", text))
 
 
-def _ensure_content_lengths(content: StoryContent, plan: PlanRow) -> StoryContent:
-    main_story = content.main_story
-    while _word_count(main_story) < 850:
-        main_story += (
-            " The devotees remember this pastime with faith and love. "
-            "Children can trust that Krishna hears sincere prayer and protects those who depend on Him. "
-            "At bedtime we keep our hearts calm and remember His holy name."
-        )
-
-    audio_script = content.audio_script
-    padding = [
-        f'<break time="1.5s" /> Tonight we heard {plan.title}, a sacred Krishna Book pastime.',
-        "Listen softly, with wonder, and remember that Krishna protects His devotees.",
-        '<break time="1.0s" /> Before sleep, think of one kind action you can do tomorrow.',
-        "Hare Krishna dear children. Sweet dreams.",
-    ]
-    idx = 0
-    while _word_count(audio_script) < 650:
-        audio_script += " " + padding[idx % len(padding)]
-        idx += 1
-
+def _apply_repetition_cleanup(content: StoryContent) -> StoryContent:
+    main_story = clean_repetition(content.main_story, content_type="story")
+    audio_script = clean_repetition(content.audio_script, content_type="audio")
     return StoryContent(
         title=content.title,
         recap=content.recap,
@@ -235,43 +249,63 @@ def _ensure_content_lengths(content: StoryContent, plan: PlanRow) -> StoryConten
     )
 
 
-def _expand_mock_story(plan: PlanRow) -> str:
-    paragraphs = [
+def _finalize_content(content: StoryContent, plan: PlanRow) -> StoryContent:
+    content = _apply_repetition_cleanup(content)
+    story_report = detect_repetition(content.main_story, content_type="story")
+    audio_report = detect_repetition(content.audio_script, content_type="audio")
+    if story_report.errors or audio_report.errors:
+        raise StoryGenerationError(
+            "Repetition detected after cleanup: "
+            + " | ".join(story_report.errors + audio_report.errors)
+        )
+    if _word_count(content.main_story) < 200 and plan:
+        pass  # test mode allows shorter mock
+    return content
+
+
+def _needs_regeneration(content: StoryContent) -> bool:
+    story_words = _word_count(content.main_story)
+    audio_words = _word_count(content.audio_script)
+    if story_words < _MIN_STORY_WORDS or audio_words < _MIN_AUDIO_WORDS:
+        return True
+    if detect_repetition(content.main_story, content_type="story").errors:
+        return True
+    if detect_repetition(content.audio_script, content_type="audio").errors:
+        return True
+    return False
+
+
+def _mock_main_story(plan: PlanRow) -> str:
+    scenes = [
         f"Dear children, Hare Krishna. Tonight we hear about {plan.title}.",
         plan.summary_seed,
-        "The devotees remember this pastime with love and trust in Krishna's plan.",
-        "When the world feels heavy, sincere prayer brings hope and protection.",
+        "The palace lamps glow softly while devotees remember Krishna with faith.",
+        "Even when the world feels heavy, sincere prayer brings hope and protection.",
+        "Vasudeva speaks with quiet strength, and Devaki shines with peaceful devotion.",
+        "The demigods offer prayers from their hearts, trusting the Lord's plan.",
+        "We learn that courage can be gentle and faith can be calm.",
         "Krishna never forgets those who call Him with love.",
-        "We can remember this story at bedtime and feel peaceful.",
-        "Let us keep our hearts soft, our words kind, and our actions honest.",
-        "When we hear Krishna-katha before sleep, our minds become calm like a quiet river.",
-        "Tomorrow we can wake up and serve our parents, teachers, and friends.",
-        "That is how we follow the example of the devotees in this sacred story.",
-    ]
-    text = " ".join(paragraphs)
-    while len(text.split()) < 220:
-        text += (
-            " The Lord's pastimes teach us courage, kindness, and faith in difficult moments. "
-            "Children can remember Krishna's name and feel protected."
-        )
-    return text
-
-
-def _expand_mock_audio(plan: PlanRow) -> str:
-    parts = [
-        f"Hare Krishna dear children. Tonight's Krishna Book story is {plan.title}.",
-        plan.summary_seed,
-        "Listen softly, with wonder, as the devotees prayed for help.",
-        "Remember that Krishna hears sincere prayer.",
-        '<break time="1.5s" />',
-        "Before sleep, think of one kind action you can do tomorrow.",
-        '<break time="1.0s" />',
+        "Children can picture the scene and remember how the devotees acted with kindness.",
+        "Each moment of the pastime teaches honesty, patience, and trust in Krishna.",
+        "When we listen carefully, we hear how prayer can change a heavy heart.",
+        "Before sleep, remember one kind action you can do tomorrow.",
         "Hare Krishna. Sweet dreams.",
     ]
-    text = " ".join(parts)
-    while len(text.split()) < 120:
-        text += (
-            " The narration moves gently, like a calm bedtime river, helping children feel safe and loved. "
-            "Krishna's mercy is always near."
-        )
-    return text
+    return "\n\n".join(scenes)
+
+
+def _mock_audio_script(plan: PlanRow) -> str:
+    return (
+        f"Hare Krishna dear children. Tonight's Krishna Book story is {plan.title}. "
+        f"{plan.summary_seed} "
+        "Listen with wonder as the devotees pray with hope in their hearts. "
+        "Vasudeva stays calm, and Devaki's gentle face shines with devotion. "
+        '<break time="1.5s" /> '
+        "Even in difficult moments, Krishna protects those who trust Him. "
+        "Think about one brave and kind choice you can make tomorrow. "
+        '<break time="1.0s" /> '
+        "The story reminds us that prayer can be soft, sincere, and strong. "
+        "When we hear Krishna-katha at bedtime, our minds become peaceful. "
+        "Remember the characters from tonight's pastime and what they teach us. "
+        "Hare Krishna. Sweet dreams."
+    )

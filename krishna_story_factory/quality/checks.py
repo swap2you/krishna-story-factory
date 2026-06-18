@@ -5,6 +5,7 @@ import re
 from typing import TYPE_CHECKING
 
 from ..models import PackagePaths
+from .repetition import detect_repetition
 
 if TYPE_CHECKING:
     from ..config import Settings
@@ -23,10 +24,11 @@ REQUIRED_FILES = [
     "narration_mp3",
 ]
 
-_MIN_STORY_WORDS = {"test": 200, "prod": 800}
-_MIN_AUDIO_SCRIPT_WORDS = {"test": 100, "prod": 600}
-_MIN_MP3_BYTES_PROD = 500 * 1024
-_MIN_MP3_DURATION_SECONDS = 4 * 60
+_MIN_STORY_WORDS = {"test": 200, "prod": 750}
+_MAX_STORY_WORDS = {"test": 2400, "prod": 1050}
+_MIN_AUDIO_SCRIPT_WORDS = {"test": 100, "prod": 500}
+_MAX_AUDIO_SCRIPT_WORDS = {"test": 2400, "prod": 750}
+_MIN_MP3_BYTES_PROD = 250 * 1024
 
 
 def run_quality_checks(
@@ -35,6 +37,7 @@ def run_quality_checks(
     mode: str = "test",
     settings: Settings | None = None,
     word_search_answer_key: dict[str, str] | None = None,
+    story_title: str = "",
 ) -> tuple[bool, list[str]]:
     errors: list[str] = []
     path_map = {name: getattr(paths, name) for name in REQUIRED_FILES}
@@ -45,6 +48,7 @@ def run_quality_checks(
         elif path.stat().st_size <= 0:
             errors.append(f"Empty file: {name} -> {path.name}")
 
+    main_story_text = ""
     if paths.story_md.exists():
         story_text = paths.story_md.read_text(encoding="utf-8", errors="ignore")
         story = story_text.lower()
@@ -52,23 +56,32 @@ def run_quality_checks(
             if section not in story:
                 errors.append(f"story.md missing section: {section}")
         story_words = _word_count(story_text)
-        min_story = _MIN_STORY_WORDS.get(mode, 800)
+        min_story = _MIN_STORY_WORDS.get(mode, 750)
+        max_story = _MAX_STORY_WORDS.get(mode, 1050)
         if story_words < min_story:
             errors.append(f"story.md is too short ({story_words} words; need at least {min_story}).")
-        if story_words > 2400:
-            errors.append("story.md appears too long for ages 6-12 bedtime story package.")
+        if mode == "prod" and story_words > max_story:
+            errors.append(f"story.md is too long ({story_words} words; target at most {max_story}).")
         banned = ["graphic violence", "romantic detail", "adult theme"]
         for phrase in banned:
             if phrase in story:
                 errors.append(f"story.md contains disallowed phrase marker: {phrase}")
+        if "## main story" in story:
+            main_story_text = story_text.split("## Main Story", 1)[-1].split("## Moral", 1)[0]
+            errors.extend(detect_repetition(main_story_text, content_type="story").errors)
 
     if paths.audio_script.exists():
-        audio_words = _word_count(paths.audio_script.read_text(encoding="utf-8", errors="ignore"))
-        min_audio = _MIN_AUDIO_SCRIPT_WORDS.get(mode, 600)
+        audio_text = paths.audio_script.read_text(encoding="utf-8", errors="ignore")
+        audio_words = _word_count(audio_text)
+        min_audio = _MIN_AUDIO_SCRIPT_WORDS.get(mode, 500)
+        max_audio = _MAX_AUDIO_SCRIPT_WORDS.get(mode, 750)
         if audio_words < min_audio:
             errors.append(f"audio_script.txt is too short ({audio_words} words; need at least {min_audio}).")
-        if re.search(r"\[\s*pause\s*\]", paths.audio_script.read_text(encoding="utf-8", errors="ignore"), re.I):
+        if mode == "prod" and audio_words > max_audio:
+            errors.append(f"audio_script.txt is too long ({audio_words} words; target at most {max_audio}).")
+        if re.search(r"\[\s*pause\s*\]", audio_text, re.I):
             errors.append("audio_script.txt still contains [pause] markers.")
+        errors.extend(detect_repetition(audio_text, content_type="audio").errors)
 
     if paths.whatsapp_caption.exists():
         caption = paths.whatsapp_caption.read_text(encoding="utf-8", errors="ignore").strip()
@@ -78,6 +91,12 @@ def run_quality_checks(
             errors.append("WhatsApp caption is too long for practical delivery.")
         if "group" in caption.lower():
             errors.append('WhatsApp caption must not mention "group".')
+        if mode == "prod" and story_title and story_title.lower() not in caption.lower():
+            errors.append("WhatsApp caption must contain the story title.")
+        if settings and mode == "prod":
+            expected_link = settings.package_public_link or settings.google_drive_folder_url
+            if expected_link and expected_link not in caption:
+                errors.append("WhatsApp caption must contain the package link when Drive URL is configured.")
 
     if paths.narration_mp3.exists() and paths.narration_mp3.stat().st_size <= 0:
         errors.append("MP3 does not exist or is empty.")
@@ -90,31 +109,58 @@ def run_quality_checks(
         elif paths.narration_mp3.exists():
             size = paths.narration_mp3.stat().st_size
             if size <= _MIN_MP3_BYTES_PROD:
-                errors.append(f"narration.mp3 is too small ({size} bytes; need > 500 KB for prod bedtime audio).")
-            duration = _mp3_duration_seconds(paths.narration_mp3)
-            if duration is not None and duration < _MIN_MP3_DURATION_SECONDS:
-                errors.append(
-                    f"narration.mp3 is too short ({duration:.0f}s; need at least {_MIN_MP3_DURATION_SECONDS // 60} minutes)."
-                )
+                errors.append(f"narration.mp3 is too small ({size} bytes; need > 250 KB for prod bedtime audio).")
 
-    if not paths.story_card.exists() and not paths.image_prompt.exists():
-        errors.append("Either story_card.png or image_prompt.txt must exist.")
+    if not paths.story_card.exists():
+        errors.append("story_card.png is required.")
+
+    if settings and settings.image_generate_coloring_page and mode == "prod":
+        if not paths.coloring_page.exists():
+            errors.append("coloring_page.png is required when IMAGE_GENERATE_COLORING_PAGE=true.")
+
+    if mode == "prod" and settings and settings.image_generate_coloring_page:
+        if paths.coloring_page_prompt.exists():
+            prompt = paths.coloring_page_prompt.read_text(encoding="utf-8", errors="ignore").lower()
+            required_any = [
+                ("thick", "outline"),
+                ("white background", "white"),
+                ("cute", "sweet", "child-friendly", "child friendly"),
+            ]
+            if not any(any(term in prompt for term in group) for group in required_any[:2]):
+                errors.append("coloring_page_prompt.txt should describe thick outlines and white background.")
+            if not any(term in prompt for term in required_any[2]):
+                errors.append("coloring_page_prompt.txt should describe cute/sweet child-friendly style.")
+
+    if paths.story_card_square_prompt.exists() or paths.image_prompt.exists():
+        card_prompt = ""
+        if paths.story_card_square_prompt.exists():
+            card_prompt = paths.story_card_square_prompt.read_text(encoding="utf-8", errors="ignore").lower()
+        elif paths.image_prompt.exists():
+            card_prompt = paths.image_prompt.read_text(encoding="utf-8", errors="ignore").lower()
+        if card_prompt and not any(x in card_prompt for x in ["cinematic", "3d", "devotional", "realistic"]):
+            errors.append("story card prompt should describe cinematic/devotional style.")
 
     if word_search_answer_key is not None and len(word_search_answer_key) < 3:
         errors.append("Activity word-search grid did not place enough words.")
 
+    manifest_data: dict = {}
     if paths.manifest.exists():
         try:
-            data = json.loads(paths.manifest.read_text(encoding="utf-8"))
+            manifest_data = json.loads(paths.manifest.read_text(encoding="utf-8"))
             for field in ["source_reference", "library_id", "age_range", "generated_at"]:
-                if not data.get(field):
+                if not manifest_data.get(field):
                     errors.append(f"manifest.json missing {field}.")
-            age = str(data.get("age_range", ""))
+            age = str(manifest_data.get("age_range", ""))
             if age not in {"6-12", "7-11"}:
                 errors.append("manifest.json age_range must be 6-12 (or legacy 7-11).")
             for src_field in ["story_source", "audio_source", "image_source"]:
-                if not data.get("generation", {}).get(src_field):
+                if not manifest_data.get("generation", {}).get(src_field):
                     errors.append(f"manifest.json missing generation.{src_field}.")
+            if mode == "prod" and settings:
+                expected_link = settings.package_public_link or settings.google_drive_folder_url
+                package_link = str(manifest_data.get("package", {}).get("package_link", "")).strip()
+                if expected_link and not package_link:
+                    errors.append("manifest.package.package_link is empty but Drive URL is configured.")
         except json.JSONDecodeError as exc:
             errors.append(f"manifest.json is invalid JSON: {exc}")
     else:

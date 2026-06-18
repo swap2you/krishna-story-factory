@@ -109,7 +109,14 @@ class WhatsAppCloudSender(BaseSender):
         detail = f"Sent template '{template_name}' ({language_code}) to {sent_count} recipient(s)."
         if failed_count:
             detail += f" {failed_count} failed."
-        return SendResult(status="SENT_CLOUD", detail=detail, provider_ids=provider_ids)
+        status = "SENT_CLOUD"
+        if template_name == "hello_world":
+            status = "SENT_SMOKE_TEST"
+            detail += (
+                " Smoke-test template sent. Real story message was not sent. "
+                "Set WHATSAPP_TEMPLATE_NAME=daily_krishna_story after Meta approval."
+            )
+        return SendResult(status=status, detail=detail, provider_ids=provider_ids)
 
 
 def _chapter_from_paths(paths: PackagePaths) -> str:

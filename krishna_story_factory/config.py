@@ -38,14 +38,24 @@ class Settings:
     elevenlabs_api_key: str
     elevenlabs_voice_id: str
     elevenlabs_model_id: str
+    elevenlabs_stability: float | None
+    elevenlabs_similarity_boost: float | None
+    elevenlabs_style: float | None
+    elevenlabs_use_speaker_boost: bool | None
+    elevenlabs_speed: float | None
+    elevenlabs_pronunciation_dictionary_id: str
     enable_ambient_audio: bool
     elevenlabs_sfx_enabled: bool
     ambient_audio_mix_level: float
 
     package_publish_mode: str
+    google_drive_upload_enabled: bool
     google_drive_folder_id: str
     google_drive_folder_url: str
     google_drive_local_sync_root: Path | None
+    google_drive_credentials_file: Path | None
+    google_drive_token_file: Path | None
+    google_drive_share_role: str
     package_public_link: str
 
     whatsapp_sender_type: str
@@ -66,6 +76,20 @@ class Settings:
     telegram_chat_id: str
     slack_webhook_url: str
     discord_webhook_url: str
+
+
+def _optional_float(env_name: str) -> float | None:
+    raw = os.getenv(env_name, "").strip()
+    if not raw:
+        return None
+    return float(raw)
+
+
+def _optional_bool(env_name: str) -> bool | None:
+    raw = os.getenv(env_name, "").strip()
+    if raw == "":
+        return None
+    return str_to_bool(raw)
 
 
 def _optional_path(project_root: Path, env_name: str) -> Path | None:
@@ -114,13 +138,23 @@ def load_settings(project_root: Path) -> Settings:
         elevenlabs_api_key=os.getenv("ELEVENLABS_API_KEY", ""),
         elevenlabs_voice_id=os.getenv("ELEVENLABS_VOICE_ID", ""),
         elevenlabs_model_id=os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2"),
+        elevenlabs_stability=_optional_float("ELEVENLABS_STABILITY"),
+        elevenlabs_similarity_boost=_optional_float("ELEVENLABS_SIMILARITY_BOOST"),
+        elevenlabs_style=_optional_float("ELEVENLABS_STYLE"),
+        elevenlabs_use_speaker_boost=_optional_bool("ELEVENLABS_USE_SPEAKER_BOOST"),
+        elevenlabs_speed=_optional_float("ELEVENLABS_SPEED"),
+        elevenlabs_pronunciation_dictionary_id=os.getenv("ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", "").strip(),
         enable_ambient_audio=str_to_bool(os.getenv("ENABLE_AMBIENT_AUDIO"), False),
         elevenlabs_sfx_enabled=str_to_bool(os.getenv("ELEVENLABS_SFX_ENABLED"), False),
         ambient_audio_mix_level=float(os.getenv("AMBIENT_AUDIO_MIX_LEVEL", "0.12") or "0.12"),
         package_publish_mode=os.getenv("PACKAGE_PUBLISH_MODE", "local"),
+        google_drive_upload_enabled=str_to_bool(os.getenv("GOOGLE_DRIVE_UPLOAD_ENABLED"), False),
         google_drive_folder_id=os.getenv("GOOGLE_DRIVE_FOLDER_ID", ""),
         google_drive_folder_url=os.getenv("GOOGLE_DRIVE_FOLDER_URL", ""),
         google_drive_local_sync_root=_optional_path(project_root, "GOOGLE_DRIVE_LOCAL_SYNC_ROOT"),
+        google_drive_credentials_file=_optional_path(project_root, "GOOGLE_DRIVE_CREDENTIALS_FILE"),
+        google_drive_token_file=_optional_path(project_root, "GOOGLE_DRIVE_TOKEN_FILE"),
+        google_drive_share_role=os.getenv("GOOGLE_DRIVE_SHARE_ROLE", "reader"),
         package_public_link=os.getenv("PACKAGE_PUBLIC_LINK", ""),
         whatsapp_sender_type=os.getenv("WHATSAPP_SENDER_TYPE", "manual").strip().lower(),
         whatsapp_graph_api_version=os.getenv("WHATSAPP_GRAPH_API_VERSION", "v25.0"),

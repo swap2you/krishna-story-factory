@@ -8,6 +8,7 @@ output/*
 !output/.gitkeep
 whatsapp_test_outbox/
 logs/
+credentials/
 *.log
 .DS_Store
 krishna-story-factory-v1-buildpack/

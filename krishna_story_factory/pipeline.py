@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from .audio.tts import AudioGenerator
 from .config import Settings
 from .content.caption import format_whatsapp_caption
-from .csv_store import already_sent_today, append_story_log, read_next_pending, update_plan_status
+from .csv_store import already_sent_today, append_storage_log, append_story_log, read_next_pending, update_plan_status
 from .generation.source_guard import run_source_guard
 from .generation.story_generator import StoryGenerator
 from .image.story_card import StoryCardGenerator
@@ -37,6 +37,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
     package_link = resolve_package_link(settings)
     word_search_answer_key: dict[str, str] = {}
     image_outputs: dict[str, str] = {}
+    publish_result = None
 
     try:
         content = StoryGenerator(settings, mode).generate(plan)
@@ -45,12 +46,8 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
         if guard_errors:
             raise PipelineError(" | ".join(guard_errors))
 
-        package_link = resolve_package_link(settings)
-        caption = format_whatsapp_caption(story_title=content.title, package_link=package_link)
-
         paths.story_md.write_text(content.to_markdown(), encoding="utf-8")
         paths.audio_script.write_text(content.audio_script, encoding="utf-8")
-        paths.whatsapp_caption.write_text(caption, encoding="utf-8")
         paths.image_prompt.write_text(content.image_prompt, encoding="utf-8")
         paths.hero_image_prompt.write_text(content.hero_image_prompt or content.image_prompt, encoding="utf-8")
         paths.story_card_square_prompt.write_text(
@@ -94,6 +91,20 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             encoding="utf-8",
         )
 
+        append_storage_log(
+            settings.project_root,
+            {
+                "date": now.date().isoformat(),
+                "chapter_no": plan.chapter_no,
+                "slug": plan.slug,
+                "mode": mode,
+                "status": publish_result.drive_status,
+                "detail": publish_result.drive_detail,
+                "folder_link": package_link,
+                "created_at": now.isoformat(timespec="seconds"),
+            },
+        )
+
         write_manifest(
             settings=settings,
             plan=plan,
@@ -108,6 +119,9 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             package_publish_mode=publish_result.publish_mode,
             package_link=package_link,
             local_sync_path=publish_result.local_sync_path,
+            drive_status=publish_result.drive_status,
+            drive_detail=publish_result.drive_detail,
+            drive_folder_id=publish_result.drive_folder_id,
             word_search_answer_key=word_search_answer_key,
             image_outputs=image_outputs,
         )
@@ -117,6 +131,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             mode=mode,
             settings=settings,
             word_search_answer_key=word_search_answer_key,
+            story_title=content.title,
         )
         quality_status = "PASS" if ok else "FAIL"
         if quality_errors:
@@ -136,6 +151,9 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             package_publish_mode=publish_result.publish_mode,
             package_link=package_link,
             local_sync_path=publish_result.local_sync_path,
+            drive_status=publish_result.drive_status,
+            drive_detail=publish_result.drive_detail,
+            drive_folder_id=publish_result.drive_folder_id,
             word_search_answer_key=word_search_answer_key,
             image_outputs=image_outputs,
         )
@@ -202,6 +220,8 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
         "whatsapp_status": send_result.status,
         "detail": send_result.detail,
         "package_link": package_link,
+        "drive_upload_status": publish_result.drive_status if publish_result else "",
+        "whatsapp_template": settings.whatsapp_template_name,
     }
     if send_result.failure_reason:
         result["whatsapp_failure_reason"] = send_result.failure_reason

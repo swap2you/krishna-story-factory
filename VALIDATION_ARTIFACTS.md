@@ -7,70 +7,52 @@ Date: 2026-06-18
 ```powershell
 pytest -q
 python run_daily_story.py --mode test --force
-python run_daily_story.py --mode prod --force
-.\scripts\diagnose_whatsapp_failure.ps1
+python scripts/check_audio_quality.py output\004_prayers-in-the-prison\narration.mp3
+python scripts/test_whatsapp_cloud.py
+python scripts/test_whatsapp_daily_template.py
+python scripts/test_google_drive_upload.ps1
 ```
 
 ## Pytest
 
 ```text
-28 passed
+35 passed
 ```
 
-## CSV queue checks
+## Repetition gate
 
 ```text
-series_plan.csv: 10 rows
-001 done, 002 done after prod validation, 003–010 pending
-next pending: 003_vasudevas-promise
-whatsapp_recipients.csv: 2 rows; Wife Test skipped (REPLACE phone)
+Padding loops removed from story_generator
+Quality FAIL on repeated closings, paragraphs, and filler phrases
+Post-generation cleanup runs before quality checks
 ```
 
-## Latest prod output path (local)
+## Latest test run
 
 ```text
-output/002_devaki-and-vasudeva-wedding/
-```
-
-## Required file checklist
-
-```text
-story.md
-audio_script.txt (no [pause]; uses <break time="..."/>)
-whatsapp_caption.txt (reply here, today, no group)
-activity_sheet.pdf (3 pages, word-search grid)
-story_card.png
-story_card_square.png
-coloring_page.png
-coloring_page_prompt.txt
-hero_image_prompt.txt
-story_card_square_prompt.txt
-parent_notes.md
-manifest.json
-narration.mp3 (> 500 KB in prod)
-```
-
-## Prod run summary
-
-```text
+output/005_krishna-appears/
 quality: PASS
-story_source: openai
-audio_source: elevenlabs
-image_source: openai
-activity: word_search_answer_key in manifest.json
-package_link: (empty — add GOOGLE_DRIVE_FOLDER_URL to local .env)
-whatsapp_status: FAILED_CLOUD
-whatsapp_failure_reason: TOKEN_EXPIRED
+drive_upload_status: DISABLED
+package_link: parent Google Drive folder URL
+whatsapp_template: from local .env (use daily_krishna_story for prod)
 ```
 
-## WhatsApp diagnostics
+## Drive upload mode
 
-```powershell
-Get-Content tracking\send_log.csv -Tail 10
-.\scripts\diagnose_whatsapp_failure.ps1
+```text
+GOOGLE_DRIVE_UPLOAD_ENABLED=false (default)
+Set true + credentials/google_drive_oauth_client.json for API upload
+Or set GOOGLE_DRIVE_LOCAL_SYNC_ROOT for local sync copy
+See docs/08_GOOGLE_DRIVE_UPLOAD.md
 ```
 
-Latest send_log detail includes `reason=TOKEN_EXPIRED | template=hello_world | HTTP 401`.
+## WhatsApp template mode
+
+```text
+hello_world = smoke test only (SENT_SMOKE_TEST in prod)
+daily_krishna_story = real parent message with title + package link
+Set WHATSAPP_TEMPLATE_NAME=daily_krishna_story in local .env
+```
 
 ## Regenerate
 
@@ -79,4 +61,4 @@ Latest send_log detail includes `reason=TOKEN_EXPIRED | template=hello_world | H
 python run_daily_story.py --mode prod --force
 ```
 
-See [docs/01_DAILY_RUNBOOK.md](docs/01_DAILY_RUNBOOK.md).
+See [docs/01_DAILY_RUNBOOK.md](docs/01_DAILY_RUNBOOK.md) and [docs/08_GOOGLE_DRIVE_UPLOAD.md](docs/08_GOOGLE_DRIVE_UPLOAD.md).

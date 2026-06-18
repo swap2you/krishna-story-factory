@@ -2,32 +2,39 @@
 
 Generate a bedtime narration script for children ages 6–12.
 
-## Length and tone
+## Voice and tone
 
-- Target **650–850 spoken words**.
-- Calm, expressive bedtime narration.
-- Rich emotional context in natural prose.
+- Calm, expressive bedtime storytelling.
+- Middle-aged warm female narrator style.
+- Gentle base, motherly tone, devotional warmth.
+- Natural emotional arc: wonder, concern, hope, relief.
 - Faithful to the current queue row only.
+
+## Length
+
+- Target **500–750 spoken words**.
+- Meaningful pacing over filler length.
+- Close once, softly. Do not repeat the closing.
 
 ## Format rules
 
 - Plain text only. No markdown.
 - **Never** use the literal word `pause` as a spoken direction.
 - **Never** use `[pause]` markers.
+- For `eleven_multilingual_v2`, do **not** use bracket audio tags.
 - Use SSML-style breaks for pacing:
   - `<break time="1.0s" />`
   - `<break time="1.5s" />`
   - `<break time="2.0s" />`
-- Describe mood in narration language: softly, gently, with wonder, with concern, with relief.
 
-## ElevenLabs model behavior
+## Pronunciation
 
-- If `ELEVENLABS_MODEL_ID` contains `v3`, you may use approved audio tags such as `[softly]`, `[with wonder]`, `[gentle pause]`.
-- If the model is **not** v3, do **not** use bracket tags. Use `<break time="..."/>` and prose instead.
+- “Hare Krishna” must sound natural; do not over-Anglicize.
+- Use “Hare Krishna dear children” only once at the opening.
 
 ## Content
 
-- Opening greeting: Hare Krishna dear children.
 - Retell the pastime in order without jumping ahead.
 - Explain names gently once.
-- Close with a peaceful bedtime thought and Hare Krishna.
+- No repeated closing blocks.
+- End with one peaceful bedtime thought and Hare Krishna.

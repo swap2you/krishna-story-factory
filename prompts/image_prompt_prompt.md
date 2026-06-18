@@ -2,42 +2,55 @@
 
 Generate separate prompts for each output:
 
-1. **hero_image_prompt** — 16:9 devotional cinematic hero scene
+1. **hero_image_prompt** — ultra-realistic 3D devotional cinematic hero scene
 2. **story_card_square_prompt** — 1080x1080 square card, one focal scene
 3. **story_card_wide_prompt** — optional wide card scene
-4. **coloring_page_prompt** — printable black-and-white coloring page
-5. **line_art_prompt** — simple line art reference
+4. **coloring_page_prompt** — cute printable coloring page
+5. **line_art_prompt** — cute devotional coloring book line art reference
 
-## Square story card
+## Hero / story card style
 
-- 1080x1080 preferred
-- devotional cinematic painting
-- one clear focal scene
-- not too crowded
-- fewer background faces
-- warm light
-- child-safe
-- accurate clothing and ancient setting
-- no modern objects
-- no distorted faces or hands
-- no text baked into image
+- Ultra-realistic 3D devotional cinematic painting.
+- Not flat, not cartoon.
+- Soft volumetric golden light.
+- Clear focal point.
+- Beautiful expressive faces.
+- Rich but not cluttered.
+- No distorted hands or faces.
+- No modern objects.
+- Child-safe, no violence.
+- Mood should match the pastime.
 
-## Coloring page
+## Prison stories (e.g. chapter 004)
 
-- printable black-and-white coloring page
-- thick clean outlines
-- white background
-- no shading
-- large simple shapes
-- child-friendly faces
-- no weapons, no violence
+- Devaki and Vasudeva in a stone prison cell.
+- Devaki has soft spiritual radiance.
+- Vasudeva is protective and calm.
+- Moonlight through bars.
+- No horror, no gore, no cruelty.
+- Sacred, hopeful, gentle.
+
+## Coloring page style
+
+- Cute devotional coloring book illustration.
+- Thick clean confident black outlines.
+- White background.
+- Large colorable spaces.
+- Sweet expressive faces.
+- Kids should want to color and keep it.
+- Avoid stiff adult faces.
+- Avoid too many background bricks.
+- Avoid cramped composition.
+- No shading, no gray, no excessive tiny details.
+- Simple devotional elements when relevant: moon, lotus border, small oil lamp, flower garland.
+- No weapons, no violence.
 
 ## Story 002 direction
 
-- Devaki and Vasudeva seated respectfully in a wedding chariot
-- Kamsa driving, visibly troubled after hearing the heavenly voice
-- Mathura street in background
-- flower petals but not excessive clutter
-- soft golden celestial glow from sky
-- no threatening weapons
-- mood: wonder, tension, protection, faith
+- Devaki and Vasudeva seated respectfully in a wedding chariot.
+- Kamsa driving, visibly troubled after hearing the heavenly voice.
+- Mathura street in background.
+- Flower petals but not excessive clutter.
+- Soft golden celestial glow from sky.
+- No threatening weapons.
+- Mood: wonder, tension, protection, faith.

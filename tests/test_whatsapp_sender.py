@@ -147,7 +147,7 @@ def test_sender_broadcast_logs_success(mock_send: MagicMock, mock_log: MagicMock
     settings = _settings(tmp_path, cloud_token="token", phone_number_id="1186584224540331", recipients_csv=recipients)
     paths = _package_paths(tmp_path)
     result = WhatsAppCloudSender().send(settings=settings, paths=paths, mode="prod")
-    assert result.status == "SENT_CLOUD"
+    assert result.status == "SENT_SMOKE_TEST"
     mock_log.assert_called_once()
     assert mock_log.call_args[0][1]["message_id"] == "wamid.ABC"
 
@@ -180,13 +180,23 @@ def _settings(
         elevenlabs_api_key="",
         elevenlabs_voice_id="",
         elevenlabs_model_id="eleven_multilingual_v2",
+        elevenlabs_stability=0.42,
+        elevenlabs_similarity_boost=0.78,
+        elevenlabs_style=0.35,
+        elevenlabs_use_speaker_boost=True,
+        elevenlabs_speed=0.95,
+        elevenlabs_pronunciation_dictionary_id="",
         enable_ambient_audio=False,
         elevenlabs_sfx_enabled=False,
         ambient_audio_mix_level=0.12,
         package_publish_mode="local",
+        google_drive_upload_enabled=False,
         google_drive_folder_id="",
         google_drive_folder_url="",
         google_drive_local_sync_root=None,
+        google_drive_credentials_file=None,
+        google_drive_token_file=None,
+        google_drive_share_role="reader",
         package_public_link="",
         whatsapp_sender_type="cloud",
         whatsapp_graph_api_version="v25.0",

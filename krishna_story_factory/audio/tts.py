@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import base64
+import logging
 
 import requests
 
 from ..config import Settings
-
-
 from .sanitize import sanitize_audio_script
+
+logger = logging.getLogger(__name__)
 
 
 class AudioGenerationError(RuntimeError):
@@ -45,21 +46,49 @@ class AudioGenerator:
             "Accept": "audio/mpeg",
             "Content-Type": "application/json",
         }
-        payload = {
+        payload: dict = {
             "text": narration_text,
             "model_id": self.settings.elevenlabs_model_id,
-            "voice_settings": {
-                "stability": 0.55,
-                "similarity_boost": 0.75,
-                "style": 0.15,
-                "use_speaker_boost": True,
-            },
+            "voice_settings": self._voice_settings(),
         }
+        if self.settings.elevenlabs_pronunciation_dictionary_id:
+            payload["pronunciation_dictionary_locators"] = [
+                {"pronunciation_dictionary_id": self.settings.elevenlabs_pronunciation_dictionary_id, "version_id": "latest"}
+            ]
+
         response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
+        if response.status_code >= 400 and "pronunciation_dictionary" in response.text.lower():
+            logger.warning("ElevenLabs pronunciation dictionary not supported; retrying without it.")
+            payload.pop("pronunciation_dictionary_locators", None)
+            response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
+        if response.status_code >= 400 and self._has_optional_voice_fields(payload):
+            logger.warning("ElevenLabs rejected optional voice settings; retrying with core settings only.")
+            payload["voice_settings"] = {
+                "stability": payload["voice_settings"].get("stability", 0.42),
+                "similarity_boost": payload["voice_settings"].get("similarity_boost", 0.78),
+            }
+            response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
         if response.status_code >= 400:
             raise AudioGenerationError(f"ElevenLabs TTS failed: {response.status_code} {response.text[:500]}")
         output_path.write_bytes(response.content)
         return "elevenlabs"
+
+    def _voice_settings(self) -> dict:
+        s = self.settings
+        settings = {
+            "stability": s.elevenlabs_stability if s.elevenlabs_stability is not None else 0.42,
+            "similarity_boost": s.elevenlabs_similarity_boost if s.elevenlabs_similarity_boost is not None else 0.78,
+            "style": s.elevenlabs_style if s.elevenlabs_style is not None else 0.35,
+            "use_speaker_boost": s.elevenlabs_use_speaker_boost if s.elevenlabs_use_speaker_boost is not None else True,
+        }
+        if s.elevenlabs_speed is not None:
+            settings["speed"] = s.elevenlabs_speed
+        return settings
+
+    @staticmethod
+    def _has_optional_voice_fields(payload: dict) -> bool:
+        voice = payload.get("voice_settings", {})
+        return "style" in voice or "speed" in voice or "use_speaker_boost" in voice
 
     @staticmethod
     def is_placeholder_mp3(path) -> bool:

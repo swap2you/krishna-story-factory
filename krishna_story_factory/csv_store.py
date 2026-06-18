@@ -80,6 +80,17 @@ WHATSAPP_RECIPIENT_FIELDS = [
     "notes",
 ]
 
+STORAGE_LOG_FIELDS = [
+    "date",
+    "chapter_no",
+    "slug",
+    "mode",
+    "status",
+    "detail",
+    "folder_link",
+    "created_at",
+]
+
 
 def _write_header_if_absent(path: Path, fieldnames: list[str]) -> None:
     if not path.exists():
@@ -98,6 +109,7 @@ def ensure_csv_files(project_root: Path) -> None:
     _write_header_if_absent(tracking_dir / "story_log.csv", LOG_FIELDS)
     _write_header_if_absent(tracking_dir / "send_log.csv", SEND_LOG_FIELDS)
     _write_header_if_absent(tracking_dir / "quality_log.csv", QUALITY_LOG_FIELDS)
+    _write_header_if_absent(tracking_dir / "storage_log.csv", STORAGE_LOG_FIELDS)
 
 
 def read_next_pending(project_root: Path) -> PlanRow | None:
@@ -170,6 +182,15 @@ def append_send_log(project_root: Path, row: dict[str, str]) -> None:
     with path.open("a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=SEND_LOG_FIELDS)
         writer.writerow({field: row.get(field, "") for field in SEND_LOG_FIELDS})
+
+
+def append_storage_log(project_root: Path, row: dict[str, str]) -> None:
+    path = project_root / "tracking" / "storage_log.csv"
+    if not path.exists():
+        ensure_csv_files(project_root)
+    with path.open("a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=STORAGE_LOG_FIELDS)
+        writer.writerow({field: row.get(field, "") for field in STORAGE_LOG_FIELDS})
 
 
 def already_sent_today(project_root: Path, timezone_name: str) -> bool:

@@ -33,7 +33,6 @@ def test_series_plan_parses_ten_rows() -> None:
 def test_next_pending_story_matches_csv() -> None:
     rows = _read_series_rows()
     expected = next(row for row in rows if row.get("status", "").strip().lower() == "pending")
-    settings = load_settings(PROJECT_ROOT)
     plan = read_next_pending(PROJECT_ROOT)
     assert plan is not None
     assert plan.chapter_no == expected["chapter_no"]
@@ -43,14 +42,13 @@ def test_next_pending_story_matches_csv() -> None:
 def test_whatsapp_recipients_parses_two_rows() -> None:
     rows = _read_recipient_rows()
     assert len(rows) == 2
-    assert rows[0]["name"] == "Swapnil Test"
-    assert rows[1]["name"] == "Wife Test"
+    assert rows[0]["phone_e164"]
+    assert rows[1]["phone_e164"]
 
 
-def test_replace_phone_placeholder_skipped() -> None:
+def test_active_opted_in_recipients_loadable() -> None:
     settings = load_settings(PROJECT_ROOT)
     active = load_active_recipients(settings.whatsapp_recipients_csv)
-    names = [r.name for r in active]
-    assert "Swapnil Test" in names
-    assert "Wife Test" not in names
-    assert all("REPLACE" not in r.phone_e164 for r in active)
+    assert len(active) >= 1
+    assert all(r.opt_in for r in active)
+    assert all(r.status == "active" for r in active)
