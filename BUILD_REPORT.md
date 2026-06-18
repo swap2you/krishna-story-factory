@@ -29,6 +29,7 @@ Date: 2026-06-18
 - Age range: `6-12`
 - Chapters 001–010 from Krishna Book opening pastimes
 - Sample state in repo: `001` done, `002`–`010` pending
+- RFC-style CSV quoting on `summary_seed` and `notes` fields (one row per line)
 
 ## Code improvements
 
@@ -51,7 +52,7 @@ python run_daily_story.py --mode prod --force
 
 | Check | Result |
 |-------|--------|
-| `pytest -q` | **11 passed** |
+| `pytest -q` | **15 passed** |
 | Test pipeline | **SUCCESS** → `output/001_the-earth-prays-for-krishna/` |
 | WhatsApp smoke | **SUCCESS** (hello_world, Meta wamid) |
 | Prod pipeline | **SUCCESS**, quality **PASS**, WhatsApp **SENT_CLOUD** (1 recipient) |

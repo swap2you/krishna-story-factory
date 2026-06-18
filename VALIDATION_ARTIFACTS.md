@@ -14,7 +14,15 @@ python run_daily_story.py --mode prod --force
 ## Pytest
 
 ```text
-11 passed
+15 passed
+```
+
+## CSV queue checks
+
+```text
+series_plan.csv: 10 rows (001 done, 002–010 pending)
+next pending: 002_devaki-and-vasudeva-wedding
+whatsapp_recipients.csv: 2 rows; Wife Test skipped (REPLACE phone)
 ```
 
 ## Latest prod output path (local)
