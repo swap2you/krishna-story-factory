@@ -1,3 +1,7 @@
 date,chapter_no,slug,sender_type,recipient_name,recipient_phone,status,detail,message_id,created_at
 2026-06-18,002,devaki-and-vasudeva-wedding,cloud,Swapnil Test,17143074266,FAILED,"WhatsApp API error: HTTP 401 | HTTP 401 | {""error"":{""message"":""Authentication Error"",""code"":190,""type"":""OAuthException"",""fbtrace_id"":""AO4ZMdQtcxJ8fucsiR5mlnt""}}",,2026-06-18T15:23:58-04:00
 2026-06-18,002,devaki-and-vasudeva-wedding,cloud,Swapnil Test,17143074266,FAILED,reason=TOKEN_EXPIRED | template=hello_world | language=en_US | phone=17143074266 | HTTP 401 | meta=Authentication Error (code 190),,2026-06-18T16:00:54-04:00
+2026-06-18,003,vasudevas-promise,cloud,Swapnil Patil,17143074266,FAILED,reason=TOKEN_EXPIRED | template=hello_world | language=en_US | phone=17143074266 | HTTP 401 | meta=Authentication Error (code 190),,2026-06-18T16:14:07-04:00
+2026-06-18,003,vasudevas-promise,cloud,Sachi Patil,17176085419,FAILED,reason=TOKEN_EXPIRED | template=hello_world | language=en_US | phone=17176085419 | HTTP 401 | meta=Authentication Error (code 190),,2026-06-18T16:14:08-04:00
+2026-06-18,004,prayers-in-the-prison,cloud,Swapnil Patil,17143074266,SUCCESS,template=hello_world | language=en_US | phone=17143074266,wamid.HBgLMTcxNDMwNzQyNjYVAgARGBI2NTM0N0Q1RDM4OUE0ODk1QjAA,2026-06-18T16:23:40-04:00
+2026-06-18,004,prayers-in-the-prison,cloud,Sachi Patil,17176085419,FAILED,reason=TOKEN_EXPIRED | template=hello_world | language=en_US | phone=17176085419 | HTTP 400 | meta=(#131030) Recipient phone number not in allowed list (code 131030),,2026-06-18T16:23:41-04:00
