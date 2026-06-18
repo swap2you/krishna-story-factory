@@ -62,6 +62,42 @@ ELEVENLABS_VOICE_ID=YOUR_VOICE_ID
 ELEVENLABS_MODEL_ID=eleven_multilingual_v2
 ```
 
+## WhatsApp Business Cloud
+
+Official docs:
+
+- https://developers.facebook.com/documentation/business-messaging/whatsapp/get-started
+
+Steps:
+
+1. Create Meta app with WhatsApp product.
+2. Copy Phone Number ID and temporary access token from Meta.
+3. Add test recipient in Meta dashboard.
+4. Set local `.env` only (never commit):
+
+```env
+WHATSAPP_SEND_ENABLED=true
+WHATSAPP_SENDER_TYPE=cloud
+WHATSAPP_GRAPH_API_VERSION=v25.0
+WHATSAPP_BUSINESS_ACCOUNT_ID=YOUR_WABA_ID
+WHATSAPP_PHONE_NUMBER_ID=YOUR_PHONE_NUMBER_ID
+WHATSAPP_CLOUD_TOKEN=YOUR_TEMP_OR_SYSTEM_TOKEN
+WHATSAPP_TEST_RECIPIENT_PHONE=17143074266
+WHATSAPP_TEMPLATE_NAME=hello_world
+WHATSAPP_TEMPLATE_LANGUAGE=en_US
+WHATSAPP_RECIPIENTS_CSV=input/whatsapp_recipients.csv
+```
+
+Smoke test:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/test_whatsapp_cloud.py
+```
+
+v1 sends template messages to opted-in individuals from CSV. Group sending is not supported.
+
+For production daily parent sends, switch later to approved template `daily_krishna_story` plus a Google Drive package link.
+
 ## Streamlit
 
 Official docs:

@@ -36,11 +36,16 @@ class Settings:
 
     whatsapp_sender_type: str
     whatsapp_graph_api_version: str
+    whatsapp_business_account_id: str
     whatsapp_phone_number_id: str
+    whatsapp_cloud_token: str
     whatsapp_access_token: str
     whatsapp_target_phone: str
+    whatsapp_test_recipient_phone: str
     whatsapp_template_name: str
+    whatsapp_template_language: str
     whatsapp_language_code: str
+    whatsapp_recipients_csv: Path
     whatsapp_web_test_dir: Path
 
     telegram_bot_token: str
@@ -60,6 +65,9 @@ def load_settings(project_root: Path) -> Settings:
     load_dotenv(project_root / ".env")
     output_root = _resolve_path(project_root, "OUTPUT_ROOT", "output")
     web_test_dir = _resolve_path(project_root, "WHATSAPP_WEB_TEST_DIR", "whatsapp_test_outbox")
+    recipients_csv = _resolve_path(project_root, "WHATSAPP_RECIPIENTS_CSV", "input/whatsapp_recipients.csv")
+    cloud_token = os.getenv("WHATSAPP_CLOUD_TOKEN", "").strip() or os.getenv("WHATSAPP_ACCESS_TOKEN", "").strip()
+    template_language = os.getenv("WHATSAPP_TEMPLATE_LANGUAGE", "").strip() or os.getenv("WHATSAPP_LANGUAGE_CODE", "en_US")
 
     return Settings(
         project_root=project_root,
@@ -78,12 +86,17 @@ def load_settings(project_root: Path) -> Settings:
         elevenlabs_voice_id=os.getenv("ELEVENLABS_VOICE_ID", ""),
         elevenlabs_model_id=os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2"),
         whatsapp_sender_type=os.getenv("WHATSAPP_SENDER_TYPE", "manual").strip().lower(),
-        whatsapp_graph_api_version=os.getenv("WHATSAPP_GRAPH_API_VERSION", "v23.0"),
+        whatsapp_graph_api_version=os.getenv("WHATSAPP_GRAPH_API_VERSION", "v25.0"),
+        whatsapp_business_account_id=os.getenv("WHATSAPP_BUSINESS_ACCOUNT_ID", ""),
         whatsapp_phone_number_id=os.getenv("WHATSAPP_PHONE_NUMBER_ID", ""),
+        whatsapp_cloud_token=cloud_token,
         whatsapp_access_token=os.getenv("WHATSAPP_ACCESS_TOKEN", ""),
         whatsapp_target_phone=os.getenv("WHATSAPP_TARGET_PHONE", ""),
-        whatsapp_template_name=os.getenv("WHATSAPP_TEMPLATE_NAME", ""),
+        whatsapp_test_recipient_phone=os.getenv("WHATSAPP_TEST_RECIPIENT_PHONE", ""),
+        whatsapp_template_name=os.getenv("WHATSAPP_TEMPLATE_NAME", "hello_world"),
+        whatsapp_template_language=template_language,
         whatsapp_language_code=os.getenv("WHATSAPP_LANGUAGE_CODE", "en_US"),
+        whatsapp_recipients_csv=recipients_csv,
         whatsapp_web_test_dir=web_test_dir,
         telegram_bot_token=os.getenv("TELEGRAM_BOT_TOKEN", ""),
         telegram_chat_id=os.getenv("TELEGRAM_CHAT_ID", ""),

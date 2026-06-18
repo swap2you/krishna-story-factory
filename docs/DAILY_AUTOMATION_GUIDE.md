@@ -51,3 +51,12 @@ Use force only for testing:
 ```powershell
 python run_daily_story.py --mode prod --force
 ```
+
+## WhatsApp Cloud in daily automation
+
+When `WHATSAPP_SEND_ENABLED=true` and `WHATSAPP_SENDER_TYPE=cloud`:
+
+- `run_daily_story.py --mode prod` sends the configured template to active opted-in recipients in `input/whatsapp_recipients.csv`
+- `run_daily_story.py --mode test` never calls WhatsApp
+- v1 uses `hello_world` for Meta test setup; switch to `daily_krishna_story` after template approval
+- Results are logged in `tracking/send_log.csv`

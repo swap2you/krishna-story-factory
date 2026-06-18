@@ -2,11 +2,11 @@
 
 ## Recommendation
 
-Primary: WhatsApp Business Cloud API.
+Primary: WhatsApp Business Cloud API (template + package link).
 
 Fallback: Telegram.
 
-Reason: Telegram bot/channel delivery is usually simpler than WhatsApp business onboarding. But WhatsApp remains best for parents if your business setup is approved.
+Reason: Telegram bot/channel delivery is usually simpler than WhatsApp business onboarding. WhatsApp remains best for parents once Meta business assets are approved.
 
 ## Supported sender types
 
@@ -27,9 +27,26 @@ No external send. Logs package location.
 
 Creates a local outbox for private testing.
 
-## WhatsApp Cloud
+## WhatsApp Cloud (v1)
 
 Uses Meta WhatsApp Business Cloud API.
+
+v1 behavior:
+
+- Sends approved **template** messages only (`hello_world` for Meta test setup)
+- Broadcasts one-by-one to active opted-in numbers in `input/whatsapp_recipients.csv`
+- Does **not** send to WhatsApp groups
+- Does **not** upload MP3/PDF/image yet
+- Logs each recipient result to `tracking/send_log.csv`
+
+Smoke tests:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/test_whatsapp_cloud.py
+.\.venv\Scripts\python.exe scripts/test_whatsapp_broadcast.py
+```
+
+See [WHATSAPP_BUSINESS_CLOUD_GUIDE.md](WHATSAPP_BUSINESS_CLOUD_GUIDE.md).
 
 ## Telegram
 
@@ -59,3 +76,5 @@ DISCORD_WEBHOOK_URL=
 ## Do not use fragile automation first
 
 Do not build the first production version on unofficial browser automation. It may break, require QR sessions, or violate platform expectations.
+
+Group sending is intentionally **not** part of v1.

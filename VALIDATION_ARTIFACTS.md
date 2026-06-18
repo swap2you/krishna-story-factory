@@ -7,67 +7,59 @@ Validation date: 2026-06-18
 ```powershell
 pytest -q
 python run_daily_story.py --mode test --force
-python -m streamlit run dashboard.py
+python scripts/test_whatsapp_cloud.py
 ```
 
 ## Pytest result
 
 ```text
-1 passed in ~1s
+10 passed
 ```
 
-Test: `tests/test_pipeline_test_mode.py::test_pipeline_generates_required_files_in_test_mode`
+Includes:
 
-Isolated copy ignores: `.git`, `.pytest_cache`, `.codex_validation_tmp`, `.cursor`, `.venv`, `output`, `__pycache__`, `.env`, `krishna-story-factory-v1-buildpack`
+- `tests/test_pipeline_test_mode.py`
+- `tests/test_whatsapp_sender.py` (phone normalization, config errors, recipient filtering, mocked Meta success, no token in errors)
 
 ## Pipeline result (test mode)
 
 ```json
 {
   "status": "SUCCESS",
-  "output_dir": "output/004_prahlada",
   "quality_status": "PASS",
-  "whatsapp_status": "NOT_ATTEMPTED",
-  "detail": "WhatsApp send disabled."
+  "whatsapp_status": "NOT_ATTEMPTED"
 }
 ```
 
-## Dashboard startup
+Test mode does not call WhatsApp even when cloud sender is configured locally.
+
+## WhatsApp Cloud smoke test
 
 ```text
-You can now view your Streamlit app in your browser.
-Local URL: http://localhost:8501
+SUCCESS
+Meta message id: wamid....
 ```
 
-Started with `python -m streamlit run dashboard.py` (headless smoke test). Stopped after confirming startup.
+Template: `hello_world`  
+Recipient: configured `WHATSAPP_TEST_RECIPIENT_PHONE`  
+Token source: local `.env` only (`WHATSAPP_CLOUD_TOKEN`)
 
-## Required output files (local validation run)
+## Recipient CSV template
+
+`input/whatsapp_recipients.csv`:
+
+```csv
+name,phone_e164,opt_in,status,notes
+Swapnil Test,+17143074266,true,active,Meta test recipient
+```
+
+## Send log schema
+
+`tracking/send_log.csv` columns:
 
 ```text
-story.md
-audio_script.txt
-whatsapp_caption.txt
-activity_sheet.pdf
-story_card.png
-image_prompt.txt
-parent_notes.md
-manifest.json
-narration.mp3
+date,chapter_no,slug,sender_type,recipient_name,recipient_phone,status,detail,message_id,created_at
 ```
-
-## Manifest fields verified
-
-- `source_reference`
-- `library_id`
-- `age_range` (`7-11`)
-- `generated_at`
-
-## Tracking CSV state committed to repo
-
-- `tracking/story_log.csv` — headers only
-- `tracking/send_log.csv` — headers only
-- `tracking/quality_log.csv` — headers only
-- `input/series_plan.csv` — `004_prahlada` pending
 
 ## Regenerate locally
 
@@ -75,5 +67,8 @@ narration.mp3
 .\.venv\Scripts\Activate.ps1
 pytest -q
 python run_daily_story.py --mode test --force
-python -m streamlit run dashboard.py
+python scripts/test_whatsapp_cloud.py
+python scripts/test_whatsapp_broadcast.py
 ```
+
+Next pending story in sample queue: `005_boat-crossing`.

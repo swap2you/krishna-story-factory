@@ -55,8 +55,11 @@ SEND_LOG_FIELDS = [
     "chapter_no",
     "slug",
     "sender_type",
+    "recipient_name",
+    "recipient_phone",
     "status",
     "detail",
+    "message_id",
     "created_at",
 ]
 
@@ -67,6 +70,14 @@ QUALITY_LOG_FIELDS = [
     "quality_status",
     "errors",
     "created_at",
+]
+
+WHATSAPP_RECIPIENT_FIELDS = [
+    "name",
+    "phone_e164",
+    "opt_in",
+    "status",
+    "notes",
 ]
 
 
@@ -83,6 +94,7 @@ def ensure_csv_files(project_root: Path) -> None:
     input_dir.mkdir(parents=True, exist_ok=True)
     tracking_dir.mkdir(parents=True, exist_ok=True)
     _write_header_if_absent(input_dir / "series_plan.csv", SERIES_FIELDS)
+    _write_header_if_absent(input_dir / "whatsapp_recipients.csv", WHATSAPP_RECIPIENT_FIELDS)
     _write_header_if_absent(tracking_dir / "story_log.csv", LOG_FIELDS)
     _write_header_if_absent(tracking_dir / "send_log.csv", SEND_LOG_FIELDS)
     _write_header_if_absent(tracking_dir / "quality_log.csv", QUALITY_LOG_FIELDS)
@@ -146,6 +158,15 @@ def append_story_log(project_root: Path, row: dict[str, str]) -> None:
     with path.open("a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=LOG_FIELDS)
         writer.writerow({field: row.get(field, "") for field in LOG_FIELDS})
+
+
+def append_send_log(project_root: Path, row: dict[str, str]) -> None:
+    path = project_root / "tracking" / "send_log.csv"
+    if not path.exists():
+        ensure_csv_files(project_root)
+    with path.open("a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=SEND_LOG_FIELDS)
+        writer.writerow({field: row.get(field, "") for field in SEND_LOG_FIELDS})
 
 
 def already_sent_today(project_root: Path, timezone_name: str) -> bool:

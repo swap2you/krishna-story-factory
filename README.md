@@ -63,6 +63,7 @@ krishna-story-factory/
     series_plan.csv           # Story queue (status: pending | done)
     library_catalog.csv       # Approved source libraries
     config_profiles.csv       # Optional generation profiles
+    whatsapp_recipients.csv   # Opted-in parent phone numbers for Cloud API
 
   tracking/
     story_log.csv             # One row per pipeline run
@@ -154,7 +155,7 @@ python run_daily_story.py --mode prod --force
 3. On success, the row is marked `done` and a log row is appended to `tracking/story_log.csv`
 4. Output appears under `output/<chapter_no>_<slug>/`
 
-Sample queue ships with chapters `001`–`003` marked `done` and **`004_prahlada` pending**.
+Sample queue ships with chapters `001`–`004` marked `done` and **`005_boat-crossing` pending**.
 
 ---
 
@@ -171,6 +172,14 @@ WHATSAPP_SENDER_TYPE=telegram    # fallback
 WHATSAPP_SENDER_TYPE=slack       # fallback
 WHATSAPP_SENDER_TYPE=discord     # fallback
 ```
+
+WhatsApp Cloud v1:
+
+- Template messages only (`hello_world` for Meta test setup)
+- Broadcast one-by-one to opted-in numbers in `input/whatsapp_recipients.csv`
+- No WhatsApp group sending in v1
+- Smoke test: `.\.venv\Scripts\python.exe scripts/test_whatsapp_cloud.py`
+- Production path: approved template (`daily_krishna_story`) + Google Drive package link
 
 Recommended rollout:
 

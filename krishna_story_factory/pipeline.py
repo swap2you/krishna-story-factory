@@ -78,7 +78,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
         if not ok:
             raise PipelineError("Quality checks failed. See tracking/story_log.csv and manifest.json.")
 
-        if settings.whatsapp_send_enabled:
+        if settings.whatsapp_send_enabled and mode == "prod":
             if already_sent_today(settings.project_root, settings.app_timezone) and not force:
                 send_result = SendResult(
                     status="SKIPPED_DAILY_LIMIT",
