@@ -1,85 +1,79 @@
 # Validation Artifacts
 
-Validation date: `2026-06-18`
+Validation date: 2026-06-18
 
-## Generated Output Folder
+## Commands
 
-`C:\Development\Workspace\DevotionalRepo\krishna-story-factory\output\004_prahlada`
+```powershell
+pytest -q
+python run_daily_story.py --mode test --force
+python -m streamlit run dashboard.py
+```
 
-## Pipeline Result
+## Pytest result
+
+```text
+1 passed in ~1s
+```
+
+Test: `tests/test_pipeline_test_mode.py::test_pipeline_generates_required_files_in_test_mode`
+
+Isolated copy ignores: `.git`, `.pytest_cache`, `.codex_validation_tmp`, `.cursor`, `.venv`, `output`, `__pycache__`, `.env`, `krishna-story-factory-v1-buildpack`
+
+## Pipeline result (test mode)
 
 ```json
 {
   "status": "SUCCESS",
-  "output_dir": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\output\\004_prahlada",
+  "output_dir": "output/004_prahlada",
   "quality_status": "PASS",
   "whatsapp_status": "NOT_ATTEMPTED",
   "detail": "WhatsApp send disabled."
 }
 ```
 
-## Files Created
+## Dashboard startup
 
-| File | Bytes |
-| --- | ---: |
-| `story.md` | 3200 |
-| `audio_script.txt` | 481 |
-| `whatsapp_caption.txt` | 273 |
-| `activity_sheet.pdf` | 3636 |
-| `story_card.png` | 15028 |
-| `image_prompt.txt` | 236 |
-| `parent_notes.md` | 299 |
-| `manifest.json` | 1347 |
-| `narration.mp3` | 66 |
+```text
+You can now view your Streamlit app in your browser.
+Local URL: http://localhost:8501
+```
 
-All required files exist and are non-empty.
+Started with `python -m streamlit run dashboard.py` (headless smoke test). Stopped after confirming startup.
 
-## Manifest Fields Verified
+## Required output files (local validation run)
 
-- `source_reference`: `Srimad-Bhagavatam Canto 7 Chapter 8`
-- `library_id`: `srimad_bhagavatam`
-- `age_range`: `7-11`
-- `generated_at`: `2026-06-18T11:01:33-04:00`
+```text
+story.md
+audio_script.txt
+whatsapp_caption.txt
+activity_sheet.pdf
+story_card.png
+image_prompt.txt
+parent_notes.md
+manifest.json
+narration.mp3
+```
 
-`manifest.json` was validated with:
+## Manifest fields verified
+
+- `source_reference`
+- `library_id`
+- `age_range` (`7-11`)
+- `generated_at`
+
+## Tracking CSV state committed to repo
+
+- `tracking/story_log.csv` — headers only
+- `tracking/send_log.csv` — headers only
+- `tracking/quality_log.csv` — headers only
+- `input/series_plan.csv` — `004_prahlada` pending
+
+## Regenerate locally
 
 ```powershell
-.\.venv\Scripts\python.exe -m json.tool output\004_prahlada\manifest.json
+.\.venv\Scripts\Activate.ps1
+pytest -q
+python run_daily_story.py --mode test --force
+python -m streamlit run dashboard.py
 ```
-
-## Quality Status
-
-`PASS`
-
-The latest `tracking/story_log.csv` entry records:
-
-```text
-2026-06-18,004,prahlada,Prahlada's Faith,C:\Development\Workspace\DevotionalRepo\krishna-story-factory\output\004_prahlada,SUCCESS,PASS,NOT_ATTEMPTED,manual,C:\Development\Workspace\DevotionalRepo\krishna-story-factory\output\004_prahlada\manifest.json,2026-06-18T11:01:33-04:00,
-```
-
-## Sender Status
-
-`NOT_ATTEMPTED`
-
-Reason: WhatsApp sending is disabled. No live OpenAI, ElevenLabs, WhatsApp, Telegram, Slack, or Discord API calls were made.
-
-## Test Result
-
-```text
-1 passed in 1.13s
-```
-
-## Dashboard Status
-
-- `dashboard.py` compile check passed.
-- Streamlit startup check reached:
-
-```text
-URL: http://127.0.0.1:8507
-Uvicorn server started on 127.0.0.1:8507
-```
-
-## Notes
-
-- The queue had no pending story at the start of validation, so `004_prahlada` was temporarily set to `pending` and then restored to `done` by the CLI after generation.
-- Pytest temp/cache paths were redirected to a workspace-local folder because the default Windows temp/cache locations were not writable in this session.
