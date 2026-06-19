@@ -73,6 +73,14 @@ def main() -> int:
         print(f"Next pending story: {plan.chapter_no}_{plan.slug} — {plan.title}")
     else:
         print("Next pending story: none")
+    if not _flag("GOOGLE_DRIVE_UPLOAD_ENABLED") or not _present("GOOGLE_DRIVE_FOLDER_ID"):
+        print("")
+        print("Drive upload disabled. To enable in local .env:")
+        print("  GOOGLE_DRIVE_UPLOAD_ENABLED=true")
+        print("  GOOGLE_DRIVE_FOLDER_ID=1vr5zYLVcPdAENwRDieGxxYuBgmHdkqei")
+        print("  GOOGLE_DRIVE_FOLDER_URL=https://drive.google.com/drive/folders/1vr5zYLVcPdAENwRDieGxxYuBgmHdkqei?usp=sharing")
+        print("  GOOGLE_DRIVE_CREDENTIALS_FILE=credentials/google_drive_oauth_client.json")
+        print("  GOOGLE_DRIVE_TOKEN_FILE=credentials/google_drive_token.json")
     return 0
 
 

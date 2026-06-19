@@ -7,6 +7,7 @@ from typing import Any
 from ..config import Settings
 from ..models import PlanRow, StoryContent
 from ..prompts_loader import load_project_text
+from .prompt_normalize import normalize_image_prompts
 from ..quality.repetition import clean_repetition, detect_repetition
 
 
@@ -205,6 +206,8 @@ Return only valid JSON matching the schema described above.
             f"Tonight we continue the Krishna Book in order. Our story is {plan.title}, "
             f"from {plan.source_reference}."
         )
+        if plan.chapter_no == "002":
+            recap += " We will hear how a heavenly voice warned Kamsa about Devaki's eighth son."
         main_story = _mock_main_story(plan)
         audio_script = _mock_audio_script(plan)
         image_prompt = (
@@ -274,25 +277,9 @@ def _word_count(text: str) -> int:
     return len(re.findall(r"\b[\w']+\b", text))
 
 
-def _ensure_coloring_prompt(prompt: str) -> str:
-    text = prompt.strip()
-    if not text:
-        text = "Devotional Krishna coloring page scene."
-    lower = text.lower()
-    if not any(term in lower for term in ("thick", "outline")):
-        text += " Thick clean black outlines."
-    if "white background" not in lower and "white" not in lower:
-        text += " White background."
-    if not any(term in lower for term in ("cute", "sweet", "child-friendly", "child friendly")):
-        text += " Cute sweet child-friendly devotional coloring-book style."
-    return text.strip()
-
-
 def _apply_repetition_cleanup(content: StoryContent) -> StoryContent:
     main_story = clean_repetition(content.main_story, content_type="story")
     audio_script = clean_repetition(content.audio_script, content_type="audio")
-    line_art = _ensure_coloring_prompt(content.line_art_prompt)
-    coloring_page = _ensure_coloring_prompt(content.coloring_page_prompt or line_art)
     return StoryContent(
         title=content.title,
         recap=content.recap,
@@ -303,13 +290,13 @@ def _apply_repetition_cleanup(content: StoryContent) -> StoryContent:
         audio_script=audio_script,
         whatsapp_caption=content.whatsapp_caption,
         image_prompt=content.image_prompt,
-        line_art_prompt=line_art,
+        line_art_prompt=content.line_art_prompt,
         story_card_text=content.story_card_text,
         parent_notes=content.parent_notes,
         hero_image_prompt=content.hero_image_prompt,
         story_card_square_prompt=content.story_card_square_prompt,
         story_card_wide_prompt=content.story_card_wide_prompt,
-        coloring_page_prompt=coloring_page,
+        coloring_page_prompt=content.coloring_page_prompt,
         recall_questions=content.recall_questions,
         thinking_questions=content.thinking_questions,
         word_search_words=content.word_search_words,
@@ -320,6 +307,7 @@ def _apply_repetition_cleanup(content: StoryContent) -> StoryContent:
 
 def _finalize_content(content: StoryContent, plan: PlanRow) -> StoryContent:
     content = _apply_repetition_cleanup(content)
+    content = normalize_image_prompts(content, plan)
     story_report = detect_repetition(content.main_story, content_type="story")
     audio_report = detect_repetition(content.audio_script, content_type="audio")
     if story_report.errors or audio_report.errors:
@@ -361,16 +349,24 @@ def _mock_main_story(plan: PlanRow) -> str:
         plan.summary_seed,
         "The palace lamps glow softly while devotees remember Krishna with faith.",
         "Even when the world feels heavy, sincere prayer brings hope and protection.",
-        "Vasudeva speaks with quiet strength, and Devaki shines with peaceful devotion.",
         "The demigods offer prayers from their hearts, trusting the Lord's plan.",
         "We learn that courage can be gentle and faith can be calm.",
         "Krishna never forgets those who call Him with love.",
         "Children can picture the scene and remember how the devotees acted with kindness.",
         "Each moment of the pastime teaches honesty, patience, and trust in Krishna.",
         "When we listen carefully, we hear how prayer can change a heavy heart.",
+        "The gentle night breeze carries the sound of conch shells and quiet chanting.",
+        "Every lamp along the road seems to welcome the devotees with a golden glow.",
+        "We remember that Krishna sees every sincere effort, even when it seems small.",
         "Before sleep, remember one kind action you can do tomorrow.",
         "Hare Krishna. Sweet dreams.",
     ]
+    if plan.chapter_no == "001":
+        scenes.insert(4, "Mother Earth felt burdened, and the demigods prayed to Lord Vishnu for help.")
+        scenes.insert(5, "Lord Brahma listened with care as sincere prayers rose toward the Lord.")
+    if plan.chapter_no == "002":
+        scenes.insert(4, "Devaki and Vasudeva rode in a golden chariot while Kamsa drove as charioteer.")
+        scenes.insert(5, "A heavenly voice warned about Devaki's eighth son, and wonder filled the air.")
     return "\n\n".join(scenes)
 
 

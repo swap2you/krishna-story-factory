@@ -17,6 +17,7 @@ def write_manifest(
     mode: str,
     quality_status: str,
     quality_errors: list[str],
+    quality_warnings: list[str] | None = None,
     story_source: str,
     audio_source: str,
     image_source: str,
@@ -97,7 +98,11 @@ def write_manifest(
         "activity": {
             "word_search_answer_key": word_search_answer_key or {},
         },
-        "quality": {"status": quality_status, "errors": quality_errors},
+        "quality": {
+            "status": quality_status,
+            "errors": quality_errors,
+            "warnings": quality_warnings or [],
+        },
         "daily_send_guard": "enabled unless --force is passed",
     }
     paths.manifest.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")

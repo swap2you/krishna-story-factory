@@ -32,18 +32,17 @@ Generate separate prompts for each output:
 
 ## Coloring page style
 
-- Cute devotional coloring book illustration.
-- Thick clean confident black outlines.
+- Premium children's devotional coloring-book illustration.
+- Cute sweet expressive faces.
+- Centered composition, no cropping, full scene inside safe margins.
+- Thick confident black outlines.
 - White background.
 - Large colorable spaces.
-- Sweet expressive faces.
-- Kids should want to color and keep it.
-- Avoid stiff adult faces.
-- Avoid too many background bricks.
-- Avoid cramped composition.
-- No shading, no gray, no excessive tiny details.
-- Simple devotional elements when relevant: moon, lotus border, small oil lamp, flower garland.
-- No weapons, no violence.
+- Minimal tiny ornaments.
+- No gray shading, no clutter, no stiff adult faces.
+- Story-specific devotional details.
+- Decorative but simple lotus or flower border where appropriate.
+- Suitable for ages 6–12 — something a child would proudly put on a wall.
 
 ## Story 002 direction
 

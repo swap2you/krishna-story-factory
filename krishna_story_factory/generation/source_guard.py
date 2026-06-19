@@ -8,6 +8,30 @@ _STORY_002_BANNED_PHRASES = (
     "kamsa the king",
 )
 
+_STORY_002_BANNED_CONTENT = (
+    "i will bring each child to you",
+    "bring each child to you",
+    "each child to you",
+    "imprisoned devaki",
+    "put in prison",
+    "birth of krishna",
+    "krishna appears",
+    "gokula",
+    "nanda maharaja",
+    "putana",
+)
+
+_STORY_002_BANNED_PASTIMES = (
+    "gajendra",
+    "prahlad",
+    "prahlada",
+    "damodara",
+    "fruit seller",
+    "fruit-seller",
+    "earth prays",
+    "lord brahma",
+)
+
 _UNRELATED_PASTIMES = (
     "gajendra",
     "prahlad",
@@ -57,13 +81,19 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
             errors.append("Story 001 should reference Earth, Brahma, prayer, or Vishnu.")
 
     if plan.chapter_no == "002":
+        recap_lower = content.recap.lower()
+        if "eighth son" not in recap_lower:
+            errors.append("Story 002 recap must mention Devaki's eighth son.")
         for phrase in _STORY_002_BANNED_PHRASES:
             if phrase in combined:
                 errors.append(
                     f"Story 002 must not call Kamsa king yet (found: {phrase!r}). "
                     "Use 'Devaki's powerful brother' or 'a prince of the royal family'."
                 )
-        for pastime in _UNRELATED_PASTIMES:
+        for phrase in _STORY_002_BANNED_CONTENT:
+            if phrase in combined:
+                errors.append(f"Story 002 must not include later-sequence content: {phrase!r}")
+        for pastime in _UNRELATED_PASTIMES + _STORY_002_BANNED_PASTIMES:
             if pastime in combined:
                 errors.append(f"Story 002 must not reference unrelated pastime: {pastime}")
 

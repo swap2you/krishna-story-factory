@@ -28,6 +28,14 @@ GOOGLE_DRIVE_TOKEN_FILE=credentials/google_drive_token.json
 
 First upload opens a browser for OAuth. Token is saved to `credentials/google_drive_token.json` (local only).
 
+Install Drive dependencies if missing:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Required packages: `google-api-python-client`, `google-auth`, `google-auth-oauthlib`.
+
 ## Parent folder permissions
 
 - Share the parent folder with parents as **Viewer**.

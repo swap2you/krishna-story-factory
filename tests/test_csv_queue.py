@@ -26,14 +26,14 @@ def test_series_plan_parses_ten_rows() -> None:
     rows = _read_series_rows()
     assert len(rows) == 10
     pending = [row for row in rows if row.get("status", "").strip().lower() == "pending"]
-    assert len(pending) == 9
+    assert len(pending) == 8
 
 
-def test_next_pending_story_is_002_after_001_done() -> None:
+def test_next_pending_story_is_003_after_002_done() -> None:
     plan = read_next_pending(PROJECT_ROOT)
     assert plan is not None
-    assert plan.chapter_no == "002"
-    assert plan.slug == "devaki-and-vasudeva-wedding"
+    assert plan.chapter_no == "003"
+    assert plan.slug == "vasudevas-promise"
 
 
 def test_whatsapp_recipients_parses_two_rows() -> None:

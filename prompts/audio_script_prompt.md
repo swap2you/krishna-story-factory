@@ -15,6 +15,7 @@ Generate a bedtime narration script for children ages 6–12.
 - Target **500–750 spoken words**.
 - Meaningful pacing over filler length.
 - Close once, softly. Do not repeat the closing.
+- If narration sounds too plain in ElevenLabs, change the voice ID and voice settings in `.env` — do not pad the script to force duration.
 
 ## Format rules
 

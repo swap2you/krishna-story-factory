@@ -24,8 +24,9 @@ REQUIRED_FILES = [
     "narration_mp3",
 ]
 
-_MIN_STORY_WORDS = {"test": 200, "prod": 750}
-_MAX_STORY_WORDS = {"test": 2400, "prod": 1050}
+_MIN_MAIN_STORY_WORDS = {"test": 200, "prod": 750}
+_MAX_MAIN_STORY_WORDS = {"test": 2400, "prod": 1050}
+_TOTAL_MARKDOWN_WARNING_WORDS = 1300
 _MIN_AUDIO_SCRIPT_WORDS = {"test": 100, "prod": 500}
 _MAX_AUDIO_SCRIPT_WORDS = {"test": 2400, "prod": 750}
 _MIN_MP3_BYTES_PROD = 250 * 1024
@@ -38,8 +39,9 @@ def run_quality_checks(
     settings: Settings | None = None,
     word_search_answer_key: dict[str, str] | None = None,
     story_title: str = "",
-) -> tuple[bool, list[str]]:
+) -> tuple[bool, list[str], list[str]]:
     errors: list[str] = []
+    warnings: list[str] = []
     path_map = {name: getattr(paths, name) for name in REQUIRED_FILES}
 
     for name, path in path_map.items():
@@ -56,19 +58,30 @@ def run_quality_checks(
             if section not in story:
                 errors.append(f"story.md missing section: {section}")
         story_words = _word_count(story_text)
-        min_story = _MIN_STORY_WORDS.get(mode, 750)
-        max_story = _MAX_STORY_WORDS.get(mode, 1050)
-        if story_words < min_story:
-            errors.append(f"story.md is too short ({story_words} words; need at least {min_story}).")
-        if mode == "prod" and story_words > max_story:
-            errors.append(f"story.md is too long ({story_words} words; target at most {max_story}).")
+        main_story_text = _extract_main_story(story_text)
+        main_story_words = _word_count(main_story_text) if main_story_text else 0
+        min_main = _MIN_MAIN_STORY_WORDS.get(mode, 750)
+        max_main = _MAX_MAIN_STORY_WORDS.get(mode, 1050)
+        if main_story_text:
+            if main_story_words < min_main:
+                errors.append(
+                    f"Main Story is too short ({main_story_words} words; need at least {min_main})."
+                )
+            if mode == "prod" and main_story_words > max_main:
+                errors.append(
+                    f"Main Story is too long ({main_story_words} words; target at most {max_main})."
+                )
+            errors.extend(detect_repetition(main_story_text, content_type="story").errors)
+        elif mode == "prod":
+            errors.append("story.md Main Story section could not be parsed for word count.")
+        if mode == "prod" and story_words > _TOTAL_MARKDOWN_WARNING_WORDS:
+            warnings.append(
+                f"Total story.md is {story_words} words (above {_TOTAL_MARKDOWN_WARNING_WORDS} warning threshold)."
+            )
         banned = ["graphic violence", "romantic detail", "adult theme"]
         for phrase in banned:
             if phrase in story:
                 errors.append(f"story.md contains disallowed phrase marker: {phrase}")
-        if "## main story" in story:
-            main_story_text = story_text.split("## Main Story", 1)[-1].split("## Moral", 1)[0]
-            errors.extend(detect_repetition(main_story_text, content_type="story").errors)
 
     if paths.audio_script.exists():
         audio_text = paths.audio_script.read_text(encoding="utf-8", errors="ignore")
@@ -121,22 +134,32 @@ def run_quality_checks(
     if mode == "prod" and settings and settings.image_generate_coloring_page:
         if paths.coloring_page_prompt.exists():
             prompt = paths.coloring_page_prompt.read_text(encoding="utf-8", errors="ignore").lower()
-            required_any = [
-                ("thick", "outline"),
-                ("white background", "white"),
-                ("cute", "sweet", "child-friendly", "child friendly"),
+            coloring_checks = [
+                ("centered composition", ("centered composition",)),
+                ("no cropping", ("no cropping",)),
+                ("large colorable spaces", ("large colorable spaces",)),
+                ("white background", ("white background", "white")),
+                ("thick black outlines", ("thick", "outline")),
+                ("cute/sweet expressive faces", ("cute", "sweet expressive faces", "sweet")),
             ]
-            if not any(any(term in prompt for term in group) for group in required_any[:2]):
-                errors.append("coloring_page_prompt.txt should describe thick outlines and white background.")
-            if not any(term in prompt for term in required_any[2]):
-                errors.append("coloring_page_prompt.txt should describe cute/sweet child-friendly style.")
+            for label, terms in coloring_checks:
+                if not any(term in prompt for term in terms):
+                    errors.append(f"coloring_page_prompt.txt should describe {label}.")
 
-    if paths.story_card_square_prompt.exists() or paths.image_prompt.exists():
-        card_prompt = ""
-        if paths.story_card_square_prompt.exists():
-            card_prompt = paths.story_card_square_prompt.read_text(encoding="utf-8", errors="ignore").lower()
-        elif paths.image_prompt.exists():
-            card_prompt = paths.image_prompt.read_text(encoding="utf-8", errors="ignore").lower()
+    if mode == "prod" and paths.story_card_square_prompt.exists():
+        card_prompt = paths.story_card_square_prompt.read_text(encoding="utf-8", errors="ignore").lower()
+        square_checks = [
+            ("devotional style", ("devotional",)),
+            ("cinematic style", ("cinematic",)),
+            ("ultra-realistic or 3D style", ("ultra-realistic", "ultra realistic", "3d")),
+            ("no modern objects", ("no modern objects",)),
+            ("not crowded or clear focal scene", ("not crowded", "clear focal")),
+        ]
+        for label, terms in square_checks:
+            if not any(term in card_prompt for term in terms):
+                errors.append(f"story_card_square_prompt.txt should describe {label}.")
+    elif mode == "prod" and paths.image_prompt.exists():
+        card_prompt = paths.image_prompt.read_text(encoding="utf-8", errors="ignore").lower()
         if card_prompt and not any(x in card_prompt for x in ["cinematic", "3d", "devotional", "realistic"]):
             errors.append("story card prompt should describe cinematic/devotional style.")
 
@@ -166,7 +189,23 @@ def run_quality_checks(
     else:
         errors.append("manifest.json missing source reference because manifest is absent.")
 
-    return not errors, errors
+    return not errors, errors, warnings
+
+
+def _extract_main_story(story_text: str) -> str:
+    lowered = story_text.lower()
+    marker = "## main story"
+    if marker not in lowered:
+        return ""
+    start = lowered.index(marker) + len(marker)
+    tail = story_text[start:].lstrip(":\n ")
+    end_markers = ["## moral", "## takeaway", "## five-star challenge"]
+    end = len(tail)
+    tail_lower = tail.lower()
+    for end_marker in end_markers:
+        if end_marker in tail_lower:
+            end = min(end, tail_lower.index(end_marker))
+    return tail[:end].strip()
 
 
 def _word_count(text: str) -> int:

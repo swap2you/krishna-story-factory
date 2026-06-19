@@ -49,19 +49,48 @@ Return only valid JSON with these keys:
 - Explain names gently.
 - No graphic violence.
 
-## Story 002 special wording
+## Story 002 The Wedding and the Heavenly Voice
 
-- Do **not** call Kamsa “king of Mathura” or “King Kamsa”.
-- Use “Devaki’s powerful brother” or “a prince of the royal family”.
+Focus on:
+- wedding ceremony
+- Devaki and Vasudeva leaving in chariot
+- Kamsa driving as charioteer
+- heavenly voice warning Kamsa about **Devaki's eighth son**
+- immediate shock and emotional tension
+
+Recap rules for story 002:
+- Recap **must** say "Devaki's eighth son" (not vague "future children" or generic prophecy wording).
+
+Do not deeply cover in story 002:
+- Vasudeva's full promise to bring each child to Kamsa (save mainly for story 003)
+- Kamsa's later imprisonment actions
+- Krishna's birth or Gokula pastimes
+
+Story 002 may include Vasudeva's calm reassurance, but not the full promise sequence.
+
+Special wording:
+- Do **not** call Kamsa "king of Mathura" or "King Kamsa".
+- Use "Devaki's powerful brother" or "a prince of the royal family".
+
+Image direction:
+- Devaki and Vasudeva seated in a golden wedding chariot
+- Kamsa driving as charioteer
+- heavenly voice suggested by soft divine light from sky
+- ancient Mathura wedding atmosphere, flower garlands and petals
+- mood: joy changing into wonder and concern
+
+Coloring page direction:
+- Devaki and Vasudeva in decorated wedding chariot, Kamsa as charioteer, two friendly horses
+- simple Mathura palace arch, soft divine rays above, no weapons, no frightening faces
 
 ## Story 004 Prayers in the Prison
 
-- Focus on Devaki’s peaceful spiritual glow.
-- Vasudeva’s quiet strength.
+- Focus on Devaki's peaceful spiritual glow.
+- Vasudeva's quiet strength.
 - Prayers of the demigods.
 - Hope in darkness.
-- Krishna’s coming appearance.
-- Do not overstate that Devaki “loved Krishna very much” in a modern emotional sense; keep it devotional and respectful.
+- Krishna's coming appearance.
+- Do not overstate that Devaki "loved Krishna very much" in a modern emotional sense; keep it devotional and respectful.
 - Do not make the guards sentimental unless source supports it.
 - Avoid repeating darkness/light clichés.
 
@@ -72,8 +101,8 @@ Cover only:
 - Earth approaching Lord Brahma (cow form if source-appropriate)
 - Brahma and demigods going toward the Lord
 - prayers to Lord Vishnu / Kshirodakashayi Vishnu
-- the Lord’s promise to appear
-- gentle anticipation before Krishna’s appearance
+- the Lord's promise to appear
+- gentle anticipation before Krishna's appearance
 
 Do not include:
 - Devaki/Vasudeva wedding
@@ -84,7 +113,7 @@ Do not include:
 Image direction:
 - Mother Earth as gentle cow or symbolic Earth figure with Brahma and demigods
 - celestial atmosphere, concern turning to hope
-- divine light representing Vishnu’s promise (reverential, child-safe)
+- divine light representing Vishnu's promise (reverential, child-safe)
 
 Activity word search words (example):
 EARTH, BRAHMA, PRAYER, VISHNU, DEVA, HOPE, COW, BURDEN, PROMISE, KRISHNA
@@ -92,7 +121,7 @@ EARTH, BRAHMA, PRAYER, VISHNU, DEVA, HOPE, COW, BURDEN, PROMISE, KRISHNA
 ## Audio script
 
 - No `[pause]` markers.
-- No literal spoken “pause”.
+- No literal spoken "pause".
 - Use `<break time="1.0s" />`, `<break time="1.5s" />`, and `<break time="2.0s" />`.
 - Closing appears once only.
 

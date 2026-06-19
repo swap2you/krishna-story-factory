@@ -126,7 +126,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             image_outputs=image_outputs,
         )
 
-        ok, quality_errors = run_quality_checks(
+        ok, quality_errors, quality_warnings = run_quality_checks(
             paths,
             mode=mode,
             settings=settings,
@@ -136,6 +136,9 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
         quality_status = "PASS" if ok else "FAIL"
         if quality_errors:
             errors.extend(quality_errors)
+        if quality_warnings:
+            for warning in quality_warnings:
+                errors.append(f"WARNING: {warning}")
 
         write_manifest(
             settings=settings,
@@ -145,6 +148,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             mode=mode,
             quality_status=quality_status,
             quality_errors=quality_errors,
+            quality_warnings=quality_warnings,
             story_source=story_source,
             audio_source=audio_source,
             image_source=image_source,

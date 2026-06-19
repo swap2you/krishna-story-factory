@@ -136,6 +136,65 @@ def test_replace_phone_recipient_skipped(tmp_path: Path) -> None:
 
 @patch("krishna_story_factory.senders.whatsapp_cloud.append_send_log")
 @patch("krishna_story_factory.senders.whatsapp_cloud.WhatsAppCloudClient.send_template")
+def test_daily_template_sent_cloud_status(mock_send: MagicMock, mock_log: MagicMock, tmp_path: Path) -> None:
+    from dataclasses import replace
+
+    from krishna_story_factory.models import PlanRow, StoryContent
+
+    mock_send.return_value = {"message_ids": ["wamid.DAILY"]}
+    recipients = tmp_path / "input" / "whatsapp_recipients.csv"
+    recipients.parent.mkdir(parents=True)
+    recipients.write_text(
+        "name,phone_e164,opt_in,status,notes\nSwapnil,+17143074266,true,active,test\n",
+        encoding="utf-8",
+    )
+    settings = replace(
+        _settings(tmp_path, cloud_token="token", phone_number_id="1186584224540331", recipients_csv=recipients),
+        whatsapp_template_name="daily_krishna_story",
+    )
+    paths = _package_paths(tmp_path)
+    plan = PlanRow(
+        chapter_no="002",
+        slug="devaki-and-vasudeva-wedding",
+        title="The Wedding and the Heavenly Voice",
+        project="krishna_book_bedtime",
+        library_id="krishna_book",
+        source_reference="Krishna Book Chapter 1",
+        scripture_reference="SB 10.1",
+        summary_seed="seed",
+        age_range="6-12",
+        package_type="bedtime_story",
+        send_date="",
+        status="pending",
+    )
+    content = StoryContent(
+        title=plan.title,
+        recap="recap",
+        main_story="story",
+        moral="moral",
+        takeaway="takeaway",
+        five_star_challenge=["a"],
+        audio_script="audio",
+        whatsapp_caption="",
+        image_prompt="img",
+        line_art_prompt="line",
+        story_card_text=plan.title,
+        parent_notes="notes",
+    )
+    result = WhatsAppCloudSender().send(
+        settings=settings,
+        paths=paths,
+        mode="prod",
+        plan=plan,
+        content=content,
+        package_link="https://drive.example/pkg",
+    )
+    assert result.status == "SENT_CLOUD"
+    assert mock_send.called
+
+
+@patch("krishna_story_factory.senders.whatsapp_cloud.append_send_log")
+@patch("krishna_story_factory.senders.whatsapp_cloud.WhatsAppCloudClient.send_template")
 def test_sender_broadcast_logs_success(mock_send: MagicMock, mock_log: MagicMock, tmp_path: Path) -> None:
     mock_send.return_value = {"message_ids": ["wamid.ABC"]}
     recipients = tmp_path / "input" / "whatsapp_recipients.csv"
