@@ -127,24 +127,25 @@ def run_quality_checks(
     if not paths.story_card.exists():
         errors.append("story_card.png is required.")
 
-    if settings and settings.image_generate_coloring_page and mode == "prod":
+    if settings and (settings.image_generate_coloring_page or settings.image_generate_line_art) and mode == "prod":
         if not paths.coloring_page.exists():
-            errors.append("coloring_page.png is required when IMAGE_GENERATE_COLORING_PAGE=true.")
+            errors.append("coloring_page.png is required when coloring or line-art visuals are enabled.")
 
-    if mode == "prod" and settings and settings.image_generate_coloring_page:
-        if paths.coloring_page_prompt.exists():
-            prompt = paths.coloring_page_prompt.read_text(encoding="utf-8", errors="ignore").lower()
+    if mode == "prod" and settings and (settings.image_generate_line_art or settings.image_generate_coloring_page):
+        prompt_path = paths.line_art_prompt if settings.image_generate_line_art else paths.coloring_page_prompt
+        if prompt_path.exists():
+            prompt = prompt_path.read_text(encoding="utf-8", errors="ignore").lower()
             coloring_checks = [
-                ("centered composition", ("centered composition",)),
+                ("centered composition", ("centered composition", "portrait composition")),
                 ("no cropping", ("no cropping",)),
                 ("large colorable spaces", ("large colorable spaces",)),
                 ("white background", ("white background", "white")),
-                ("thick black outlines", ("thick", "outline")),
-                ("cute/sweet expressive faces", ("cute", "sweet expressive faces", "sweet")),
+                ("thick black outlines", ("thick", "outline", "confident")),
+                ("cute/sweet expressive faces", ("cute", "sweet expressive faces", "sweet", "expressive faces")),
             ]
             for label, terms in coloring_checks:
                 if not any(term in prompt for term in terms):
-                    errors.append(f"coloring_page_prompt.txt should describe {label}.")
+                    errors.append(f"{prompt_path.name} should describe {label}.")
 
     if mode == "prod" and paths.story_card_square_prompt.exists():
         card_prompt = paths.story_card_square_prompt.read_text(encoding="utf-8", errors="ignore").lower()

@@ -9,6 +9,9 @@ output/*
 whatsapp_test_outbox/
 logs/
 credentials/
+assets/reference/*.png
+assets/reference/*.jpg
+assets/reference/*.jpeg
 *.log
 .DS_Store
 krishna-story-factory-v1-buildpack/

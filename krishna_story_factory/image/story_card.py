@@ -51,7 +51,7 @@ class StoryCardGenerator:
                 plan=plan,
             )
 
-        if self.settings.image_generate_coloring_page:
+        if self.settings.image_generate_coloring_page and not self.settings.image_generate_line_art:
             coloring_prompt = content.coloring_page_prompt or content.line_art_prompt
             if coloring_prompt:
                 sources["coloring_page"] = self._generate_one(

@@ -10,6 +10,7 @@ from .csv_store import already_sent_today, append_storage_log, append_story_log,
 from .generation.source_guard import run_source_guard
 from .generation.story_generator import StoryGenerator
 from .image.story_card import StoryCardGenerator
+from .visuals import StoryVisualGenerator
 from .manifest import write_manifest
 from .models import SendResult
 from .paths import make_package_paths
@@ -37,6 +38,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
     package_link = resolve_package_link(settings)
     word_search_answer_key: dict[str, str] = {}
     image_outputs: dict[str, str] = {}
+    visual_result = None
     publish_result = None
 
     try:
@@ -73,7 +75,20 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             paths.ambient_prompt.write_text(ambient_prompt, encoding="utf-8")
 
         audio_source = AudioGenerator(settings, mode).generate_mp3(content.audio_script, paths.narration_mp3)
-        image_outputs = StoryCardGenerator(settings, mode).generate_all(content, paths, plan=plan)
+
+        if settings.image_generate_line_art or settings.image_generate_poster:
+            visual_result = StoryVisualGenerator(settings, mode).generate_all(
+                paths.story_md,
+                paths.root,
+                force=force,
+            )
+            image_outputs["visual_brief"] = "generated"
+            if visual_result.line_art_status not in {"SKIPPED", ""}:
+                image_outputs["line_art"] = visual_result.line_art_status.lower()
+            if visual_result.poster_status not in {"SKIPPED", ""}:
+                image_outputs["poster"] = visual_result.poster_status.lower()
+
+        image_outputs.update(StoryCardGenerator(settings, mode).generate_all(content, paths, plan=plan))
         image_source = image_outputs.get("story_card", "fallback")
 
         puzzle = ActivitySheetGenerator().generate(
@@ -124,6 +139,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             drive_folder_id=publish_result.drive_folder_id,
             word_search_answer_key=word_search_answer_key,
             image_outputs=image_outputs,
+            visual_result=visual_result,
         )
 
         ok, quality_errors, quality_warnings = run_quality_checks(
@@ -160,6 +176,7 @@ def run_daily_story(settings: Settings, *, mode: str, force: bool = False) -> di
             drive_folder_id=publish_result.drive_folder_id,
             word_search_answer_key=word_search_answer_key,
             image_outputs=image_outputs,
+            visual_result=visual_result,
         )
 
         if not ok:

@@ -35,6 +35,19 @@ class Settings:
     image_size_story_card: str
     image_size_coloring_page: str
 
+    openai_image_output_format: str
+    image_use_style_references: bool
+    image_line_art_reference: Path | None
+    image_poster_reference: Path | None
+    image_line_art_size: str
+    image_poster_size: str
+    image_generate_line_art: bool
+    image_generate_poster: bool
+    image_add_local_typography: bool
+    image_keep_raw_art: bool
+    visual_max_retries: int
+    visual_quality_threshold: int
+
     elevenlabs_api_key: str
     elevenlabs_voice_id: str
     elevenlabs_model_id: str
@@ -132,10 +145,22 @@ def load_settings(project_root: Path) -> Settings:
         openai_image_model=os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-1"),
         openai_image_size=os.getenv("OPENAI_IMAGE_SIZE", "1024x1024"),
         openai_image_quality=os.getenv("OPENAI_IMAGE_QUALITY", "medium"),
+        openai_image_output_format=os.getenv("OPENAI_IMAGE_OUTPUT_FORMAT", "png"),
         image_generate_coloring_page=str_to_bool(os.getenv("IMAGE_GENERATE_COLORING_PAGE"), True),
         image_generate_wide_card=str_to_bool(os.getenv("IMAGE_GENERATE_WIDE_CARD"), False),
         image_size_story_card=os.getenv("IMAGE_SIZE_STORY_CARD", "1024x1024"),
         image_size_coloring_page=os.getenv("IMAGE_SIZE_COLORING_PAGE", "1024x1024"),
+        image_use_style_references=str_to_bool(os.getenv("IMAGE_USE_STYLE_REFERENCES"), True),
+        image_line_art_reference=_optional_path(project_root, "IMAGE_LINE_ART_REFERENCE"),
+        image_poster_reference=_optional_path(project_root, "IMAGE_POSTER_REFERENCE"),
+        image_line_art_size=os.getenv("IMAGE_LINE_ART_SIZE", "1024x1536"),
+        image_poster_size=os.getenv("IMAGE_POSTER_SIZE", "1024x1536"),
+        image_generate_line_art=str_to_bool(os.getenv("IMAGE_GENERATE_LINE_ART"), True),
+        image_generate_poster=str_to_bool(os.getenv("IMAGE_GENERATE_POSTER"), True),
+        image_add_local_typography=str_to_bool(os.getenv("IMAGE_ADD_LOCAL_TYPOGRAPHY"), True),
+        image_keep_raw_art=str_to_bool(os.getenv("IMAGE_KEEP_RAW_ART"), True),
+        visual_max_retries=int(os.getenv("VISUAL_MAX_RETRIES", "2") or "2"),
+        visual_quality_threshold=int(os.getenv("VISUAL_QUALITY_THRESHOLD", "80") or "80"),
         elevenlabs_api_key=os.getenv("ELEVENLABS_API_KEY", ""),
         elevenlabs_voice_id=os.getenv("ELEVENLABS_VOICE_ID", ""),
         elevenlabs_model_id=os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2"),

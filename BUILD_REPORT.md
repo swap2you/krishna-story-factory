@@ -1,91 +1,65 @@
-# Build Report — Krishna Book Bedtime v1.3
+# Build Report — Story Visual Generation
 
-Date: 2026-06-18  
-Base commit: `4d2f6f3`
+Date: 2026-06-20
 
 ## Summary
 
-Fixed story word-count quality gate to measure **Main Story only**, upgraded story card and coloring prompt normalization, strengthened story 002 source guards, and validated story **002 — The Wedding and the Heavenly Voice** in prod.
+Added a reusable story-to-visual pipeline that reads each `story.md` and produces premium line-art coloring pages and cinematic devotional posters with local Pillow typography. Integrated into the daily pipeline, Google Drive upload list, and manifest.
 
 ## pytest result
 
 ```text
-45 passed
+69 passed
 ```
 
-## Story 002 quality result
+## Story 003 visual generation
 
 ```text
-quality_status: PASS
-Main Story: 1003 words (target 750–1050)
-Total story.md: 1150 words (allowed; no warning)
-Audio script: 705 words
-Repetition: PASS
-story_card_square_prompt: PASS (devotional/cinematic/ultra-realistic)
-coloring_page_prompt: PASS (centered, no cropping, thick outlines, etc.)
+line_art_status: GENERATED
+poster_status: GENERATED
+reference_images_used: false
+quality_score: 100
+model: gpt-image-1
+quality: medium
+requested_sizes: line_art 1024x1536, poster 1024x1536
+actual_sizes: line_art 1024x1536, poster 1024x1536
+line_art_portrait.png: 1024 x 1656 (with local title band)
+story_poster.png: 1024 x 1756 (with local typography panels)
 ```
 
 ## Commands run
 
 ```powershell
-pytest -q
-python run_daily_story.py --mode test --force
-python run_daily_story.py --mode prod --force
-python scripts/diagnose_local_config.py
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe scripts\generate_story_visuals.py `
+  --story output\003_vasudevas-promise\story.md `
+  --output output\003_vasudevas-promise `
+  --generate-all `
+  --dry-run
+.\.venv\Scripts\python.exe scripts\generate_story_visuals.py `
+  --story output\003_vasudevas-promise\story.md `
+  --output output\003_vasudevas-promise `
+  --generate-all `
+  --use-references `
+  --force
 ```
 
-## Output folder
+## Generated files (story 003)
 
-`output/002_devaki-and-vasudeva-wedding/`
-
-## Audio / MP3
-
-- MP3 size: **3,721,552 bytes**
-- Audio script: **705 words**
-- No `[pause]` markers; `<break time="..."/>` only
-
-## Activity sheet
-
-3 pages (recap/questions, word search + drawing box, coloring + family activity)
-
-## Drive upload status
-
-```text
-FAILED — ModuleNotFoundError: google.auth not installed in .venv
-Run: pip install -r requirements.txt
-Then enable GOOGLE_DRIVE_* vars in local .env and re-run test upload script
-```
-
-## WhatsApp template status
-
-```text
-Template: daily_krishna_story
-Prod send: FAILED_CLOUD — TOKEN_EXPIRED (HTTP 401)
-Story generation succeeded; WhatsApp failure did not block package creation
-```
-
-## Next pending story
-
-`003_vasudevas-promise — Vasudeva's Promise and Kamsa's Fear`
-
-## Morning command
-
-```powershell
-cd C:\Development\Workspace\DevotionalRepo\krishna-story-factory
-.\.venv\Scripts\Activate.ps1
-python run_daily_story.py --mode prod
-```
-
-## Key code changes
-
-- Quality gate counts **Main Story section** only; total markdown >1300 words is a warning
-- `prompt_normalize.py` enforces cinematic/devotional card prompts and premium coloring prompts
-- Story 002 source guard: recap must mention "eighth son"; blocks full promise sequence
-- Story generation prompt expanded for story 002 scope and image direction
-- Diagnostics print Drive enable instructions when upload disabled
+- `visual_brief.json`
+- `line_art_prompt.txt`, `line_art_raw.png`, `line_art_portrait.png`
+- `coloring_page.png`, `coloring_page_print.pdf`
+- `poster_art_prompt.txt`, `poster_art_raw.png`, `poster_copy.json`
+- `story_poster.png`, `story_poster_whatsapp.jpg`
+- `visual_generation_manifest.json`
 
 ## Known limitations
 
-1. Drive upload requires `pip install -r requirements.txt` plus OAuth in local `.env`
-2. WhatsApp token must be refreshed; template must be Approved in Meta
-3. If audio sounds too plain, change ElevenLabs voice ID/settings — do not pad script length
+- Style reference PNGs were not present locally; generation used text templates only.
+- Local `.env` may still use `gpt-image-1` / `medium` until updated to match `.env.example` (`gpt-image-2`, `high`).
+- Image models may still produce imperfect anatomy; local typography avoids misspelled titles and quotes.
+- Exact pixel replication across stories is not guaranteed.
+
+## Documentation
+
+See [docs/09_STORY_VISUAL_GENERATION.md](docs/09_STORY_VISUAL_GENERATION.md).
