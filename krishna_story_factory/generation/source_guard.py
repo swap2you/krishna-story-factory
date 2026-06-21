@@ -48,7 +48,10 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
         _require(combined, ("brought", "bring"), "Story 003 must show Vasudeva bringing the child to Kamsa.", errors)
         _require(combined, ("returned the child", "gave the child back", "return the child", "returned him", "returns him", "gave him back"), "Story 003 must say Kamsa initially returns the child.", errors)
         _require(combined, ("truthful", "truthfulness", "kept his word", "keeps his word"), "Story 003 must emphasize Vasudeva's truthfulness.", errors)
-        for phrase in ("narada", "nārada", "imprison", "six sons", "krishna was born", "krishna appeared"):
+        for phrase in (
+            "narada", "nārada", "imprison", "prison", "locked up", "jail", "six sons",
+            "krishna was born", "krishna appeared",
+        ):
             if phrase in combined:
                 errors.append(f"Story 003 crosses its end boundary with later content: {phrase!r}.")
         if not any(term in narration for term in ("returned the child", "gave the child back", "return the child", "returned him", "returns him", "gave him back")):
