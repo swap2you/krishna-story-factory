@@ -22,18 +22,17 @@ def _read_recipient_rows() -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
-def test_series_plan_parses_ten_rows() -> None:
+def test_series_plan_parses_complete_static_plan() -> None:
     rows = _read_series_rows()
-    assert len(rows) == 10
-    pending = [row for row in rows if row.get("status", "").strip().lower() == "pending"]
-    assert len(pending) == 8
+    assert len(rows) == 93
+    assert "status" not in rows[0]
 
 
 def test_next_pending_story_is_003_after_002_done() -> None:
     plan = read_next_pending(PROJECT_ROOT)
     assert plan is not None
     assert plan.chapter_no == "003"
-    assert plan.slug == "vasudevas-promise"
+    assert plan.slug == "vasudeva-keeps-his-word"
 
 
 def test_whatsapp_recipients_parses_two_rows() -> None:

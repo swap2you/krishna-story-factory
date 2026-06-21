@@ -9,7 +9,9 @@ output/*
 whatsapp_test_outbox/
 .work/
 logs/
-tracking/activity_history.csv
+tracking/*.csv
+!tracking/templates/
+!tracking/templates/*.csv
 credentials/
 assets/reference/*.png
 assets/reference/*.jpg

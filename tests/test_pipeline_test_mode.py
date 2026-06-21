@@ -5,22 +5,13 @@ import shutil
 from pathlib import Path
 
 from krishna_story_factory.config import load_settings
-from krishna_story_factory.csv_store import ensure_csv_files
+from krishna_story_factory.csv_store import ensure_csv_files, reset_series_status
 from krishna_story_factory.outputs import FINAL_OUTPUT_FILES
 from krishna_story_factory.pipeline import run_daily_story
 
 
 def _mark_first_story_pending(project: Path) -> None:
-    path = project / "input" / "series_plan.csv"
-    with path.open("r", newline="", encoding="utf-8-sig") as f:
-        reader = csv.DictReader(f)
-        fieldnames = list(reader.fieldnames or [])
-        rows = list(reader)
-    rows[0]["status"] = "pending"
-    with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
+    reset_series_status(project, ["001"], status="pending")
 
 
 def test_pipeline_generates_required_files_in_test_mode(tmp_path: Path) -> None:
