@@ -60,6 +60,8 @@ class ActivityPlanner:
             selected = _prayer_wheel(plan)
         elif plan.chapter_no == "002":
             selected = _wedding_chariot(plan)
+        elif plan.chapter_no == "003":
+            selected = _truthfulness_sequence(plan)
         else:
             selected = self._generic(plan, story_text, history)
         selected.validate()
@@ -131,6 +133,24 @@ def _wedding_chariot(plan: PlanRow) -> ActivityPlan:
         safety_note="PARENT HELP: An adult should supervise scissors. Use glue or tape carefully.",
         completion_prompt="Retell the scene: celebration, procession, heavenly voice, protection.",
         answer_key=["1", "2", "3", "4"],
+    )
+
+
+def _truthfulness_sequence(plan: PlanRow) -> ActivityPlan:
+    return ActivityPlan(
+        activity_title="Vasudeva's Truthfulness Story Path", activity_type="STORY_SEQUENCE",
+        learning_goal="Retell the six source-bounded events and identify Vasudeva's truthful choice.",
+        story_connection="The cards follow the first son's birth through Kamsa returning the child.",
+        recommended_send_mode="PARENT_GUIDED", estimated_minutes=15, parent_effort="Low: read the cards and discuss the choice.",
+        age_variants={"ages_6_8": "Number and draw one detail on each card.", "ages_9_13": "Number each card and explain the truthful choice."},
+        materials=["pencil", "crayons"],
+        instructions=["Number the six events in story order.", "Draw one source-faithful detail on each card.", "Circle the card showing Vasudeva's truthful choice.", "Retell the ending: Kamsa returns the child."],
+        review_questions=["Why was keeping his word difficult for Vasudeva?", "What did Kamsa do after seeing Vasudeva's honesty?"],
+        printable_components=[
+            "The first son is born", "Vasudeva remembers his word", "Vasudeva brings the child",
+            "Kamsa is astonished", "Kamsa returns the child", "Truthfulness shines",
+        ],
+        completion_prompt="Retell all six events, then share one promise you can keep with care.",
     )
 
 

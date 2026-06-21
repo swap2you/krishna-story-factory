@@ -334,6 +334,8 @@ def _render_word_or_path(c: Canvas, plan: PlanRow, a: ActivityPlan) -> None:
 
 
 def _render_cards(c: Canvas, plan: PlanRow, a: ActivityPlan, labels: list[str]) -> None:
+    if len(a.printable_components) >= 6:
+        labels = a.printable_components[:6]
     y = _header(c, plan, a, 1)
     _wrapped(c, a.story_connection + " " + a.instructions[0], MARGIN, y, PAGE_W - 2 * MARGIN)
     c.setDash(4, 3)
@@ -341,6 +343,7 @@ def _render_cards(c: Canvas, plan: PlanRow, a: ActivityPlan, labels: list[str]) 
         row, col = divmod(i, 2); x = MARGIN + col * 3.65 * inch; yy = 5.75 * inch - row * 1.55 * inch
         c.roundRect(x, yy, 3.25 * inch, 1.18 * inch, 8, stroke=1, fill=0)
         c.setFont("Helvetica-Bold", 12); c.drawString(x + 0.16 * inch, yy + 0.82 * inch, label)
-        c.setFont("Helvetica", 10); c.drawString(x + 0.16 * inch, yy + 0.5 * inch, "Draw or write a story-specific clue.")
+        prompt = "Number this event and draw one detail." if a.activity_type == "STORY_SEQUENCE" else "Draw or write a story-specific clue."
+        c.setFont("Helvetica", 10); c.drawString(x + 0.16 * inch, yy + 0.5 * inch, prompt)
     c.setDash(); c.setFont("Helvetica-Bold", 10.5); c.drawString(MARGIN, 0.82 * inch, a.completion_prompt)
     c.showPage()

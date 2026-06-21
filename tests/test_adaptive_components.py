@@ -11,7 +11,7 @@ from krishna_story_factory.models import PlanRow
 from krishna_story_factory.pdf.activity_sheet import ActivitySheetGenerator, validate_activity_pdf
 
 
-def row(chapter="003", title="A Krishna Book Story"):
+def row(chapter="004", title="A Krishna Book Story"):
     return PlanRow(chapter, "story", title, "p", "l", "Krishna Book", "SB 10", "seed", "6-13", "daily", "", "done")
 
 
@@ -48,6 +48,7 @@ def test_heavy_crafts_are_not_consecutive(tmp_path):
 @pytest.mark.parametrize("chapter,title,expected,pages", [
     ("001", "The Earth Prays for Krishna to Come", "PRAYER_OR_GRATITUDE_CRAFT", 1),
     ("002", "The Wedding and the Heavenly Voice", "CUT_AND_BUILD", 2),
+    ("003", "Vasudeva Keeps His Word", "STORY_SEQUENCE", 1),
 ])
 def test_story_specific_activity_pdf(tmp_path, chapter, title, expected, pages):
     activity = ActivityPlanner(tmp_path / "history.csv").plan(row(chapter, title), "story")
@@ -89,6 +90,15 @@ def test_story_001_plan_has_six_petals(tmp_path):
     activity = ActivityPlanner(tmp_path / "history.csv").plan(row("001", "The Earth Prays for Krishna to Come"), "story")
     assert activity.activity_title == "Prayer Petal Wheel"
     assert "six" in " ".join(activity.printable_components).lower()
+
+
+def test_story_003_plan_has_six_source_bounded_events(tmp_path):
+    activity = ActivityPlanner(tmp_path / "history.csv").plan(row("003", "Vasudeva Keeps His Word"), "story")
+    assert activity.recommended_send_mode == "PARENT_GUIDED"
+    assert activity.printable_components == [
+        "The first son is born", "Vasudeva remembers his word", "Vasudeva brings the child",
+        "Kamsa is astonished", "Kamsa returns the child", "Truthfulness shines",
+    ]
 
 
 def test_activity_metadata_is_strict_internal_json_shape(tmp_path):
