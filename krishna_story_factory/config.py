@@ -23,6 +23,7 @@ class Settings:
     openai_image_enabled: bool
     elevenlabs_enabled: bool
     whatsapp_send_enabled: bool
+    telegram_send_enabled: bool
     allow_placeholder_audio: bool
 
     openai_api_key: str
@@ -152,6 +153,7 @@ def load_settings(project_root: Path) -> Settings:
         openai_image_enabled=str_to_bool(os.getenv("OPENAI_IMAGE_ENABLED"), False),
         elevenlabs_enabled=str_to_bool(os.getenv("ELEVENLABS_ENABLED"), False),
         whatsapp_send_enabled=str_to_bool(os.getenv("WHATSAPP_SEND_ENABLED"), False),
+        telegram_send_enabled=str_to_bool(os.getenv("TELEGRAM_SEND_ENABLED"), False),
         allow_placeholder_audio=str_to_bool(os.getenv("ALLOW_PLACEHOLDER_AUDIO"), False),
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
         openai_text_model=os.getenv("OPENAI_TEXT_MODEL", "gpt-5.4"),

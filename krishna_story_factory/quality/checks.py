@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING
 
 from ..models import PackagePaths, extract_main_story, word_count
@@ -45,6 +46,9 @@ def run_quality_checks(
             if main_words > 1300:
                 errors.append(f"Main Story too long ({main_words} words).")
         errors.extend(detect_repetition(main_story, content_type="story").errors)
+        reflection = re.search(r"## Bedtime Reflection\s*\n(.*?)(?=\n## |\n<!--|\Z)", story_text, re.I | re.S)
+        if not reflection or not reflection.group(1).strip():
+            errors.append("story.md Bedtime Reflection must contain one child-friendly reflection question.")
 
     if mode == "prod" and paths.narration_mp3.exists():
         size = paths.narration_mp3.stat().st_size

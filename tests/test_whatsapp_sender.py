@@ -226,6 +226,7 @@ def _settings(
         openai_image_enabled=False,
         elevenlabs_enabled=False,
         whatsapp_send_enabled=True,
+        telegram_send_enabled=False,
         allow_placeholder_audio=False,
         openai_api_key="",
         openai_text_model="gpt-4.1",

@@ -247,6 +247,47 @@ def replace_component_files(settings: Settings, *, source_dir: Path, manifest_pa
             detail=f"Drive component replacement failed: {type(exc).__name__}: {exc}")
 
 
+def replace_existing_files(
+    settings: Settings, *, source_dir: Path, manifest_path: Path, filenames: tuple[str, ...]
+) -> DriveUploadResult:
+    """Replace selected files in an existing exact-seven package without creating a new folder."""
+    names = tuple(dict.fromkeys(filenames))
+    if not names or "manifest.json" not in names or any(name not in FINAL_OUTPUT_FILES for name in names):
+        return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link="", detail="Invalid repair file set.")
+    missing = [name for name in names if not (source_dir / name).exists()]
+    if missing:
+        return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link="", detail=f"Missing repair files: {missing}")
+    data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    link = str(data.get("package", {}).get("package_link", ""))
+    match = re.search(r"/folders/([A-Za-z0-9_-]+)", link)
+    folder_id = match.group(1) if match else str(data.get("package", {}).get("drive_folder_id", ""))
+    if not settings.google_drive_upload_enabled or not folder_id:
+        return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link=link, folder_id=folder_id,
+            detail="Drive upload must be enabled and the existing folder ID must be present.")
+    try:
+        token = settings.google_drive_token_file or settings.project_root / "credentials" / "google_drive_token.json"
+        service = _build_drive_service(settings.google_drive_credentials_file, token)
+        query = f"'{folder_id}' in parents and trashed=false"
+        before = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+        if len(before) != 7 or {item.get("name", "") for item in before} != set(FINAL_OUTPUT_FILES):
+            return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link=link, folder_id=folder_id,
+                detail=f"Drive preflight refused repair: found {[item.get('name', '') for item in before]}.", remote_files=tuple(before))
+        for name in names:
+            if name != "manifest.json":
+                _upload_file(service, folder_id, source_dir / name)
+        detail = f"Replaced {len(names)} repaired files; Drive folder contains 7 exact final files."
+        _set_manifest_drive_result(manifest_path, "UPLOADED", detail)
+        _upload_file(service, folder_id, manifest_path)
+        after = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+        ok = len(after) == 7 and {item.get("name", "") for item in after} == set(FINAL_OUTPUT_FILES)
+        return DriveUploadResult(status="UPLOADED" if ok else "FAILED", publish_mode="package_repair", package_link=link,
+            folder_id=folder_id, detail=detail if ok else "Drive post-repair exact-seven validation failed.",
+            uploaded_files=names, remote_files=tuple(after))
+    except Exception as exc:
+        return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link=link, folder_id=folder_id,
+            detail=f"Drive package repair failed: {type(exc).__name__}: {exc}")
+
+
 def _set_manifest_drive_result(path: Path, status: str, detail: str) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     package = data.setdefault("package", {})
@@ -254,4 +295,4 @@ def _set_manifest_drive_result(path: Path, status: str, detail: str) -> None:
     package["drive_detail"] = detail
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
-__all__ = ["DriveUploadResult", "upload_final_package", "upload_story_package", "replace_component_files"]
+__all__ = ["DriveUploadResult", "upload_final_package", "upload_story_package", "replace_component_files", "replace_existing_files"]

@@ -37,6 +37,7 @@ def _story_md(main_words: int) -> str:
         f"# Title\n\n## Recap\nrecap text here\n\n## Main Story\n{main}\n\n"
         f"## Moral\nmoral words here\n\n## Takeaway\ntakeaway words here\n\n"
         f"## Five-Star Challenge\n1. one\n2. two\n3. three\n4. four\n5. five\n"
+        f"\n## Bedtime Reflection\nWhat kind action will you take tomorrow?\n"
     )
 
 
@@ -53,6 +54,15 @@ def test_main_story_too_short_fails_prod(tmp_path: Path) -> None:
     ok, errors, _ = run_quality_checks(paths, mode="prod", poster_score=90, coloring_score=90)
     assert not ok
     assert any("too short" in e.lower() for e in errors)
+
+
+def test_empty_bedtime_reflection_fails_quality(tmp_path: Path) -> None:
+    paths = _paths(tmp_path)
+    text = _story_md(800).replace("What kind action will you take tomorrow?", "")
+    paths.story_md.write_text(text, encoding="utf-8")
+    ok, errors, _ = run_quality_checks(paths, mode="prod", poster_score=90, coloring_score=90)
+    assert not ok
+    assert any("reflection" in error.lower() for error in errors)
 
 
 def test_source_guard_blocks_wrong_pastime_for_chapter_002() -> None:
@@ -81,6 +91,54 @@ def test_source_guard_blocks_wrong_pastime_for_chapter_002() -> None:
     )
     errors = run_source_guard(plan, content)
     assert errors
+
+
+def test_story_001_source_guard_accepts_required_facts_and_rejects_invention() -> None:
+    plan = _source_plan("001", "the-earth-prays-for-krishna")
+    factual = (
+        "Bhumi, Mother Earth, assumed the form of a cow and approached Lord Brahma. "
+        "Brahma and the demigods went to the Ocean of Milk. Within his heart, Brahma received "
+        "the message that the Lord would appear as the son of Vasudeva."
+    )
+    assert run_source_guard(plan, _source_content(plan, factual)) == []
+    invented = factual + ' The Lord said, "I will be born in Vrindavana."'
+    assert any("Vrindavana" in error for error in run_source_guard(plan, _source_content(plan, invented)))
+
+
+def test_story_002_source_guard_enforces_relationships() -> None:
+    plan = _source_plan("002", "devaki-and-vasudeva-wedding")
+    factual = (
+        "Kamsa, Devaki's brother and the son of Ugrasena, personally drove the chariot. "
+        "The warning concerned Devaki's eighth child."
+    )
+    assert run_source_guard(plan, _source_content(plan, factual)) == []
+    assert any("cousin" in error.lower() for error in run_source_guard(plan, _source_content(plan, factual + " He was her cousin.")))
+
+
+def test_story_003_guard_stops_before_narada_and_imprisonment() -> None:
+    plan = _source_plan("003", "vasudeva-keeps-his-word")
+    factual = (
+        "Devaki's first son was born. Truthful Vasudeva kept his word and brought the child to Kamsa. "
+        "Astonished, Kamsa returned the child because the warning concerned the eighth child."
+    )
+    assert run_source_guard(plan, _source_content(plan, factual)) == []
+    crossed = factual + " Later Narada came, and Kamsa chose to imprison the parents."
+    assert run_source_guard(plan, _source_content(plan, crossed))
+
+
+def _source_plan(chapter: str, slug: str) -> PlanRow:
+    return PlanRow(
+        chapter_no=chapter, slug=slug, title="Title", project="krishna_book_bedtime", library_id="krishna_book",
+        source_reference="Krishna Book Chapter 1", scripture_reference="SB 10.1", summary_seed="Seed",
+        age_range="6-12", package_type="bedtime_story", send_date="", status="pending",
+    )
+
+
+def _source_content(plan: PlanRow, text: str) -> StoryContent:
+    return StoryContent(
+        title=plan.title, recap="", main_story=text, moral="Be truthful.", takeaway="Trust Krishna.",
+        five_star_challenge=["a", "b", "c", "d", "e"], audio_script=text,
+    )
 
 
 def test_extra_output_files_fail_quality(tmp_path: Path) -> None:

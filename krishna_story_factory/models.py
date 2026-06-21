@@ -24,6 +24,10 @@ class PlanRow:
     updated_at: str = ""
     notes: str = ""
     row_index: int | None = None
+    must_include: str = ""
+    must_avoid: str = ""
+    start_boundary: str = ""
+    end_boundary: str = ""
 
 
 @dataclass(slots=True)

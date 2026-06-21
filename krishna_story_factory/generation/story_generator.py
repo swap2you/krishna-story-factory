@@ -8,6 +8,7 @@ from ..config import Settings
 from ..models import PlanRow, StoryContent
 from ..prompts_loader import load_master_section, load_project_text
 from .prompt_normalize import normalize_image_prompts
+from .source_guard import source_fact_brief
 from ..quality.repetition import clean_repetition, detect_repetition
 
 
@@ -144,6 +145,16 @@ CURRENT QUEUE ROW:
 - summary_seed: {plan.summary_seed}
 - age_range: {plan.age_range}
 - notes: {plan.notes}
+- start_boundary: {plan.start_boundary}
+- end_boundary: {plan.end_boundary}
+- must_include: {plan.must_include}
+- must_avoid: {plan.must_avoid}
+
+{source_fact_brief(plan)}
+
+Before returning JSON, internally verify every required source fact is present, no avoided or later
+event appears, no quotation was invented, and the story stops at the end boundary. The
+bedtime_reflection field must be one non-empty, child-friendly question ending with a question mark.
 
 Return only valid JSON matching the STORY_GENERATION schema.
 """.strip()
@@ -303,6 +314,14 @@ def _apply_repetition_cleanup(content: StoryContent) -> StoryContent:
         word_search_words=content.word_search_words,
         draw_activity=content.draw_activity,
         family_activity=content.family_activity,
+        parent_discussion_note=content.parent_discussion_note,
+        bedtime_reflection=content.bedtime_reflection,
+        poster_visual_brief=content.poster_visual_brief,
+        coloring_visual_brief=content.coloring_visual_brief,
+        poster_one_liner=content.poster_one_liner,
+        scripture_reference=content.scripture_reference,
+        age_range=content.age_range,
+        source_reference=content.source_reference,
     )
 
 
@@ -369,6 +388,7 @@ def _mock_main_story(plan: PlanRow) -> str:
     if plan.chapter_no == "001":
         scenes.insert(4, "Mother Earth felt burdened, and the demigods prayed to Lord Vishnu for help.")
         scenes.insert(5, "Lord Brahma listened with care as sincere prayers rose toward the Lord.")
+        scenes.insert(6, "Within his heart, Brahma received the message that the Lord would appear as the son of Vasudeva.")
     if plan.chapter_no == "002":
         scenes.insert(4, "Devaki and Vasudeva rode in a golden chariot while Kamsa drove as charioteer.")
         scenes.insert(5, "A heavenly voice warned about Devaki's eighth son, and wonder filled the air.")

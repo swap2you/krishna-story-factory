@@ -23,6 +23,7 @@ from .csv_store import (
     update_plan_status,
 )
 from .generation.story_generator import StoryGenerator
+from .generation.source_guard import run_source_guard
 from .images.generator import generate_coloring, generate_poster
 from .images.client import ImageClient
 from .manifest import update_component_manifest, write_manifest
@@ -100,7 +101,7 @@ def run_daily_story(
         update_plan_status(settings.project_root, plan, "processing")
         result = _run_with_repairs(settings, plan, mode=mode, no_upload=no_upload, debug=debug, now=now)
         if result.status == "SUCCESS":
-            update_plan_status(settings.project_root, plan, "done")
+            update_plan_status(settings.project_root, plan, "done", drive_folder_id=_folder_id(result.package_link))
         else:
             update_plan_status(settings.project_root, plan, "pending")
         append_story_log(
@@ -180,6 +181,9 @@ def _run_once(
     content.source_reference = plan.source_reference
     content.scripture_reference = plan.scripture_reference
     content.age_range = plan.age_range
+    source_errors = run_source_guard(plan, content)
+    if source_errors:
+        raise PipelineError("Source-fact validation failed: " + " | ".join(source_errors))
     story_md = content.to_markdown()
     paths.story_md.write_text(story_md, encoding="utf-8")
 
@@ -219,7 +223,8 @@ def _run_once(
         raise PipelineError(f"Activity vision score {activity_score} below threshold 88.")
     package_link = settings.package_public_link or settings.google_drive_folder_url
     paths.whatsapp_caption.write_text(
-        format_whatsapp_caption(story_title=content.title, package_link=package_link),
+        format_whatsapp_caption(story_title=content.title, package_link=package_link,
+            activity_title=activity.activity_title, recommended_send_mode=activity.recommended_send_mode),
         encoding="utf-8",
     )
 
@@ -260,7 +265,8 @@ def _run_once(
         if upload.status not in {"UPLOADED", "LOCAL_SYNC"}:
             raise PipelineError(f"Drive upload failed: {upload.detail}")
         paths.whatsapp_caption.write_text(
-            format_whatsapp_caption(story_title=content.title, package_link=package_link),
+            format_whatsapp_caption(story_title=content.title, package_link=package_link,
+                activity_title=activity.activity_title, recommended_send_mode=activity.recommended_send_mode),
             encoding="utf-8",
         )
         append_storage_log(
@@ -510,3 +516,8 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _folder_id(link: str) -> str:
+    match = re.search(r"/folders/([A-Za-z0-9_-]+)", link or "")
+    return match.group(1) if match else ""
