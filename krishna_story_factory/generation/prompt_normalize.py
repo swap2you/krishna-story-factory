@@ -66,6 +66,14 @@ def normalize_image_prompts(content: StoryContent, plan: PlanRow) -> StoryConten
         word_search_words=content.word_search_words,
         draw_activity=content.draw_activity,
         family_activity=content.family_activity,
+        parent_discussion_note=content.parent_discussion_note,
+        bedtime_reflection=content.bedtime_reflection,
+        poster_visual_brief=content.poster_visual_brief,
+        coloring_visual_brief=content.coloring_visual_brief,
+        poster_one_liner=content.poster_one_liner,
+        scripture_reference=content.scripture_reference,
+        age_range=content.age_range,
+        source_reference=content.source_reference,
     )
 
 

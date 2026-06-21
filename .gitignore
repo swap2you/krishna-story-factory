@@ -7,7 +7,11 @@ __pycache__/
 output/*
 !output/.gitkeep
 whatsapp_test_outbox/
+.work/
 logs/
+tracking/*.csv
+!tracking/templates/
+!tracking/templates/*.csv
 credentials/
 assets/reference/*.png
 assets/reference/*.jpg
