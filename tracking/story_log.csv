@@ -1,1 +1,3 @@
-﻿date,chapter_no,slug,title,output_dir,status,quality_status,whatsapp_status,sender_type,manifest_path,created_at,errors
+date,chapter_no,slug,title,output_dir,status,quality_status,whatsapp_status,sender_type,manifest_path,created_at,errors
+2026-06-21,001,the-earth-prays-for-krishna,The Earth Prays for Krishna to Come,C:\Development\Workspace\DevotionalRepo\krishna-story-factory\output\001_the-earth-prays-for-krishna,SUCCESS,PASS,SKIPPED_RELEASE_SCOPE,cloud,C:\Development\Workspace\DevotionalRepo\krishna-story-factory\output\001_the-earth-prays-for-krishna\manifest.json,2026-06-21T08:58:43-04:00,
+2026-06-21,002,devaki-and-vasudeva-wedding,The Wedding and the Heavenly Voice,C:\Development\Workspace\DevotionalRepo\krishna-story-factory\output\002_devaki-and-vasudeva-wedding,SUCCESS,PASS,SKIPPED_RELEASE_SCOPE,cloud,C:\Development\Workspace\DevotionalRepo\krishna-story-factory\output\002_devaki-and-vasudeva-wedding\manifest.json,2026-06-21T09:09:32-04:00,
