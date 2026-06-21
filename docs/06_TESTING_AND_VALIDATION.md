@@ -11,38 +11,37 @@ python run_daily_story.py --mode test --force
 
 ```powershell
 python scripts/test_whatsapp_cloud.py
-python run_daily_story.py --mode prod --force
+python run_daily_story.py --mode prod
 ```
 
 ## Required output files
 
 ```text
 story.md
-audio_script.txt
-whatsapp_caption.txt
-activity_sheet.pdf
-story_card.png
-image_prompt.txt
-line_art_prompt.txt
-parent_notes.md
-manifest.json
 narration.mp3
+story_poster.png
+coloring_page.png
+activity_sheet.pdf
+whatsapp_caption.txt
+manifest.json
 ```
 
 ## Manifest source fields
 
-- `story_source`
 - `audio_source`
-- `image_source`
+- `source_reference`
+- `scripture_reference`
+- `package.package_link`
+- `activity.recommended_send_mode`
 
 ## Quality gates
 
 - All required files exist and are non-empty
-- Story >= 800 words in prod; audio script >= 600 words in prod
+- Story >= 700 words in prod; audio script >= 525 words in prod
 - No `[pause]` in audio script; narration.mp3 > 500 KB in prod when ElevenLabs enabled
-- WhatsApp caption must not mention "group"; must say "reply here" and "today"
-- Activity sheet includes a real word-search grid (10+ words placed)
-- Story 002 source guard blocks "King Kamsa" and unrelated pastimes
+- WhatsApp caption uses the per-story manifest link and activity-aware wording
+- Activity PDF is one or two pages and passes structural and vision QA
+- Story source guards enforce the selected episode boundary and required relationships
 
 ## New tests
 
@@ -51,4 +50,4 @@ pytest tests/test_audio_sanitize.py tests/test_quality_guards.py tests/test_capt
 ```
 - Story sections present
 - Prod with ElevenLabs requires real MP3 unless `ALLOW_PLACEHOLDER_AUDIO=true`
-- `source_reference`, `library_id`, `age_range`, `generated_at` in manifest
+- source, age, quality, activity, package link, and Drive result in manifest

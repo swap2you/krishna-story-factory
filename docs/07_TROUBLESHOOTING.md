@@ -25,7 +25,8 @@ Regenerate with updated prompts. Pipeline sanitizes `[pause]` to `<break time="1
 
 ## Audio too short
 
-Prod quality fails if narration.mp3 is <= 500 KB. Target 650–850 spoken words in audio_script.txt.
+Prod quality fails if narration.mp3 is <= 500 KB or outside the validated duration window. The audio
+performance script is stored in the hidden metadata section of `story.md`.
 
 ## Drive package link missing
 
@@ -33,7 +34,8 @@ Set `GOOGLE_DRIVE_FOLDER_URL` in `.env`. Optionally set `GOOGLE_DRIVE_LOCAL_SYNC
 
 ## No pending story
 
-Reset or edit `input/series_plan.csv` and set a row to `pending`.
+Inspect ignored `tracking/queue_state.csv`. Reset the intended row there or use the queue reset helper;
+never add mutable status to `input/series_plan.csv`.
 
 ## ElevenLabs fails in prod
 

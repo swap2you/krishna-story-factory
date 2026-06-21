@@ -77,8 +77,8 @@ Prefer `gpt-image-2` when available; the client falls back to your configured GP
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\generate_story_visuals.py `
-  --story output\003_vasudevas-promise\story.md `
-  --output output\003_vasudevas-promise `
+  --story output\003_vasudeva-keeps-his-word\story.md `
+  --output output\003_vasudeva-keeps-his-word `
   --generate-all `
   --dry-run
 ```
@@ -87,8 +87,8 @@ Prefer `gpt-image-2` when available; the client falls back to your configured GP
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\generate_story_visuals.py `
-  --story output\003_vasudevas-promise\story.md `
-  --output output\003_vasudevas-promise `
+  --story output\003_vasudeva-keeps-his-word\story.md `
+  --output output\003_vasudeva-keeps-his-word `
   --line-art-only
 ```
 
@@ -96,8 +96,8 @@ Prefer `gpt-image-2` when available; the client falls back to your configured GP
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\generate_story_visuals.py `
-  --story output\003_vasudevas-promise\story.md `
-  --output output\003_vasudevas-promise `
+  --story output\003_vasudeva-keeps-his-word\story.md `
+  --output output\003_vasudeva-keeps-his-word `
   --poster-only
 ```
 
@@ -105,8 +105,8 @@ Prefer `gpt-image-2` when available; the client falls back to your configured GP
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\generate_story_visuals.py `
-  --story output\003_vasudevas-promise\story.md `
-  --output output\003_vasudevas-promise `
+  --story output\003_vasudeva-keeps-his-word\story.md `
+  --output output\003_vasudeva-keeps-his-word `
   --generate-all `
   --use-references `
   --force
