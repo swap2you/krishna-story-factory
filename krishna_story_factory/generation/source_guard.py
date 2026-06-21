@@ -8,12 +8,21 @@ UNRELATED_PASTIMES = ("gajendra", "prahlada", "damodara", "fruit seller", "putan
 
 
 def source_fact_brief(plan: PlanRow) -> str:
-    return (
+    brief = (
         f"SOURCE FACT BRIEF\nSource: {plan.source_reference}\nBoundary: {plan.scripture_reference}\n"
         f"Start: {plan.start_boundary}\nEnd: {plan.end_boundary}\n"
         f"Must include: {plan.must_include}\nMust avoid: {plan.must_avoid}\n"
         "Do not invent direct quotations or cross the end boundary. Paraphrase unless a quotation is explicitly supplied."
     )
+    if plan.chapter_no == "003":
+        brief += (
+            "\nSTORY 003 HARD BOUNDARY: Devaki and Vasudeva are not imprisoned in this episode. "
+            "Do not mention a prison, cell, jail, confinement, guards, or Narada. Begin with the birth of their first son. "
+            "Include these facts in both main_story and audio_script using unambiguous wording: "
+            "'Vasudeva brought their first son to Kamsa.' and "
+            "'Kamsa initially returned the child to Vasudeva.'"
+        )
+    return brief
 
 
 def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:

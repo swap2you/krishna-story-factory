@@ -5,6 +5,7 @@ from pathlib import Path
 from krishna_story_factory.config import Settings
 from krishna_story_factory.models import PackagePaths, PlanRow, StoryContent
 from krishna_story_factory.generation.source_guard import run_source_guard
+from krishna_story_factory.generation.story_generator import _generation_issues
 from krishna_story_factory.outputs import FINAL_OUTPUT_FILES
 from krishna_story_factory.quality.checks import run_quality_checks
 
@@ -124,6 +125,7 @@ def test_story_003_guard_stops_before_narada_and_imprisonment() -> None:
     assert run_source_guard(plan, _source_content(plan, factual)) == []
     crossed = factual + " Later Narada came, and Kamsa chose to imprison the parents."
     assert run_source_guard(plan, _source_content(plan, crossed))
+    assert any("boundary" in issue.lower() for issue in _generation_issues(_source_content(plan, crossed), plan))
 
 
 def _source_plan(chapter: str, slug: str) -> PlanRow:

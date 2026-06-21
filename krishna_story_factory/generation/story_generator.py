@@ -8,7 +8,7 @@ from ..config import Settings
 from ..models import PlanRow, StoryContent
 from ..prompts_loader import load_master_section, load_project_text
 from .prompt_normalize import normalize_image_prompts
-from .source_guard import source_fact_brief
+from .source_guard import run_source_guard, source_fact_brief
 from ..quality.repetition import clean_repetition, detect_repetition
 
 
@@ -50,7 +50,7 @@ class StoryGenerator:
         best = content
 
         for attempt in range(2):
-            issues = _regeneration_issues(best)
+            issues = _generation_issues(best, plan)
             if not issues:
                 return best
             expand_prompt = f"""{prompt}
@@ -66,14 +66,14 @@ Return only valid JSON matching the schema.
             if _content_score(candidate) >= _content_score(best):
                 best = candidate
 
-        if _regeneration_issues(best):
+        if _generation_issues(best, plan):
             expanded = _apply_repetition_cleanup(
                 self._expand_short_fields(client, plan, best)
             )
             if _content_score(expanded) >= _content_score(best):
                 best = expanded
 
-        remaining = _regeneration_issues(best)
+        remaining = _generation_issues(best, plan)
         if remaining:
             raise StoryGenerationError(
                 "Generated story/audio is too short or still repetitive after regeneration: "
@@ -102,7 +102,7 @@ Return only valid JSON matching the schema.
                 "family_activity": content.family_activity,
             },
         }
-        issues = _regeneration_issues(content)
+        issues = _generation_issues(content, plan)
         prompt = f"""You are expanding a Krishna Book bedtime story package JSON.
 
 Fix ONLY these issues by lengthening main_story and/or audio_script:
@@ -361,6 +361,10 @@ def _regeneration_issues(content: StoryContent) -> list[str]:
     issues.extend(detect_repetition(content.main_story, content_type="story").errors)
     issues.extend(detect_repetition(content.audio_script, content_type="audio").errors)
     return issues
+
+
+def _generation_issues(content: StoryContent, plan: PlanRow) -> list[str]:
+    return _regeneration_issues(content) + run_source_guard(plan, content)
 
 
 def _needs_regeneration(content: StoryContent) -> bool:
