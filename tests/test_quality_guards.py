@@ -5,7 +5,7 @@ from pathlib import Path
 from krishna_story_factory.config import Settings
 from krishna_story_factory.models import PackagePaths, PlanRow, StoryContent
 from krishna_story_factory.generation.source_guard import run_source_guard
-from krishna_story_factory.generation.story_generator import _generation_issues
+from krishna_story_factory.generation.story_generator import _generation_issues, _repair_story003_boundary
 from krishna_story_factory.outputs import FINAL_OUTPUT_FILES
 from krishna_story_factory.quality.checks import run_quality_checks
 
@@ -126,6 +126,18 @@ def test_story_003_guard_stops_before_narada_and_imprisonment() -> None:
     crossed = factual + " Later Narada came, and Kamsa chose to imprison the parents."
     assert run_source_guard(plan, _source_content(plan, crossed))
     assert any("boundary" in issue.lower() for issue in _generation_issues(_source_content(plan, crossed), plan))
+
+
+def test_story_003_deterministic_repair_removes_later_episode_and_restores_ending() -> None:
+    plan = _source_plan("003", "vasudeva-keeps-his-word")
+    broken = _source_content(
+        plan,
+        "Devaki's first son was born. They were locked up in prison. Truthful Vasudeva brought him to Kamsa.",
+    )
+    repaired = _repair_story003_boundary(broken)
+    assert "prison" not in repaired.main_story.lower()
+    assert "initially returned the child" in repaired.main_story.lower()
+    assert "initially returned the child" in repaired.audio_script.lower()
 
 
 def _source_plan(chapter: str, slug: str) -> PlanRow:
