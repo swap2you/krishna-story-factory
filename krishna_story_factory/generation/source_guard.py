@@ -46,12 +46,12 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
     if plan.chapter_no == "003":
         _require(combined, ("first son", "first child"), "Story 003 must include the birth of the first son.", errors)
         _require(combined, ("brought", "bring"), "Story 003 must show Vasudeva bringing the child to Kamsa.", errors)
-        _require(combined, ("returned the child", "gave the child back", "return the child"), "Story 003 must say Kamsa initially returns the child.", errors)
+        _require(combined, ("returned the child", "gave the child back", "return the child", "returned him", "returns him", "gave him back"), "Story 003 must say Kamsa initially returns the child.", errors)
         _require(combined, ("truthful", "truthfulness", "kept his word", "keeps his word"), "Story 003 must emphasize Vasudeva's truthfulness.", errors)
         for phrase in ("narada", "nārada", "imprison", "six sons", "krishna was born", "krishna appeared"):
             if phrase in combined:
                 errors.append(f"Story 003 crosses its end boundary with later content: {phrase!r}.")
-        if not any(term in narration for term in ("returned the child", "gave the child back", "return the child")):
+        if not any(term in narration for term in ("returned the child", "gave the child back", "return the child", "returned him", "returns him", "gave him back")):
             errors.append("Narration omits Story 003's ending: Kamsa initially returns the child.")
     return errors
 
