@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 from .config import Settings
 from .models import PackagePaths, PlanRow, StoryContent, extract_main_story, word_count
 from .outputs import FINAL_OUTPUT_FILES
+from .activities.planner import ActivityPlan
 
 
 def write_manifest(
@@ -26,6 +27,12 @@ def write_manifest(
     poster_score: int = 0,
     coloring_score: int = 0,
     reference_used: bool = False,
+    activity: ActivityPlan | None = None,
+    activity_page_count: int = 0,
+    activity_score: int = 0,
+    poster_reference_used: bool = False,
+    style_reference_used: bool = False,
+    identity_consistency_score: int = 0,
 ) -> None:
     now = datetime.now(ZoneInfo(settings.app_timezone)).isoformat(timespec="seconds")
     story_text = paths.story_md.read_text(encoding="utf-8") if paths.story_md.exists() else ""
@@ -57,6 +64,22 @@ def write_manifest(
             "reference_image_used": reference_used,
             "poster_qa_score": poster_score,
             "coloring_qa_score": coloring_score,
+            "coloring_generation": {
+                "poster_reference_used": poster_reference_used,
+                "style_reference_used": style_reference_used,
+                "qa_score": coloring_score,
+                "identity_consistency_score": identity_consistency_score,
+            },
+        },
+        "activity": {
+            "type": activity.activity_type if activity else "",
+            "title": activity.activity_title if activity else "",
+            "recommended_send_mode": activity.recommended_send_mode if activity else "",
+            "estimated_minutes": activity.estimated_minutes if activity else 0,
+            "parent_effort": activity.parent_effort if activity else "",
+            "page_count": activity_page_count,
+            "qa_score": activity_score,
+            "answer_key": activity.answer_key if activity and activity.answer_key else [],
         },
         "quality": {
             "status": quality_status,
@@ -73,6 +96,37 @@ def write_manifest(
         "audio_source": audio_source,
     }
     paths.manifest.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def update_component_manifest(
+    path, *, activity: ActivityPlan, activity_page_count: int, activity_score: int,
+    coloring_score: int, identity_consistency_score: int, poster_reference_used: bool,
+    style_reference_used: bool, drive_status: str | None = None, drive_detail: str | None = None,
+    coloring_model: str = "", model_override: str = "", coloring_requested_size: str = "1024x1536",
+) -> None:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data["generated_at"] = datetime.now(ZoneInfo("America/New_York")).isoformat(timespec="seconds")
+    data["activity"] = {
+        "type": activity.activity_type, "title": activity.activity_title,
+        "recommended_send_mode": activity.recommended_send_mode,
+        "estimated_minutes": activity.estimated_minutes, "parent_effort": activity.parent_effort,
+        "page_count": activity_page_count, "qa_score": activity_score,
+        "answer_key": activity.answer_key,
+    }
+    images = data.setdefault("images", {})
+    images["coloring_qa_score"] = coloring_score
+    images["coloring_generation"] = {
+        "poster_reference_used": poster_reference_used, "style_reference_used": style_reference_used,
+        "qa_score": coloring_score, "identity_consistency_score": identity_consistency_score,
+        "model": coloring_model or images.get("model", ""),
+        "model_override": model_override,
+        "requested_size": coloring_requested_size,
+    }
+    if drive_status is not None:
+        package = data.setdefault("package", {})
+        package["drive_status"] = drive_status
+        package["drive_detail"] = drive_detail or ""
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def _mp3_duration(path) -> float | None:

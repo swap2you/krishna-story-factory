@@ -71,49 +71,68 @@ def generate_coloring(
     output_path: Path,
     work_candidates: Path,
     work_reviews: Path,
+    poster_path: Path,
     mode: str = "prod",
-) -> tuple[int, bool]:
+    max_candidates: int | None = None,
+) -> tuple[int, bool, bool, int]:
     if mode == "test" or not settings.openai_image_enabled:
         _placeholder_coloring(output_path, content.title)
-        return 90, False
+        return 90, True, False, 90
     client = ImageClient(settings)
-    ref = settings.image_reference_line_art
-    ref_used = bool(ref and ref.exists())
-    if not ref_used:
-        import logging
-
-        logging.getLogger(__name__).warning("Line-art reference image not found; continuing without reference.")
+    if not poster_path.exists():
+        raise RuntimeError(f"Approved story poster is required for coloring generation: {poster_path}")
+    work_candidates.mkdir(parents=True, exist_ok=True)
+    work_reviews.mkdir(parents=True, exist_ok=True)
+    style_ref = settings.image_reference_line_art
+    style_ref_used = bool(style_ref and style_ref.exists())
     section = load_master_section(settings.project_root, "COLORING_VISUAL")
-    base_prompt = f"{section}\n\n{content.coloring_visual_brief or content.line_art_prompt or content.coloring_page_prompt}"
-    best_score = 0
-    best_path: Path | None = None
-    rounds = settings.image_max_repair_rounds + 1
-    candidates_n = max(2, settings.image_candidates_per_type)
+    base_prompt = f"{section}\n\n{_identity_constraints(content.title)}\n\n{content.coloring_visual_brief or content.line_art_prompt or content.coloring_page_prompt}"
+    acceptance_score = max(90, settings.image_min_acceptance_score)
+    candidate_limit = max_candidates or min(3, settings.image_max_repair_rounds + 1)
     prompt = base_prompt
-    for round_idx in range(rounds):
-        for idx in range(candidates_n):
-            cand = work_candidates / f"coloring_r{round_idx}_c{idx}.png"
-            client.generate(prompt, cand, reference_path=ref if ref_used else None)
-            cleaned = work_candidates / f"coloring_r{round_idx}_c{idx}_clean.png"
-            _clean_line_art(cand, cleaned)
-            review = review_image(settings, story_md=story_md, image_path=cleaned, kind="coloring", rubric=COLORING_RUBRIC)
-            save_review(work_reviews, f"coloring_r{round_idx}_c{idx}", review)
-            if review.score > best_score:
-                best_score = review.score
-                best_path = cleaned
-            if review.score >= settings.image_min_acceptance_score:
-                best_path = cleaned
-                best_score = review.score
-                break
-        if best_score >= settings.image_min_acceptance_score and best_path:
-            break
-        prompt = f"{base_prompt}\n\nREPAIR: Fix these issues: {review.issues[:5]}"
-    if not best_path:
+    last_review = None
+    for candidate_idx in range(candidate_limit):
+        cand = work_candidates / f"coloring_candidate_{candidate_idx + 1}.png"
+        client.generate(
+            prompt, cand, reference_path=poster_path, reference_required=True,
+            style_reference_path=style_ref if style_ref_used else None,
+            story_title=content.title, max_api_attempts=2, requested_size="1024x1536",
+        )
+        cleaned = work_candidates / f"coloring_candidate_{candidate_idx + 1}_clean.png"
+        _clean_line_art(cand, cleaned)
+        review = review_image(
+            settings, story_md=story_md, image_path=cleaned, kind="coloring",
+            rubric=COLORING_RUBRIC, comparison_path=poster_path,
+        )
+        save_review(work_reviews, f"coloring_candidate_{candidate_idx + 1}", review)
+        last_review = review
+        accepted = (
+            review.score >= acceptance_score
+            and review.identity_consistency_score >= 90
+            and not review.hard_rejection
+        )
+        if accepted:
+            cleaned.replace(output_path)
+            return review.score, True, style_ref_used, review.identity_consistency_score
+        repair_reasons = review.hard_rejection_reasons + review.issues
+        prompt = f"{base_prompt}\n\nREPAIR: Fix these issues: {repair_reasons[:8]}"
+
+    if last_review is None:
         raise RuntimeError("No coloring candidate generated.")
-    best_path.replace(output_path)
-    if best_score < settings.image_min_acceptance_score:
-        raise RuntimeError(f"Coloring vision score {best_score} below threshold {settings.image_min_acceptance_score}.")
-    return best_score, ref_used
+    raise RuntimeError(
+        "COLORING_QA_FAILED: "
+        f"score={last_review.score}, identity={last_review.identity_consistency_score}, "
+        f"hard_rejection={last_review.hard_rejection}, issues={last_review.hard_rejection_reasons + last_review.issues}"
+    )
+
+
+def _identity_constraints(title: str) -> str:
+    universal = """IDENTITY RULES: Only Krishna may wear a peacock feather or be associated with a flute. Ordinary humans have two arms. No random halos, unrelated deity symbols, childlike adult faces, or identical faces. Vishnu has four arms only when explicitly shown; Brahma has multiple heads only when explicitly shown."""
+    if "Earth Prays" in title:
+        return universal + " Mother Earth is a gentle sacred cow with devotional expression. Brahma leads the prayer. Vishnu, Brahma, and supporting demigods must remain distinct; do not crowd the scene. Vishnu must have NO peacock feather, feather plume, or feather-shaped ornament on, beside, or behind His crown."
+    if "Wedding" in title or "Heavenly Voice" in title:
+        return universal + " Devaki is an adult royal bride; Vasudeva is an adult noble bridegroom, calm and protective; Kamsa is an adult warrior prince driving the chariot, shocked and fearful. Devaki and Vasudeva sit behind him. No peacock feathers, Krishna-like crowns, toddler faces, or cheerful Kamsa."
+    return universal
 
 
 def compose_poster(raw_path: Path, output_path: Path, title: str, one_liner: str) -> None:

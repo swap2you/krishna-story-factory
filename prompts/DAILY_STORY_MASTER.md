@@ -61,11 +61,37 @@ Thick confident black outlines. Clean white background. Large colorable spaces. 
 Full scene inside safe margins. No title or quote inside artwork. No gray wash or cross-hatching.
 Use coloring_visual_brief from the story package.
 
+Identity constraints: only Krishna may wear a peacock feather or be associated with a flute.
+Ordinary humans have two arms and no random halos. Adults must look adult and distinct.
+When a story poster is supplied, it is the authoritative content reference for character identity,
+age, clothing, role, position, expression, and event. Any line-art reference is style-only.
+
+## ADAPTIVE_ACTIVITY_PLANNER
+
+Inspect the story title, text, turning point, characters, setting, objects, lesson, age range,
+and recent activity history. Choose exactly one primary activity type from:
+PAPER_CRAFT, CUT_AND_BUILD, PUPPET_PLAY, MINI_DRAMA, ROLE_CARDS, STORY_SEQUENCE,
+MATCHING_GAME, STORY_MAP, MAZE_OR_PATH, SORTING_GAME, PRAYER_OR_GRATITUDE_CRAFT,
+FAMILY_MISSION, MEMORY_GAME, SIMPLE_BOARD_GAME, DRAW_AND_REFLECT, WORD_SEARCH,
+CROSSWORD, COLORING_ONLY, QUICK_DISCUSSION.
+
+Do not repeat the previous type. Do not select WORD_SEARCH more than once in five stories.
+Do not choose written worksheets or heavy crafts consecutively. Alternate making, acting,
+solving, discussion, and family participation. Prefer the actual pastime over generic filler.
+Return strict internal JSON:
+{
+  "activity_title": "", "activity_type": "", "learning_goal": "", "story_connection": "",
+  "recommended_send_mode": "", "estimated_minutes": 0, "parent_effort": "",
+  "age_variants": {"ages_6_8": "", "ages_9_13": ""}, "materials": [],
+  "instructions": [], "review_questions": [], "printable_components": [],
+  "safety_note": "", "completion_prompt": ""
+}
+
 ## ACTIVITY_SHEET
 
-Two-page activity sheet content only (no coloring page).
-Page 1: title, source, recap, 3 recall, 2 thinking, 1 bedtime reflection.
-Page 2: word search words, drawing prompt, family game/craft, five-star challenge, parent reminder.
+Render only the selected adaptive activity in one or two black-and-white pages. Never embed the
+coloring page. Use locally rendered text, clear printable components, safe margins, at least 10 pt
+body text, child-safe cutting guidance, and no answer key visible on the page.
 
 ## CONTENT_REPAIR
 

@@ -133,10 +133,7 @@ def _resolve_path(project_root: Path, env_name: str, default: str) -> Path:
 
 
 def _resolve_image_model(raw: str) -> str:
-    model = (raw or "gpt-image-2").strip()
-    if model in {"gpt-image-1", "gpt-image-1-mini"}:
-        return "gpt-image-2"
-    return model
+    return (raw or "gpt-image-2").strip()
 
 
 def load_settings(project_root: Path) -> Settings:

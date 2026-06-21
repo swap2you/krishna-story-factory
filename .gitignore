@@ -9,6 +9,7 @@ output/*
 whatsapp_test_outbox/
 .work/
 logs/
+tracking/activity_history.csv
 credentials/
 assets/reference/*.png
 assets/reference/*.jpg

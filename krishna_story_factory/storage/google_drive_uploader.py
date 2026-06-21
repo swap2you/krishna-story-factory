@@ -3,6 +3,8 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
+import json
+import re
 
 from ..config import Settings
 from ..outputs import FINAL_OUTPUT_FILES
@@ -22,6 +24,7 @@ class DriveUploadResult:
     detail: str = ""
     folder_name: str = ""
     uploaded_files: tuple[str, ...] = field(default_factory=tuple)
+    remote_files: tuple[dict, ...] = field(default_factory=tuple)
 
 
 def upload_final_package(settings: Settings, *, folder_name: str, source_dir: Path) -> DriveUploadResult:
@@ -181,4 +184,74 @@ def _upload_file(service, folder_id: str, path: Path) -> None:
 
 upload_story_package = upload_final_package
 
-__all__ = ["DriveUploadResult", "upload_final_package", "upload_story_package"]
+
+def replace_component_files(settings: Settings, *, source_dir: Path, manifest_path: Path) -> DriveUploadResult:
+    filenames = ("activity_sheet.pdf", "coloring_page.png", "manifest.json")
+    missing = [name for name in filenames if not (source_dir / name).exists()]
+    if missing:
+        return DriveUploadResult(status="FAILED", publish_mode="component_replace", package_link="", detail=f"Missing component files: {missing}")
+    data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    link = str(data.get("package", {}).get("package_link", ""))
+    match = re.search(r"/folders/([A-Za-z0-9_-]+)", link)
+    folder_id = match.group(1) if match else str(data.get("package", {}).get("drive_folder_id", ""))
+    if settings.google_drive_local_sync_root:
+        import shutil
+        dest = settings.google_drive_local_sync_root / source_dir.name
+        dest.mkdir(parents=True, exist_ok=True)
+        for name in filenames[:2]:
+            shutil.copy2(source_dir / name, dest / name)
+        count = len([p for p in dest.iterdir() if p.is_file()])
+        status = "LOCAL_SYNC" if count == 7 else "FAILED"
+        detail = f"Replaced 3 component files; folder contains {count} files."
+        _set_manifest_drive_result(manifest_path, status, detail)
+        shutil.copy2(manifest_path, dest / "manifest.json")
+        return DriveUploadResult(status=status, publish_mode="component_replace", package_link=link, folder_id=folder_id,
+            detail=detail, uploaded_files=filenames)
+    if not settings.google_drive_upload_enabled:
+        return DriveUploadResult(status="SKIPPED", publish_mode="component_replace", package_link=link, folder_id=folder_id,
+            detail="Upload disabled by flag.")
+    if not folder_id:
+        return DriveUploadResult(status="FAILED", publish_mode="component_replace", package_link=link, detail="Existing Drive folder ID missing from manifest package link.")
+    try:
+        token = settings.google_drive_token_file or settings.project_root / "credentials" / "google_drive_token.json"
+        service = _build_drive_service(settings.google_drive_credentials_file, token)
+        query = f"'{folder_id}' in parents and trashed=false"
+        preflight = service.files().list(
+            q=query, fields="files(id,name,modifiedTime)", pageSize=100,
+        ).execute().get("files", [])
+        preflight_names = {item.get("name", "") for item in preflight}
+        if len(preflight) != 7 or preflight_names != set(FINAL_OUTPUT_FILES):
+            return DriveUploadResult(
+                status="FAILED", publish_mode="component_replace", package_link=link, folder_id=folder_id,
+                detail=f"Drive preflight refused replacement: expected exact seven final files, found {sorted(preflight_names)}.",
+                remote_files=tuple(preflight),
+            )
+        for name in filenames[:2]:
+            _upload_file(service, folder_id, source_dir / name)
+        interim = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+        status = "UPLOADED" if len(interim) == 7 and {item.get("name", "") for item in interim} == set(FINAL_OUTPUT_FILES) else "FAILED"
+        detail = f"Replaced 3 component files; Drive folder contains {len(interim)} exact final files."
+        _set_manifest_drive_result(manifest_path, status, detail)
+        _upload_file(service, folder_id, manifest_path)
+        final_files = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+        final_ok = len(final_files) == 7 and {item.get("name", "") for item in final_files} == set(FINAL_OUTPUT_FILES)
+        if not final_ok:
+            status = "FAILED"
+            detail = f"Drive post-replacement verification failed: found {[item.get('name', '') for item in final_files]}."
+            _set_manifest_drive_result(manifest_path, status, detail)
+            _upload_file(service, folder_id, manifest_path)
+        return DriveUploadResult(status=status, publish_mode="component_replace", package_link=link, folder_id=folder_id,
+            detail=detail, uploaded_files=filenames, remote_files=tuple(final_files))
+    except Exception as exc:
+        return DriveUploadResult(status="FAILED", publish_mode="component_replace", package_link=link, folder_id=folder_id,
+            detail=f"Drive component replacement failed: {type(exc).__name__}: {exc}")
+
+
+def _set_manifest_drive_result(path: Path, status: str, detail: str) -> None:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    package = data.setdefault("package", {})
+    package["drive_status"] = status
+    package["drive_detail"] = detail
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+__all__ = ["DriveUploadResult", "upload_final_package", "upload_story_package", "replace_component_files"]
