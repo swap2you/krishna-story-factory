@@ -27,6 +27,8 @@ class Settings:
 
     openai_api_key: str
     openai_text_model: str
+    openai_repair_model: str
+    openai_visual_qa_model: str
     openai_image_model: str
     openai_image_size: str
     openai_image_quality: str
@@ -36,9 +38,16 @@ class Settings:
     image_size_coloring_page: str
 
     openai_image_output_format: str
+    openai_image_format: str
+    image_reference_line_art: Path | None
+    image_reference_poster: Path | None
+    image_reference_required: bool
+    image_candidates_per_type: int
+    image_max_repair_rounds: int
+    image_min_acceptance_score: int
+    pipeline_max_repair_attempts: int
+    debug_artifacts: bool
     image_use_style_references: bool
-    image_line_art_reference: Path | None
-    image_poster_reference: Path | None
     image_line_art_size: str
     image_poster_size: str
     image_generate_line_art: bool
@@ -123,6 +132,13 @@ def _resolve_path(project_root: Path, env_name: str, default: str) -> Path:
     return value
 
 
+def _resolve_image_model(raw: str) -> str:
+    model = (raw or "gpt-image-2").strip()
+    if model in {"gpt-image-1", "gpt-image-1-mini"}:
+        return "gpt-image-2"
+    return model
+
+
 def load_settings(project_root: Path) -> Settings:
     load_dotenv(project_root / ".env")
     output_root = _resolve_path(project_root, "OUTPUT_ROOT", "output")
@@ -141,18 +157,29 @@ def load_settings(project_root: Path) -> Settings:
         whatsapp_send_enabled=str_to_bool(os.getenv("WHATSAPP_SEND_ENABLED"), False),
         allow_placeholder_audio=str_to_bool(os.getenv("ALLOW_PLACEHOLDER_AUDIO"), False),
         openai_api_key=os.getenv("OPENAI_API_KEY", ""),
-        openai_text_model=os.getenv("OPENAI_TEXT_MODEL", "gpt-4.1"),
-        openai_image_model=os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-1"),
-        openai_image_size=os.getenv("OPENAI_IMAGE_SIZE", "1024x1024"),
-        openai_image_quality=os.getenv("OPENAI_IMAGE_QUALITY", "medium"),
-        openai_image_output_format=os.getenv("OPENAI_IMAGE_OUTPUT_FORMAT", "png"),
+        openai_text_model=os.getenv("OPENAI_TEXT_MODEL", "gpt-5.4"),
+        openai_repair_model=os.getenv("OPENAI_REPAIR_MODEL", os.getenv("OPENAI_TEXT_MODEL", "gpt-5.4")),
+        openai_visual_qa_model=os.getenv("OPENAI_VISUAL_QA_MODEL", "gpt-5.4-mini"),
+        openai_image_model=_resolve_image_model(os.getenv("OPENAI_IMAGE_MODEL", "gpt-image-2")),
+        openai_image_size=os.getenv("OPENAI_IMAGE_SIZE", "1024x1536"),
+        openai_image_quality=os.getenv("OPENAI_IMAGE_QUALITY", "high"),
+        openai_image_output_format=os.getenv("OPENAI_IMAGE_OUTPUT_FORMAT", os.getenv("OPENAI_IMAGE_FORMAT", "png")),
+        openai_image_format=os.getenv("OPENAI_IMAGE_FORMAT", os.getenv("OPENAI_IMAGE_OUTPUT_FORMAT", "png")),
         image_generate_coloring_page=str_to_bool(os.getenv("IMAGE_GENERATE_COLORING_PAGE"), True),
         image_generate_wide_card=str_to_bool(os.getenv("IMAGE_GENERATE_WIDE_CARD"), False),
         image_size_story_card=os.getenv("IMAGE_SIZE_STORY_CARD", "1024x1024"),
         image_size_coloring_page=os.getenv("IMAGE_SIZE_COLORING_PAGE", "1024x1024"),
+        image_reference_line_art=_optional_path(project_root, "IMAGE_REFERENCE_LINE_ART")
+        or _optional_path(project_root, "IMAGE_LINE_ART_REFERENCE"),
+        image_reference_poster=_optional_path(project_root, "IMAGE_REFERENCE_POSTER")
+        or _optional_path(project_root, "IMAGE_POSTER_REFERENCE"),
+        image_reference_required=str_to_bool(os.getenv("IMAGE_REFERENCE_REQUIRED"), False),
+        image_candidates_per_type=int(os.getenv("IMAGE_CANDIDATES_PER_TYPE", "2") or "2"),
+        image_max_repair_rounds=int(os.getenv("IMAGE_MAX_REPAIR_ROUNDS", "2") or "2"),
+        image_min_acceptance_score=int(os.getenv("IMAGE_MIN_ACCEPTANCE_SCORE", "86") or "86"),
+        pipeline_max_repair_attempts=int(os.getenv("PIPELINE_MAX_REPAIR_ATTEMPTS", "4") or "4"),
+        debug_artifacts=str_to_bool(os.getenv("DEBUG_ARTIFACTS"), False),
         image_use_style_references=str_to_bool(os.getenv("IMAGE_USE_STYLE_REFERENCES"), True),
-        image_line_art_reference=_optional_path(project_root, "IMAGE_LINE_ART_REFERENCE"),
-        image_poster_reference=_optional_path(project_root, "IMAGE_POSTER_REFERENCE"),
         image_line_art_size=os.getenv("IMAGE_LINE_ART_SIZE", "1024x1536"),
         image_poster_size=os.getenv("IMAGE_POSTER_SIZE", "1024x1536"),
         image_generate_line_art=str_to_bool(os.getenv("IMAGE_GENERATE_LINE_ART"), True),
@@ -163,7 +190,7 @@ def load_settings(project_root: Path) -> Settings:
         visual_quality_threshold=int(os.getenv("VISUAL_QUALITY_THRESHOLD", "80") or "80"),
         elevenlabs_api_key=os.getenv("ELEVENLABS_API_KEY", ""),
         elevenlabs_voice_id=os.getenv("ELEVENLABS_VOICE_ID", ""),
-        elevenlabs_model_id=os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2"),
+        elevenlabs_model_id=os.getenv("ELEVENLABS_MODEL_ID", "eleven_v3"),
         elevenlabs_stability=_optional_float("ELEVENLABS_STABILITY"),
         elevenlabs_similarity_boost=_optional_float("ELEVENLABS_SIMILARITY_BOOST"),
         elevenlabs_style=_optional_float("ELEVENLABS_STYLE"),

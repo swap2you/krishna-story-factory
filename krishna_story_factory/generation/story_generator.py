@@ -6,7 +6,7 @@ from typing import Any
 
 from ..config import Settings
 from ..models import PlanRow, StoryContent
-from ..prompts_loader import load_project_text
+from ..prompts_loader import load_master_section, load_project_text
 from .prompt_normalize import normalize_image_prompts
 from ..quality.repetition import clean_repetition, detect_repetition
 
@@ -20,10 +20,11 @@ _EXPAND_INSTRUCTION = (
     "Do not repeat any closing sentence or paragraph. Close once, softly."
 )
 
-_MIN_STORY_WORDS = 750
-_MAX_STORY_WORDS = 1050
-_MIN_AUDIO_WORDS = 500
-_MAX_AUDIO_WORDS = 750
+_MIN_STORY_WORDS = 700
+_MAX_STORY_WORDS = 1300
+_TARGET_STORY_WORDS = (850, 1200)
+_MIN_AUDIO_WORDS = 450
+_MAX_AUDIO_WORDS = 700
 
 
 class StoryGenerator:
@@ -127,26 +128,24 @@ Input JSON:
         return self._from_dict(plan, self._parse_json(raw_text))
 
     def _build_prompt(self, plan: PlanRow) -> str:
-        base = load_project_text(self.settings.project_root, "prompts/story_generation_prompt.md")
+        base = load_master_section(self.settings.project_root, "STORY_GENERATION")
         rules = load_project_text(self.settings.project_root, "input/content_quality_rules.md")
         return f"""{base}
 
 CONTENT QUALITY RULES:
 {rules}
 
-CURRENT QUEUE ROW (generate ONLY for this row; do not mix other pastimes):
+CURRENT QUEUE ROW:
 - chapter_no: {plan.chapter_no}
 - slug: {plan.slug}
 - title: {plan.title}
-- project: {plan.project}
-- library_id: {plan.library_id}
 - source_reference: {plan.source_reference}
 - scripture_reference: {plan.scripture_reference}
 - summary_seed: {plan.summary_seed}
 - age_range: {plan.age_range}
 - notes: {plan.notes}
 
-Return only valid JSON matching the schema described above.
+Return only valid JSON matching the STORY_GENERATION schema.
 """.strip()
 
     def _parse_json(self, text: str) -> dict[str, Any]:
@@ -162,9 +161,11 @@ Return only valid JSON matching the schema described above.
                 raise StoryGenerationError(f"OpenAI JSON parse failed: {exc}") from exc
 
     def _from_dict(self, plan: PlanRow, data: dict[str, Any]) -> StoryContent:
-        activity = data.get("activity_sheet") or {}
-        image_prompt = str(data.get("image_prompt") or data.get("hero_image_prompt") or "")
-        line_art = str(data.get("line_art_prompt") or data.get("coloring_page_prompt") or "")
+        activity = data.get("activity_data") or data.get("activity_sheet") or {}
+        audio = str(data.get("audio_performance_script") or data.get("audio_script") or "")
+        poster_brief = str(data.get("poster_visual_brief") or data.get("hero_image_prompt") or "")
+        coloring_brief = str(data.get("coloring_visual_brief") or data.get("line_art_prompt") or "")
+        parent = str(data.get("parent_discussion_note") or data.get("parent_notes") or "")
         try:
             return StoryContent(
                 title=str(data.get("title") or plan.title),
@@ -173,23 +174,23 @@ Return only valid JSON matching the schema described above.
                 moral=str(data["moral"]),
                 takeaway=str(data["takeaway"]),
                 five_star_challenge=[str(x) for x in data["five_star_challenge"]][:5],
-                audio_script=str(data["audio_script"]),
-                whatsapp_caption=str(data.get("whatsapp_caption") or ""),
-                image_prompt=image_prompt,
-                line_art_prompt=line_art,
-                hero_image_prompt=str(data.get("hero_image_prompt") or image_prompt),
-                story_card_square_prompt=str(data.get("story_card_square_prompt") or image_prompt),
-                story_card_wide_prompt=str(
-                    data.get("story_card_wide_prompt") or data.get("story_card_square_prompt") or image_prompt
-                ),
-                coloring_page_prompt=str(data.get("coloring_page_prompt") or line_art),
+                audio_script=audio,
+                parent_notes=parent,
+                parent_discussion_note=parent,
+                bedtime_reflection=str(data.get("bedtime_reflection") or data.get("takeaway") or ""),
+                poster_visual_brief=poster_brief,
+                coloring_visual_brief=coloring_brief,
+                poster_one_liner=str(data.get("poster_one_liner") or data.get("takeaway") or ""),
+                hero_image_prompt=poster_brief,
+                line_art_prompt=coloring_brief,
+                coloring_page_prompt=coloring_brief,
+                image_prompt=poster_brief,
                 story_card_text=str(data.get("story_card_text") or plan.title),
-                parent_notes=str(data["parent_notes"]),
-                recall_questions=[str(x) for x in activity.get("recall_questions", data.get("recall_questions", []))][:3],
-                thinking_questions=[str(x) for x in activity.get("thinking_questions", data.get("thinking_questions", []))][:2],
-                word_search_words=[str(x) for x in activity.get("word_search_words", data.get("word_search_words", []))][:10],
-                draw_activity=str(activity.get("draw_activity") or data.get("draw_activity") or "Draw your favorite scene from the story."),
-                family_activity=str(activity.get("family_activity") or data.get("family_activity") or "Share one thing you learned with your family."),
+                recall_questions=[str(x) for x in activity.get("recall_questions", [])][:3],
+                thinking_questions=[str(x) for x in activity.get("thinking_questions", [])][:2],
+                word_search_words=[str(x) for x in activity.get("word_search_words", [])][:10],
+                draw_activity=str(activity.get("draw_activity") or "Draw your favorite scene from the story."),
+                family_activity=str(activity.get("family_activity") or "Share one thing you learned with your family."),
             )
         except KeyError as exc:
             raise StoryGenerationError(f"Generated story is missing required key: {exc}") from exc
@@ -332,8 +333,12 @@ def _regeneration_issues(content: StoryContent) -> list[str]:
     audio_words = _word_count(content.audio_script)
     if story_words < _MIN_STORY_WORDS:
         issues.append(f"main_story has {story_words} words; need at least {_MIN_STORY_WORDS}.")
+    if story_words > _MAX_STORY_WORDS:
+        issues.append(f"main_story has {story_words} words; should be at most {_MAX_STORY_WORDS}.")
     if audio_words < _MIN_AUDIO_WORDS:
         issues.append(f"audio_script has {audio_words} words; need at least {_MIN_AUDIO_WORDS}.")
+    if audio_words > _MAX_AUDIO_WORDS:
+        issues.append(f"audio_script has {audio_words} words; should be at most {_MAX_AUDIO_WORDS}.")
     issues.extend(detect_repetition(content.main_story, content_type="story").errors)
     issues.extend(detect_repetition(content.audio_script, content_type="audio").errors)
     return issues

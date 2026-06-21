@@ -11,8 +11,13 @@ from krishna_story_factory.pipeline import run_daily_story
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate a daily Krishna-conscious bedtime story package.")
-    parser.add_argument("--mode", choices=["test", "prod"], default="test", help="test uses local mock content and no external API calls.")
-    parser.add_argument("--force", action="store_true", help="Allow sending even if a story was already sent today.")
+    parser.add_argument("--mode", choices=["test", "prod"], default="test")
+    parser.add_argument("--force", action="store_true", help="Reprocess a specific chapter when used with --chapter.")
+    parser.add_argument("--chapter", help="Process a specific chapter number, e.g. 003")
+    parser.add_argument("--rebuild", action="store_true", help="Allow selecting a done row when no pending rows remain.")
+    parser.add_argument("--no-upload", action="store_true")
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--clean-reset", action="store_true", help="Reset output, queue 001-010 pending, and tracking logs.")
     return parser.parse_args()
 
 
@@ -21,7 +26,16 @@ def main() -> int:
     project_root = Path(__file__).resolve().parent
     ensure_csv_files(project_root)
     settings = load_settings(project_root)
-    result = run_daily_story(settings, mode=args.mode, force=args.force)
+    result = run_daily_story(
+        settings,
+        mode=args.mode,
+        force=args.force,
+        chapter=args.chapter,
+        rebuild=args.rebuild,
+        no_upload=args.no_upload,
+        debug=args.debug,
+        clean_reset=args.clean_reset,
+    )
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0 if result.get("status") in {"SUCCESS", "NO_PENDING_STORY"} else 1
 

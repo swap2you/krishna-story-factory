@@ -115,7 +115,7 @@ def ensure_csv_files(project_root: Path) -> None:
     _write_header_if_absent(tracking_dir / "storage_log.csv", STORAGE_LOG_FIELDS)
 
 
-def read_next_pending(project_root: Path) -> PlanRow | None:
+def read_next_pending(project_root: Path, *, rebuild: bool = False) -> PlanRow | None:
     path = project_root / "input" / "series_plan.csv"
     with path.open("r", newline="", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
@@ -123,26 +123,107 @@ def read_next_pending(project_root: Path) -> PlanRow | None:
         if missing:
             raise ValueError(f"series_plan.csv is missing required columns: {sorted(missing)}")
         for idx, row in enumerate(reader):
-            if row.get("status", "").strip().lower() == "pending":
-                return PlanRow(
-                    chapter_no=row.get("chapter_no", "").strip(),
-                    slug=row.get("slug", "").strip(),
-                    title=row.get("title", "").strip(),
-                    project=row.get("project", "krishna_book_bedtime").strip() or "krishna_book_bedtime",
-                    library_id=row.get("library_id", "krishna_book").strip() or "krishna_book",
-                    source_reference=row.get("source_reference", "").strip(),
-                    scripture_reference=row.get("scripture_reference", "").strip(),
-                    summary_seed=row.get("summary_seed", "").strip(),
-                    age_range=row.get("age_range", "6-12").strip() or "6-12",
-                    package_type=row.get("package_type", "bedtime_story").strip() or "bedtime_story",
-                    send_date=row.get("send_date", "").strip(),
-                    status=row.get("status", "").strip(),
-                    created_at=row.get("created_at", "").strip(),
-                    updated_at=row.get("updated_at", "").strip(),
-                    notes=row.get("notes", "").strip(),
-                    row_index=idx,
-                )
+            status = row.get("status", "").strip().lower()
+            if status == "pending" or (rebuild and status == "done"):
+                return _row_to_plan(row, idx)
     return None
+
+
+def read_plan_by_chapter(project_root: Path, chapter_no: str) -> PlanRow | None:
+    normalized = chapter_no.strip().zfill(3)
+    path = project_root / "input" / "series_plan.csv"
+    with path.open("r", newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for idx, row in enumerate(reader):
+            if row.get("chapter_no", "").strip().zfill(3) == normalized:
+                return _row_to_plan(row, idx)
+    return None
+
+
+def _row_to_plan(row: dict[str, str], idx: int) -> PlanRow:
+    return PlanRow(
+        chapter_no=row.get("chapter_no", "").strip(),
+        slug=row.get("slug", "").strip(),
+        title=row.get("title", "").strip(),
+        project=row.get("project", "krishna_book_bedtime").strip() or "krishna_book_bedtime",
+        library_id=row.get("library_id", "krishna_book").strip() or "krishna_book",
+        source_reference=row.get("source_reference", "").strip(),
+        scripture_reference=row.get("scripture_reference", "").strip(),
+        summary_seed=row.get("summary_seed", "").strip(),
+        age_range=row.get("age_range", "6-12").strip() or "6-12",
+        package_type=row.get("package_type", "bedtime_story").strip() or "bedtime_story",
+        send_date=row.get("send_date", "").strip(),
+        status=row.get("status", "").strip(),
+        created_at=row.get("created_at", "").strip(),
+        updated_at=row.get("updated_at", "").strip(),
+        notes=row.get("notes", "").strip(),
+        row_index=idx,
+    )
+
+
+def reset_processing_to_pending(project_root: Path) -> None:
+    path = project_root / "input" / "series_plan.csv"
+    with path.open("r", newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or SERIES_FIELDS)
+        rows = list(reader)
+    changed = False
+    for row in rows:
+        if row.get("status", "").strip().lower() == "processing":
+            row["status"] = "pending"
+            changed = True
+    if changed:
+        with path.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+
+
+def reset_series_status(project_root: Path, chapters: list[str], status: str = "pending") -> None:
+    normalized = {c.strip().zfill(3) for c in chapters}
+    path = project_root / "input" / "series_plan.csv"
+    with path.open("r", newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or SERIES_FIELDS)
+        rows = list(reader)
+    for row in rows:
+        if row.get("chapter_no", "").strip().zfill(3) in normalized:
+            row["status"] = status
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def reset_tracking_logs(project_root: Path) -> None:
+    tracking_dir = project_root / "tracking"
+    tracking_dir.mkdir(parents=True, exist_ok=True)
+    _write_header_if_absent(tracking_dir / "story_log.csv", LOG_FIELDS)
+    _write_header_if_absent(tracking_dir / "send_log.csv", SEND_LOG_FIELDS)
+    _write_header_if_absent(tracking_dir / "quality_log.csv", QUALITY_LOG_FIELDS)
+    _write_header_if_absent(tracking_dir / "storage_log.csv", STORAGE_LOG_FIELDS)
+    for name, fields in (
+        ("story_log.csv", LOG_FIELDS),
+        ("send_log.csv", SEND_LOG_FIELDS),
+        ("quality_log.csv", QUALITY_LOG_FIELDS),
+        ("storage_log.csv", STORAGE_LOG_FIELDS),
+    ):
+        path = tracking_dir / name
+        with path.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fields)
+            writer.writeheader()
+
+
+def acquire_pipeline_lock(project_root: Path) -> Path:
+    lock = project_root / ".pipeline.lock"
+    if lock.exists():
+        raise RuntimeError("Another pipeline run appears to be in progress (.pipeline.lock exists).")
+    lock.write_text(datetime.now().isoformat(), encoding="utf-8")
+    return lock
+
+
+def release_pipeline_lock(lock_path: Path) -> None:
+    lock_path.unlink(missing_ok=True)
 
 
 def update_plan_status(project_root: Path, plan: PlanRow, status: str) -> None:
