@@ -18,7 +18,7 @@ Repository: [github.com/swap2you/krishna-story-factory](https://github.com/swap2
 ## Core command
 
 ```powershell
-python run_daily_story.py --mode prod --force
+python run_daily_story.py --mode prod
 ```
 
 Test mode (no paid APIs):
@@ -32,23 +32,15 @@ python run_daily_story.py --mode test --force
 ```text
 output/<chapter_no>_<slug>/
   story.md
-  audio_script.txt
-  whatsapp_caption.txt
-  activity_sheet.pdf
-  story_card.png
-  story_card_square.png
-  coloring_page.png (when image generation enabled)
-  image_prompt.txt
-  hero_image_prompt.txt
-  story_card_square_prompt.txt
-  coloring_page_prompt.txt
-  line_art_prompt.txt
-  parent_notes.md
-  manifest.json
   narration.mp3
+  story_poster.png
+  coloring_page.png
+  activity_sheet.pdf
+  whatsapp_caption.txt
+  manifest.json
 ```
 
-Activity sheet is a **3-page PDF** with word-search grid, drawing box, and coloring/craft page.
+The adaptive activity sheet is a validated one- or two-page PDF tied to the selected pastime.
 
 ## Google Drive package link
 
@@ -57,10 +49,12 @@ Set `GOOGLE_DRIVE_FOLDER_URL` in local `.env` (see `.env.example`). Caption and 
 ## Project layout
 
 ```text
-input/series_plan.csv          # Krishna Book queue
+input/krishna_book_master_plan.csv # complete static editorial plan
+input/series_plan.csv          # CLI-ready static episode metadata
 input/whatsapp_recipients.csv  # opted-in parent phones
 input/content_quality_rules.md
-tracking/*.csv
+tracking/queue_state.csv       # ignored mutable execution state
+tracking/templates/*.csv      # tracked header-only examples
 docs/01-07_*.md
 prompts/*.md
 scripts/
