@@ -2,40 +2,16 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
 from pathlib import Path
+import json
+import re
 
 from ..config import Settings
+from ..outputs import FINAL_OUTPUT_FILES
 
 logger = logging.getLogger(__name__)
 
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
-
-PACKAGE_FILES = [
-    "story.md",
-    "audio_script.txt",
-    "whatsapp_caption.txt",
-    "activity_sheet.pdf",
-    "story_card.png",
-    "story_card_square.png",
-    "coloring_page.png",
-    "line_art_portrait.png",
-    "coloring_page_print.pdf",
-    "story_poster.png",
-    "story_poster_whatsapp.jpg",
-    "visual_brief.json",
-    "poster_copy.json",
-    "visual_generation_manifest.json",
-    "image_prompt.txt",
-    "hero_image_prompt.txt",
-    "line_art_prompt.txt",
-    "coloring_page_prompt.txt",
-    "story_card_square_prompt.txt",
-    "story_card_wide_prompt.txt",
-    "parent_notes.md",
-    "manifest.json",
-    "narration.mp3",
-]
 
 
 @dataclass(frozen=True, slots=True)
@@ -48,59 +24,68 @@ class DriveUploadResult:
     detail: str = ""
     folder_name: str = ""
     uploaded_files: tuple[str, ...] = field(default_factory=tuple)
+    remote_files: tuple[dict, ...] = field(default_factory=tuple)
 
 
-def upload_story_package(
-    settings: Settings,
-    *,
-    folder_name: str,
-    source_dir: Path,
-) -> DriveUploadResult:
+def upload_final_package(settings: Settings, *, folder_name: str, source_dir: Path) -> DriveUploadResult:
+    missing = [name for name in FINAL_OUTPUT_FILES if not (source_dir / name).exists()]
+    if missing:
+        return DriveUploadResult(
+            status="FAILED",
+            publish_mode="drive_api",
+            package_link=settings.google_drive_folder_url,
+            detail=f"Missing final files before upload: {missing}",
+            folder_name=folder_name,
+        )
     if settings.google_drive_upload_enabled:
-        return _upload_via_api(settings, folder_name=folder_name, source_dir=source_dir)
+        return _upload_via_api(settings, folder_name=folder_name, source_dir=source_dir, files=FINAL_OUTPUT_FILES)
     if settings.google_drive_local_sync_root:
-        return _upload_via_local_sync(settings, folder_name=folder_name, source_dir=source_dir)
+        return _upload_via_local_sync(settings, folder_name=folder_name, source_dir=source_dir, files=FINAL_OUTPUT_FILES)
     link = settings.package_public_link or settings.google_drive_folder_url
     return DriveUploadResult(
         status="DISABLED",
         publish_mode="link_only",
         package_link=link,
-        detail="Drive upload disabled; using configured folder URL only.",
+        detail="Drive upload disabled.",
         folder_name=folder_name,
     )
 
 
-def _upload_via_local_sync(settings: Settings, *, folder_name: str, source_dir: Path) -> DriveUploadResult:
+def _upload_via_local_sync(settings: Settings, *, folder_name: str, source_dir: Path, files: tuple[str, ...]) -> DriveUploadResult:
     import shutil
 
     dest = settings.google_drive_local_sync_root / folder_name
     if dest.exists():
         shutil.rmtree(dest)
-    shutil.copytree(source_dir, dest)
+    dest.mkdir(parents=True)
+    uploaded: list[str] = []
+    for name in files:
+        src = source_dir / name
+        if src.exists():
+            shutil.copy2(src, dest / name)
+            uploaded.append(name)
     link = settings.package_public_link or settings.google_drive_folder_url
-    uploaded = tuple(p.name for p in dest.iterdir() if p.is_file())
     return DriveUploadResult(
         status="LOCAL_SYNC",
         publish_mode="local_drive_sync",
         package_link=link,
         local_sync_path=str(dest),
-        detail=f"Copied package to local Drive sync folder: {dest}",
+        detail=f"Copied {len(uploaded)} final file(s).",
         folder_name=folder_name,
-        uploaded_files=uploaded,
+        uploaded_files=tuple(uploaded),
     )
 
 
-def _upload_via_api(settings: Settings, *, folder_name: str, source_dir: Path) -> DriveUploadResult:
+def _upload_via_api(settings: Settings, *, folder_name: str, source_dir: Path, files: tuple[str, ...]) -> DriveUploadResult:
     creds_file = settings.google_drive_credentials_file
     token_file = settings.google_drive_token_file
     parent_id = settings.google_drive_folder_id
-
     if not creds_file or not creds_file.exists():
         return DriveUploadResult(
             status="FAILED",
             publish_mode="drive_api",
             package_link=settings.google_drive_folder_url,
-            detail="GOOGLE_DRIVE_CREDENTIALS_FILE missing; upload skipped.",
+            detail="GOOGLE_DRIVE_CREDENTIALS_FILE missing.",
             folder_name=folder_name,
         )
     if not token_file:
@@ -110,29 +95,15 @@ def _upload_via_api(settings: Settings, *, folder_name: str, source_dir: Path) -
             status="FAILED",
             publish_mode="drive_api",
             package_link=settings.google_drive_folder_url,
-            detail="GOOGLE_DRIVE_FOLDER_ID missing; upload skipped.",
+            detail="GOOGLE_DRIVE_FOLDER_ID missing.",
             folder_name=folder_name,
         )
-
     try:
         service = _build_drive_service(creds_file, token_file)
-        resolved_name = _resolve_folder_name(
-            service,
-            parent_id,
-            folder_name,
-            overwrite=settings.google_drive_overwrite_existing,
-        )
-        child_folder_id = _ensure_child_folder(
-            service,
-            parent_id,
-            resolved_name,
-            overwrite=settings.google_drive_overwrite_existing,
-        )
+        child_folder_id = _ensure_child_folder(service, parent_id, folder_name)
         uploaded: list[str] = []
-        for filename in PACKAGE_FILES:
+        for filename in files:
             path = source_dir / filename
-            if not path.exists():
-                continue
             _upload_file(service, child_folder_id, path)
             uploaded.append(filename)
         link = f"https://drive.google.com/drive/folders/{child_folder_id}?usp=sharing"
@@ -141,8 +112,8 @@ def _upload_via_api(settings: Settings, *, folder_name: str, source_dir: Path) -
             publish_mode="drive_api",
             package_link=link,
             folder_id=child_folder_id,
-            detail=f"Uploaded {len(uploaded)} file(s) to Drive folder {resolved_name}.",
-            folder_name=resolved_name,
+            detail=f"Uploaded {len(uploaded)} final file(s).",
+            folder_name=folder_name,
             uploaded_files=tuple(uploaded),
         )
     except Exception as exc:
@@ -154,24 +125,6 @@ def _upload_via_api(settings: Settings, *, folder_name: str, source_dir: Path) -
             detail=f"Drive upload failed: {type(exc).__name__}: {exc}",
             folder_name=folder_name,
         )
-
-
-def _resolve_folder_name(service, parent_id: str, folder_name: str, *, overwrite: bool) -> str:
-    if overwrite:
-        return folder_name
-    if _folder_exists(service, parent_id, folder_name):
-        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        return f"{folder_name}_{stamp}"
-    return folder_name
-
-
-def _folder_exists(service, parent_id: str, folder_name: str) -> bool:
-    query = (
-        f"mimeType='application/vnd.google-apps.folder' and "
-        f"name='{folder_name}' and '{parent_id}' in parents and trashed=false"
-    )
-    result = service.files().list(q=query, fields="files(id)", pageSize=1).execute()
-    return bool(result.get("files"))
 
 
 def _build_drive_service(creds_file: Path, token_file: Path):
@@ -194,7 +147,7 @@ def _build_drive_service(creds_file: Path, token_file: Path):
     return build("drive", "v3", credentials=creds, cache_discovery=False)
 
 
-def _ensure_child_folder(service, parent_id: str, folder_name: str, *, overwrite: bool) -> str:
+def _ensure_child_folder(service, parent_id: str, folder_name: str) -> str:
     query = (
         f"mimeType='application/vnd.google-apps.folder' and "
         f"name='{folder_name}' and '{parent_id}' in parents and trashed=false"
@@ -203,11 +156,7 @@ def _ensure_child_folder(service, parent_id: str, folder_name: str, *, overwrite
     files = result.get("files", [])
     if files:
         return files[0]["id"]
-    metadata = {
-        "name": folder_name,
-        "mimeType": "application/vnd.google-apps.folder",
-        "parents": [parent_id],
-    }
+    metadata = {"name": folder_name, "mimeType": "application/vnd.google-apps.folder", "parents": [parent_id]}
     created = service.files().create(body=metadata, fields="id").execute()
     return created["id"]
 
@@ -215,7 +164,14 @@ def _ensure_child_folder(service, parent_id: str, folder_name: str, *, overwrite
 def _upload_file(service, folder_id: str, path: Path) -> None:
     from googleapiclient.http import MediaFileUpload
 
-    mime = _guess_mime(path)
+    mime = {
+        ".md": "text/markdown",
+        ".txt": "text/plain",
+        ".pdf": "application/pdf",
+        ".png": "image/png",
+        ".json": "application/json",
+        ".mp3": "audio/mpeg",
+    }.get(path.suffix.lower(), "application/octet-stream")
     query = f"name='{path.name}' and '{folder_id}' in parents and trashed=false"
     existing = service.files().list(q=query, fields="files(id)", pageSize=1).execute().get("files", [])
     media = MediaFileUpload(str(path), mimetype=mime, resumable=True)
@@ -226,13 +182,117 @@ def _upload_file(service, folder_id: str, path: Path) -> None:
         service.files().create(body=metadata, media_body=media, fields="id").execute()
 
 
-def _guess_mime(path: Path) -> str:
-    suffix = path.suffix.lower()
-    return {
-        ".md": "text/markdown",
-        ".txt": "text/plain",
-        ".pdf": "application/pdf",
-        ".png": "image/png",
-        ".json": "application/json",
-        ".jpg": "image/jpeg",
-    }.get(suffix, "application/octet-stream")
+upload_story_package = upload_final_package
+
+
+def replace_component_files(settings: Settings, *, source_dir: Path, manifest_path: Path) -> DriveUploadResult:
+    filenames = ("activity_sheet.pdf", "coloring_page.png", "manifest.json")
+    missing = [name for name in filenames if not (source_dir / name).exists()]
+    if missing:
+        return DriveUploadResult(status="FAILED", publish_mode="component_replace", package_link="", detail=f"Missing component files: {missing}")
+    data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    link = str(data.get("package", {}).get("package_link", ""))
+    match = re.search(r"/folders/([A-Za-z0-9_-]+)", link)
+    folder_id = match.group(1) if match else str(data.get("package", {}).get("drive_folder_id", ""))
+    if settings.google_drive_local_sync_root:
+        import shutil
+        dest = settings.google_drive_local_sync_root / source_dir.name
+        dest.mkdir(parents=True, exist_ok=True)
+        for name in filenames[:2]:
+            shutil.copy2(source_dir / name, dest / name)
+        count = len([p for p in dest.iterdir() if p.is_file()])
+        status = "LOCAL_SYNC" if count == 7 else "FAILED"
+        detail = f"Replaced 3 component files; folder contains {count} files."
+        _set_manifest_drive_result(manifest_path, status, detail)
+        shutil.copy2(manifest_path, dest / "manifest.json")
+        return DriveUploadResult(status=status, publish_mode="component_replace", package_link=link, folder_id=folder_id,
+            detail=detail, uploaded_files=filenames)
+    if not settings.google_drive_upload_enabled:
+        return DriveUploadResult(status="SKIPPED", publish_mode="component_replace", package_link=link, folder_id=folder_id,
+            detail="Upload disabled by flag.")
+    if not folder_id:
+        return DriveUploadResult(status="FAILED", publish_mode="component_replace", package_link=link, detail="Existing Drive folder ID missing from manifest package link.")
+    try:
+        token = settings.google_drive_token_file or settings.project_root / "credentials" / "google_drive_token.json"
+        service = _build_drive_service(settings.google_drive_credentials_file, token)
+        query = f"'{folder_id}' in parents and trashed=false"
+        preflight = service.files().list(
+            q=query, fields="files(id,name,modifiedTime)", pageSize=100,
+        ).execute().get("files", [])
+        preflight_names = {item.get("name", "") for item in preflight}
+        if len(preflight) != 7 or preflight_names != set(FINAL_OUTPUT_FILES):
+            return DriveUploadResult(
+                status="FAILED", publish_mode="component_replace", package_link=link, folder_id=folder_id,
+                detail=f"Drive preflight refused replacement: expected exact seven final files, found {sorted(preflight_names)}.",
+                remote_files=tuple(preflight),
+            )
+        for name in filenames[:2]:
+            _upload_file(service, folder_id, source_dir / name)
+        interim = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+        status = "UPLOADED" if len(interim) == 7 and {item.get("name", "") for item in interim} == set(FINAL_OUTPUT_FILES) else "FAILED"
+        detail = f"Replaced 3 component files; Drive folder contains {len(interim)} exact final files."
+        _set_manifest_drive_result(manifest_path, status, detail)
+        _upload_file(service, folder_id, manifest_path)
+        final_files = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+        final_ok = len(final_files) == 7 and {item.get("name", "") for item in final_files} == set(FINAL_OUTPUT_FILES)
+        if not final_ok:
+            status = "FAILED"
+            detail = f"Drive post-replacement verification failed: found {[item.get('name', '') for item in final_files]}."
+            _set_manifest_drive_result(manifest_path, status, detail)
+            _upload_file(service, folder_id, manifest_path)
+        return DriveUploadResult(status=status, publish_mode="component_replace", package_link=link, folder_id=folder_id,
+            detail=detail, uploaded_files=filenames, remote_files=tuple(final_files))
+    except Exception as exc:
+        return DriveUploadResult(status="FAILED", publish_mode="component_replace", package_link=link, folder_id=folder_id,
+            detail=f"Drive component replacement failed: {type(exc).__name__}: {exc}")
+
+
+def replace_existing_files(
+    settings: Settings, *, source_dir: Path, manifest_path: Path, filenames: tuple[str, ...]
+) -> DriveUploadResult:
+    """Replace selected files in an existing exact-seven package without creating a new folder."""
+    names = tuple(dict.fromkeys(filenames))
+    if not names or "manifest.json" not in names or any(name not in FINAL_OUTPUT_FILES for name in names):
+        return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link="", detail="Invalid repair file set.")
+    missing = [name for name in names if not (source_dir / name).exists()]
+    if missing:
+        return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link="", detail=f"Missing repair files: {missing}")
+    data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    link = str(data.get("package", {}).get("package_link", ""))
+    match = re.search(r"/folders/([A-Za-z0-9_-]+)", link)
+    folder_id = match.group(1) if match else str(data.get("package", {}).get("drive_folder_id", ""))
+    if not settings.google_drive_upload_enabled or not folder_id:
+        return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link=link, folder_id=folder_id,
+            detail="Drive upload must be enabled and the existing folder ID must be present.")
+    try:
+        token = settings.google_drive_token_file or settings.project_root / "credentials" / "google_drive_token.json"
+        service = _build_drive_service(settings.google_drive_credentials_file, token)
+        query = f"'{folder_id}' in parents and trashed=false"
+        before = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+        if len(before) != 7 or {item.get("name", "") for item in before} != set(FINAL_OUTPUT_FILES):
+            return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link=link, folder_id=folder_id,
+                detail=f"Drive preflight refused repair: found {[item.get('name', '') for item in before]}.", remote_files=tuple(before))
+        for name in names:
+            if name != "manifest.json":
+                _upload_file(service, folder_id, source_dir / name)
+        detail = f"Replaced {len(names)} repaired files; Drive folder contains 7 exact final files."
+        _set_manifest_drive_result(manifest_path, "UPLOADED", detail)
+        _upload_file(service, folder_id, manifest_path)
+        after = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+        ok = len(after) == 7 and {item.get("name", "") for item in after} == set(FINAL_OUTPUT_FILES)
+        return DriveUploadResult(status="UPLOADED" if ok else "FAILED", publish_mode="package_repair", package_link=link,
+            folder_id=folder_id, detail=detail if ok else "Drive post-repair exact-seven validation failed.",
+            uploaded_files=names, remote_files=tuple(after))
+    except Exception as exc:
+        return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link=link, folder_id=folder_id,
+            detail=f"Drive package repair failed: {type(exc).__name__}: {exc}")
+
+
+def _set_manifest_drive_result(path: Path, status: str, detail: str) -> None:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    package = data.setdefault("package", {})
+    package["drive_status"] = status
+    package["drive_detail"] = detail
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+__all__ = ["DriveUploadResult", "upload_final_package", "upload_story_package", "replace_component_files", "replace_existing_files"]
