@@ -34,6 +34,7 @@ def write_manifest(
     style_reference_used: bool = False,
     identity_consistency_score: int = 0,
     waveform_metrics=None,
+    matching_coverage: dict | None = None,
 ) -> None:
     now = datetime.now(ZoneInfo(settings.app_timezone)).isoformat(timespec="seconds")
     story_text = paths.story_md.read_text(encoding="utf-8") if paths.story_md.exists() else ""
@@ -91,6 +92,7 @@ def write_manifest(
             "page_count": activity_page_count,
             "qa_score": activity_score,
             "answer_key": activity.answer_key if activity and activity.answer_key else [],
+            "matching_coverage": matching_coverage or {},
         },
         "quality": {
             "status": quality_status,
@@ -115,6 +117,7 @@ def update_component_manifest(
     coloring_score: int, identity_consistency_score: int, poster_reference_used: bool,
     style_reference_used: bool, drive_status: str | None = None, drive_detail: str | None = None,
     coloring_model: str = "", model_override: str = "", coloring_requested_size: str = "1024x1536",
+    matching_coverage: dict | None = None,
 ) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     data["generated_at"] = datetime.now(ZoneInfo("America/New_York")).isoformat(timespec="seconds")
@@ -124,6 +127,7 @@ def update_component_manifest(
         "estimated_minutes": activity.estimated_minutes, "parent_effort": activity.parent_effort,
         "page_count": activity_page_count, "qa_score": activity_score,
         "answer_key": activity.answer_key,
+        "matching_coverage": matching_coverage or data.get("activity", {}).get("matching_coverage") or {},
     }
     images = data.setdefault("images", {})
     images["coloring_qa_score"] = coloring_score

@@ -325,6 +325,7 @@ def _run_once(
         poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
         identity_consistency_score=identity_score,
         waveform_metrics=waveform_metrics,
+        matching_coverage=pdf_check.matching_coverage,
     )
 
     drive_status = "SKIPPED"
@@ -367,6 +368,7 @@ def _run_once(
             poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
             identity_consistency_score=identity_score,
             waveform_metrics=waveform_metrics,
+            matching_coverage=pdf_check.matching_coverage,
         )
         paths.whatsapp_caption.write_text(
             format_whatsapp_caption(
@@ -451,6 +453,7 @@ def _run_once(
         poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
         identity_consistency_score=identity_score,
         waveform_metrics=waveform_metrics,
+        matching_coverage=pdf_check.matching_coverage,
     )
 
     ok, quality_errors, quality_warnings = run_quality_checks(
@@ -563,6 +566,7 @@ def _rebuild_components(
         style_reference_used=style_ref, drive_status="SKIPPED" if no_upload else "PENDING_COMPONENT_REPLACE",
         drive_detail="Upload disabled by flag." if no_upload else "",
         coloring_model=ImageClient(settings).model, model_override=ImageClient(settings).model_override,
+        matching_coverage=pdf_check.matching_coverage,
     )
     upload = None
     if not no_upload:
@@ -574,6 +578,7 @@ def _rebuild_components(
                 identity_consistency_score=identity_score, poster_reference_used=poster_ref,
                 style_reference_used=style_ref, drive_status=upload.status, drive_detail=upload.detail,
                 coloring_model=ImageClient(settings).model, model_override=ImageClient(settings).model_override,
+                matching_coverage=pdf_check.matching_coverage,
             )
         if upload.status not in {"UPLOADED", "LOCAL_SYNC", "SKIPPED"}:
             raise PipelineError(upload.detail)

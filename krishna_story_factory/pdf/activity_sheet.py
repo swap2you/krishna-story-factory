@@ -14,7 +14,7 @@ from ..activities.models import (
     ActivityPack, ActivityPage, DecisionNode, MatchingCard, RolePlayCard, SequenceCard, SIMPLE_TYPES,
     component_label,
 )
-from ..activities.qa import pdf_text_has_generic_placeholders
+from ..activities.qa import matching_coverage_from_pdf_text, pdf_text_has_generic_placeholders, retain_matching_coverage_evidence
 from ..models import PlanRow
 
 PAGE_W, PAGE_H = letter
@@ -43,12 +43,15 @@ class PdfCheckResult:
     coverage: list[float]
     minimum_font_size: float
     errors: list[str]
+    matching_coverage: dict | None = None
 
 
 class ActivitySheetGenerator:
     def generate(self, plan: PlanRow, activity: ActivityPack, output_path: Path) -> PdfCheckResult:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         canvas = Canvas(str(output_path), pagesize=letter, pageCompression=1)
+        canvas.setTitle(activity.activity_title or "Activity Sheet")
+        canvas.setAuthor("Krishna Story Factory")
         # Prefer rich deterministic layouts for known packs; otherwise render each page.
         if activity.activity_type == "PRAYER_OR_GRATITUDE_CRAFT" and any(
             p.page_type == "PRAYER_WHEEL" for p in activity.pages
@@ -136,9 +139,12 @@ def validate_activity_pdf(
     placeholder_hits = pdf_text_has_generic_placeholders(text_blob)
     if placeholder_hits:
         errors.append("Activity PDF contains generic placeholders: " + ", ".join(placeholder_hits[:6]))
+    matching_meta = None
+    if activity is not None:
+        matching_meta = _append_matching_coverage_errors(errors, activity, text_blob, render_dir)
     if min_font < 9.8:
         errors.append(f"Minimum font size is {min_font:.1f} pt; expected about 10 pt or larger.")
-    return PdfCheckResult(page_count, coverage, 0 if min_font == 99 else min_font, errors)
+    return PdfCheckResult(page_count, coverage, 0 if min_font == 99 else min_font, errors, matching_meta)
 
 
 def _pdfium_pdf_check(
@@ -181,10 +187,37 @@ def _pdfium_pdf_check(
     placeholder_hits = pdf_text_has_generic_placeholders(joined)
     if placeholder_hits:
         errors.append("Activity PDF contains generic placeholders: " + ", ".join(placeholder_hits[:6]))
+    matching_meta = _append_matching_coverage_errors(errors, activity, joined, render_dir)
     doc.close()
     if temporary:
         temporary.cleanup()
-    return PdfCheckResult(page_count, coverage, 10.0, errors)
+    return PdfCheckResult(page_count, coverage, 10.0, errors, matching_meta)
+
+
+def _append_matching_coverage_errors(
+    errors: list[str], activity: ActivityPack | None, text_blob: str, render_dir: Path | None
+) -> dict | None:
+    if activity is None:
+        return None
+    coverage_check = matching_coverage_from_pdf_text(activity, text_blob)
+    if not coverage_check.pass_:
+        if coverage_check.missing_labels:
+            errors.append("Matching coverage missing labels: " + ", ".join(coverage_check.missing_labels[:8]))
+        if coverage_check.orphan_labels:
+            errors.append("Matching coverage orphans: " + "; ".join(coverage_check.orphan_labels[:6]))
+    try:
+        chapter_guess = ""
+        if render_dir and render_dir.parent:
+            chapter_guess = render_dir.parent.name[:3]
+        retain_matching_coverage_evidence(
+            Path.cwd(),
+            chapter_no=chapter_guess or "005",
+            coverage=coverage_check,
+            pdf_text=text_blob,
+        )
+    except Exception:
+        pass
+    return coverage_check.to_dict()
 
 
 def _page_bounds(activity: ActivityPack | None) -> tuple[int, int]:
@@ -235,7 +268,23 @@ def _fallback_pdf_check(path: Path, render_dir: Path | None, activity: ActivityP
         temporary.cleanup()
     if not coverage:
         coverage = [0.0] * count
-    return PdfCheckResult(count, coverage, 10.0, errors)
+    matching_meta = None
+    # Fallback path may lack text extraction; still fail closed if activity provided and no text.
+    if activity is not None:
+        text_blob = ""
+        try:
+            import fitz
+            doc = fitz.open(path)
+            text_blob = "\n".join(page.get_text() for page in doc)
+            doc.close()
+        except Exception:
+            try:
+                data = path.read_bytes()
+                text_blob = data.decode("latin-1", errors="ignore")
+            except Exception:
+                text_blob = ""
+        matching_meta = _append_matching_coverage_errors(errors, activity, text_blob, render_dir)
+    return PdfCheckResult(count, coverage, 10.0, errors, matching_meta)
 
 
 def _find_pdftoppm() -> Path | None:
@@ -400,39 +449,72 @@ def _render_decision_tree(c: Canvas, plan: PlanRow, activity: ActivityPack, page
 
 
 def _render_matching_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    """Render every MatchingCard pair. Never silently truncate; paginate when needed."""
     c.setFont(FONT_BOLD, 12)
-    c.drawString(MARGIN, y, "Match the helpers and actions")
-    y -= 0.25 * inch
-    for step in page.instructions[:3]:
-        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
-        y -= 0.04 * inch
+    c.drawString(MARGIN, y, "Match each figure to why they came")
+    y -= 0.22 * inch
+    for step in page.instructions[:4]:
+        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN, 10.5, 13)
+        y -= 0.02 * inch
     pairs = [item for item in page.components if isinstance(item, MatchingCard)]
-    if pairs:
-        left = [item.left for item in pairs]
-        right = [item.right for item in reversed(pairs)]
-    else:
-        comps = [component_label(item) for item in page.components] or ["A", "B", "C", "D", "1", "2", "3", "4"]
-        left = comps[: len(comps) // 2] or comps[:4]
-        right = comps[len(comps) // 2 :] or comps[4:8]
-    c.setDash(4, 3)
-    for i, label in enumerate(left[:4]):
-        yy = 6.2 * inch - i * 1.15 * inch
-        c.roundRect(MARGIN, yy, 3.1 * inch, 0.9 * inch, 8, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 11)
-        c.drawString(MARGIN + 0.15 * inch, yy + 0.4 * inch, label[:36])
-    for i, label in enumerate(right[:4]):
-        yy = 6.2 * inch - i * 1.15 * inch
-        c.roundRect(PAGE_W / 2 + 0.15 * inch, yy, 3.1 * inch, 0.9 * inch, 8, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 11)
-        c.drawString(PAGE_W / 2 + 0.3 * inch, yy + 0.4 * inch, label[:36])
-    c.setDash()
-    if activity.safety_note:
-        c.setFont(FONT_BOLD, 10)
-        c.drawString(MARGIN, 1.0 * inch, activity.safety_note[:110])
-    # Family reflection footer area
-    c.roundRect(MARGIN, 1.35 * inch, PAGE_W - 2 * MARGIN, 0.7 * inch, 6, stroke=1, fill=0)
-    c.setFont(FONT_REGULAR, 10.5)
-    c.drawString(MARGIN + 0.15 * inch, 1.7 * inch, "Family reflection: My prayer for the world is ________________________________")
+    if not pairs:
+        comps = [component_label(item) for item in page.components]
+        half = max(1, len(comps) // 2)
+        pairs = [
+            MatchingCard(comps[i], comps[half + i] if half + i < len(comps) else f"Match {i + 1}", "story", pair_id=chr(65 + i))
+            for i in range(min(half, len(comps)))
+        ]
+    # Stable IDs on the left; shuffle rights without dropping any pair.
+    left_items = [(p.pair_id or chr(65 + i), p.left) for i, p in enumerate(pairs)]
+    right_items = list(pairs)
+    # Deterministic shuffle by reverse + rotate so answers are not in printed left order.
+    if len(right_items) > 1:
+        right_items = list(reversed(right_items))
+        right_items = right_items[1:] + right_items[:1]
+
+    per_page = 5
+    remaining_left = left_items
+    remaining_right = [(p.pair_id or "", p.right) for p in right_items]
+    first = True
+    while remaining_left or remaining_right:
+        if not first:
+            c.showPage()
+            y = _header(c, plan, activity, c.getPageNumber(), page.page_title)
+            y = _story_box(c, page.story_connection or activity.story_connection, y)
+            y -= 0.15 * inch
+            c.setFont(FONT_BOLD, 11)
+            c.drawString(MARGIN, y, "Match continued")
+            y -= 0.25 * inch
+        first = False
+        batch_left = remaining_left[:per_page]
+        batch_right = remaining_right[:per_page]
+        remaining_left = remaining_left[per_page:]
+        remaining_right = remaining_right[per_page:]
+        row_h = 0.95 * inch if len(batch_left) >= 5 else 1.1 * inch
+        top = min(y - 0.1 * inch, 6.35 * inch)
+        c.setDash(4, 3)
+        for i, (pair_id, label) in enumerate(batch_left):
+            yy = top - i * row_h
+            c.roundRect(MARGIN, yy, 3.15 * inch, row_h - 0.12 * inch, 8, stroke=1, fill=0)
+            c.setFont(FONT_BOLD, 10)
+            c.drawString(MARGIN + 0.12 * inch, yy + row_h - 0.32 * inch, f"{pair_id}.")
+            _wrapped_font(c, label, MARGIN + 0.4 * inch, yy + row_h - 0.32 * inch, 2.55 * inch, font=FONT_BOLD, size=10.5, leading=12)
+        for i, (_pair_id, label) in enumerate(batch_right):
+            yy = top - i * row_h
+            c.roundRect(PAGE_W / 2 + 0.1 * inch, yy, 3.15 * inch, row_h - 0.12 * inch, 8, stroke=1, fill=0)
+            _wrapped_font(
+                c, label, PAGE_W / 2 + 0.25 * inch, yy + row_h - 0.32 * inch, 2.85 * inch,
+                font=FONT_BOLD, size=10.5, leading=12,
+            )
+        c.setDash()
+        if remaining_left or remaining_right:
+            continue
+        if activity.safety_note:
+            c.setFont(FONT_BOLD, 10)
+            c.drawString(MARGIN, 0.85 * inch, activity.safety_note[:110])
+        ages = activity.age_variants or {}
+        note = f"Younger: {ages.get('ages_6_8', 'draw lines or cut-and-match.')}  Older: {ages.get('ages_9_13', 'write one reason.')}"
+        _wrapped(c, note[:160], MARGIN, 1.15 * inch, PAGE_W - 2 * MARGIN, 9.5, 11)
 
 
 def _render_role_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:

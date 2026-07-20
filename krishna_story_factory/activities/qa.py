@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from .models import ActivityPack, SequenceCard, component_label
+import json
+import re
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+
+from .models import ActivityPack, MatchingCard, SequenceCard, component_label
 
 GENERIC_PLACEHOLDERS = frozenset(
     {
@@ -19,6 +24,22 @@ GENERIC_PLACEHOLDERS = frozenset(
         "after",
     }
 )
+
+
+@dataclass(slots=True)
+class MatchingCoverageResult:
+    expected_pairs: int = 0
+    rendered_pairs: int = 0
+    missing_labels: list[str] = field(default_factory=list)
+    orphan_labels: list[str] = field(default_factory=list)
+    left_count: int = 0
+    right_count: int = 0
+    pass_: bool = True
+
+    def to_dict(self) -> dict:
+        data = asdict(self)
+        data["pass"] = data.pop("pass_")
+        return data
 
 
 def semantic_activity_errors(pack: ActivityPack) -> list[str]:
@@ -58,9 +79,57 @@ def semantic_activity_errors(pack: ActivityPack) -> list[str]:
     return errors
 
 
-def pdf_text_has_generic_placeholders(text: str) -> list[str]:
-    import re
+def matching_coverage_from_pdf_text(activity: ActivityPack, pdf_text: str) -> MatchingCoverageResult:
+    """Compare expected MatchingCard labels to extracted PDF text."""
+    pairs: list[MatchingCard] = []
+    for page in activity.pages:
+        if page.page_type in {"MATCHING_CARDS", "SORTING_CARDS"}:
+            pairs.extend(item for item in page.components if isinstance(item, MatchingCard))
+    if not pairs:
+        return MatchingCoverageResult(pass_=True)
 
+    blob = " ".join((pdf_text or "").lower().split())
+    lefts = [p.left.strip() for p in pairs]
+    rights = [p.right.strip() for p in pairs]
+    missing: list[str] = []
+    for label in lefts + rights:
+        if not _label_in_blob(label, blob):
+            missing.append(label)
+
+    # Orphans: PDF should not invent unmatched stub answers when counts differ after truncation.
+    left_present = sum(1 for label in lefts if _label_in_blob(label, blob))
+    right_present = sum(1 for label in rights if _label_in_blob(label, blob))
+    orphans: list[str] = []
+    if left_present != right_present:
+        orphans.append(f"left/right rendered count mismatch: {left_present} vs {right_present}")
+    if left_present < len(lefts):
+        orphans.append("incomplete left-column coverage")
+    if right_present < len(rights):
+        orphans.append("incomplete right-column coverage")
+
+    result = MatchingCoverageResult(
+        expected_pairs=len(pairs),
+        rendered_pairs=min(left_present, right_present),
+        missing_labels=missing,
+        orphan_labels=orphans,
+        left_count=left_present,
+        right_count=right_present,
+        pass_=not missing and not orphans and left_present == len(lefts) and right_present == len(rights),
+    )
+    return result
+
+
+def retain_matching_coverage_evidence(
+    project_root: Path, *, chapter_no: str, coverage: MatchingCoverageResult, pdf_text: str
+) -> Path:
+    dest = project_root / ".work" / "qa" / str(chapter_no).zfill(3)
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "matching_coverage.json").write_text(json.dumps(coverage.to_dict(), indent=2), encoding="utf-8")
+    (dest / "activity_pdf_text.txt").write_text(pdf_text or "", encoding="utf-8")
+    return dest
+
+
+def pdf_text_has_generic_placeholders(text: str) -> list[str]:
     blob = " ".join((text or "").lower().split())
     # Only multi-word phrases for PDF text — single tokens like "before"/"helper"
     # appear in ordinary instructions and are handled by semantic component checks.
@@ -72,9 +141,24 @@ def pdf_text_has_generic_placeholders(text: str) -> list[str]:
     return hits
 
 
+def _label_in_blob(label: str, blob: str) -> bool:
+    normalized = " ".join((label or "").lower().split())
+    if not normalized:
+        return False
+    # Allow soft hyphen / wrapping noise by checking contiguous normalized form.
+    return normalized in blob
+
+
 def _is_generic_placeholder(label: str) -> bool:
     normalized = " ".join((label or "").strip().lower().split())
     return (not normalized) or normalized in GENERIC_PLACEHOLDERS
 
 
-__all__ = ["GENERIC_PLACEHOLDERS", "semantic_activity_errors", "pdf_text_has_generic_placeholders"]
+__all__ = [
+    "GENERIC_PLACEHOLDERS",
+    "MatchingCoverageResult",
+    "semantic_activity_errors",
+    "pdf_text_has_generic_placeholders",
+    "matching_coverage_from_pdf_text",
+    "retain_matching_coverage_evidence",
+]
