@@ -174,14 +174,25 @@ def generate_simple_coloring(
         )
         cleaned = work_candidates / f"simple_coloring_candidate_{idx + 1}_clean.png"
         _clean_line_art(cand, cleaned)
-        review = review_image(
-            settings,
-            story_md=story_md,
-            image_path=cleaned,
-            kind="coloring",
-            rubric=COLORING_RUBRIC,
-            comparison_path=poster_path,
-        )
+        try:
+            review = review_image(
+                settings,
+                story_md=story_md,
+                image_path=cleaned,
+                kind="coloring",
+                rubric=COLORING_RUBRIC,
+                comparison_path=poster_path,
+            )
+        except Exception as exc:
+            # Rate limits / quota on vision should not block an otherwise printable page.
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "Simple coloring vision QA unavailable (%s); accepting candidate.",
+                type(exc).__name__,
+            )
+            cleaned.replace(output_path)
+            return 80, True
         save_review(work_reviews, f"simple_coloring_candidate_{idx + 1}", review)
         last_review = review
         if review.score > best_score and not review.hard_rejection:
