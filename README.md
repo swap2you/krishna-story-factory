@@ -40,7 +40,11 @@ output/<chapter_no>_<slug>/
   manifest.json
 ```
 
-The adaptive activity sheet is a validated one- or two-page PDF tied to the selected pastime.
+The adaptive activity sheet is a validated 2–4 page ActivityPack PDF (1 page only for
+simple types). See [docs/11_ACTIVITY_ENGINE_V2.md](docs/11_ACTIVITY_ENGINE_V2.md).
+
+WhatsApp and Telegram sending are disabled for v1 delivery; Google Drive upload is the
+package distribution path.
 
 ## Google Drive package link
 

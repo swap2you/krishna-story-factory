@@ -8,7 +8,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen.canvas import Canvas
 
-from ..activities.planner import ActivityPlan
+from ..activities.models import ActivityPack, ActivityPage, SIMPLE_TYPES
 from ..models import PlanRow
 
 PAGE_W, PAGE_H = letter
@@ -24,36 +24,51 @@ class PdfCheckResult:
 
 
 class ActivitySheetGenerator:
-    def generate(self, plan: PlanRow, activity: ActivityPlan, output_path: Path) -> PdfCheckResult:
+    def generate(self, plan: PlanRow, activity: ActivityPack, output_path: Path) -> PdfCheckResult:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         canvas = Canvas(str(output_path), pagesize=letter, pageCompression=1)
-        if activity.activity_type == "PRAYER_OR_GRATITUDE_CRAFT":
+        # Prefer rich deterministic layouts for known packs; otherwise render each page.
+        if activity.activity_type == "PRAYER_OR_GRATITUDE_CRAFT" and any(
+            p.page_type == "PRAYER_WHEEL" for p in activity.pages
+        ):
             _render_prayer_wheel(canvas, plan, activity)
+            support = [p for p in activity.pages if p.page_type != "PRAYER_WHEEL"]
+            for page in support:
+                _render_page(canvas, plan, activity, page)
         elif activity.activity_type == "CUT_AND_BUILD":
             _render_cut_and_build(canvas, plan, activity)
-        elif activity.activity_type in {"MINI_DRAMA", "ROLE_CARDS"}:
-            _render_role_cards(canvas, plan, activity)
-        elif activity.activity_type in {"MATCHING_GAME", "SORTING_GAME", "MEMORY_GAME"}:
-            _render_matching(canvas, plan, activity)
-        elif activity.activity_type == "STORY_SEQUENCE":
-            _render_sequence(canvas, plan, activity)
+            support = [p for p in activity.pages if p.page_type not in {"CUT_AND_BUILD_PARTS", "STORY_SEQUENCE_CARDS"}]
+            # cut_and_build already renders 2 pages covering parts+sequence; add remaining support pages
+            for page in support:
+                _render_page(canvas, plan, activity, page)
         else:
-            _render_word_or_path(canvas, plan, activity)
+            for page in activity.pages:
+                if page.page_type == "ANSWER_KEY_INTERNAL_ONLY":
+                    continue
+                _render_page(canvas, plan, activity, page)
         canvas.save()
-        return validate_activity_pdf(output_path)
+        return validate_activity_pdf(output_path, activity=activity)
 
 
-def validate_activity_pdf(path: Path, render_dir: Path | None = None) -> PdfCheckResult:
+def validate_activity_pdf(
+    path: Path,
+    render_dir: Path | None = None,
+    activity: ActivityPack | None = None,
+) -> PdfCheckResult:
     try:
         import fitz
     except ImportError:
-        return _fallback_pdf_check(path, render_dir)
+        return _fallback_pdf_check(path, render_dir, activity=activity)
     doc = fitz.open(path)
     errors: list[str] = []
     coverage: list[float] = []
     min_font = 99.0
-    if len(doc) not in {1, 2}:
-        errors.append(f"Activity PDF has {len(doc)} pages; expected one or two.")
+    page_count = len(doc)
+    min_pages, max_pages = _page_bounds(activity)
+    if not min_pages <= page_count <= max_pages:
+        errors.append(f"Activity PDF has {page_count} pages; expected {min_pages}-{max_pages}.")
+    if page_count > 5:
+        errors.append(f"Activity PDF has {page_count} pages; maximum is 5.")
     for index, page in enumerate(doc):
         blocks = page.get_text("dict").get("blocks", [])
         rects = []
@@ -83,17 +98,29 @@ def validate_activity_pdf(path: Path, render_dir: Path | None = None) -> PdfChec
             render_dir.mkdir(parents=True, exist_ok=True)
             pix = page.get_pixmap(matrix=fitz.Matrix(1.5, 1.5), alpha=False)
             pix.save(render_dir / f"activity_page_{index + 1}.png")
+    # Hard reject if coloring image appears embedded
+    text_blob = " ".join(page.get_text() for page in doc).lower()
+    if "coloring_page.png" in text_blob or "embedded coloring" in text_blob:
+        errors.append("Activity PDF must not embed coloring_page.png.")
     if min_font < 9.8:
         errors.append(f"Minimum font size is {min_font:.1f} pt; expected about 10 pt or larger.")
-    return PdfCheckResult(len(doc), coverage, 0 if min_font == 99 else min_font, errors)
+    return PdfCheckResult(page_count, coverage, 0 if min_font == 99 else min_font, errors)
 
 
-def _fallback_pdf_check(path: Path, render_dir: Path | None) -> PdfCheckResult:
-    """Render with Poppler when PyMuPDF is absent and validate page coverage from pixels."""
+def _page_bounds(activity: ActivityPack | None) -> tuple[int, int]:
+    if activity and activity.activity_type in SIMPLE_TYPES:
+        return 1, 2
+    return 2, 4
+
+
+def _fallback_pdf_check(path: Path, render_dir: Path | None, activity: ActivityPack | None = None) -> PdfCheckResult:
     import re
     data = path.read_bytes()
     count = len(re.findall(rb"/Type\s*/Page(?!s)", data))
-    errors = [] if count in {1, 2} else [f"Activity PDF has {count} pages; expected one or two."]
+    min_pages, max_pages = _page_bounds(activity)
+    errors = [] if min_pages <= count <= max_pages else [f"Activity PDF has {count} pages; expected {min_pages}-{max_pages}."]
+    if count > 5:
+        errors.append(f"Activity PDF has {count} pages; maximum is 5.")
     coverage: list[float] = []
     import subprocess
     import tempfile
@@ -163,12 +190,13 @@ def _rendered_content_metrics(path: Path) -> tuple[float, float]:
     return round(bbox_area / total, 3), ink_pixels / total
 
 
-def _header(c: Canvas, plan: PlanRow, activity: ActivityPlan, page: int) -> float:
+def _header(c: Canvas, plan: PlanRow, activity: ActivityPack, page: int, page_title: str = "") -> float:
     c.setStrokeColorRGB(0.15, 0.15, 0.15)
     c.setLineWidth(1.2)
     c.roundRect(MARGIN, PAGE_H - 1.05 * inch, PAGE_W - 2 * MARGIN, 0.55 * inch, 8, stroke=1, fill=0)
-    c.setFont("Helvetica-Bold", 21)
-    c.drawCentredString(PAGE_W / 2, PAGE_H - 0.7 * inch, activity.activity_title)
+    title = page_title or activity.activity_title
+    c.setFont("Helvetica-Bold", 18 if len(title) > 42 else 21)
+    c.drawCentredString(PAGE_W / 2, PAGE_H - 0.7 * inch, title[:70])
     c.setFont("Helvetica", 10.5)
     c.drawCentredString(PAGE_W / 2, PAGE_H - 0.92 * inch, f"{plan.title}  |  {activity.estimated_minutes} minutes")
     _footer(c, plan, page)
@@ -189,103 +217,378 @@ def _wrapped(c: Canvas, text: str, x: float, y: float, width: float, size: float
         if c.stringWidth(trial, "Helvetica", size) <= width:
             current = trial
         else:
-            lines.append(current); current = word
+            lines.append(current)
+            current = word
     if current:
         lines.append(current)
     for line in lines:
-        c.drawString(x, y, line); y -= leading
+        c.drawString(x, y, line)
+        y -= leading
     return y
 
 
-def _render_prayer_wheel(c: Canvas, plan: PlanRow, a: ActivityPlan) -> None:
+def _story_box(c: Canvas, text: str, y: float) -> float:
+    c.setStrokeColorRGB(0.2, 0.2, 0.2)
+    c.roundRect(MARGIN, y - 0.55 * inch, PAGE_W - 2 * MARGIN, 0.55 * inch, 6, stroke=1, fill=0)
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(MARGIN + 0.12 * inch, y - 0.18 * inch, "Story connection")
+    return _wrapped(c, text, MARGIN + 0.12 * inch, y - 0.36 * inch, PAGE_W - 2 * MARGIN - 0.24 * inch, 10, 12)
+
+
+def _render_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage) -> None:
+    page_no = c.getPageNumber()
+    y = _header(c, plan, activity, page_no, page.page_title)
+    y = _story_box(c, page.story_connection or activity.story_connection, y)
+    y -= 0.2 * inch
+    if page.page_type == "DECISION_TREE":
+        _render_decision_tree(c, plan, activity, page, y)
+    elif page.page_type in {"MATCHING_CARDS", "SORTING_CARDS"}:
+        _render_matching_page(c, plan, activity, page, y)
+    elif page.page_type == "ROLE_PLAY_CARDS":
+        _render_role_page(c, plan, activity, page, y)
+    elif page.page_type == "FAMILY_MISSION":
+        _render_family_mission(c, plan, activity, page, y)
+    elif page.page_type == "STORY_MAP":
+        _render_story_map(c, plan, activity, page, y)
+    elif page.page_type == "MAZE_OR_PATH":
+        _render_path(c, plan, activity, page, y)
+    elif page.page_type == "WORD_SEARCH":
+        _render_word_search_page(c, plan, activity, page, y)
+    elif page.page_type == "DRAW_AND_REFLECT":
+        _render_draw_reflect(c, plan, activity, page, y)
+    elif page.page_type == "STORY_SEQUENCE_CARDS":
+        _render_sequence_page(c, plan, activity, page, y)
+    elif page.page_type == "QUICK_DISCUSSION":
+        _render_discussion(c, plan, activity, page, y)
+    else:
+        _render_generic_cards(c, plan, activity, page, y)
+    c.showPage()
+
+
+def _render_decision_tree(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(MARGIN, y, "Promise and duty decision tree")
+    y -= 0.28 * inch
+    for step in page.instructions:
+        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN, 10.5)
+        y -= 0.05 * inch
+    # Tree boxes
+    c.roundRect(PAGE_W / 2 - 1.4 * inch, 6.4 * inch, 2.8 * inch, 0.7 * inch, 8, stroke=1, fill=0)
+    c.setFont("Helvetica-Bold", 11)
+    c.drawCentredString(PAGE_W / 2, 6.68 * inch, "A hard promise appears")
+    c.line(PAGE_W / 2, 6.4 * inch, PAGE_W / 2 - 1.8 * inch, 5.5 * inch)
+    c.line(PAGE_W / 2, 6.4 * inch, PAGE_W / 2 + 1.8 * inch, 5.5 * inch)
+    c.roundRect(MARGIN + 0.2 * inch, 4.7 * inch, 2.8 * inch, 0.8 * inch, 8, stroke=1, fill=0)
+    c.roundRect(PAGE_W - MARGIN - 3.0 * inch, 4.7 * inch, 2.8 * inch, 0.8 * inch, 8, stroke=1, fill=0)
+    c.setFont("Helvetica-Bold", 10.5)
+    c.drawCentredString(MARGIN + 1.6 * inch, 5.05 * inch, "Keep the word")
+    c.drawCentredString(PAGE_W - MARGIN - 1.6 * inch, 5.05 * inch, "Break the word")
+    c.setFont("Helvetica", 9.5)
+    c.drawCentredString(MARGIN + 1.6 * inch, 4.85 * inch, "Mark Vasudeva's path")
+    c.drawCentredString(PAGE_W - MARGIN - 1.6 * inch, 4.85 * inch, "Discuss why this hurts trust")
+    c.roundRect(MARGIN, 2.4 * inch, PAGE_W - 2 * MARGIN, 1.8 * inch, 8, stroke=1, fill=0)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(MARGIN + 0.2 * inch, 3.85 * inch, "Family promise card")
+    c.setFont("Helvetica", 10.5)
+    c.drawString(MARGIN + 0.2 * inch, 3.5 * inch, "One promise I can keep with care:")
+    c.line(MARGIN + 0.2 * inch, 3.15 * inch, PAGE_W - MARGIN - 0.2 * inch, 3.15 * inch)
+    c.line(MARGIN + 0.2 * inch, 2.8 * inch, PAGE_W - MARGIN - 0.2 * inch, 2.8 * inch)
+    c.drawString(MARGIN + 0.2 * inch, 2.55 * inch, "Parent signature: ________________   Date: __________")
+    if activity.completion_prompt:
+        c.setFont("Helvetica-Bold", 10.5)
+        c.drawString(MARGIN, 1.1 * inch, activity.completion_prompt[:110])
+
+
+def _render_matching_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(MARGIN, y, "Match the helpers and actions")
+    y -= 0.25 * inch
+    for step in page.instructions[:3]:
+        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
+        y -= 0.04 * inch
+    comps = page.components or ["A", "B", "C", "D", "1", "2", "3", "4"]
+    left = comps[: len(comps) // 2] or comps[:4]
+    right = comps[len(comps) // 2 :] or comps[4:8]
+    c.setDash(4, 3)
+    for i, label in enumerate(left[:4]):
+        yy = 6.2 * inch - i * 1.15 * inch
+        c.roundRect(MARGIN, yy, 3.1 * inch, 0.9 * inch, 8, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(MARGIN + 0.15 * inch, yy + 0.4 * inch, label[:36])
+    for i, label in enumerate(right[:4]):
+        yy = 6.2 * inch - i * 1.15 * inch
+        c.roundRect(PAGE_W / 2 + 0.15 * inch, yy, 3.1 * inch, 0.9 * inch, 8, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(PAGE_W / 2 + 0.3 * inch, yy + 0.4 * inch, label[:36])
+    c.setDash()
+    if activity.safety_note:
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(MARGIN, 1.0 * inch, activity.safety_note[:110])
+    # Family reflection footer area
+    c.roundRect(MARGIN, 1.35 * inch, PAGE_W - 2 * MARGIN, 0.7 * inch, 6, stroke=1, fill=0)
+    c.setFont("Helvetica", 10.5)
+    c.drawString(MARGIN + 0.15 * inch, 1.7 * inch, "Family reflection: My prayer for the world is ________________________________")
+
+
+def _render_role_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    _render_generic_cards(c, plan, activity, page, y, prompt="Speak this short line and act the scene.")
+
+
+def _render_family_mission(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(MARGIN, y, "Family mission")
+    y -= 0.3 * inch
+    for step in page.instructions:
+        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
+        y -= 0.05 * inch
+    c.roundRect(MARGIN, 3.2 * inch, PAGE_W - 2 * MARGIN, 2.4 * inch, 10, stroke=1, fill=0)
+    c.setFont("Helvetica-Bold", 14)
+    c.drawCentredString(PAGE_W / 2, 5.2 * inch, "Today's kindness from the story")
+    c.setFont("Helvetica", 11)
+    c.drawString(MARGIN + 0.3 * inch, 4.7 * inch, "We will: _______________________________________________")
+    c.drawString(MARGIN + 0.3 * inch, 4.2 * inch, "Because the story taught us: ____________________________")
+    c.rect(MARGIN + 0.3 * inch, 3.5 * inch, 0.28 * inch, 0.28 * inch, stroke=1, fill=0)
+    c.drawString(MARGIN + 0.7 * inch, 3.55 * inch, "Done together")
+    if activity.review_questions:
+        c.setFont("Helvetica-Bold", 10.5)
+        c.drawString(MARGIN, 2.5 * inch, "Talk about it:")
+        yy = 2.25 * inch
+        for q in activity.review_questions[:2]:
+            yy = _wrapped(c, f"• {q}", MARGIN, yy, PAGE_W - 2 * MARGIN)
+            yy -= 0.08 * inch
+
+
+def _render_story_map(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    labels = page.components[:3] or ["Beginning", "Turning point", "Lesson"]
+    for i, label in enumerate(labels):
+        yy = 6.5 * inch - i * 1.7 * inch
+        c.roundRect(MARGIN, yy, PAGE_W - 2 * MARGIN, 1.4 * inch, 8, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(MARGIN + 0.2 * inch, yy + 1.05 * inch, label)
+        c.setFont("Helvetica", 10)
+        c.drawString(MARGIN + 0.2 * inch, yy + 0.7 * inch, "Write or draw what happened:")
+
+
+def _render_path(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    comps = page.components or ["Start", "Clue 1", "Clue 2", "Turning point", "Kind choice", "Finish"]
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(MARGIN, y, "Trace the path through the pastime")
+    for i, label in enumerate(comps[:6]):
+        row, col = divmod(i, 2)
+        x = MARGIN + col * 3.65 * inch
+        yy = 6.3 * inch - row * 1.4 * inch
+        c.roundRect(x, yy, 3.25 * inch, 1.05 * inch, 8, stroke=1, fill=0)
+        c.circle(x + 0.35 * inch, yy + 0.52 * inch, 0.18 * inch, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(x + 0.7 * inch, yy + 0.48 * inch, label)
+        if i < 5:
+            c.setFont("Helvetica-Bold", 14)
+            c.drawString(x + 3.0 * inch if col == 0 else x - 0.25 * inch, yy + 0.2 * inch, ">")
+
+
+def _render_word_search_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    from .word_search import build_word_search
+
+    words = page.components or ["Krishna", "prayer", "truth", "faith", "promise", "devotee"]
+    puzzle = build_word_search(words)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(MARGIN, y, "Find these story words:")
+    c.setFont("Helvetica", 10.5)
+    c.drawString(MARGIN, y - 0.25 * inch, ", ".join(puzzle.placed_words))
+    start_y = 6.8 * inch
+    cell = 0.32 * inch
+    for r, row in enumerate(puzzle.grid):
+        for col, ch in enumerate(row):
+            x = MARGIN + col * cell
+            yy = start_y - r * cell
+            c.rect(x, yy, cell, cell, stroke=1, fill=0)
+            c.setFont("Helvetica-Bold", 9)
+            c.drawCentredString(x + cell / 2, yy + 0.08 * inch, ch)
+    c.setFont("Helvetica", 10.5)
+    c.drawString(MARGIN, 1.4 * inch, "Circle one word and tell why it matters in this pastime.")
+
+
+def _render_draw_reflect(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    for step in page.instructions[:3]:
+        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
+        y -= 0.05 * inch
+    c.rect(MARGIN, 2.4 * inch, PAGE_W - 2 * MARGIN, 3.6 * inch, stroke=1, fill=0)
+    c.setFont("Helvetica", 10)
+    c.drawCentredString(PAGE_W / 2, 5.8 * inch, "Draw the turning point here")
+    c.drawString(MARGIN, 1.9 * inch, "One sentence reflection: _______________________________________________")
+
+
+def _render_sequence_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    labels = page.components or ["Event 1", "Event 2", "Event 3", "Event 4", "Event 5", "Event 6"]
+    for step in page.instructions[:2]:
+        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
+        y -= 0.04 * inch
+    c.setDash(4, 3)
+    for i, label in enumerate(labels[:6]):
+        row, col = divmod(i, 2)
+        x = MARGIN + col * 3.65 * inch
+        yy = 6.0 * inch - row * 1.55 * inch
+        c.roundRect(x, yy, 3.25 * inch, 1.25 * inch, 8, stroke=1, fill=0)
+        c.setDash()
+        c.rect(x + 0.12 * inch, yy + 0.7 * inch, 0.36 * inch, 0.36 * inch, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 10.5)
+        c.drawString(x + 0.6 * inch, yy + 0.8 * inch, label[:34])
+        c.setFont("Helvetica", 9.5)
+        c.drawString(x + 0.6 * inch, yy + 0.45 * inch, "Number + draw one detail")
+        c.setDash(4, 3)
+    c.setDash()
+
+
+def _render_discussion(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    questions = page.components or activity.review_questions or ["What was the kind choice?", "How can we practice it?"]
+    for i, q in enumerate(questions[:4], 1):
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(MARGIN, y, f"{i}. {q}")
+        y -= 0.25 * inch
+        c.line(MARGIN, y, PAGE_W - MARGIN, y)
+        y -= 0.45 * inch
+
+
+def _render_generic_cards(
+    c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float, prompt: str = "Draw or write a story-specific clue."
+) -> None:
+    labels = page.components[:6] or ["Card 1", "Card 2", "Card 3", "Card 4", "Card 5", "Card 6"]
+    for step in page.instructions[:2]:
+        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
+        y -= 0.04 * inch
+    c.setDash(4, 3)
+    for i, label in enumerate(labels):
+        row, col = divmod(i, 2)
+        x = MARGIN + col * 3.65 * inch
+        yy = 5.75 * inch - row * 1.55 * inch
+        c.roundRect(x, yy, 3.25 * inch, 1.18 * inch, 8, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(x + 0.16 * inch, yy + 0.82 * inch, label[:34])
+        c.setFont("Helvetica", 10)
+        c.drawString(x + 0.16 * inch, yy + 0.5 * inch, prompt[:42])
+    c.setDash()
+
+
+# --- Rich legacy layouts retained and extended ---
+
+def _render_prayer_wheel(c: Canvas, plan: PlanRow, a: ActivityPack) -> None:
     y = _header(c, plan, a, 1)
-    c.setFont("Helvetica-Bold", 12); c.drawString(MARGIN, y, "Make a prayer like Mother Earth, Brahma, and the demigods")
-    y = _wrapped(c, "Story link: Mother Earth cared for people, animals, and the world. Brahma led the demigods in prayer to Lord Vishnu.", MARGIN, y - 18, PAGE_W - 2 * MARGIN)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(MARGIN, y, "Make a prayer like Mother Earth, Brahma, and the demigods")
+    y = _wrapped(
+        c,
+        "Story link: Mother Earth cared for people, animals, and the world. Brahma led the demigods in prayer to Lord Vishnu.",
+        MARGIN, y - 18, PAGE_W - 2 * MARGIN,
+    )
     c.setFont("Helvetica-Bold", 10.5)
     c.drawString(MARGIN, y - 3, "1. Write or draw   2. Cut dotted outlines   3. Put petal tips behind center   4. Glue and share")
-    # A compact story path keeps the craft anchored to this exact pastime.
     story_y = 8.15 * inch
     story_boxes = ["Mother Earth as a sacred cow", "Brahma leads the prayers", "Vishnu promises Krishna will come"]
-    c.setDash(); c.setFont("Helvetica-Bold", 9)
+    c.setDash()
+    c.setFont("Helvetica-Bold", 9)
     for idx, story_step in enumerate(story_boxes):
         x = MARGIN + idx * 2.48 * inch
         c.roundRect(x, story_y, 2.1 * inch, 0.48 * inch, 5, stroke=1, fill=0)
         c.drawCentredString(x + 1.05 * inch, story_y + 0.19 * inch, story_step)
         if idx < 2:
-            c.setFont("Helvetica-Bold", 14); c.drawString(x + 2.18 * inch, story_y + 0.15 * inch, ">"); c.setFont("Helvetica-Bold", 9)
+            c.setFont("Helvetica-Bold", 14)
+            c.drawString(x + 2.18 * inch, story_y + 0.15 * inch, ">")
+            c.setFont("Helvetica-Bold", 9)
     prompts = ["My family", "Animals", "Mother Earth", "Someone who feels sad", "My community", "My special prayer"]
-    c.setDash(3, 3); c.setLineWidth(1)
+    c.setDash(3, 3)
+    c.setLineWidth(1)
     for idx, label in enumerate(prompts):
         row, col = divmod(idx, 3)
         px = (1.52 + col * 2.73) * inch
         py = (6.75 - row * 1.4) * inch
         c.ellipse(px - 1.05 * inch, py - 0.55 * inch, px + 1.05 * inch, py + 0.55 * inch, stroke=1, fill=0)
-        c.setFont("Helvetica-Bold", 10); c.drawCentredString(px, py + 4, label)
-        c.setDash(); c.line(px - 0.7 * inch, py - 0.18 * inch, px + 0.7 * inch, py - 0.18 * inch); c.setDash(3, 3)
-        c.setFont("Helvetica", 8.5); c.drawCentredString(px, py - 0.38 * inch, "write a sentence or draw")
-    c.setDash(); c.setLineWidth(1.5)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawCentredString(px, py + 4, label)
+        c.setDash()
+        c.line(px - 0.7 * inch, py - 0.18 * inch, px + 0.7 * inch, py - 0.18 * inch)
+        c.setDash(3, 3)
+        c.setFont("Helvetica", 8.5)
+        c.drawCentredString(px, py - 0.38 * inch, "write a sentence or draw")
+    c.setDash()
+    c.setLineWidth(1.5)
     cx, cy, radius = 2.15 * inch, 3.65 * inch, 0.72 * inch
     c.circle(cx, cy, radius, stroke=1, fill=0)
-    c.setFont("Helvetica-Bold", 11); c.drawCentredString(cx, cy + 6, "My Prayer")
+    c.setFont("Helvetica-Bold", 11)
+    c.drawCentredString(cx, cy + 6, "My Prayer")
     c.drawCentredString(cx, cy - 8, "for the World")
-    c.setFont("Helvetica", 8.5); c.drawCentredString(cx, cy - 0.38 * inch, "CUT OUT CENTER")
-    # Small finished-example silhouette so assembly is self-explanatory.
+    c.setFont("Helvetica", 8.5)
+    c.drawCentredString(cx, cy - 0.38 * inch, "CUT OUT CENTER")
     ex, ey = 5.75 * inch, 3.65 * inch
-    c.setDash()
     for idx in range(6):
         angle = math.radians(idx * 60)
         px, py = ex + math.cos(angle) * 0.72 * inch, ey + math.sin(angle) * 0.72 * inch
         c.ellipse(px - 0.38 * inch, py - 0.22 * inch, px + 0.38 * inch, py + 0.22 * inch, stroke=1, fill=0)
     c.circle(ex, ey, 0.38 * inch, stroke=1, fill=0)
-    c.setFont("Helvetica-Bold", 9.5); c.drawCentredString(ex, ey - 1.2 * inch, "FINISHED EXAMPLE - PETAL TIPS GO BEHIND CENTER")
-    c.setFont("Helvetica-Bold", 10.5); c.drawString(MARGIN, 1.22 * inch, a.safety_note)
-    _wrapped(c, "Ages 6-8: draw a picture.  Ages 9-13: write one sincere sentence.  Talk: " + a.review_questions[0], MARGIN, 0.98 * inch, PAGE_W - 2 * MARGIN, 10)
+    c.setFont("Helvetica-Bold", 9.5)
+    c.drawCentredString(ex, ey - 1.2 * inch, "FINISHED EXAMPLE - PETAL TIPS GO BEHIND CENTER")
+    c.setFont("Helvetica-Bold", 10.5)
+    c.drawString(MARGIN, 1.22 * inch, a.safety_note)
+    review = a.review_questions[0] if a.review_questions else "How did prayer show care?"
+    _wrapped(c, "Ages 6-8: draw.  Ages 9-13: write one sentence.  Talk: " + review, MARGIN, 0.98 * inch, PAGE_W - 2 * MARGIN, 10)
     c.showPage()
 
 
-def _render_cut_and_build(c: Canvas, plan: PlanRow, a: ActivityPlan) -> None:
+def _render_cut_and_build(c: Canvas, plan: PlanRow, a: ActivityPack) -> None:
     y = _header(c, plan, a, 1)
-    c.setFont("Helvetica-Bold", 11); c.drawString(MARGIN, y, "Color first. Cut on dotted lines. Fold on solid lines.")
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(MARGIN, y, "Color first. Cut on dotted lines. Fold on solid lines.")
     c.setFont("Helvetica-Bold", 9.5)
-    c.setDash(4, 3); c.line(MARGIN, y - 0.25 * inch, MARGIN + 0.7 * inch, y - 0.25 * inch)
-    c.setDash(); c.drawString(MARGIN + 0.78 * inch, y - 0.29 * inch, "CUT")
+    c.setDash(4, 3)
+    c.line(MARGIN, y - 0.25 * inch, MARGIN + 0.7 * inch, y - 0.25 * inch)
+    c.setDash()
+    c.drawString(MARGIN + 0.78 * inch, y - 0.29 * inch, "CUT")
     c.line(MARGIN + 1.35 * inch, y - 0.25 * inch, MARGIN + 2.05 * inch, y - 0.25 * inch)
     c.drawString(MARGIN + 2.13 * inch, y - 0.29 * inch, "FOLD")
     c.setDash(4, 3)
     body = (1.25 * inch, 4.65 * inch, 5.2 * inch, 2.1 * inch)
     c.roundRect(*body, 12, stroke=1, fill=0)
-    c.setFont("Helvetica-Bold", 15); c.drawCentredString(PAGE_W / 2, 5.85 * inch, "CHARIOT BODY")
-    c.setFont("Helvetica", 10); c.drawCentredString(PAGE_W / 2, 5.55 * inch, "Decorate with flower garlands")
+    c.setFont("Helvetica-Bold", 15)
+    c.drawCentredString(PAGE_W / 2, 5.85 * inch, "CHARIOT BODY")
+    c.setFont("Helvetica", 10)
+    c.drawCentredString(PAGE_W / 2, 5.55 * inch, "Decorate with flower garlands")
     for x in (2.2 * inch, 5.8 * inch):
-        c.circle(x, 3.85 * inch, 0.65 * inch, stroke=1, fill=0); c.circle(x, 3.85 * inch, 0.13 * inch, stroke=1, fill=0)
-        c.setFont("Helvetica-Bold", 10); c.drawCentredString(x, 3.08 * inch, "WHEEL")
+        c.circle(x, 3.85 * inch, 0.65 * inch, stroke=1, fill=0)
+        c.circle(x, 3.85 * inch, 0.13 * inch, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawCentredString(x, 3.08 * inch, "WHEEL")
     c.wedge(2.55 * inch, 6.9 * inch, 5.95 * inch, 8.75 * inch, 0, 180, stroke=1, fill=0)
-    c.setFont("Helvetica-Bold", 11); c.drawCentredString(PAGE_W / 2, 7.43 * inch, "CANOPY")
-    c.setDash(); c.line(1.55 * inch, 5.07 * inch, 6.95 * inch, 5.07 * inch)
-    c.setFont("Helvetica", 9); c.drawString(1.6 * inch, 5.13 * inch, "SOLID FOLD LINE")
-    c.setFont("Helvetica-Bold", 10.5); c.drawString(MARGIN, 1.55 * inch, a.safety_note)
+    c.setFont("Helvetica-Bold", 11)
+    c.drawCentredString(PAGE_W / 2, 7.43 * inch, "CANOPY")
+    c.setDash()
+    c.line(1.55 * inch, 5.07 * inch, 6.95 * inch, 5.07 * inch)
+    c.setFont("Helvetica", 9)
+    c.drawString(1.6 * inch, 5.13 * inch, "SOLID FOLD LINE")
+    c.setFont("Helvetica-Bold", 10.5)
+    c.drawString(MARGIN, 1.55 * inch, a.safety_note)
     c.setFont("Helvetica", 10)
     c.drawString(MARGIN, 1.28 * inch, "Finished example: canopy above body, two wheels below, Kamsa in front; Devaki and Vasudeva behind.")
-    # Finished-example silhouette.
     ex, ey = 4.25 * inch, 3.55 * inch
-    c.setLineWidth(1.2); c.rect(ex - 0.72 * inch, ey - 0.2 * inch, 1.44 * inch, 0.55 * inch, stroke=1, fill=0)
+    c.setLineWidth(1.2)
+    c.rect(ex - 0.72 * inch, ey - 0.2 * inch, 1.44 * inch, 0.55 * inch, stroke=1, fill=0)
     c.wedge(ex - 0.6 * inch, ey + 0.2 * inch, ex + 0.6 * inch, ey + 0.95 * inch, 0, 180, stroke=1, fill=0)
     c.circle(ex - 0.43 * inch, ey - 0.3 * inch, 0.2 * inch, stroke=1, fill=0)
     c.circle(ex + 0.43 * inch, ey - 0.3 * inch, 0.2 * inch, stroke=1, fill=0)
-    c.setFont("Helvetica-Bold", 8.5); c.drawCentredString(ex, ey - 0.65 * inch, "FINISHED CHARIOT")
-    # Two separate flower-garland decoration strips.
+    c.setFont("Helvetica-Bold", 8.5)
+    c.drawCentredString(ex, ey - 0.65 * inch, "FINISHED CHARIOT")
     c.setDash(3, 3)
     for strip_x in (1.55 * inch, 5.0 * inch):
         c.roundRect(strip_x, 2.1 * inch, 1.95 * inch, 0.55 * inch, 5, stroke=1, fill=0)
         c.setDash()
         for flower in range(6):
             c.circle(strip_x + (0.2 + flower * 0.31) * inch, 2.42 * inch, 0.1 * inch, stroke=1, fill=0)
-        c.setFont("Helvetica-Bold", 8); c.drawCentredString(strip_x + 0.975 * inch, 2.18 * inch, "FLOWER GARLAND STRIP")
+        c.setFont("Helvetica-Bold", 8)
+        c.drawCentredString(strip_x + 0.975 * inch, 2.18 * inch, "FLOWER GARLAND STRIP")
         c.setDash(3, 3)
     c.showPage()
 
     y = _header(c, plan, a, 2)
-    c.setDash(); c.roundRect(MARGIN, 8.15 * inch, PAGE_W - 2 * MARGIN, 0.55 * inch, 6, stroke=1, fill=0)
+    c.setDash()
+    c.roundRect(MARGIN, 8.15 * inch, PAGE_W - 2 * MARGIN, 0.55 * inch, 6, stroke=1, fill=0)
     c.setFont("Helvetica-Bold", 10.5)
     c.drawCentredString(PAGE_W / 2, 8.47 * inch, "TURNING POINT: The heavenly voice changes joy to fear - Vasudeva responds calmly.")
     labels = [("KAMSA", "adult charioteer - front"), ("DEVAKI", "adult royal bride - behind"), ("VASUDEVA", "adult noble bridegroom - behind")]
@@ -293,57 +596,38 @@ def _render_cut_and_build(c: Canvas, plan: PlanRow, a: ActivityPlan) -> None:
     for i, (name, role) in enumerate(labels):
         x = MARGIN + i * 2.35 * inch
         c.roundRect(x, 6.1 * inch, 1.85 * inch, 1.7 * inch, 8, stroke=1, fill=0)
-        c.setFont("Helvetica-Bold", 12); c.drawCentredString(x + 0.925 * inch, 7.27 * inch, name)
-        c.setFont("Helvetica", 9.5); c.drawCentredString(x + 0.925 * inch, 7.02 * inch, role)
-        # Simple locally drawn adult standee silhouette: head, shoulders, and long torso.
+        c.setFont("Helvetica-Bold", 12)
+        c.drawCentredString(x + 0.925 * inch, 7.27 * inch, name)
+        c.setFont("Helvetica", 9.5)
+        c.drawCentredString(x + 0.925 * inch, 7.02 * inch, role)
         c.circle(x + 0.925 * inch, 6.75 * inch, 0.14 * inch, stroke=1, fill=0)
         c.line(x + 0.55 * inch, 6.5 * inch, x + 1.3 * inch, 6.5 * inch)
         c.line(x + 0.55 * inch, 6.5 * inch, x + 0.72 * inch, 6.22 * inch)
         c.line(x + 1.3 * inch, 6.5 * inch, x + 1.13 * inch, 6.22 * inch)
         c.line(x + 0.25 * inch, 6.2 * inch, x + 1.6 * inch, 6.2 * inch)
-        c.setDash(); c.setFont("Helvetica", 8); c.drawCentredString(x + 0.925 * inch, 6.11 * inch, "fold base"); c.setDash(4, 3)
+        c.setDash()
+        c.setFont("Helvetica", 8)
+        c.drawCentredString(x + 0.925 * inch, 6.11 * inch, "fold base")
+        c.setDash(4, 3)
     events = ["The wedding celebration", "The chariot procession", "The heavenly voice", "Vasudeva protects Devaki"]
     for i, event in enumerate(events):
-        row, col = divmod(i, 2); x = MARGIN + col * 3.65 * inch; yy = 4.9 * inch - row * 1.22 * inch
+        row, col = divmod(i, 2)
+        x = MARGIN + col * 3.65 * inch
+        yy = 4.9 * inch - row * 1.22 * inch
         c.roundRect(x, yy, 3.25 * inch, 0.88 * inch, 6, stroke=1, fill=0)
-        c.setDash(); c.rect(x + 0.12 * inch, yy + 0.25 * inch, 0.36 * inch, 0.36 * inch, stroke=1, fill=0)
-        c.setFont("Helvetica-Bold", 10); c.drawString(x + 0.58 * inch, yy + 0.48 * inch, event)
-        c.setFont("Helvetica", 10); c.drawString(x + 0.58 * inch, yy + 0.25 * inch, "Write the event number in the box")
+        c.setDash()
+        c.rect(x + 0.12 * inch, yy + 0.25 * inch, 0.36 * inch, 0.36 * inch, stroke=1, fill=0)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(x + 0.58 * inch, yy + 0.48 * inch, event)
+        c.setFont("Helvetica", 10)
+        c.drawString(x + 0.58 * inch, yy + 0.25 * inch, "Write the event number in the box")
         c.setDash(4, 3)
-    c.setDash(); c.setFont("Helvetica-Bold", 11); c.drawString(MARGIN, 2.1 * inch, "Assembly steps")
+    c.setDash()
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(MARGIN, 2.1 * inch, "Assembly steps")
     yy = 1.88 * inch
-    for idx, step in enumerate(a.instructions, 1):
-        c.setFont("Helvetica", 10); c.drawString(MARGIN, yy, f"{idx}. {step}"); yy -= 0.18 * inch
-    c.showPage()
-
-
-def _render_sequence(c: Canvas, plan: PlanRow, a: ActivityPlan) -> None:
-    _render_cards(c, plan, a, ["Beginning", "Problem", "Helpful choice", "Turning point", "Result", "Lesson"])
-
-
-def _render_role_cards(c: Canvas, plan: PlanRow, a: ActivityPlan) -> None:
-    _render_cards(c, plan, a, ["Narrator", "Main character", "Helper", "Listener", "Scene 1", "Scene 2"])
-
-
-def _render_matching(c: Canvas, plan: PlanRow, a: ActivityPlan) -> None:
-    _render_cards(c, plan, a, ["Character", "Action", "Object", "Meaning", "Before", "After"])
-
-
-def _render_word_or_path(c: Canvas, plan: PlanRow, a: ActivityPlan) -> None:
-    _render_cards(c, plan, a, ["Start", "Story clue 1", "Story clue 2", "Turning point", "Kind choice", "Finish"])
-
-
-def _render_cards(c: Canvas, plan: PlanRow, a: ActivityPlan, labels: list[str]) -> None:
-    if len(a.printable_components) >= 6:
-        labels = a.printable_components[:6]
-    y = _header(c, plan, a, 1)
-    _wrapped(c, a.story_connection + " " + a.instructions[0], MARGIN, y, PAGE_W - 2 * MARGIN)
-    c.setDash(4, 3)
-    for i, label in enumerate(labels):
-        row, col = divmod(i, 2); x = MARGIN + col * 3.65 * inch; yy = 5.75 * inch - row * 1.55 * inch
-        c.roundRect(x, yy, 3.25 * inch, 1.18 * inch, 8, stroke=1, fill=0)
-        c.setFont("Helvetica-Bold", 12); c.drawString(x + 0.16 * inch, yy + 0.82 * inch, label)
-        prompt = "Number this event and draw one detail." if a.activity_type == "STORY_SEQUENCE" else "Draw or write a story-specific clue."
-        c.setFont("Helvetica", 10); c.drawString(x + 0.16 * inch, yy + 0.5 * inch, prompt)
-    c.setDash(); c.setFont("Helvetica-Bold", 10.5); c.drawString(MARGIN, 0.82 * inch, a.completion_prompt)
+    for idx, step in enumerate(a.instructions[:5], 1):
+        c.setFont("Helvetica", 10)
+        c.drawString(MARGIN, yy, f"{idx}. {step[:95]}")
+        yy -= 0.18 * inch
     c.showPage()

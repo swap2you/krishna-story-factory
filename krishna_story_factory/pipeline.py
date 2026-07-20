@@ -98,12 +98,14 @@ def run_daily_story(
                 return {"status": "INVALID_COMPONENTS", "detail": "This release supports exactly: activity,coloring"}
             return _rebuild_components(settings, plan, mode=mode, no_upload=no_upload, debug=debug, now=now)
 
-        update_plan_status(settings.project_root, plan, "processing")
+        if mode != "test":
+            update_plan_status(settings.project_root, plan, "processing")
         result = _run_with_repairs(settings, plan, mode=mode, no_upload=no_upload, debug=debug, now=now)
-        if result.status == "SUCCESS":
-            update_plan_status(settings.project_root, plan, "done", drive_folder_id=_folder_id(result.package_link))
-        else:
-            update_plan_status(settings.project_root, plan, "pending")
+        if mode != "test":
+            if result.status == "SUCCESS":
+                update_plan_status(settings.project_root, plan, "done", drive_folder_id=_folder_id(result.package_link))
+            else:
+                update_plan_status(settings.project_root, plan, "pending")
         append_story_log(
             settings.project_root,
             {
@@ -187,8 +189,9 @@ def _run_once(
     story_md = content.to_markdown()
     paths.story_md.write_text(story_md, encoding="utf-8")
 
-    audio_source = AudioGenerator(settings, mode).generate_mp3(content.audio_script, paths.narration_mp3)
-    _validate_audio(paths.narration_mp3, settings, mode)
+    audio_gen = AudioGenerator(settings, mode)
+    audio_source = audio_gen.generate_mp3(content.audio_script, paths.narration_mp3)
+    _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
 
     poster_score, poster_ref = generate_poster(
         settings,
@@ -211,16 +214,23 @@ def _run_once(
     )
     reference_used = poster_ref or poster_content_ref or coloring_style_ref
 
-    activity_planner = ActivityPlanner(settings.project_root / "tracking" / "activity_history.csv")
+    activity_planner = ActivityPlanner(settings.project_root / "tracking" / "activity_history.csv", settings=settings)
     activity = activity_planner.plan(plan, story_md)
     pdf_check = ActivitySheetGenerator().generate(plan, activity, paths.activity_sheet)
     render_dir = work.root / "activity_pages"
-    pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir)
+    pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir, activity=activity)
     if pdf_check.errors:
         raise PipelineError("Activity PDF validation failed: " + " | ".join(pdf_check.errors))
     activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
     if activity_score < 88:
-        raise PipelineError(f"Activity vision score {activity_score} below threshold 88.")
+        activity = _repair_activity_pack(settings, plan, story_md, activity, activity_score)
+        pdf_check = ActivitySheetGenerator().generate(plan, activity, paths.activity_sheet)
+        pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir, activity=activity)
+        if pdf_check.errors:
+            raise PipelineError("Repaired activity PDF validation failed: " + " | ".join(pdf_check.errors))
+        activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
+        if activity_score < 88:
+            raise PipelineError(f"Activity vision score {activity_score} below threshold 88 after repair.")
     package_link = settings.package_public_link or settings.google_drive_folder_url
     paths.whatsapp_caption.write_text(
         format_whatsapp_caption(story_title=content.title, package_link=package_link,
@@ -361,7 +371,7 @@ def _run_once(
     )
 
 
-def _validate_audio(path: Path, settings: Settings, mode: str) -> None:
+def _validate_audio(path: Path, settings: Settings, mode: str, *, low_credit: bool = False) -> None:
     if mode == "test":
         return
     if not path.exists() or path.stat().st_size <= 500 * 1024:
@@ -370,8 +380,10 @@ def _validate_audio(path: Path, settings: Settings, mode: str) -> None:
         from mutagen.mp3 import MP3
 
         duration = float(MP3(path).info.length)
-        if duration < 180 or duration > 360:
-            raise PipelineError(f"Audio duration {duration:.0f}s outside 3–6 minute window.")
+        min_seconds = 150 if low_credit else 180  # 2.5 min only in low-credit mode
+        if duration < min_seconds or duration > 360:
+            window = "2.5–6" if low_credit else "3–6"
+            raise PipelineError(f"Audio duration {duration:.0f}s outside {window} minute window.")
     except ImportError:
         pass
 
@@ -390,16 +402,23 @@ def _rebuild_components(
     work = new_work_paths(settings.project_root, debug=True)
     temp_activity = work.root / "activity_sheet.pdf"
     temp_coloring = work.root / "coloring_page.png"
-    planner = ActivityPlanner(settings.project_root / "tracking" / "activity_history.csv")
+    planner = ActivityPlanner(settings.project_root / "tracking" / "activity_history.csv", settings=settings)
     activity = planner.plan(plan, story_md)
     ActivitySheetGenerator().generate(plan, activity, temp_activity)
     render_dir = work.root / "activity_pages"
-    pdf_check = validate_activity_pdf(temp_activity, render_dir)
+    pdf_check = validate_activity_pdf(temp_activity, render_dir, activity=activity)
     if pdf_check.errors:
         raise PipelineError("Activity PDF validation failed: " + " | ".join(pdf_check.errors))
     activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
     if activity_score < 88:
-        raise PipelineError(f"Activity vision score {activity_score} below threshold 88.")
+        activity = _repair_activity_pack(settings, plan, story_md, activity, activity_score)
+        ActivitySheetGenerator().generate(plan, activity, temp_activity)
+        pdf_check = validate_activity_pdf(temp_activity, render_dir, activity=activity)
+        if pdf_check.errors:
+            raise PipelineError("Repaired activity PDF validation failed: " + " | ".join(pdf_check.errors))
+        activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
+        if activity_score < 88:
+            raise PipelineError(f"Activity vision score {activity_score} below threshold 88 after repair.")
     coloring_score, poster_ref, style_ref, identity_score = generate_coloring(
         settings, story_md=story_md, content=content, output_path=temp_coloring,
         work_candidates=work.coloring_candidates, work_reviews=work.reviews,
@@ -448,6 +467,44 @@ def _rebuild_components(
         "drive_detail": upload.detail if upload else "Upload disabled by flag.",
         "final_file_count": len(final_names), "queue_unchanged": True,
     }
+
+
+def _repair_activity_pack(settings: Settings, plan: PlanRow, story_md: str, activity, score: int):
+    """One-shot repair for weak activity packs; falls back to deterministic preferred/dynamic pack."""
+    import json
+    import re
+
+    from .activities.models import pack_from_dict
+    from .prompts_loader import load_project_text
+
+    if settings.openai_api_key and getattr(settings, "openai_text_enabled", False):
+        try:
+            from openai import OpenAI
+
+            repair = load_project_text(settings.project_root, "prompts/activity_bank/08_ACTIVITY_REPAIR.md")
+            prompt = (
+                f"{repair}\n\nQA_SCORE: {score}\n"
+                f"CURRENT_PACK_JSON:\n{json.dumps(activity.to_dict(), ensure_ascii=True)}\n\n"
+                f"STORY.MD:\n{story_md[:6000]}\n\n"
+                "Return only repaired ActivityPack JSON."
+            )
+            client = OpenAI(api_key=settings.openai_api_key)
+            response = client.responses.create(model=settings.openai_text_model, input=prompt)
+            raw = getattr(response, "output_text", "") or ""
+            try:
+                data = json.loads(raw)
+            except json.JSONDecodeError:
+                match = re.search(r"\{.*\}", raw, re.DOTALL)
+                if not match:
+                    raise ValueError("No JSON object found.")
+                data = json.loads(match.group(0))
+            pack = pack_from_dict(data)
+            pack.validate()
+            return pack
+        except Exception:
+            pass
+    planner = ActivityPlanner(settings.project_root / "tracking" / "activity_history.csv", settings=settings)
+    return planner.plan(plan, story_md)
 
 
 def _review_activity(

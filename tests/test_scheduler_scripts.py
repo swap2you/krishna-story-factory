@@ -10,6 +10,7 @@ def test_scheduler_is_unattended_and_non_overlapping() -> None:
     assert "--mode prod" in runner and "--force" not in runner
     assert '$env:WHATSAPP_SEND_ENABLED = "false"' in runner
     assert '$env:TELEGRAM_SEND_ENABLED = "false"' in runner
+    assert "Disable-ScheduledTask" in installer
     assert "MultipleInstances IgnoreNew" in installer
     assert "RestartCount 2" in installer
     assert "Minutes 30" in installer

@@ -1,3 +1,11 @@
-from .planner import ActivityPlan, ActivityPlanner, ALLOWED_ACTIVITY_TYPES
+from .models import ActivityPack, ActivityPage, ActivityPlan, ALLOWED_ACTIVITY_TYPES, pack_from_dict
+from .planner import ActivityPlanner
 
-__all__ = ["ActivityPlan", "ActivityPlanner", "ALLOWED_ACTIVITY_TYPES"]
+__all__ = [
+    "ActivityPack",
+    "ActivityPage",
+    "ActivityPlan",
+    "ActivityPlanner",
+    "ALLOWED_ACTIVITY_TYPES",
+    "pack_from_dict",
+]

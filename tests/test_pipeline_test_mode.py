@@ -33,3 +33,20 @@ def test_pipeline_generates_required_files_in_test_mode(tmp_path: Path) -> None:
         assert path.stat().st_size > 0, filename
     extras = [p.name for p in output_dir.iterdir() if p.is_file() and p.name not in FINAL_OUTPUT_FILES]
     assert not extras, extras
+
+
+def test_test_mode_does_not_mutate_runtime_queue(tmp_path: Path) -> None:
+    source = Path(__file__).resolve().parents[1]
+    project = tmp_path / "project"
+    ignore = shutil.ignore_patterns(
+        ".git", ".pytest_cache", ".codex_validation_tmp", ".cursor", ".venv", "output", "__pycache__", ".env"
+    )
+    shutil.copytree(source, project, ignore=ignore)
+    ensure_csv_files(project)
+    queue = project / "tracking" / "queue_state.csv"
+    before = queue.read_text(encoding="utf-8")
+    settings = load_settings(project)
+    result = run_daily_story(settings, mode="test", force=True, no_upload=True)
+    assert result["status"] == "SUCCESS"
+    after = queue.read_text(encoding="utf-8")
+    assert before == after

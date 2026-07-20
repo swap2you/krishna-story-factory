@@ -40,7 +40,9 @@ manifest.json
 - Story >= 700 words in prod; audio script >= 525 words in prod
 - No `[pause]` in audio script; narration.mp3 > 500 KB in prod when ElevenLabs enabled
 - WhatsApp caption uses the per-story manifest link and activity-aware wording
-- Activity PDF is one or two pages and passes structural and vision QA
+- Activity PDF is 2–4 pages for normal packs (1–2 for simple types), passes structural and vision QA (≥88), and is not a generic worksheet
+- ActivityPack pages each include a story_connection; answer keys stay in the manifest only
+- See [11_ACTIVITY_ENGINE_V2.md](11_ACTIVITY_ENGINE_V2.md)
 - Story source guards enforce the selected episode boundary and required relationships
 
 ## New tests

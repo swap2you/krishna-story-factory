@@ -14,8 +14,8 @@ def test_master_plan_covers_all_krishna_book_chapters() -> None:
     assert validate_master_plan(MASTER) == []
 
 
-def test_next_active_episode_is_corrected_story_003() -> None:
+def test_next_active_episode_is_story_004() -> None:
     plan = read_next_pending(ROOT)
     assert plan is not None
-    assert (plan.chapter_no, plan.slug) == ("003", "vasudeva-keeps-his-word")
+    assert (plan.chapter_no, plan.slug) == ("004", "narada-warns-kamsa")
 

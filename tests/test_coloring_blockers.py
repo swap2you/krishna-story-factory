@@ -97,8 +97,8 @@ def test_poppler_fallback_works_without_pymupdf(tmp_path):
     activity = ActivityPlanner(tmp_path / "history.csv").plan(plan, "story")
     pdf = tmp_path / "activity.pdf"
     ActivitySheetGenerator().generate(plan, activity, pdf)
-    result = validate_activity_pdf(pdf, tmp_path / "rendered")
-    assert result.page_count == 1
+    result = validate_activity_pdf(pdf, tmp_path / "rendered", activity=activity)
+    assert 2 <= result.page_count <= 4
     assert not result.errors
     assert (tmp_path / "rendered" / "activity_page_1.png").exists()
 

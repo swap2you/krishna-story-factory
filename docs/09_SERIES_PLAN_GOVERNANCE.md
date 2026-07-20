@@ -18,3 +18,7 @@ To disable an episode, set `enabled=false` in the master plan and remove it from
 If it already has local runtime state, leave that ignored history intact or mark it `disabled` in
 `tracking/queue_state.csv`. Never commit the runtime file.
 
+Activity history (`tracking/activity_history.csv`) is also runtime-only and gitignored. Preferred
+ActivityPacks for early episodes are documented in [11_ACTIVITY_ENGINE_V2.md](11_ACTIVITY_ENGINE_V2.md);
+do not mutate the static master plan to encode activity status.
+

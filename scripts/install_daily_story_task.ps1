@@ -16,6 +16,7 @@ $Settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances 
 $Principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
 Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings `
     -Principal $Principal -Description "Generate and upload the next Krishna Story package; delivery senders disabled." -Force | Out-Null
-Enable-ScheduledTask -TaskName $TaskName | Out-Null
+# Leave disabled by default; enable manually after validating a prod run.
+Disable-ScheduledTask -TaskName $TaskName | Out-Null
 & (Join-Path $ProjectRoot "scripts\test_daily_story_task.ps1") -TaskName $TaskName
 

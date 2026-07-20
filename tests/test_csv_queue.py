@@ -28,11 +28,11 @@ def test_series_plan_parses_complete_static_plan() -> None:
     assert "status" not in rows[0]
 
 
-def test_next_pending_story_is_003_after_002_done() -> None:
+def test_next_pending_story_is_004_after_003_done() -> None:
     plan = read_next_pending(PROJECT_ROOT)
     assert plan is not None
-    assert plan.chapter_no == "003"
-    assert plan.slug == "vasudeva-keeps-his-word"
+    assert plan.chapter_no == "004"
+    assert plan.slug == "narada-warns-kamsa"
 
 
 def test_whatsapp_recipients_parses_two_rows() -> None:
