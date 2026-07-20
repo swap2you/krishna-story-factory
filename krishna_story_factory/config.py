@@ -101,6 +101,9 @@ class Settings:
     slack_webhook_url: str
     discord_webhook_url: str
     story_greeting_names: str = ""
+    elevenlabs_voice_name: str = ""
+    elevenlabs_output_format: str = "mp3_44100_128"
+    elevenlabs_pronunciation_dictionary_version_id: str = ""
 
 
 def _optional_float(env_name: str) -> float | None:
@@ -189,7 +192,7 @@ def load_settings(project_root: Path) -> Settings:
         visual_max_retries=int(os.getenv("VISUAL_MAX_RETRIES", "2") or "2"),
         visual_quality_threshold=int(os.getenv("VISUAL_QUALITY_THRESHOLD", "80") or "80"),
         elevenlabs_api_key=os.getenv("ELEVENLABS_API_KEY", ""),
-        elevenlabs_voice_id=os.getenv("ELEVENLABS_VOICE_ID", ""),
+        elevenlabs_voice_id=os.getenv("ELEVENLABS_VOICE_ID", "Itr6exdQTrvjpW1lNztS"),
         elevenlabs_model_id=os.getenv("ELEVENLABS_MODEL_ID", "eleven_v3"),
         elevenlabs_stability=_optional_float("ELEVENLABS_STABILITY"),
         elevenlabs_similarity_boost=_optional_float("ELEVENLABS_SIMILARITY_BOOST"),
@@ -200,6 +203,11 @@ def load_settings(project_root: Path) -> Settings:
         enable_ambient_audio=str_to_bool(os.getenv("ENABLE_AMBIENT_AUDIO"), False),
         elevenlabs_sfx_enabled=str_to_bool(os.getenv("ELEVENLABS_SFX_ENABLED"), False),
         ambient_audio_mix_level=float(os.getenv("AMBIENT_AUDIO_MIX_LEVEL", "0.12") or "0.12"),
+        elevenlabs_voice_name=os.getenv("ELEVENLABS_VOICE_NAME", "Renee - Rich, Calm and Smooth").strip(),
+        elevenlabs_output_format=os.getenv("ELEVENLABS_OUTPUT_FORMAT", "mp3_44100_128").strip() or "mp3_44100_128",
+        elevenlabs_pronunciation_dictionary_version_id=os.getenv(
+            "ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID", ""
+        ).strip(),
         package_publish_mode=os.getenv("PACKAGE_PUBLISH_MODE", "local"),
         google_drive_upload_enabled=str_to_bool(os.getenv("GOOGLE_DRIVE_UPLOAD_ENABLED"), False),
         google_drive_folder_id=os.getenv("GOOGLE_DRIVE_FOLDER_ID", ""),
