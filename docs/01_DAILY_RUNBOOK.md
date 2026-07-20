@@ -29,19 +29,21 @@ Expected first pending story after this release: `003_vasudeva-keeps-his-word`.
 ## 5. Optional local test (no paid APIs)
 
 ```powershell
-python run_daily_story.py --mode test --force
+.\scripts\run_test.ps1 --force
 ```
 
-Check audio script has no `[pause]` markers. The adaptive activity PDF must have one or two
-useful pages, no blank page, and an activity tied to the current pastime.
+Check audio script has no `[pause]` markers. The Activity Engine V2 PDF must have 2–4
+useful pages for normal packs (1 page only for simple types), no blank page, and every
+page tied to the current pastime. See [11_ACTIVITY_ENGINE_V2.md](11_ACTIVITY_ENGINE_V2.md).
 
 ## 6. Run real production generation
 
 ```powershell
-python run_daily_story.py --mode prod
+.\scripts\run_prod.ps1
 ```
 
-This generates the full package and sends WhatsApp template messages when cloud sender is enabled.
+This generates the full package and uploads exactly seven files to Google Drive when
+Drive upload is enabled. WhatsApp/Telegram remain disabled.
 
 ## 7. Confirm output folder
 
@@ -50,15 +52,15 @@ Get-ChildItem output | Sort-Object Name -Descending | Select-Object -First 3
 ```
 
 Expected: `output/003_vasudeva-keeps-his-word/` with exactly seven final files, including
-the one- or two-page adaptive activity sheet and manifest `package.package_link`.
+the multi-page activity sheet and manifest `package.package_link`.
 
 ## Component-only rebuild
 
 To keep the approved story, narration, poster, caption, Drive folder, and queue state unchanged:
 
 ```powershell
-python run_daily_story.py --mode prod --chapter 001 --rebuild-components activity,coloring --debug
-python run_daily_story.py --mode prod --chapter 002 --rebuild-components activity,coloring --debug
+.\scripts\run_prod.ps1 --chapter 001 --rebuild-components activity,coloring --debug
+.\scripts\run_prod.ps1 --chapter 002 --rebuild-components activity,coloring --debug
 ```
 
 Use `--no-upload` for local validation. Component rebuild replaces only
@@ -113,7 +115,7 @@ python scripts/test_whatsapp_cloud.py
 ## 12. Rerun with force
 
 ```powershell
-python run_daily_story.py --mode prod --chapter 003 --force
+.\scripts\run_prod.ps1 --chapter 003 --force
 ```
 
 Use `--force` when you intentionally want to override the daily send guard or regenerate the current package.
@@ -129,7 +131,7 @@ Use `--force` when you intentionally want to override the daily send guard or re
 ```powershell
 cd C:\Development\Workspace\DevotionalRepo\krishna-story-factory
 .\.venv\Scripts\Activate.ps1
-python run_daily_story.py --mode prod
+.\scripts\run_prod.ps1
 Get-Content tracking\story_log.csv
 Get-Content tracking\send_log.csv
 ```

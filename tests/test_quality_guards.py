@@ -119,13 +119,24 @@ def test_story_002_source_guard_enforces_relationships() -> None:
 def test_story_003_guard_stops_before_narada_and_imprisonment() -> None:
     plan = _source_plan("003", "vasudeva-keeps-his-word")
     factual = (
-        "Devaki's first son was born. Truthful Vasudeva kept his word and brought the child to Kamsa. "
-        "Astonished, Kamsa returned the child because the warning concerned the eighth child."
+        "Devaki's first son Kirtiman was born. Truthful Vasudeva kept his word and brought Kirtiman to Kamsa. "
+        "Astonished, Kamsa returned Kirtiman because the warning concerned the eighth child."
     )
     assert run_source_guard(plan, _source_content(plan, factual)) == []
     crossed = factual + " Later Narada came, and Kamsa chose to imprison the parents."
     assert run_source_guard(plan, _source_content(plan, crossed))
     assert any("boundary" in issue.lower() for issue in _generation_issues(_source_content(plan, crossed), plan))
+
+
+def test_story_003_guard_distinguishes_safety_claim_from_caution() -> None:
+    plan = _source_plan("003", "vasudeva-keeps-his-word")
+    factual = (
+        "Devaki's first son Kirtiman was born. Truthful Vasudeva kept his word and brought Kirtiman to Kamsa. "
+        "Kamsa returned Kirtiman. Vasudeva did not assume the family was permanently safe."
+    )
+    assert run_source_guard(plan, _source_content(plan, factual)) == []
+    unsafe = factual.replace("did not assume the family was", "believed the family was")
+    assert any("permanently safe" in error for error in run_source_guard(plan, _source_content(plan, unsafe)))
 
 
 def test_story_003_deterministic_repair_removes_later_episode_and_restores_ending() -> None:
@@ -152,6 +163,7 @@ def _source_content(plan: PlanRow, text: str) -> StoryContent:
     return StoryContent(
         title=plan.title, recap="", main_story=text, moral="Be truthful.", takeaway="Trust Krishna.",
         five_star_challenge=["a", "b", "c", "d", "e"], audio_script=text,
+        bedtime_reflection="Whom can you ask for help when a promise feels unsafe?",
     )
 
 

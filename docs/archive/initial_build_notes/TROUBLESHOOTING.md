@@ -50,7 +50,7 @@ WHATSAPP_SENDER_TYPE=web_test
 Then rerun:
 
 ```powershell
-python run_daily_story.py --mode prod --force
+.\scripts\run_prod.ps1 --force
 ```
 
 If local outbox works, your issue is external API configuration, not package generation.

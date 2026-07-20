@@ -18,8 +18,8 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 copy .env.example .env
-pytest -q
-python run_daily_story.py --mode test --force
+.\scripts\test_all.ps1
+.\scripts\run_test.ps1 --force
 ```
 
 ## Mac/Linux setup
@@ -29,8 +29,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-pytest -q
-python run_daily_story.py --mode test --force
+.\scripts\test_all.ps1
+.\scripts\run_test.ps1 --force
 ```
 
 ## Dashboard

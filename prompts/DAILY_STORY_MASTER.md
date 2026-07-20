@@ -69,29 +69,68 @@ age, clothing, role, position, expression, and event. Any line-art reference is 
 ## ADAPTIVE_ACTIVITY_PLANNER
 
 Inspect the story title, text, turning point, characters, setting, objects, lesson, age range,
-and recent activity history. Choose exactly one primary activity type from:
+and recent activity history. Build one ActivityPack (not a shallow worksheet).
+
+Choose exactly one primary activity type from:
 PAPER_CRAFT, CUT_AND_BUILD, PUPPET_PLAY, MINI_DRAMA, ROLE_CARDS, STORY_SEQUENCE,
 MATCHING_GAME, STORY_MAP, MAZE_OR_PATH, SORTING_GAME, PRAYER_OR_GRATITUDE_CRAFT,
 FAMILY_MISSION, MEMORY_GAME, SIMPLE_BOARD_GAME, DRAW_AND_REFLECT, WORD_SEARCH,
 CROSSWORD, COLORING_ONLY, QUICK_DISCUSSION.
 
-Do not repeat the previous type. Do not select WORD_SEARCH more than once in five stories.
-Do not choose written worksheets or heavy crafts consecutively. Alternate making, acting,
-solving, discussion, and family participation. Prefer the actual pastime over generic filler.
-Return strict internal JSON:
+Diversity rules:
+- Do not repeat the previous primary type.
+- Do not select WORD_SEARCH more than once in six stories.
+- Do not choose written worksheets or heavy crafts consecutively.
+- Alternate making, acting, solving, reflecting, mapping/sequencing, and family participation.
+- Prefer the actual pastime over generic filler.
+- Every page must include story_connection tied to this pastime.
+
+Page count:
+- Normal packs: 2–4 pages
+- COLORING_ONLY or QUICK_DISCUSSION only: 1–2 pages
+- Never more than 5 pages
+
+Return strict ActivityPack JSON:
 {
-  "activity_title": "", "activity_type": "", "learning_goal": "", "story_connection": "",
-  "recommended_send_mode": "", "estimated_minutes": 0, "parent_effort": "",
-  "age_variants": {"ages_6_8": "", "ages_9_13": ""}, "materials": [],
-  "instructions": [], "review_questions": [], "printable_components": [],
-  "safety_note": "", "completion_prompt": ""
+  "activity_title": "",
+  "activity_type": "",
+  "send_mode": "",
+  "estimated_minutes": 0,
+  "parent_effort": "",
+  "learning_goal": "",
+  "story_connection": "",
+  "materials": [],
+  "pages": [
+    {
+      "page_title": "",
+      "page_type": "",
+      "instructions": [],
+      "components": [],
+      "layout_hint": "",
+      "story_connection": ""
+    }
+  ],
+  "answer_key": [],
+  "parent_note": "",
+  "qa_requirements": [],
+  "age_variants": {"ages_6_8": "", "ages_9_13": ""},
+  "safety_note": "",
+  "completion_prompt": "",
+  "review_questions": []
 }
+
+Allowed page_type values:
+STORY_MAP, STORY_SEQUENCE_CARDS, CUT_AND_BUILD_PARTS, ROLE_PLAY_CARDS, PUPPET_CARDS,
+MAZE_OR_PATH, MATCHING_CARDS, SORTING_CARDS, MINI_BOARD_GAME, PRAYER_WHEEL,
+GRATITUDE_GARLAND, DECISION_TREE, EMOTION_MAP, DRAW_AND_REFLECT, WORD_SEARCH,
+CROSSWORD, FAMILY_MISSION, QUICK_DISCUSSION, ANSWER_KEY_INTERNAL_ONLY
 
 ## ACTIVITY_SHEET
 
-Render only the selected adaptive activity in one or two black-and-white pages. Never embed the
-coloring page. Use locally rendered text, clear printable components, safe margins, at least 10 pt
-body text, child-safe cutting guidance, and no answer key visible on the page.
+Render the selected ActivityPack as a black-and-white multi-page kids pack.
+Default 2–4 pages. Never embed the coloring page. Use locally rendered text only.
+Clear printable components, safe margins, at least 10 pt body text, child-safe cutting
+guidance, and no answer key visible on the page. No nearly blank pages.
 
 ## CONTENT_REPAIR
 

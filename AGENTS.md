@@ -15,8 +15,8 @@ Rules:
 Before finishing:
 
 ```powershell
-pytest -q
-python run_daily_story.py --mode test --force
+.\scripts\test_all.ps1
+.\scripts\run_test.ps1 --force
 ```
 
 Start with [docs/01_DAILY_RUNBOOK.md](docs/01_DAILY_RUNBOOK.md).

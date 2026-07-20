@@ -49,7 +49,7 @@ The app blocks more than one sent story per day unless `--force` is used.
 Use force only for testing:
 
 ```powershell
-python run_daily_story.py --mode prod --force
+.\scripts\run_prod.ps1 --force
 ```
 
 ## WhatsApp Cloud in daily automation

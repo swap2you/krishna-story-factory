@@ -60,7 +60,7 @@ Never commit tokens. Use `hello_world` for Meta test setup. Switch to `daily_kri
 ## Validate
 
 ```powershell
-pytest -q
-python run_daily_story.py --mode test --force
+.\scripts\test_all.ps1
+.\scripts\run_test.ps1 --force
 python scripts/test_whatsapp_cloud.py
 ```

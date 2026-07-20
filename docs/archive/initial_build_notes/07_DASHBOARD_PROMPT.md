@@ -11,7 +11,7 @@ Features:
 - Show story log.
 - Allow editing `series_plan.csv`.
 - Allow adding new story rows.
-- Trigger `python run_daily_story.py --mode test --force`.
+- Trigger `.\scripts\run_test.ps1 --force`.
 - Trigger prod only after confirmation checkbox.
 - Show generated output folder list.
 

@@ -24,7 +24,7 @@ Then execute the build in phases:
 Phase 1 — Baseline validation:
 - Create a Python virtual environment if missing.
 - Install `requirements.txt`.
-- Run `python run_daily_story.py --mode test --force`.
+- Run `.\scripts\run_test.ps1 --force`.
 - Run `pytest -q`.
 - Fix any breakages without changing the intended architecture.
 

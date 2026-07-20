@@ -81,7 +81,7 @@ Second prod run generated **002**, not 001. Next pending is **003**.
 ```powershell
 cd C:\Development\Workspace\DevotionalRepo\krishna-story-factory
 .\.venv\Scripts\Activate.ps1
-python run_daily_story.py --mode prod
+.\scripts\run_prod.ps1
 ```
 
 ## WhatsApp

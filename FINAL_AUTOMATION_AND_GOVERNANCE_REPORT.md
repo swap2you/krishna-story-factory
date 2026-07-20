@@ -58,7 +58,7 @@ the normal source, quality, audio, activity, coloring, or poster gates.
 
 - Tests: 70 passed
 - Required `pytest -q`: passed
-- Required `python run_daily_story.py --mode test --force`: passed
+- Required `.\scripts\run_test.ps1 --force`: passed
 - Master-plan validation: 93 episodes, Chapters 1–90 covered, next active episode 003
 - Story 001/002 non-regeneration check during Story 003 attempts: hashes unchanged
 - Scheduler static validation: passed
@@ -106,7 +106,7 @@ The task is not installed or enabled because the release contract prohibits inst
 ## Remaining blockers
 
 1. Replenish or reset ElevenLabs quota sufficiently for a validated 3–6 minute narration.
-2. Rerun `python run_daily_story.py --mode prod`; require all Story 003 gates and exact-seven Drive
+2. Rerun `.\scripts\run_prod.ps1`; require all Story 003 gates and exact-seven Drive
    verification to pass.
 3. Mark the draft PR ready, verify checks, squash-merge, then install and validate the scheduled task.
 

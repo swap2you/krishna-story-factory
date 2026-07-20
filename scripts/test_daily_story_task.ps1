@@ -15,11 +15,13 @@ if ($Installer -notmatch 'RestartCount 2' -or $Installer -notmatch 'Minutes 30')
 if (-not $StaticOnly) {
     $Task = Get-ScheduledTask -TaskName $TaskName -ErrorAction Stop
     $Info = Get-ScheduledTaskInfo -TaskName $TaskName
-    if ($Task.State -eq "Disabled") { $Failures += "task is disabled" }
+    # Disabled is the default install state; enabled is also valid after manual enable.
+    if ($Task.State -notin @("Disabled", "Ready", "Running")) { $Failures += "unexpected task state: $($Task.State)" }
     if ($Task.Actions.Arguments -match '--force') { $Failures += "registered action uses --force" }
     if ($Task.Settings.MultipleInstances -ne "IgnoreNew") { $Failures += "registered task permits overlap" }
-    if (-not $Info.NextRunTime) { $Failures += "next run time is missing" }
+    if ($Task.State -ne "Disabled" -and -not $Info.NextRunTime) { $Failures += "next run time is missing" }
 }
+if ($Installer -notmatch 'Disable-ScheduledTask') { $Failures += "installer does not leave task disabled by default" }
 if ($Failures) { throw ($Failures -join "; ") }
 Write-Output "Scheduler validation PASS"
 if (-not $StaticOnly) { Get-ScheduledTaskInfo -TaskName $TaskName | Select-Object TaskName,NextRunTime,LastRunTime,LastTaskResult }

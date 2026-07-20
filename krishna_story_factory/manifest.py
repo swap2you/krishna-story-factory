@@ -91,7 +91,8 @@ def write_manifest(
             "drive_status": drive_status,
             "drive_detail": drive_detail,
         },
-        "queue_transition": "done" if quality_status == "PASS" else "pending",
+        "publishable": mode != "test",
+        "queue_transition": "unchanged" if mode == "test" else ("done" if quality_status == "PASS" else "pending"),
         "mode": mode,
         "audio_source": audio_source,
     }

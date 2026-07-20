@@ -19,8 +19,8 @@ Run:
 python -m venv .venv if missing
 activate venv
 pip install -r requirements.txt
-pytest -q
-python run_daily_story.py --mode test --force
+.\scripts\test_all.ps1
+.\scripts\run_test.ps1 --force
 
 Check that the output folder contains:
 story.md

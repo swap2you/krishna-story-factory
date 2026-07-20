@@ -36,7 +36,7 @@ OPENAI_IMAGE_QUALITY=medium
 Run:
 
 ```powershell
-python run_daily_story.py --mode prod --force
+.\scripts\run_prod.ps1 --force
 ```
 
 ## ElevenLabs
