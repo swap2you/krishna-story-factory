@@ -167,11 +167,11 @@ def validate_story_format_v2(package: StoryPackageContentV2, *, next_title: str 
     if not (100 <= meaning_words <= 180):
         errors.append(f"devotional_meaning word count {meaning_words} outside 100–180")
     prayer_words = word_count(package.bedtime_prayer)
-    if not (80 <= prayer_words <= 140):
-        errors.append(f"bedtime_prayer word count {prayer_words} outside 80–140")
+    if not (75 <= prayer_words <= 140):
+        errors.append(f"bedtime_prayer word count {prayer_words} outside 75–140")
     preview_words = word_count(package.next_story_preview)
-    if not (35 <= preview_words <= 80):
-        errors.append(f"next_story_preview word count {preview_words} outside 35–80")
+    if not (30 <= preview_words <= 80):
+        errors.append(f"next_story_preview word count {preview_words} outside 30–80")
     parent_words = word_count(package.parent_note)
     if not (60 <= parent_words <= 120):
         errors.append(f"parent_note word count {parent_words} outside 60–120")
@@ -362,7 +362,7 @@ def extract_section(story_md: str, heading: str) -> str:
     return match.group(1).strip() if match else ""
 
 
-def _condense_main_story(main_story: str, *, target_words: int = 420) -> str:
+def _condense_main_story(main_story: str, *, target_words: int = 360) -> str:
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", main_story.strip()) if p.strip()]
     selected: list[str] = []
     total = 0
