@@ -157,6 +157,7 @@ def validate_story_format_v2(package: StoryPackageContentV2, *, next_title: str 
         errors.append("think_about_it must contain 3–5 questions")
     if len(package.five_star_challenge) != 5:
         errors.append("five_star_challenge must contain exactly five items")
+    errors.extend(_placeholder_errors(package))
     recap_words = word_count(package.recap)
     if not (70 <= recap_words <= 130) and package.story_number not in {"001", "1"}:
         errors.append(f"recap word count {recap_words} outside 70–130")
@@ -231,9 +232,39 @@ def validate_audio_consistency(package: StoryPackageContentV2) -> list[str]:
     return errors
 
 
+_PLACEHOLDER_RE = re.compile(
+    r"\(\s*[345]\s*\)|\bTODO\b|\bTBD\b|\bdummy\b|\bplaceholder\b|\.\.\.\s*$",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _placeholder_errors(package: StoryPackageContentV2) -> list[str]:
+    errors: list[str] = []
+    chunks: list[str] = list(package.five_lessons) + list(package.think_about_it) + list(package.five_star_challenge)
+    chunks.extend(
+        [
+            package.main_story,
+            package.devotional_meaning,
+            package.bedtime_prayer,
+            package.next_story_preview,
+            package.recap,
+        ]
+    )
+    for chunk in chunks:
+        if _PLACEHOLDER_RE.search(chunk or ""):
+            errors.append(f"placeholder/incomplete text detected: {chunk[:80]!r}")
+            break
+    for lesson in package.five_lessons:
+        if len(re.findall(r"\b[\w']+\b", lesson or "")) < 6:
+            errors.append(f"five_lessons item too short/incomplete: {lesson!r}")
+    return errors
+
+
 def validate_story_markdown_v2(story_md: str) -> list[str]:
     errors: list[str] = []
     text = story_md or ""
+    if _PLACEHOLDER_RE.search(text):
+        errors.append("story.md contains placeholder/incomplete lesson markers")
     required = [
         "## Recap",
         "## Main Story",

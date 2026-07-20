@@ -22,6 +22,18 @@ def source_fact_brief(plan: PlanRow) -> str:
             "'Vasudeva brought Kīrtimān, their first son, to Kaṁsa.' and "
             "'Kaṁsa initially returned the child, Kīrtimān, to Vasudeva.'"
         )
+    if plan.chapter_no == "005":
+        brief += (
+            "\nSTORY 005 HARD BOUNDARY (Krishna Book Ch. 2 / SB 10.2.25–42): "
+            "Devakī carries Kṛṣṇa within her womb. Invisible demigods approach, led by Brahmā and Śiva; "
+            "Nārada and other demigods/sages may accompany (Indra, Candra, Varuṇa acceptable). "
+            "They glorify the Lord within Devakī, pray for protection and the Lord's descent, reassure Devakī, "
+            "then return to their heavenly homes. Kṛṣṇa remains unseen within Devakī. "
+            "FORBIDDEN in this episode: sleeping/drowsy guards, prison doors opening, Vasudeva escape, "
+            "Yamunā crossing, four-armed birth appearance, Yogamāyā arriving, demigods praying to Yogamāyā, "
+            "invented verbatim scripture quotations, placeholder lessons like '(3)'. "
+            "Prison setting from the previous episode may be acknowledged, but do not invent guard-sleep miracles."
+        )
     return brief
 
 
@@ -93,6 +105,40 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
                 errors.append(f"Story 004 crosses its source boundary with {phrase!r}.")
         if not (content.bedtime_reflection.strip().endswith("?") or any(str(q).strip().endswith("?") for q in content.think_about_it)):
             errors.append("Story 004 must include a child reflection question.")
+    if plan.chapter_no == "005":
+        _require(combined, ("devaki", "devakī"), "Story 005 must center on Devakī.", errors)
+        _require(combined, ("womb",), "Story 005 must keep Krishna within Devakī's womb.", errors)
+        _require(combined, ("brahma", "brahmā"), "Story 005 must include Brahmā.", errors)
+        _require(combined, ("shiva", "śiva", "siva"), "Story 005 must include Śiva.", errors)
+        _require(combined, ("narada", "nārada"), "Story 005 must include Nārada.", errors)
+        _require(combined, ("pray", "prayer", "prayers", "glorif"), "Story 005 must include demigod prayers/glorification.", errors)
+        for phrase in (
+            "sleeping guard",
+            "drowsy guard",
+            "guards dozed",
+            "guards, unaware",
+            "heavy-eyed",
+            "prison door",
+            "doors opened",
+            "escape",
+            "yamuna",
+            "yamuṇā",
+            "four-armed",
+            "four armed",
+            "yogamaya",
+            "yogamāyā",
+            "prayers to yogamaya",
+            "krishna was born",
+            "krishna's birth",
+            "birth of lord krishna",
+        ):
+            if phrase in combined:
+                errors.append(f"Story 005 source-boundary leakage: {phrase!r}.")
+        for lesson in content.five_lessons or []:
+            if re.search(r"\(\s*[345]\s*\)", str(lesson)) or "todo" in str(lesson).lower():
+                errors.append(f"Story 005 has placeholder lesson text: {lesson!r}")
+        if not (content.bedtime_reflection.strip().endswith("?") or any(str(q).strip().endswith("?") for q in content.think_about_it)):
+            errors.append("Story 005 must include a child reflection question.")
     return errors
 
 
