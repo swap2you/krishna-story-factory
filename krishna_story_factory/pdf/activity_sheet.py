@@ -14,6 +14,7 @@ from ..activities.models import (
     ActivityPack, ActivityPage, DecisionNode, MatchingCard, RolePlayCard, SequenceCard, SIMPLE_TYPES,
     component_label,
 )
+from ..activities.qa import pdf_text_has_generic_placeholders
 from ..models import PlanRow
 
 PAGE_W, PAGE_H = letter
@@ -66,7 +67,10 @@ class ActivitySheetGenerator:
             for page in activity.pages:
                 if page.page_type == "ANSWER_KEY_INTERNAL_ONLY":
                     continue
-                _render_page(canvas, plan, activity, page)
+                if page.page_type == "PRAYER_WHEEL":
+                    _render_lotus_prayer_page(canvas, plan, activity, page)
+                else:
+                    _render_page(canvas, plan, activity, page)
         canvas.save()
         return validate_activity_pdf(output_path, activity=activity)
 
@@ -129,6 +133,9 @@ def validate_activity_pdf(
     text_blob = " ".join(page.get_text() for page in doc).lower()
     if "coloring_page.png" in text_blob or "embedded coloring" in text_blob:
         errors.append("Activity PDF must not embed coloring_page.png.")
+    placeholder_hits = pdf_text_has_generic_placeholders(text_blob)
+    if placeholder_hits:
+        errors.append("Activity PDF contains generic placeholders: " + ", ".join(placeholder_hits[:6]))
     if min_font < 9.8:
         errors.append(f"Minimum font size is {min_font:.1f} pt; expected about 10 pt or larger.")
     return PdfCheckResult(page_count, coverage, 0 if min_font == 99 else min_font, errors)
@@ -171,6 +178,9 @@ def _pdfium_pdf_check(
     joined = " ".join(text_blob).lower()
     if "coloring_page.png" in joined or "embedded coloring" in joined:
         errors.append("Activity PDF must not embed coloring_page.png.")
+    placeholder_hits = pdf_text_has_generic_placeholders(joined)
+    if placeholder_hits:
+        errors.append("Activity PDF contains generic placeholders: " + ", ".join(placeholder_hits[:6]))
     doc.close()
     if temporary:
         temporary.cleanup()
@@ -520,7 +530,7 @@ def _render_draw_reflect(c: Canvas, plan: PlanRow, activity: ActivityPack, page:
         y -= 0.05 * inch
     c.rect(MARGIN, 2.4 * inch, PAGE_W - 2 * MARGIN, 3.6 * inch, stroke=1, fill=0)
     c.setFont(FONT_REGULAR, 10)
-    c.drawCentredString(PAGE_W / 2, 5.8 * inch, "Draw the turning point here")
+    c.drawCentredString(PAGE_W / 2, 5.8 * inch, "Draw the central story moment here")
     c.drawString(MARGIN, 1.9 * inch, "One sentence reflection: _______________________________________________")
 
 
@@ -600,6 +610,43 @@ def _render_generic_cards(
 
 
 # --- Rich legacy layouts retained and extended ---
+
+def _render_lotus_prayer_page(c: Canvas, plan: PlanRow, a: ActivityPack, page: ActivityPage) -> None:
+    """Story-agnostic lotus/petal prayer page driven by page.components."""
+    from ..activities.models import PrintablePart
+
+    page_no = c.getPageNumber()
+    y = _header(c, plan, a, page_no, page.page_title)
+    y = _story_box(c, page.story_connection or a.story_connection, y)
+    y -= 0.15 * inch
+    for instruction in page.instructions[:4]:
+        y = _wrapped(c, f"• {instruction}", MARGIN, y, PAGE_W - 2 * MARGIN, 10.5, 13)
+        y -= 0.04 * inch
+    petals = [component_label(item) for item in page.components]
+    if not petals:
+        petals = ["Someone to protect", "A fear I can offer", "Something I am thankful for", "One kind action", "A prayer for the world"]
+    c.setDash(3, 3)
+    c.setLineWidth(1)
+    for idx, label in enumerate(petals[:5]):
+        row, col = divmod(idx, 3)
+        px = (1.7 + col * 2.55) * inch
+        py = (y - 0.2 * inch - row * 1.45 * inch)
+        c.ellipse(px - 1.05 * inch, py - 0.55 * inch, px + 1.05 * inch, py + 0.55 * inch, stroke=1, fill=0)
+        c.setFont(FONT_BOLD, 9.5)
+        _wrapped_font(c, label, px - 0.9 * inch, py + 0.18 * inch, 1.8 * inch, font=FONT_BOLD, size=9.5, leading=11)
+        c.setDash()
+        c.line(px - 0.75 * inch, py - 0.2 * inch, px + 0.75 * inch, py - 0.2 * inch)
+        c.setDash(3, 3)
+        c.setFont(FONT_REGULAR, 8.5)
+        c.drawCentredString(px, py - 0.4 * inch, "draw or write")
+    c.setDash()
+    ages = a.age_variants or {}
+    note = ages.get("ages_6_8", "Younger: draw.") + "  " + ages.get("ages_9_13", "Older: write.")
+    c.setFont(FONT_BOLD, 10)
+    c.drawString(MARGIN, 1.35 * inch, (a.safety_note or "PARENT HELP: supervise scissors if cutting.")[:95])
+    _wrapped(c, note + " Family talk: share one petal together.", MARGIN, 1.1 * inch, PAGE_W - 2 * MARGIN, 10)
+    c.showPage()
+
 
 def _render_prayer_wheel(c: Canvas, plan: PlanRow, a: ActivityPack) -> None:
     y = _header(c, plan, a, 1)

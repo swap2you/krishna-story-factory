@@ -35,8 +35,16 @@ from .paths import make_package_paths
 from .activities.planner import ActivityPlanner
 from .pdf.activity_sheet import ActivitySheetGenerator, validate_activity_pdf
 from .quality.checks import run_quality_checks
-from .storage.google_drive_uploader import replace_component_files, upload_final_package
+from .storage.google_drive_uploader import (
+    ensure_story_folder,
+    replace_component_files,
+    upload_files_to_folder,
+    upload_final_package,
+    verify_drive_text_links,
+)
 from .images.vision_qa import review_image, save_review
+from .audio.waveform import WaveformMetrics, validate_mp3_waveform
+from .activities.qa import semantic_activity_errors
 from .work import cleanup_work, new_work_paths, prune_output_folder
 
 logger = logging.getLogger(__name__)
@@ -227,7 +235,7 @@ def _run_once(
 
     audio_gen = AudioGenerator(settings, mode)
     audio_source = audio_gen.generate_mp3(content.audio_script, paths.narration_mp3)
-    _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
+    waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
 
     poster_score, poster_ref = generate_poster(
         settings,
@@ -257,17 +265,29 @@ def _run_once(
     pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir, activity=activity)
     if pdf_check.errors:
         raise PipelineError("Activity PDF validation failed: " + " | ".join(pdf_check.errors))
-    activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
-    if activity_score < 88:
+    activity_score = _review_activity(
+        settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
+    )
+    if activity_score < 90:
         activity = _repair_activity_pack(settings, plan, story_md, activity, activity_score)
         pdf_check = ActivitySheetGenerator().generate(plan, activity, paths.activity_sheet)
         pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir, activity=activity)
         if pdf_check.errors:
             raise PipelineError("Repaired activity PDF validation failed: " + " | ".join(pdf_check.errors))
-        activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
-        if activity_score < 88:
-            raise PipelineError(f"Activity vision score {activity_score} below threshold 88 after repair.")
+        activity_score = _review_activity(
+            settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
+        )
+        if activity_score < 90:
+            raise PipelineError(f"Activity vision score {activity_score} below threshold 90 after repair.")
+    will_upload = mode != "test" and not no_upload and settings.google_drive_upload_enabled
     package_link = None if mode == "test" else (settings.package_public_link or settings.google_drive_folder_url)
+    drive_folder_id = ""
+    if will_upload:
+        folder = ensure_story_folder(settings, folder_name=paths.root.name)
+        if folder.status != "READY" or not folder.folder_id or not folder.package_link:
+            raise PipelineError(f"Drive folder ensure failed: {folder.detail}")
+        package_link = folder.package_link
+        drive_folder_id = folder.folder_id
     caption = (
         f"TEST PREVIEW — NOT PUBLISHABLE\n\n{content.title}\nNo upload or parent delivery was performed."
         if mode == "test" else
@@ -282,6 +302,9 @@ def _run_once(
     if not ok:
         raise PipelineError(" | ".join(quality_errors))
 
+    initial_drive_status = "SKIPPED" if mode == "test" else ("UPLOADING" if will_upload else "PENDING")
+    if no_upload and mode != "test":
+        initial_drive_status = "SKIPPED"
     write_manifest(
         settings=settings,
         plan=plan,
@@ -293,19 +316,96 @@ def _run_once(
         quality_warnings=quality_warnings,
         audio_source=audio_source,
         package_link=package_link,
-        drive_status="SKIPPED" if mode == "test" else "PENDING",
-        drive_detail="",
+        drive_status=initial_drive_status,
+        drive_detail="" if will_upload else ("Upload disabled by flag." if no_upload else ""),
         poster_score=poster_score,
         coloring_score=coloring_score,
         reference_used=reference_used,
         activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
         poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
         identity_consistency_score=identity_score,
+        waveform_metrics=waveform_metrics,
     )
 
     drive_status = "SKIPPED"
     drive_detail = "Upload disabled by flag." if no_upload else ""
-    if mode != "test" and not no_upload and settings.google_drive_upload_enabled:
+    if will_upload:
+        upload = upload_files_to_folder(
+            settings,
+            folder_id=drive_folder_id,
+            package_link=package_link or "",
+            source_dir=paths.root,
+            files=FINAL_OUTPUT_FILES,
+            folder_name=paths.root.name,
+        )
+        if upload.status != "UPLOADED":
+            raise PipelineError(f"Drive upload failed: {upload.detail}")
+        ok_verify, verify_detail = verify_drive_text_links(
+            settings, folder_id=drive_folder_id, package_link=package_link or ""
+        )
+        if not ok_verify:
+            raise PipelineError(f"Drive verify failed after upload: {verify_detail}")
+        drive_status = "UPLOADED"
+        drive_detail = upload.detail
+        write_manifest(
+            settings=settings,
+            plan=plan,
+            content=content,
+            paths=paths,
+            mode=mode,
+            quality_status="PASS",
+            quality_errors=quality_errors,
+            quality_warnings=quality_warnings,
+            audio_source=audio_source,
+            package_link=package_link,
+            drive_status="UPLOADED",
+            drive_detail=drive_detail,
+            poster_score=poster_score,
+            coloring_score=coloring_score,
+            reference_used=reference_used,
+            activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
+            poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
+            identity_consistency_score=identity_score,
+            waveform_metrics=waveform_metrics,
+        )
+        paths.whatsapp_caption.write_text(
+            format_whatsapp_caption(
+                story_title=content.title,
+                package_link=package_link,
+                activity_title=activity.activity_title,
+                recommended_send_mode=activity.recommended_send_mode,
+            ),
+            encoding="utf-8",
+        )
+        reupload = upload_files_to_folder(
+            settings,
+            folder_id=drive_folder_id,
+            package_link=package_link or "",
+            source_dir=paths.root,
+            files=("manifest.json", "whatsapp_caption.txt"),
+            folder_name=paths.root.name,
+        )
+        if reupload.status != "UPLOADED":
+            raise PipelineError(f"Drive manifest re-upload failed: {reupload.detail}")
+        ok_verify2, verify_detail2 = verify_drive_text_links(
+            settings, folder_id=drive_folder_id, package_link=package_link or ""
+        )
+        if not ok_verify2:
+            raise PipelineError(f"Drive verify failed after manifest finalize: {verify_detail2}")
+        append_storage_log(
+            settings.project_root,
+            {
+                "date": now.date().isoformat(),
+                "chapter_no": plan.chapter_no,
+                "slug": plan.slug,
+                "mode": mode,
+                "status": drive_status,
+                "detail": drive_detail,
+                "folder_link": package_link,
+                "created_at": now.isoformat(timespec="seconds"),
+            },
+        )
+    elif mode != "test" and not no_upload and settings.google_drive_local_sync_root:
         upload = upload_final_package(settings, folder_name=paths.root.name, source_dir=paths.root)
         drive_status = upload.status
         drive_detail = upload.detail
@@ -342,7 +442,7 @@ def _run_once(
         quality_warnings=quality_warnings,
         audio_source=audio_source,
         package_link=package_link,
-        drive_status=drive_status,
+        drive_status=drive_status if mode != "test" else "SKIPPED",
         drive_detail=drive_detail,
         poster_score=poster_score,
         coloring_score=coloring_score,
@@ -350,6 +450,7 @@ def _run_once(
         activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
         poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
         identity_consistency_score=identity_score,
+        waveform_metrics=waveform_metrics,
     )
 
     ok, quality_errors, quality_warnings = run_quality_checks(
@@ -386,11 +487,14 @@ def _run_once(
     )
 
 
-def _validate_audio(path: Path, settings: Settings, mode: str, *, low_credit: bool = False) -> None:
+def _validate_audio(
+    path: Path, settings: Settings, mode: str, *, low_credit: bool = False
+) -> WaveformMetrics | None:
     if mode == "test":
-        return
+        return None
     if not path.exists() or path.stat().st_size <= 500 * 1024:
         raise PipelineError("narration.mp3 missing or below 500 KB.")
+    duration: float | None = None
     try:
         from mutagen.mp3 import MP3
 
@@ -401,6 +505,11 @@ def _validate_audio(path: Path, settings: Settings, mode: str, *, low_credit: bo
             raise PipelineError(f"Audio duration {duration:.0f}s outside {window} minute window.")
     except ImportError:
         pass
+
+    metrics = validate_mp3_waveform(path, expected_duration=duration)
+    if metrics.status != "PASS":
+        raise PipelineError(f"Audio waveform validation failed: {metrics.detail}")
+    return metrics
 
 
 def _rebuild_components(
@@ -424,16 +533,20 @@ def _rebuild_components(
     pdf_check = validate_activity_pdf(temp_activity, render_dir, activity=activity)
     if pdf_check.errors:
         raise PipelineError("Activity PDF validation failed: " + " | ".join(pdf_check.errors))
-    activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
-    if activity_score < 88:
+    activity_score = _review_activity(
+        settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
+    )
+    if activity_score < 90:
         activity = _repair_activity_pack(settings, plan, story_md, activity, activity_score)
         ActivitySheetGenerator().generate(plan, activity, temp_activity)
         pdf_check = validate_activity_pdf(temp_activity, render_dir, activity=activity)
         if pdf_check.errors:
             raise PipelineError("Repaired activity PDF validation failed: " + " | ".join(pdf_check.errors))
-        activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
-        if activity_score < 88:
-            raise PipelineError(f"Activity vision score {activity_score} below threshold 88 after repair.")
+        activity_score = _review_activity(
+            settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
+        )
+        if activity_score < 90:
+            raise PipelineError(f"Activity vision score {activity_score} below threshold 90 after repair.")
     coloring_score, poster_ref, style_ref, identity_score = generate_coloring(
         settings, story_md=story_md, content=content, output_path=temp_coloring,
         work_candidates=work.coloring_candidates, work_reviews=work.reviews,
@@ -524,9 +637,27 @@ def _repair_activity_pack(settings: Settings, plan: PlanRow, story_md: str, acti
 
 def _review_activity(
     settings: Settings, story_md: str, render_dir: Path, reviews_dir: Path, mode: str,
-    *, activity=None,
+    *, activity=None, chapter_no: str = "", slug: str = "",
 ) -> int:
     pages = sorted(render_dir.glob("activity_page_*.png"))
+    if activity is not None:
+        semantic_errors = semantic_activity_errors(activity)
+        if semantic_errors:
+            _retain_activity_qa_evidence(
+                settings,
+                chapter_no=chapter_no,
+                activity=activity,
+                contact_sheet=None,
+                review_payload={
+                    "score": 0,
+                    "issues": semantic_errors,
+                    "hard_rejection": True,
+                    "hard_rejection_reasons": semantic_errors,
+                },
+            )
+            if mode == "test":
+                return 0
+            return 0
     if mode == "test" or not settings.openai_api_key:
         return 90
     if not pages:
@@ -547,7 +678,44 @@ incomplete assembly, repetitive or burdensome activities, visible answer keys, o
     contact_sheet = _activity_contact_sheet(pages, reviews_dir / "activity_contact_sheet.png")
     review = review_image(settings, story_md=story_md, image_path=contact_sheet, kind="activity", rubric=rubric)
     save_review(reviews_dir, "activity_final", review)
+    _retain_activity_qa_evidence(
+        settings,
+        chapter_no=chapter_no,
+        activity=activity,
+        contact_sheet=contact_sheet,
+        review_payload={
+            "score": review.score,
+            "issues": review.issues,
+            "hard_rejection": review.hard_rejection,
+            "hard_rejection_reasons": review.hard_rejection_reasons,
+            "raw": review.raw,
+        },
+    )
     return review.score
+
+
+def _retain_activity_qa_evidence(
+    settings: Settings,
+    *,
+    chapter_no: str,
+    activity=None,
+    contact_sheet: Path | None,
+    review_payload: dict,
+) -> None:
+    chapter = (chapter_no or "unknown").strip() or "unknown"
+    qa_dir = settings.project_root / ".work" / "qa" / chapter
+    qa_dir.mkdir(parents=True, exist_ok=True)
+    (qa_dir / "activity_final.json").write_text(
+        json.dumps(review_payload, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    if activity is not None:
+        (qa_dir / "activity_pack.json").write_text(
+            json.dumps(activity.to_dict(), indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    if contact_sheet and contact_sheet.exists():
+        shutil.copy2(contact_sheet, qa_dir / "activity_contact_sheet.png")
 
 
 def _activity_contact_sheet(pages: list[Path], output: Path) -> Path:

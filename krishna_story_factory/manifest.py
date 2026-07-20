@@ -33,6 +33,7 @@ def write_manifest(
     poster_reference_used: bool = False,
     style_reference_used: bool = False,
     identity_consistency_score: int = 0,
+    waveform_metrics=None,
 ) -> None:
     now = datetime.now(ZoneInfo(settings.app_timezone)).isoformat(timespec="seconds")
     story_text = paths.story_md.read_text(encoding="utf-8") if paths.story_md.exists() else ""
@@ -40,6 +41,21 @@ def write_manifest(
     audio_words = word_count(content.audio_script)
     audio_duration = _mp3_duration(paths.narration_mp3)
     audio_size = paths.narration_mp3.stat().st_size if paths.narration_mp3.exists() else 0
+    metrics = {
+        "main_story_words": main_story_words,
+        "audio_script_words": audio_words,
+        "audio_duration_seconds": audio_duration,
+        "audio_bytes": audio_size,
+    }
+    if waveform_metrics is not None:
+        metrics.update(
+            {
+                "peak": getattr(waveform_metrics, "peak", None),
+                "clipping_ratio": getattr(waveform_metrics, "clipping_ratio", None),
+                "longest_silence_seconds": getattr(waveform_metrics, "longest_silence_seconds", None),
+                "waveform_validation_status": getattr(waveform_metrics, "status", None),
+            }
+        )
     manifest = {
         "app": "krishna-story-factory",
         "version": "2.0",
@@ -51,12 +67,7 @@ def write_manifest(
         "scripture_reference": plan.scripture_reference,
         "age_range": plan.age_range,
         "outputs": list(FINAL_OUTPUT_FILES),
-        "metrics": {
-            "main_story_words": main_story_words,
-            "audio_script_words": audio_words,
-            "audio_duration_seconds": audio_duration,
-            "audio_bytes": audio_size,
-        },
+        "metrics": metrics,
         "images": {
             "model": settings.openai_image_model,
             "quality": settings.openai_image_quality,
