@@ -320,10 +320,17 @@ def package_from_llm_dict(
     lessons = [str(x).strip() for x in (data.get("five_lessons") or []) if str(x).strip()]
     questions = [str(x).strip() for x in (data.get("think_about_it") or []) if str(x).strip()]
     challenge = [str(x).strip() for x in (data.get("five_star_challenge") or []) if str(x).strip()][:5]
-    # Legacy fallback bridge
+    # Legacy fallback bridge — never invent numbered placeholder lessons.
     if len(lessons) < 5:
         moral = str(data.get("moral") or "").strip()
         takeaway = str(data.get("takeaway") or "").strip()
+        fallbacks = [
+            "Trust Lord Kṛṣṇa even when the path feels uncertain.",
+            "Speak truthfully and keep your promises with love.",
+            "Remember the Lord with a soft and grateful heart.",
+            "Offer simple prayers when fear or worry appears.",
+            "Share kindness with family as a daily act of devotion.",
+        ]
         while len(lessons) < 5:
             if moral and moral not in lessons:
                 lessons.append(moral)
@@ -332,8 +339,13 @@ def package_from_llm_dict(
                 lessons.append(takeaway)
                 takeaway = ""
             else:
-                lessons.append(f"Remember the Lord with love in this pastime ({len(lessons) + 1}).")
+                nxt = next((item for item in fallbacks if item not in lessons), "")
+                if not nxt:
+                    break
+                lessons.append(nxt)
         lessons = lessons[:5]
+        if len(lessons) < 5:
+            raise ValueError("five_lessons incomplete after fallback; refusing placeholder lessons")
     if len(questions) < 3:
         for item in (activity.get("recall_questions") or []) + (activity.get("thinking_questions") or []):
             if str(item).strip() and str(item).strip() not in questions:
