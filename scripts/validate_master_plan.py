@@ -15,18 +15,21 @@ def main() -> int:
     errors = validate_master_plan(path)
     rows = load_master_plan(path)
     next_plan = read_next_pending(PROJECT_ROOT)
-    if not next_plan or next_plan.chapter_no != "003":
-        errors.append(f"Next active episode must be 003; found {next_plan.chapter_no if next_plan else 'none'}.")
+    if not next_plan:
+        errors.append("No next pending episode found in runtime queue.")
     if errors:
         print("MASTER PLAN INVALID")
         for error in errors:
             print(f"- {error}")
         return 1
     chapters = {int(row["source_chapter"]) for row in rows}
-    print(f"MASTER PLAN VALID: {len(rows)} episodes; chapters {min(chapters)}-{max(chapters)} covered; next active 003")
+    print(
+        f"MASTER PLAN VALID: {len(rows)} episodes; "
+        f"chapters {min(chapters)}-{max(chapters)} covered; "
+        f"next active {next_plan.chapter_no}"
+    )
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

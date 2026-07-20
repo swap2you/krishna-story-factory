@@ -14,6 +14,8 @@ from .config import Settings
 from .content.caption import format_whatsapp_caption
 from .csv_store import (
     acquire_pipeline_lock,
+    already_completed_production_today,
+    append_run_history,
     append_storage_log,
     append_story_log,
     read_next_pending,
@@ -82,6 +84,27 @@ def run_daily_story(
     now = datetime.now(ZoneInfo(settings.app_timezone))
     plan: PlanRow | None = None
     try:
+        normal_prod = mode == "prod" and not force and not rebuild and not rebuild_components
+        if normal_prod and already_completed_production_today(settings.project_root, settings.app_timezone):
+            detail = "A successful production story already completed today."
+            append_run_history(
+                settings.project_root,
+                {
+                    "started_at": now.isoformat(timespec="seconds"),
+                    "completed_at": now.isoformat(timespec="seconds"),
+                    "status": "SKIPPED_ALREADY_COMPLETED_TODAY",
+                    "chapter_no": "",
+                    "slug": "",
+                    "detail": detail,
+                    "exit_code": "0",
+                },
+            )
+            return {
+                "status": "SKIPPED_ALREADY_COMPLETED_TODAY",
+                "detail": detail,
+                "errors": "",
+            }
+
         if chapter:
             plan = read_plan_by_chapter(settings.project_root, chapter)
             if not plan:
@@ -123,6 +146,19 @@ def run_daily_story(
                 "errors": result.errors,
             },
         )
+        if mode == "prod":
+            append_run_history(
+                settings.project_root,
+                {
+                    "started_at": now.isoformat(timespec="seconds"),
+                    "completed_at": datetime.now(ZoneInfo(settings.app_timezone)).isoformat(timespec="seconds"),
+                    "status": result.status,
+                    "chapter_no": plan.chapter_no,
+                    "slug": plan.slug,
+                    "detail": result.detail or result.errors,
+                    "exit_code": "0" if result.status == "SUCCESS" else "1",
+                },
+            )
         return {
             "status": result.status,
             "output_dir": result.output_dir,
@@ -137,12 +173,11 @@ def run_daily_story(
             "errors": result.errors,
         }
     except Exception as exc:
-        if plan and plan.row_index is not None and not rebuild_components:
+        if plan and plan.row_index is not None and not rebuild_components and mode != "test":
             update_plan_status(settings.project_root, plan, "pending")
         raise PipelineError(str(exc)) from exc
     finally:
         release_pipeline_lock(lock)
-
 
 def _run_with_repairs(
     settings: Settings,

@@ -41,7 +41,12 @@ def main() -> int:
         rebuild_components=rebuild_components,
     )
     print(json.dumps(result, indent=2, ensure_ascii=False))
-    return 0 if result.get("status") in {"SUCCESS", "NO_PENDING_STORY"} else 1
+    return 0 if result.get("status") in {
+        "SUCCESS",
+        "NO_PENDING_STORY",
+        "SKIPPED_ALREADY_COMPLETED_TODAY",
+        "ALREADY_DONE",
+    } else 1
 
 
 if __name__ == "__main__":
