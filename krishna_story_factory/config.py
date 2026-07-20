@@ -100,6 +100,7 @@ class Settings:
     telegram_chat_id: str
     slack_webhook_url: str
     discord_webhook_url: str
+    story_greeting_names: str = ""
 
 
 def _optional_float(env_name: str) -> float | None:
@@ -226,4 +227,5 @@ def load_settings(project_root: Path) -> Settings:
         telegram_chat_id=os.getenv("TELEGRAM_CHAT_ID", ""),
         slack_webhook_url=os.getenv("SLACK_WEBHOOK_URL", ""),
         discord_webhook_url=os.getenv("DISCORD_WEBHOOK_URL", ""),
+        story_greeting_names=os.getenv("STORY_GREETING_NAMES", "").strip(),
     )

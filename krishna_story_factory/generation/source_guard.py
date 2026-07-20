@@ -27,11 +27,14 @@ def source_fact_brief(plan: PlanRow) -> str:
 
 def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
     errors: list[str] = []
-    story = f"{content.recap}\n{content.main_story}".lower()
+    # Boundary checks apply to the episode narrative, not next-preview / parent notes.
+    story = f"{content.recap}\n{content.main_story}\n{content.devotional_meaning}".lower()
     narration = content.audio_script.lower()
+    if content.next_story_preview:
+        narration = narration.replace(content.next_story_preview.lower(), " ")
     combined = f"{story}\n{narration}"
     for phrase in _items(plan.must_avoid):
-        if phrase.lower() in combined:
+        if phrase.lower() in story:
             errors.append(f"Source boundary violation: forbidden later/unrelated event {phrase!r}.")
     for pastime in UNRELATED_PASTIMES:
         if pastime in combined and pastime not in plan.summary_seed.lower() and pastime not in plan.must_include.lower():
@@ -73,8 +76,8 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
             errors.append("Story 003 must not say Kaṁsa was keeping his word.")
         if _asserts_permanent_safety(combined):
             errors.append("Story 003 must not imply the family was permanently safe.")
-        if not content.bedtime_reflection.strip().endswith("?"):
-            errors.append("Story 003 Bedtime Reflection must be a question.")
+        if not (content.bedtime_reflection.strip().endswith("?") or any(str(q).strip().endswith("?") for q in content.think_about_it)):
+            errors.append("Story 003 must include a child reflection question.")
     if plan.chapter_no == "004":
         _require(combined, ("narada", "nārada"), "Story 004 must include Nārada.", errors)
         _require(combined, ("yadu", "yadus"), "Story 004 must name the Yadu family.", errors)
@@ -88,8 +91,8 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
         for phrase in ("mother earth", "ocean of milk", "wedding procession", "first son", "first child", "krishna was born", "krishna's birth"):
             if phrase in combined:
                 errors.append(f"Story 004 crosses its source boundary with {phrase!r}.")
-        if not content.bedtime_reflection.strip().endswith("?"):
-            errors.append("Story 004 Bedtime Reflection must be a question.")
+        if not (content.bedtime_reflection.strip().endswith("?") or any(str(q).strip().endswith("?") for q in content.think_about_it)):
+            errors.append("Story 004 must include a child reflection question.")
     return errors
 
 

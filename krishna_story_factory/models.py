@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from .content.story_format_v2 import StoryPackageContentV2
+
 
 @dataclass(slots=True)
 class PlanRow:
@@ -61,37 +63,105 @@ class StoryContent:
     scripture_reference: str = ""
     age_range: str = "6-12"
     source_reference: str = ""
+    # Format V2 fields
+    greeting: str = ""
+    series_name: str = "Krishna Book Bedtime"
+    story_number: str = ""
+    devotional_meaning: str = ""
+    five_lessons: list[str] = field(default_factory=list)
+    think_about_it: list[str] = field(default_factory=list)
+    bedtime_prayer: str = ""
+    next_story_preview: str = ""
+    parent_note: str = ""
+    story_format: str = "v2"
+
+    def to_v2_package(self) -> StoryPackageContentV2:
+        lessons = list(self.five_lessons) or [self.moral, self.takeaway]
+        while len(lessons) < 5:
+            lessons.append(f"Remember Kṛṣṇa with love ({len(lessons) + 1}).")
+        questions = list(self.think_about_it) or list(self.recall_questions) + list(self.thinking_questions)
+        if self.bedtime_reflection and self.bedtime_reflection not in questions:
+            questions.append(self.bedtime_reflection)
+        while len(questions) < 3:
+            questions.append("What touched your heart in tonight's pastime?")
+        prayer = self.bedtime_prayer or self.bedtime_reflection
+        meaning = self.devotional_meaning or self.moral
+        parent = self.parent_note or self.parent_discussion_note or self.parent_notes
+        return StoryPackageContentV2(
+            greeting=self.greeting or "Hare Kṛṣṇa, dear children and families!",
+            series_name=self.series_name or "Krishna Book Bedtime",
+            story_number=self.story_number,
+            title=self.title,
+            source_reference=self.source_reference,
+            scripture_reference=self.scripture_reference,
+            recap=self.recap,
+            main_story=self.main_story,
+            devotional_meaning=meaning,
+            five_lessons=lessons[:5],
+            think_about_it=questions[:5],
+            five_star_challenge=list(self.five_star_challenge)[:5],
+            bedtime_prayer=prayer,
+            next_story_preview=self.next_story_preview,
+            parent_note=parent,
+            audio_narration=self.audio_script,
+            activity_data={
+                "recall_questions": self.recall_questions,
+                "thinking_questions": self.thinking_questions,
+                "word_search_words": self.word_search_words,
+                "draw_activity": self.draw_activity,
+                "family_activity": self.family_activity,
+            },
+            poster_visual_brief=self.poster_visual_brief or self.hero_image_prompt,
+            coloring_visual_brief=self.coloring_visual_brief or self.line_art_prompt or self.coloring_page_prompt,
+            poster_one_liner=self.poster_one_liner or self.takeaway,
+            age_range=self.age_range,
+        )
 
     def to_markdown(self) -> str:
-        challenge = "\n".join(f"{i + 1}. {item}" for i, item in enumerate(self.five_star_challenge))
-        parent = self.parent_discussion_note or self.parent_notes
-        return (
-            f"---\n"
-            f'title: "{_yaml_escape(self.title)}"\n'
-            f'source_reference: "{_yaml_escape(self.source_reference)}"\n'
-            f'scripture_reference: "{_yaml_escape(self.scripture_reference)}"\n'
-            f"age_range: {self.age_range}\n"
-            f"---\n\n"
-            f"# {self.title}\n\n"
-            f"## Recap\n{self.recap}\n\n"
-            f"## Main Story\n{self.main_story}\n\n"
-            f"## Moral\n{self.moral}\n\n"
-            f"## Takeaway\n{self.takeaway}\n\n"
-            f"## Five-Star Challenge\n{challenge}\n\n"
-            f"## Parent Discussion Note\n{parent}\n\n"
-            f"## Bedtime Reflection\n{self.bedtime_reflection}\n\n"
-            f"<!--\n"
-            f"## Audio Performance Script\n{self.audio_script}\n\n"
-            f"## Poster Visual Brief\n{self.poster_visual_brief or self.hero_image_prompt}\n\n"
-            f"## Coloring Visual Brief\n{self.coloring_visual_brief or self.line_art_prompt or self.coloring_page_prompt}\n\n"
-            f"## Activity Data\n"
-            f"recall: {self.recall_questions}\n"
-            f"thinking: {self.thinking_questions}\n"
-            f"words: {self.word_search_words}\n"
-            f"draw: {self.draw_activity}\n"
-            f"family: {self.family_activity}\n"
-            f"-->\n"
-        )
+        return self.to_v2_package().to_markdown()
+
+
+def story_content_from_v2(package: StoryPackageContentV2) -> StoryContent:
+    activity = package.activity_data or {}
+    parent = package.parent_note
+    return StoryContent(
+        title=package.title,
+        recap=package.recap,
+        main_story=package.main_story,
+        moral=package.devotional_meaning or (package.five_lessons[0] if package.five_lessons else ""),
+        takeaway=package.five_lessons[-1] if package.five_lessons else "",
+        five_star_challenge=list(package.five_star_challenge)[:5],
+        audio_script=package.audio_narration,
+        parent_notes=parent,
+        parent_discussion_note=parent,
+        bedtime_reflection=package.think_about_it[0] if package.think_about_it else "",
+        poster_visual_brief=package.poster_visual_brief,
+        coloring_visual_brief=package.coloring_visual_brief,
+        poster_one_liner=package.poster_one_liner,
+        hero_image_prompt=package.poster_visual_brief,
+        line_art_prompt=package.coloring_visual_brief,
+        coloring_page_prompt=package.coloring_visual_brief,
+        image_prompt=package.poster_visual_brief,
+        story_card_text=package.title,
+        recall_questions=[str(x) for x in activity.get("recall_questions", [])][:3] or list(package.think_about_it)[:3],
+        thinking_questions=[str(x) for x in activity.get("thinking_questions", [])][:2] or list(package.think_about_it)[3:5],
+        word_search_words=[str(x) for x in activity.get("word_search_words", [])][:10],
+        draw_activity=str(activity.get("draw_activity") or ""),
+        family_activity=str(activity.get("family_activity") or ""),
+        scripture_reference=package.scripture_reference,
+        age_range=package.age_range,
+        source_reference=package.source_reference,
+        greeting=package.greeting,
+        series_name=package.series_name,
+        story_number=package.story_number,
+        devotional_meaning=package.devotional_meaning,
+        five_lessons=list(package.five_lessons)[:5],
+        think_about_it=list(package.think_about_it)[:5],
+        bedtime_prayer=package.bedtime_prayer,
+        next_story_preview=package.next_story_preview,
+        parent_note=parent,
+        story_format="v2",
+    )
 
 
 def _yaml_escape(value: str) -> str:
@@ -107,7 +177,15 @@ def extract_main_story(story_md: str) -> str:
     tail = story_md[start:].lstrip(":\n ")
     end = len(tail)
     tail_lower = tail.lower()
-    for end_marker in ("## moral", "## takeaway", "## five-star challenge", "## parent discussion"):
+    for end_marker in (
+        "## devotional meaning",
+        "## five lessons",
+        "## moral",
+        "## takeaway",
+        "## five-star challenge",
+        "## parent discussion",
+        "## parent/teacher note",
+    ):
         if end_marker in tail_lower:
             end = min(end, tail_lower.index(end_marker))
     return tail[:end].strip()

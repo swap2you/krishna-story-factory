@@ -35,20 +35,49 @@ def run_quality_checks(
     if paths.story_md.exists():
         story_text = paths.story_md.read_text(encoding="utf-8", errors="ignore")
         story = story_text.lower()
-        for section in ["## recap", "## main story", "## moral", "## takeaway", "## five-star challenge"]:
-            if section not in story:
-                errors.append(f"story.md missing section: {section}")
+        v2_sections = [
+            "## recap",
+            "## main story",
+            "## devotional meaning",
+            "## five lessons",
+            "## think about it",
+            "## five-star challenge",
+            "## bedtime prayer",
+            "## next story preview",
+            "## parent/teacher note",
+        ]
+        legacy_ok = all(
+            section in story
+            for section in ["## recap", "## main story", "## moral", "## takeaway", "## five-star challenge"]
+        )
+        v2_ok = all(section in story for section in v2_sections)
+        if not v2_ok and not legacy_ok:
+            for section in v2_sections:
+                if section not in story:
+                    errors.append(f"story.md missing section: {section}")
         main_story = extract_main_story(story_text)
         main_words = word_count(main_story)
         if mode == "prod":
             if main_words < 700:
                 errors.append(f"Main Story too short ({main_words} words).")
-            if main_words > 1300:
+            max_words = 950 if v2_ok else 1300
+            if main_words > max_words:
                 errors.append(f"Main Story too long ({main_words} words).")
         errors.extend(detect_repetition(main_story, content_type="story").errors)
-        reflection = re.search(r"## Bedtime Reflection\s*\n(.*?)(?=\n## |\n<!--|\Z)", story_text, re.I | re.S)
-        if not reflection or not reflection.group(1).strip():
-            errors.append("story.md Bedtime Reflection must contain one child-friendly reflection question.")
+        if v2_ok:
+            prayer = re.search(
+                r"## Bedtime Prayer\s*\n(.*?)(?=\n## |\n<!--|\Z)", story_text, re.I | re.S
+            )
+            if not prayer or not prayer.group(1).strip():
+                errors.append("story.md Bedtime Prayer must be present.")
+            elif "hare k" not in prayer.group(1).lower():
+                errors.append("story.md Bedtime Prayer must include the Hare Kṛṣṇa mahā-mantra.")
+        else:
+            reflection = re.search(
+                r"## Bedtime Reflection\s*\n(.*?)(?=\n## |\n<!--|\Z)", story_text, re.I | re.S
+            )
+            if not reflection or not reflection.group(1).strip():
+                errors.append("story.md Bedtime Reflection must contain one child-friendly reflection question.")
 
     if mode == "prod" and paths.narration_mp3.exists():
         size = paths.narration_mp3.stat().st_size

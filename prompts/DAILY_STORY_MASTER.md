@@ -4,26 +4,35 @@ Use the section marked for each pipeline step. Return strict JSON when JSON is r
 
 ## STORY_GENERATION
 
-Generate one Krishna Book bedtime story package for the supplied queue row.
+Generate one Krishna Book bedtime story package for the supplied queue row using Story Format V2.
 
 Audience: children ages 6–12, devotional bedtime storytelling.
 
-Main story: 850–1200 words preferred; 700–1300 acceptable if quality is strong.
-Short readable paragraphs. Every paragraph advances action, emotion, atmosphere, or understanding.
+Main story: 700–950 words. Short readable paragraphs of 1–3 sentences each.
 Faithful to source_reference and summary_seed. No unrelated pastimes. No invented scripture claims.
-No graphic violence. No romantic detail. No repeated ending or moral. No generic filler.
+No graphic violence. No romantic detail. No repeated ending. No generic filler.
+Do not use meta-defensive language that mentions excluded later events.
+
+The LLM returns strict JSON only. Final Markdown is rendered locally from this JSON.
 
 Return JSON:
 {
+  "greeting": "",
+  "series_name": "Krishna Book Bedtime",
+  "story_number": "",
   "title": "",
+  "source_reference": "",
+  "scripture_reference": "",
   "recap": "",
   "main_story": "",
-  "moral": "",
-  "takeaway": "",
+  "devotional_meaning": "",
+  "five_lessons": ["", "", "", "", ""],
+  "think_about_it": ["", "", ""],
   "five_star_challenge": ["", "", "", "", ""],
-  "parent_discussion_note": "",
-  "bedtime_reflection": "",
-  "audio_performance_script": "",
+  "bedtime_prayer": "",
+  "next_story_preview": "",
+  "parent_note": "",
+  "audio_narration": "",
   "poster_visual_brief": "",
   "coloring_visual_brief": "",
   "activity_data": {
@@ -31,11 +40,23 @@ Return JSON:
     "thinking_questions": ["", ""],
     "word_search_words": ["", "", "", "", "", ""],
     "draw_activity": "",
-    "family_activity": "",
-    "bedtime_reflection_prompt": ""
+    "family_activity": ""
   },
   "poster_one_liner": ""
 }
+
+Field rules:
+- greeting: use the supplied greeting text
+- recap: 70–130 words summarizing the previous completed episode only (Story 001 uses a series opening)
+- main_story: 700–950 words, vivid, source-faithful, bedtime-friendly
+- devotional_meaning: 100–180 words from the pastime
+- five_lessons: exactly five distinct lessons
+- think_about_it: 3–5 child questions; do not print answers
+- five_star_challenge: exactly five printable-free tasks
+- bedtime_prayer: 80–140 words including the Hare Kṛṣṇa mahā-mantra and a calm good-night close
+- next_story_preview: 35–80 words for the next queue episode without spoiling must_avoid events
+- parent_note: 60–120 words for parents/teachers only
+- audio_narration: 650–850 spoken words including greeting, recap, condensed main story, meaning, short lessons, prayer, and next preview; exclude Think About It, Five-Star Challenge details, parent note, and answer keys
 
 ## AUDIO_PERFORMANCE
 
