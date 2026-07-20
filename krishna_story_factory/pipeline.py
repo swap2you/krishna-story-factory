@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 from .audio.tts import AudioGenerator
 from .config import Settings
 from .content.caption import format_whatsapp_caption
+from .content.parent_answer_key import build_parent_answer_key, validate_parent_answer_key
 from .csv_store import (
     acquire_pipeline_lock,
     already_completed_production_today,
@@ -265,11 +266,19 @@ def _run_once(
     pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir, activity=activity)
     if pdf_check.errors:
         raise PipelineError("Activity PDF validation failed: " + " | ".join(pdf_check.errors))
+    parent_key = build_parent_answer_key(activity)
+    key_errors = validate_parent_answer_key(activity, parent_key)
+    if key_errors:
+        raise PipelineError("Parent answer key incomplete: " + " | ".join(key_errors))
     activity_score = _review_activity(
         settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
     )
     if activity_score < 90:
         activity = _repair_activity_pack(settings, plan, story_md, activity, activity_score)
+        parent_key = build_parent_answer_key(activity)
+        key_errors = validate_parent_answer_key(activity, parent_key)
+        if key_errors:
+            raise PipelineError("Repaired parent answer key incomplete: " + " | ".join(key_errors))
         pdf_check = ActivitySheetGenerator().generate(plan, activity, paths.activity_sheet)
         pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir, activity=activity)
         if pdf_check.errors:
@@ -326,6 +335,7 @@ def _run_once(
         identity_consistency_score=identity_score,
         waveform_metrics=waveform_metrics,
         matching_coverage=pdf_check.matching_coverage,
+        parent_answer_key=parent_key.to_dict(),
     )
 
     drive_status = "SKIPPED"
@@ -369,6 +379,7 @@ def _run_once(
             identity_consistency_score=identity_score,
             waveform_metrics=waveform_metrics,
             matching_coverage=pdf_check.matching_coverage,
+            parent_answer_key=parent_key.to_dict(),
         )
         paths.whatsapp_caption.write_text(
             format_whatsapp_caption(
@@ -454,6 +465,7 @@ def _run_once(
         identity_consistency_score=identity_score,
         waveform_metrics=waveform_metrics,
         matching_coverage=pdf_check.matching_coverage,
+        parent_answer_key=parent_key.to_dict(),
     )
 
     ok, quality_errors, quality_warnings = run_quality_checks(
@@ -536,11 +548,16 @@ def _rebuild_components(
     pdf_check = validate_activity_pdf(temp_activity, render_dir, activity=activity)
     if pdf_check.errors:
         raise PipelineError("Activity PDF validation failed: " + " | ".join(pdf_check.errors))
+    parent_key = build_parent_answer_key(activity)
+    key_errors = validate_parent_answer_key(activity, parent_key)
+    if key_errors:
+        raise PipelineError("Parent answer key incomplete: " + " | ".join(key_errors))
     activity_score = _review_activity(
         settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
     )
     if activity_score < 90:
         activity = _repair_activity_pack(settings, plan, story_md, activity, activity_score)
+        parent_key = build_parent_answer_key(activity)
         ActivitySheetGenerator().generate(plan, activity, temp_activity)
         pdf_check = validate_activity_pdf(temp_activity, render_dir, activity=activity)
         if pdf_check.errors:
@@ -567,6 +584,7 @@ def _rebuild_components(
         drive_detail="Upload disabled by flag." if no_upload else "",
         coloring_model=ImageClient(settings).model, model_override=ImageClient(settings).model_override,
         matching_coverage=pdf_check.matching_coverage,
+        parent_answer_key=parent_key.to_dict(),
     )
     upload = None
     if not no_upload:
@@ -579,6 +597,7 @@ def _rebuild_components(
                 style_reference_used=style_ref, drive_status=upload.status, drive_detail=upload.detail,
                 coloring_model=ImageClient(settings).model, model_override=ImageClient(settings).model_override,
                 matching_coverage=pdf_check.matching_coverage,
+                parent_answer_key=parent_key.to_dict(),
             )
         if upload.status not in {"UPLOADED", "LOCAL_SYNC", "SKIPPED"}:
             raise PipelineError(upload.detail)
@@ -741,17 +760,60 @@ def _activity_contact_sheet(pages: list[Path], output: Path) -> Path:
 
 def _content_from_story_md(story_md: str, plan: PlanRow) -> StoryContent:
     def section(name: str, next_names: tuple[str, ...]) -> str:
-        match = re.search(rf"## {re.escape(name)}\s*\n(.*?)(?=\n## (?:{'|'.join(map(re.escape, next_names))})|\n-->|\Z)", story_md, re.S | re.I)
+        match = re.search(
+            rf"## {re.escape(name)}\s*\n(.*?)(?=\n## (?:{'|'.join(map(re.escape, next_names))})|\n-->|\Z)",
+            story_md,
+            re.S | re.I,
+        )
         return match.group(1).strip() if match else ""
-    title_match = re.search(r"^#\s+(.+)$", story_md, re.M)
+
+    title_match = re.search(r"^##\s+Story\s+\d+\s*[—-]\s*(.+)$", story_md, re.M | re.I)
+    if not title_match:
+        title_match = re.search(r"^#\s+(.+)$", story_md, re.M)
     coloring = section("Coloring Visual Brief", ("Activity Data",))
+    audio = section("Audio Narration", ("Poster Visual Brief", "Audio Performance Script")) or section(
+        "Audio Performance Script", ("Poster Visual Brief",)
+    )
+    meaning = section("Devotional Meaning", ("Five Lessons", "Moral")) or section("Moral", ("Takeaway", "Five Lessons"))
+    lessons_raw = section("Five Lessons", ("Think About It", "Takeaway", "Five-Star Challenge"))
+    lessons = [re.sub(r"^\d+\.\s*", "", line).strip() for line in lessons_raw.splitlines() if line.strip()]
+    questions_raw = section("Think About It", ("Five-Star Challenge",))
+    questions = [re.sub(r"^\d+\.\s*", "", line).strip() for line in questions_raw.splitlines() if line.strip()]
+    challenge_raw = section("Five-Star Challenge", ("Bedtime Prayer", "Parent Discussion Note", "Parent/Teacher Note"))
+    challenge = [re.sub(r"^\d+\.\s*", "", line).strip() for line in challenge_raw.splitlines() if line.strip()]
+    prayer = section("Bedtime Prayer", ("Next Story Preview", "Parent/Teacher Note")) or section(
+        "Bedtime Reflection", ("Parent Discussion Note", "Parent/Teacher Note")
+    )
+    parent = section("Parent/Teacher Note", ("Audio Narration", "Audio Performance Script")) or section(
+        "Parent Discussion Note", ("Bedtime Reflection", "Audio Performance Script")
+    )
+    greeting_match = re.search(r"^(Hare\s+K[^\n]+)", story_md, re.M | re.I)
     return StoryContent(
         title=title_match.group(1).strip() if title_match else plan.title,
-        recap=section("Recap", ("Main Story",)), main_story=section("Main Story", ("Moral",)),
-        moral=section("Moral", ("Takeaway",)), takeaway=section("Takeaway", ("Five-Star Challenge",)),
-        five_star_challenge=[], audio_script=section("Audio Performance Script", ("Poster Visual Brief",)),
-        coloring_visual_brief=coloring, line_art_prompt=coloring, coloring_page_prompt=coloring,
-        source_reference=plan.source_reference, scripture_reference=plan.scripture_reference, age_range=plan.age_range,
+        recap=section("Recap", ("Main Story",)),
+        main_story=section("Main Story", ("Devotional Meaning", "Moral")),
+        moral=meaning or (lessons[0] if lessons else ""),
+        takeaway=lessons[-1] if lessons else section("Takeaway", ("Five-Star Challenge",)),
+        five_star_challenge=challenge[:5],
+        audio_script=audio,
+        coloring_visual_brief=coloring,
+        line_art_prompt=coloring,
+        coloring_page_prompt=coloring,
+        source_reference=plan.source_reference,
+        scripture_reference=plan.scripture_reference,
+        age_range=plan.age_range,
+        greeting=greeting_match.group(1).strip() if greeting_match else "",
+        story_number=plan.chapter_no,
+        devotional_meaning=meaning,
+        five_lessons=lessons[:5],
+        think_about_it=questions[:5],
+        bedtime_prayer=prayer,
+        next_story_preview=section("Next Story Preview", ("Parent/Teacher Note",)),
+        parent_note=parent,
+        parent_notes=parent,
+        parent_discussion_note=parent,
+        bedtime_reflection=questions[0] if questions else prayer,
+        story_format="v2",
     )
 
 

@@ -697,8 +697,8 @@ def _pack_005(plan: PlanRow) -> ActivityPack:
             ),
         ],
         age_variants={
-            "ages_6_8": "Younger: draw inside each lotus petal.",
-            "ages_9_13": "Older: write one or two sentences in each petal.",
+            "ages_6_8": "draw lines or cut-and-match.",
+            "ages_9_13": "write one reason for each match.",
         },
         safety_note="PARENT HELP: An adult should supervise child-safe scissors if cutting.",
         completion_prompt="Share one lotus petal prayer with your family.",

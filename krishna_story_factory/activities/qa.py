@@ -154,6 +154,28 @@ def _is_generic_placeholder(label: str) -> bool:
     return (not normalized) or normalized in GENERIC_PLACEHOLDERS
 
 
+def activity_presentation_errors(activity: ActivityPack, pdf_text_by_page: list[str]) -> list[str]:
+    """Fail on cross-page instruction leakage and duplicated age labels."""
+    errors: list[str] = []
+    for index, text in enumerate(pdf_text_by_page, start=1):
+        blob = " ".join((text or "").lower().split())
+        if "younger: younger" in blob or "older: older" in blob:
+            errors.append(f"Page {index} has duplicated age labels.")
+        page = activity.pages[index - 1] if index - 1 < len(activity.pages) else None
+        if page and page.page_type in {"MATCHING_CARDS", "SORTING_CARDS"}:
+            if "lotus petal" in blob or "draw inside each lotus" in blob:
+                errors.append(f"Page {index} matching footer leaks lotus instructions.")
+        if page and page.page_type == "PRAYER_WHEEL":
+            if "cut-and-match" in blob or "reason for each match" in blob:
+                errors.append(f"Page {index} lotus footer leaks matching instructions.")
+            if page.layout_hint == "five_lotus_petals":
+                if "my lotus" not in blob and "lotus prayer" not in blob:
+                    errors.append(f"Page {index} missing lotus prayer title cues.")
+            elif "prayer" not in blob and "petal" not in blob and "gratitude" not in blob:
+                errors.append(f"Page {index} missing prayer/petal cues.")
+    return errors
+
+
 __all__ = [
     "GENERIC_PLACEHOLDERS",
     "MatchingCoverageResult",
@@ -161,4 +183,5 @@ __all__ = [
     "pdf_text_has_generic_placeholders",
     "matching_coverage_from_pdf_text",
     "retain_matching_coverage_evidence",
+    "activity_presentation_errors",
 ]

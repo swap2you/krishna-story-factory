@@ -14,7 +14,12 @@ from ..activities.models import (
     ActivityPack, ActivityPage, DecisionNode, MatchingCard, RolePlayCard, SequenceCard, SIMPLE_TYPES,
     component_label,
 )
-from ..activities.qa import matching_coverage_from_pdf_text, pdf_text_has_generic_placeholders, retain_matching_coverage_evidence
+from ..activities.qa import (
+    activity_presentation_errors,
+    matching_coverage_from_pdf_text,
+    pdf_text_has_generic_placeholders,
+    retain_matching_coverage_evidence,
+)
 from ..models import PlanRow
 
 PAGE_W, PAGE_H = letter
@@ -188,6 +193,13 @@ def _pdfium_pdf_check(
     if placeholder_hits:
         errors.append("Activity PDF contains generic placeholders: " + ", ".join(placeholder_hits[:6]))
     matching_meta = _append_matching_coverage_errors(errors, activity, joined, render_dir)
+    if activity is not None:
+        errors.extend(activity_presentation_errors(activity, text_blob))
+        for index, ratio in enumerate(coverage, start=1):
+            if ratio < 0.55 and activity.pages and index <= len(activity.pages):
+                page = activity.pages[index - 1]
+                if page.page_type == "PRAYER_WHEEL" and ratio < 0.45:
+                    errors.append(f"Page {index} lotus layout under-uses the page ({ratio:.0%} coverage).")
     doc.close()
     if temporary:
         temporary.cleanup()
@@ -513,7 +525,14 @@ def _render_matching_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page
             c.setFont(FONT_BOLD, 10)
             c.drawString(MARGIN, 0.85 * inch, activity.safety_note[:110])
         ages = activity.age_variants or {}
-        note = f"Younger: {ages.get('ages_6_8', 'draw lines or cut-and-match.')}  Older: {ages.get('ages_9_13', 'write one reason.')}"
+        younger = _strip_age_prefix(ages.get("ages_6_8", "draw lines or cut-and-match."))
+        older = _strip_age_prefix(ages.get("ages_9_13", "write one reason for each match."))
+        # Page-1 matching must never leak lotus-petal instructions.
+        if "lotus" in younger.lower() or "petal" in younger.lower():
+            younger = "draw lines or cut-and-match."
+        if "lotus" in older.lower() or "petal" in older.lower():
+            older = "write one reason for each match."
+        note = f"Younger: {younger}  Older: {older}"
         _wrapped(c, note[:160], MARGIN, 1.15 * inch, PAGE_W - 2 * MARGIN, 9.5, 11)
 
 
@@ -693,40 +712,72 @@ def _render_generic_cards(
 
 # --- Rich legacy layouts retained and extended ---
 
+def _strip_age_prefix(text: str) -> str:
+    value = (text or "").strip()
+    for prefix in ("Younger:", "Older:", "Family:"):
+        if value.lower().startswith(prefix.lower()):
+            value = value[len(prefix):].strip()
+    return value
+
+
 def _render_lotus_prayer_page(c: Canvas, plan: PlanRow, a: ActivityPack, page: ActivityPage) -> None:
-    """Story-agnostic lotus/petal prayer page driven by page.components."""
-    from ..activities.models import PrintablePart
+    """Render a real five-petal lotus around a center circle."""
+    import math
 
     page_no = c.getPageNumber()
     y = _header(c, plan, a, page_no, page.page_title)
     y = _story_box(c, page.story_connection or a.story_connection, y)
-    y -= 0.15 * inch
+    y -= 0.12 * inch
     for instruction in page.instructions[:4]:
         y = _wrapped(c, f"• {instruction}", MARGIN, y, PAGE_W - 2 * MARGIN, 10.5, 13)
-        y -= 0.04 * inch
+        y -= 0.03 * inch
     petals = [component_label(item) for item in page.components]
     if not petals:
-        petals = ["Someone to protect", "A fear I can offer", "Something I am thankful for", "One kind action", "A prayer for the world"]
-    c.setDash(3, 3)
-    c.setLineWidth(1)
-    for idx, label in enumerate(petals[:5]):
-        row, col = divmod(idx, 3)
-        px = (1.7 + col * 2.55) * inch
-        py = (y - 0.2 * inch - row * 1.45 * inch)
-        c.ellipse(px - 1.05 * inch, py - 0.55 * inch, px + 1.05 * inch, py + 0.55 * inch, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 9.5)
-        _wrapped_font(c, label, px - 0.9 * inch, py + 0.18 * inch, 1.8 * inch, font=FONT_BOLD, size=9.5, leading=11)
+        petals = [
+            "Someone to protect",
+            "A fear I can offer",
+            "Something I am thankful for",
+            "One kind action",
+            "A prayer for the world",
+        ]
+    petals = petals[:5]
+    cx = PAGE_W / 2
+    cy = 4.35 * inch
+    outer_r = 2.55 * inch
+    petal_rx = 1.15 * inch
+    petal_ry = 0.78 * inch
+    c.setStrokeColorRGB(0.12, 0.12, 0.12)
+    c.setLineWidth(1.4)
+    # Five petals around center (point-up flower).
+    for idx, label in enumerate(petals):
+        angle = math.radians(-90 + idx * 72)
+        px = cx + math.cos(angle) * (outer_r * 0.62)
+        py = cy + math.sin(angle) * (outer_r * 0.62)
+        c.saveState()
+        c.translate(px, py)
+        c.rotate(-90 + idx * 72)
+        c.setDash(3, 2)
+        c.ellipse(-petal_rx, -petal_ry, petal_rx, petal_ry, stroke=1, fill=0)
         c.setDash()
-        c.line(px - 0.75 * inch, py - 0.2 * inch, px + 0.75 * inch, py - 0.2 * inch)
-        c.setDash(3, 3)
-        c.setFont(FONT_REGULAR, 8.5)
-        c.drawCentredString(px, py - 0.4 * inch, "draw or write")
+        c.setFont(FONT_BOLD, 8.5)
+        _wrapped_font(c, label, -0.95 * inch, 0.15 * inch, 1.9 * inch, font=FONT_BOLD, size=8.5, leading=10)
+        c.setFont(FONT_REGULAR, 8)
+        c.drawCentredString(0, -0.35 * inch, "draw or write")
+        c.restoreState()
+    # Center circle
     c.setDash()
-    ages = a.age_variants or {}
-    note = ages.get("ages_6_8", "Younger: draw.") + "  " + ages.get("ages_9_13", "Older: write.")
-    c.setFont(FONT_BOLD, 10)
-    c.drawString(MARGIN, 1.35 * inch, (a.safety_note or "PARENT HELP: supervise scissors if cutting.")[:95])
-    _wrapped(c, note + " Family talk: share one petal together.", MARGIN, 1.1 * inch, PAGE_W - 2 * MARGIN, 10)
+    c.circle(cx, cy, 0.85 * inch, stroke=1, fill=0)
+    c.setFont(FONT_BOLD, 11)
+    c.drawCentredString(cx, cy + 0.12 * inch, "My Lotus")
+    c.drawCentredString(cx, cy - 0.12 * inch, "Prayer")
+    younger = _strip_age_prefix((a.age_variants or {}).get("ages_6_8", "draw inside each lotus petal."))
+    older = _strip_age_prefix((a.age_variants or {}).get("ages_9_13", "write one or two sentences in each petal."))
+    if "match" in younger.lower():
+        younger = "draw inside each lotus petal."
+    if "match" in older.lower():
+        older = "write one or two sentences in each petal."
+    note = f"Younger: {younger}  Older: {older}  Family: discuss one chosen petal together."
+    _wrapped(c, note, MARGIN, 1.15 * inch, PAGE_W - 2 * MARGIN, 10)
     c.showPage()
 
 
