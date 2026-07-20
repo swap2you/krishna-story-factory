@@ -6,8 +6,8 @@ Validated on 2026-07-20 from branch `fix/activity-engine-v2-production-lock`.
 
 - Local tests: PASS — 82 tests passed via `scripts/test_all.ps1`.
 - Test-mode isolation: PASS — Story 005 preview written under `.work/test_preview`; production queue SHA-256 unchanged.
-- Windows CI: PENDING.
-- Ubuntu CI: PENDING.
+- Windows CI: PASS — GitHub Actions run 29717356515.
+- Ubuntu CI: PASS — GitHub Actions run 29717356515.
 - Story 003 package: PASS — exactly seven files; 866 main-story words; real 220.5-second MP3; poster QA 91; coloring QA 92; two-page dynamic activity QA 94.
 - Story 003 boundary: PASS — Kīrtimān and Vasudeva's truthful delivery through Kaṁsa initially returning the child; no wedding recap, Nārada warning, imprisonment, six-sons episode, or Krishna birth.
 - Story 003 Drive: PASS — per-story folder contains exactly the seven final filenames and no intermediates.
