@@ -15,16 +15,22 @@ Repository: [github.com/swap2you/krishna-story-factory](https://github.com/swap2
 2. [docs/02_SETUP_AND_KEYS.md](docs/02_SETUP_AND_KEYS.md) — install and API keys
 3. [docs/04_CONTENT_GUIDE_KRISHNA_BOOK.md](docs/04_CONTENT_GUIDE_KRISHNA_BOOK.md) — content rules and queue
 
+## Supported Python
+
+Python 3.12 is the supported runtime on Windows and Linux. Run `scripts/bootstrap.ps1`
+once, then use the repository wrappers below. The project never relies on whichever
+global `python` happens to be on `PATH`.
+
 ## Core command
 
 ```powershell
-python run_daily_story.py --mode prod
+.\scripts\run_prod.ps1
 ```
 
 Test mode (no paid APIs):
 
 ```powershell
-python run_daily_story.py --mode test --force
+.\scripts\run_test.ps1 --force
 ```
 
 ## Required outputs
@@ -79,8 +85,8 @@ python scripts/test_whatsapp_cloud.py
 ## Validation
 
 ```powershell
-pytest -q
-python run_daily_story.py --mode test --force
+.\scripts\test_all.ps1
+.\scripts\run_test.ps1 --force
 ```
 
 ## Git safety

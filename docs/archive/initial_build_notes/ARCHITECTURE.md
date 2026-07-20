@@ -23,19 +23,19 @@ The project deliberately avoids heavy infrastructure. The source of truth is CSV
 Core command:
 
 ```bash
-python run_daily_story.py --mode test
+.\scripts\run_test.ps1
 ```
 
 Production command:
 
 ```bash
-python run_daily_story.py --mode prod
+.\scripts\run_prod.ps1
 ```
 
 Force override:
 
 ```bash
-python run_daily_story.py --mode prod --force
+.\scripts\run_prod.ps1 --force
 ```
 
 ## Modules

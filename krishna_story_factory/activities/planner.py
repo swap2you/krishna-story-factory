@@ -17,6 +17,9 @@ from .models import (
     ActivityPack,
     ActivityPage,
     ActivityPlan,
+    DecisionNode,
+    RolePlayCard,
+    SequenceCard,
     pack_from_dict,
 )
 
@@ -69,6 +72,7 @@ class ActivityPlanner:
             "001": _pack_001,
             "002": _pack_002,
             "003": _pack_003,
+            "004": _pack_004,
         }
         builder = builders.get(plan.chapter_no.strip().zfill(3))
         return builder(plan) if builder else None
@@ -448,7 +452,7 @@ def _pack_002(plan: PlanRow) -> ActivityPack:
 
 
 def _pack_003(plan: PlanRow) -> ActivityPack:
-    connection = "Vasudeva keeps his word after the first son's birth; Kamsa is astonished and returns the child."
+    connection = "Vasudeva keeps his word after Kīrtimān's birth; Kaṁsa is astonished and returns the child, but Vasudeva remains cautious."
     return ActivityPack(
         activity_title="Truthfulness Story Path",
         activity_type="STORY_SEQUENCE",
@@ -468,9 +472,12 @@ def _pack_003(plan: PlanRow) -> ActivityPack:
                     "Circle the card showing Vasudeva's truthful choice.",
                 ],
                 components=[
-                    "The first son is born", "Vasudeva remembers his word",
-                    "Vasudeva brings the child", "Kamsa is astonished",
-                    "Kamsa returns the child", "Truthfulness shines",
+                    SequenceCard("Kaṁsa says he fears the eighth child.", "Draw Kaṁsa speaking without violence.", 5),
+                    SequenceCard("Kīrtimān is born.", "Draw the peaceful newborn with Devakī and Vasudeva.", 1),
+                    SequenceCard("Kaṁsa returns Kīrtimān.", "Draw Vasudeva carefully receiving Kīrtimān.", 6),
+                    SequenceCard("Vasudeva remembers his promise.", "Draw Vasudeva thinking carefully.", 2),
+                    SequenceCard("Kaṁsa is astonished by Vasudeva’s honesty.", "Draw Kaṁsa looking surprised.", 4),
+                    SequenceCard("Vasudeva brings Kīrtimān to Kaṁsa.", "Draw the careful journey to the palace.", 3),
                 ],
                 story_connection=connection,
             ),
@@ -478,11 +485,15 @@ def _pack_003(plan: PlanRow) -> ActivityPack:
                 page_title="Promise and duty decision tree",
                 page_type="DECISION_TREE",
                 instructions=[
-                    "Follow each branch: keep the word, or break the word.",
-                    "Mark the path Vasudeva chose.",
-                    "Complete the family promise card.",
+                    "Follow each branch and choose truthfulness with wise help.",
+                    "Mark the path Vasudeva chose, then discuss when to ask a trusted adult.",
+                    "Good and safe promises should be kept. If a promise could hurt someone, asks you to hide an unsafe secret, or makes you frightened, tell a trusted adult.",
                 ],
-                components=["keep the word branch", "break the word branch", "family promise card"],
+                components=[DecisionNode(
+                    "Is this promise good and safe?",
+                    ["Yes — keep it honestly", "No or unsure — tell a trusted adult"],
+                    "Safety comes first; never hide an unsafe secret—tell a trusted adult.",
+                )],
                 story_connection=connection,
             ),
         ],
@@ -495,6 +506,56 @@ def _pack_003(plan: PlanRow) -> ActivityPack:
         answer_key=["1", "2", "3", "4", "5", "6"],
         parent_note="Stay inside the Story 003 boundary: no Narada, no prison, no killing of sons.",
         qa_requirements=["six sequence cards", "decision tree", "family promise", "no blank page"],
+    )
+
+
+def _pack_004(plan: PlanRow) -> ActivityPack:
+    connection = "Nārada warns Kaṁsa, fear drives harsh choices, and Devakī and Vasudeva remain faithful to the Lord."
+    return ActivityPack(
+        activity_title="Fear and Faith Mini-Drama",
+        activity_type="MINI_DRAMA",
+        send_mode="PARENT_GUIDED",
+        estimated_minutes=22,
+        parent_effort="Low: help children read the role cards and discuss strong feelings.",
+        learning_goal="Retell the source-bounded turning points and compare fearful choices with faithful composure.",
+        story_connection=connection,
+        materials=["pencil", "five simple household props"],
+        pages=[
+            ActivityPage(
+                "Role cards", "ROLE_PLAY_CARDS",
+                ["Choose roles.", "Read each short line and perform the action gently."],
+                [
+                    RolePlayCard("Nārada", "The divine plan is unfolding among the Yadu and Vṛṣṇi families.", "Speak calmly to Kaṁsa.", "small scarf"),
+                    RolePlayCard("Kaṁsa", "Fear is filling my mind, and I am choosing control.", "Show alarm without shouting.", "paper crown"),
+                    RolePlayCard("Devakī", "We will remain composed and remember the Lord.", "Stand peacefully beside Vasudeva.", "flower"),
+                    RolePlayCard("Vasudeva", "Even here, let us keep faith and act with dignity.", "Offer a reassuring gesture.", "folded cloth"),
+                    RolePlayCard("Narrator", "Kaṁsa removed Ugrasena from power and imprisoned the devoted couple.", "Move the scene-order cards.", "story cards"),
+                ], story_connection=connection,
+            ),
+            ActivityPage(
+                "Scene-order cards", "STORY_SEQUENCE_CARDS",
+                ["Number the shuffled cards from 1 to 6.", "Retell the episode without adding later events."],
+                [
+                    SequenceCard("Ugrasena is removed from rule.", "Draw an empty royal seat.", 5),
+                    SequenceCard("Nārada arrives.", "Draw Nārada entering calmly.", 1),
+                    SequenceCard("The devotees remain faithful.", "Draw Devakī and Vasudeva remembering the Lord.", 6),
+                    SequenceCard("Kaṁsa becomes fearful.", "Draw Kaṁsa looking alarmed.", 3),
+                    SequenceCard("Nārada explains the divine plan.", "Draw a respectful conversation.", 2),
+                    SequenceCard("Devakī and Vasudeva are imprisoned.", "Draw them composed in a simple room.", 4),
+                ], story_connection=connection,
+            ),
+            ActivityPage(
+                "Fear versus faith emotion map", "EMOTION_MAP",
+                ["Draw one sign of fear on the left and one sign of faith on the right.", "Write how Devakī and Vasudeva stayed composed.", "Name a trusted adult who helps when fear feels too large."],
+                ["How can remembering the Lord and asking a trusted adult help when you feel afraid?"],
+                story_connection=connection,
+            ),
+        ],
+        completion_prompt="Perform the three scenes, then share one faithful response to fear.",
+        review_questions=["Which choices came from fear?", "How did the devotees respond differently?"],
+        answer_key=["1", "2", "3", "4", "5", "6"],
+        parent_note="Keep imprisonment child-safe and stop before later sons or Krishna’s birth.",
+        qa_requirements=["five complete role cards", "six shuffled scene cards", "emotion map", "no raw JSON", "no blank page"],
     )
 
 

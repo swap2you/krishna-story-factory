@@ -91,7 +91,7 @@ Paste a fresh Meta temporary token into WHATSAPP_CLOUD_TOKEN in .env, then rerun
 ## Daily story integration
 
 ```powershell
-python run_daily_story.py --mode prod --force
+.\scripts\run_prod.ps1 --force
 ```
 
 When `WHATSAPP_SEND_ENABLED=true` and `WHATSAPP_SENDER_TYPE=cloud`:

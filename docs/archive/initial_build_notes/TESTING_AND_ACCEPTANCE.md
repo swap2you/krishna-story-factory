@@ -3,8 +3,8 @@
 ## Required validation commands
 
 ```powershell
-pytest -q
-python run_daily_story.py --mode test --force
+.\scripts\test_all.ps1
+.\scripts\run_test.ps1 --force
 ```
 
 ## Required output files
@@ -44,7 +44,7 @@ Must verify:
 The project is acceptable when:
 
 1. `pytest -q` passes.
-2. `python run_daily_story.py --mode test --force` succeeds.
+2. `.\scripts\run_test.ps1 --force` succeeds.
 3. A package folder is created under `output/`.
 4. All nine required files exist.
 5. `manifest.json` is valid JSON.

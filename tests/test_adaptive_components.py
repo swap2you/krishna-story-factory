@@ -5,7 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from krishna_story_factory.activities.models import ActivityPack, ActivityPage, pack_from_dict
+from krishna_story_factory.activities.models import (
+    ActivityPack, ActivityPage, DecisionNode, RolePlayCard, SequenceCard, pack_from_dict,
+)
 from krishna_story_factory.activities.planner import ALLOWED_ACTIVITY_TYPES, ActivityPlanner
 from krishna_story_factory.images.generator import _identity_constraints
 from krishna_story_factory.models import PlanRow
@@ -208,12 +210,37 @@ def test_story_002_plan_has_chariot_and_support(tmp_path):
 def test_story_003_plan_has_truthfulness_path(tmp_path):
     activity = ActivityPlanner(tmp_path / "history.csv").plan(row("003", "Vasudeva Keeps His Word"), "story")
     assert activity.recommended_send_mode == "PARENT_GUIDED"
-    assert activity.printable_components == [
-        "The first son is born", "Vasudeva remembers his word", "Vasudeva brings the child",
-        "Kamsa is astonished", "Kamsa returns the child", "Truthfulness shines",
-        "keep the word branch", "break the word branch", "family promise card",
-    ]
+    sequence = activity.pages[0].components
+    assert len(sequence) == 6 and all(isinstance(card, SequenceCard) for card in sequence)
+    assert [card.source_order for card in sequence] != sorted(card.source_order for card in sequence)
+    assert sorted(card.source_order for card in sequence) == [1, 2, 3, 4, 5, 6]
+    assert "Kīrtimān" in " ".join(card.event for card in sequence)
     assert any(p.page_type == "DECISION_TREE" for p in activity.pages)
+    node = activity.pages[1].components[0]
+    assert isinstance(node, DecisionNode) and "trusted adult" in node.guidance.lower()
+
+
+def test_story_004_has_complete_three_page_mini_drama(tmp_path):
+    activity = ActivityPlanner(tmp_path / "history.csv").plan(row("004", "Narada's Warning and Kamsa's Decision"), "story")
+    assert activity.activity_type == "MINI_DRAMA"
+    assert len(activity.pages) == 3
+    roles = activity.pages[0].components
+    assert len(roles) == 5 and all(isinstance(card, RolePlayCard) for card in roles)
+    assert all(card.line and card.action and card.prop for card in roles)
+    sequence = activity.pages[1].components
+    assert len(sequence) == 6 and [card.source_order for card in sequence] != list(range(1, 7))
+    assert activity.pages[2].page_type == "EMOTION_MAP"
+
+
+def test_pack_from_dict_rejects_incomplete_role_dictionary():
+    with pytest.raises(ValueError, match="Malformed ROLE_PLAY_CARDS component"):
+        pack_from_dict({
+            "activity_title": "Broken", "activity_type": "MINI_DRAMA", "estimated_minutes": 15,
+            "story_connection": "Story", "pages": [{
+                "page_title": "Roles", "page_type": "ROLE_PLAY_CARDS", "story_connection": "Story",
+                "components": [{"role": "Narrator"}],
+            }],
+        })
 
 
 def test_activity_metadata_includes_pack_fields(tmp_path):

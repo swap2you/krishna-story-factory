@@ -12,8 +12,10 @@ An internal JSON model with:
 * `story_connection`, `materials`, `pages[]`, `answer_key`
 * `parent_note`, `qa_requirements`
 
-Each page has `page_title`, `page_type`, `instructions`, `components`, `layout_hint`,
-and a story-specific `story_connection`.
+Each page has `page_title`, `page_type`, `instructions`, typed structured `components`,
+`layout_hint`, and a story-specific `story_connection`. Component types include
+`RolePlayCard`, `SequenceCard`, `MatchingCard`, `MissionCard`, `DecisionNode`, and
+`PrintablePart`; raw JSON or Python dictionary text is rejected.
 
 ## Activity types
 
@@ -55,7 +57,7 @@ Prompt bank: `prompts/activity_bank/00`–`08`.
 ## Rebuild only activity sheets
 
 ```powershell
-python run_daily_story.py --mode prod --chapter 003 --rebuild-components activity --debug
+.\scripts\run_prod.ps1 --chapter 003 --rebuild-components activity --debug
 ```
 
 Locked files (story, narration, poster, caption) stay unchanged.

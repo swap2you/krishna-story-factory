@@ -173,7 +173,8 @@ def _run_once(
     now: datetime,
     attempt: int,
 ) -> PipelineResult:
-    paths = make_package_paths(settings.output_root, plan)
+    output_root = settings.project_root / ".work" / "test_preview" if mode == "test" else settings.output_root
+    paths = make_package_paths(output_root, plan)
     if paths.root.exists():
         shutil.rmtree(paths.root, ignore_errors=True)
     paths.root.mkdir(parents=True, exist_ok=True)
@@ -231,12 +232,14 @@ def _run_once(
         activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
         if activity_score < 88:
             raise PipelineError(f"Activity vision score {activity_score} below threshold 88 after repair.")
-    package_link = settings.package_public_link or settings.google_drive_folder_url
-    paths.whatsapp_caption.write_text(
+    package_link = None if mode == "test" else (settings.package_public_link or settings.google_drive_folder_url)
+    caption = (
+        f"TEST PREVIEW — NOT PUBLISHABLE\n\n{content.title}\nNo upload or parent delivery was performed."
+        if mode == "test" else
         format_whatsapp_caption(story_title=content.title, package_link=package_link,
-            activity_title=activity.activity_title, recommended_send_mode=activity.recommended_send_mode),
-        encoding="utf-8",
+            activity_title=activity.activity_title, recommended_send_mode=activity.recommended_send_mode)
     )
+    paths.whatsapp_caption.write_text(caption, encoding="utf-8")
 
     ok, quality_errors, quality_warnings = run_quality_checks(
         paths, mode=mode, settings=settings, story_title=content.title, poster_score=poster_score, coloring_score=coloring_score
@@ -250,12 +253,12 @@ def _run_once(
         content=content,
         paths=paths,
         mode=mode,
-        quality_status="PASS",
+        quality_status="TEST_PASS" if mode == "test" else "PASS",
         quality_errors=quality_errors,
         quality_warnings=quality_warnings,
         audio_source=audio_source,
         package_link=package_link,
-        drive_status="PENDING",
+        drive_status="SKIPPED" if mode == "test" else "PENDING",
         drive_detail="",
         poster_score=poster_score,
         coloring_score=coloring_score,
@@ -299,7 +302,7 @@ def _run_once(
         content=content,
         paths=paths,
         mode=mode,
-        quality_status="PASS",
+        quality_status="TEST_PASS" if mode == "test" else "PASS",
         quality_errors=quality_errors,
         quality_warnings=quality_warnings,
         audio_source=audio_source,
@@ -314,30 +317,6 @@ def _run_once(
         identity_consistency_score=identity_score,
     )
 
-    if mode != "test" and not no_upload and settings.google_drive_upload_enabled:
-        upload = upload_final_package(settings, folder_name=paths.root.name, source_dir=paths.root)
-        package_link = upload.package_link or package_link
-        write_manifest(
-            settings=settings,
-            plan=plan,
-            content=content,
-            paths=paths,
-            mode=mode,
-            quality_status="PASS",
-            quality_errors=quality_errors,
-            quality_warnings=quality_warnings,
-            audio_source=audio_source,
-            package_link=package_link,
-            drive_status=upload.status,
-            drive_detail=upload.detail,
-            poster_score=poster_score,
-            coloring_score=coloring_score,
-            reference_used=reference_used,
-            activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
-            poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
-            identity_consistency_score=identity_score,
-        )
-
     ok, quality_errors, quality_warnings = run_quality_checks(
         paths, mode=mode, settings=settings, story_title=content.title, poster_score=poster_score, coloring_score=coloring_score, require_manifest=True
     )
@@ -351,7 +330,8 @@ def _run_once(
     if {p.name for p in final_files} != set(FINAL_OUTPUT_FILES):
         raise PipelineError(f"Final folder must contain exactly 7 files, found: {[p.name for p in final_files]}")
 
-    activity_planner.record(plan, activity)
+    if mode != "test":
+        activity_planner.record(plan, activity)
 
     whatsapp_status = "SKIPPED_DISABLED"
     if settings.whatsapp_send_enabled:
@@ -360,7 +340,7 @@ def _run_once(
     return PipelineResult(
         status="SUCCESS",
         output_dir=str(paths.root),
-        quality_status="PASS",
+        quality_status="TEST_PASS" if mode == "test" else "PASS",
         whatsapp_status=whatsapp_status,
         package_link=package_link,
         drive_status=drive_status,

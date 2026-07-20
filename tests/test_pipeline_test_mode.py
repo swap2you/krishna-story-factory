@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import shutil
 from pathlib import Path
 
@@ -33,6 +34,17 @@ def test_pipeline_generates_required_files_in_test_mode(tmp_path: Path) -> None:
         assert path.stat().st_size > 0, filename
     extras = [p.name for p in output_dir.iterdir() if p.is_file() and p.name not in FINAL_OUTPUT_FILES]
     assert not extras, extras
+    assert output_dir.is_relative_to(project / ".work" / "test_preview")
+    manifest = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["mode"] == "test"
+    assert manifest["publishable"] is False
+    assert manifest["queue_transition"] == "unchanged"
+    assert manifest["package"]["drive_status"] == "SKIPPED"
+    assert manifest["package"]["package_link"] is None
+    assert manifest["audio_source"] == "placeholder"
+    assert manifest["quality"]["status"] == "TEST_PASS"
+    assert "NOT PUBLISHABLE" in (output_dir / "whatsapp_caption.txt").read_text(encoding="utf-8")
+    assert not (project / "output" / output_dir.name).exists()
 
 
 def test_test_mode_does_not_mutate_runtime_queue(tmp_path: Path) -> None:

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import csv
+import shutil
 from pathlib import Path
 
 from krishna_story_factory.config import load_settings
-from krishna_story_factory.csv_store import read_next_pending
+from krishna_story_factory.csv_store import ensure_csv_files, read_next_pending, reset_series_status
 from krishna_story_factory.whatsapp.recipients import load_active_recipients
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -28,11 +29,14 @@ def test_series_plan_parses_complete_static_plan() -> None:
     assert "status" not in rows[0]
 
 
-def test_next_pending_story_is_004_after_003_done() -> None:
-    plan = read_next_pending(PROJECT_ROOT)
+def test_next_pending_story_is_005_after_004_done(tmp_path: Path) -> None:
+    shutil.copytree(PROJECT_ROOT / "input", tmp_path / "input")
+    ensure_csv_files(tmp_path)
+    reset_series_status(tmp_path, ["003", "004"], status="done")
+    plan = read_next_pending(tmp_path)
     assert plan is not None
-    assert plan.chapter_no == "004"
-    assert plan.slug == "narada-warns-kamsa"
+    assert plan.chapter_no == "005"
+    assert plan.slug == "prayers-by-the-demigods-for-lord-krishna-in-the-womb"
 
 
 def test_whatsapp_recipients_parses_two_rows() -> None:

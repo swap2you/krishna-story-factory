@@ -29,7 +29,7 @@ Expected first pending story after this release: `003_vasudeva-keeps-his-word`.
 ## 5. Optional local test (no paid APIs)
 
 ```powershell
-python run_daily_story.py --mode test --force
+.\scripts\run_test.ps1 --force
 ```
 
 Check audio script has no `[pause]` markers. The Activity Engine V2 PDF must have 2–4
@@ -39,7 +39,7 @@ page tied to the current pastime. See [11_ACTIVITY_ENGINE_V2.md](11_ACTIVITY_ENG
 ## 6. Run real production generation
 
 ```powershell
-python run_daily_story.py --mode prod
+.\scripts\run_prod.ps1
 ```
 
 This generates the full package and uploads exactly seven files to Google Drive when
@@ -59,8 +59,8 @@ the multi-page activity sheet and manifest `package.package_link`.
 To keep the approved story, narration, poster, caption, Drive folder, and queue state unchanged:
 
 ```powershell
-python run_daily_story.py --mode prod --chapter 001 --rebuild-components activity,coloring --debug
-python run_daily_story.py --mode prod --chapter 002 --rebuild-components activity,coloring --debug
+.\scripts\run_prod.ps1 --chapter 001 --rebuild-components activity,coloring --debug
+.\scripts\run_prod.ps1 --chapter 002 --rebuild-components activity,coloring --debug
 ```
 
 Use `--no-upload` for local validation. Component rebuild replaces only
@@ -115,7 +115,7 @@ python scripts/test_whatsapp_cloud.py
 ## 12. Rerun with force
 
 ```powershell
-python run_daily_story.py --mode prod --chapter 003 --force
+.\scripts\run_prod.ps1 --chapter 003 --force
 ```
 
 Use `--force` when you intentionally want to override the daily send guard or regenerate the current package.
@@ -131,7 +131,7 @@ Use `--force` when you intentionally want to override the daily send guard or re
 ```powershell
 cd C:\Development\Workspace\DevotionalRepo\krishna-story-factory
 .\.venv\Scripts\Activate.ps1
-python run_daily_story.py --mode prod
+.\scripts\run_prod.ps1
 Get-Content tracking\story_log.csv
 Get-Content tracking\send_log.csv
 ```

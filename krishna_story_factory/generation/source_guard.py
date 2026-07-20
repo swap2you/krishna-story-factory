@@ -19,8 +19,8 @@ def source_fact_brief(plan: PlanRow) -> str:
             "\nSTORY 003 HARD BOUNDARY: Devaki and Vasudeva are not imprisoned in this episode. "
             "Do not mention a prison, cell, jail, confinement, guards, or Narada. Begin with the birth of their first son. "
             "Include these facts in both main_story and audio_script using unambiguous wording: "
-            "'Vasudeva brought their first son to Kamsa.' and "
-            "'Kamsa initially returned the child to Vasudeva.'"
+            "'Vasudeva brought Kīrtimān, their first son, to Kaṁsa.' and "
+            "'Kaṁsa initially returned the child, Kīrtimān, to Vasudeva.'"
         )
     return brief
 
@@ -55,7 +55,8 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
     if plan.chapter_no == "003":
         _require(combined, ("first son", "first child"), "Story 003 must include the birth of the first son.", errors)
         _require(combined, ("brought", "bring"), "Story 003 must show Vasudeva bringing the child to Kamsa.", errors)
-        _require(combined, ("returned the child", "gave the child back", "return the child", "returned him", "returns him", "gave him back"), "Story 003 must say Kamsa initially returns the child.", errors)
+        returned_terms = ("returned the child", "gave the child back", "return the child", "returned him", "returns him", "gave him back", "returned kīrtimān", "returns kīrtimān", "returned kirtiman", "returns kirtiman")
+        _require(combined, returned_terms, "Story 003 must say Kaṁsa initially returns Kīrtimān.", errors)
         _require(combined, ("truthful", "truthfulness", "kept his word", "keeps his word"), "Story 003 must emphasize Vasudeva's truthfulness.", errors)
         for phrase in (
             "narada", "nārada", "imprison", "prison", "locked up", "jail", "six sons",
@@ -63,8 +64,32 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
         ):
             if phrase in combined:
                 errors.append(f"Story 003 crosses its end boundary with later content: {phrase!r}.")
-        if not any(term in narration for term in ("returned the child", "gave the child back", "return the child", "returned him", "returns him", "gave him back")):
-            errors.append("Narration omits Story 003's ending: Kamsa initially returns the child.")
+        if not any(term in narration for term in returned_terms):
+            errors.append("Narration omits Story 003's ending: Kaṁsa initially returns Kīrtimān.")
+        _require(combined, ("kīrtimān", "kirtiman"), "Story 003 must name the first son Kīrtimān.", errors)
+        if "cousin" in combined:
+            errors.append("Story 003 must call Kaṁsa Devakī's brother, not cousin.")
+        if re.search(r"ka[mṁ]sa (?:was |is )?(?:also )?keeping his word", combined, re.I):
+            errors.append("Story 003 must not say Kaṁsa was keeping his word.")
+        if re.search(r"(?:family|they|everyone) (?:was|were|would be) permanently safe", combined, re.I):
+            errors.append("Story 003 must not imply the family was permanently safe.")
+        if not content.bedtime_reflection.strip().endswith("?"):
+            errors.append("Story 003 Bedtime Reflection must be a question.")
+    if plan.chapter_no == "004":
+        _require(combined, ("narada", "nārada"), "Story 004 must include Nārada.", errors)
+        _require(combined, ("yadu", "yadus"), "Story 004 must name the Yadu family.", errors)
+        _require(combined, ("vrishni", "vṛṣṇi", "vrishnis"), "Story 004 must name the Vṛṣṇi family.", errors)
+        _require(combined, ("demigods", "celestial beings"), "Story 004 must say demigods are appearing in those families.", errors)
+        _require(combined, ("kālanemi", "kalanemi"), "Story 004 must identify Kaṁsa's previous identity as Kālanemi.", errors)
+        _require(combined, ("imprison", "prison", "behind bars", "locked away"), "Story 004 must include the child-safe imprisonment of Devakī and Vasudeva.", errors)
+        _require(combined, ("ugrasena",), "Story 004 must include Ugrasena.", errors)
+        _require(combined, ("removed from the throne", "leave the throne", "removed ugrasena", "taking power from ugrasena"), "Story 004 must say Kaṁsa removes Ugrasena from power.", errors)
+        _require(combined, ("remember the lord", "remembering the lord", "remember krishna", "remembering krishna", "chant krishna"), "Story 004 must show Devakī and Vasudeva remembering the Lord.", errors)
+        for phrase in ("mother earth", "ocean of milk", "wedding procession", "first son", "first child", "krishna was born", "krishna's birth"):
+            if phrase in combined:
+                errors.append(f"Story 004 crosses its source boundary with {phrase!r}.")
+        if not content.bedtime_reflection.strip().endswith("?"):
+            errors.append("Story 004 Bedtime Reflection must be a question.")
     return errors
 
 

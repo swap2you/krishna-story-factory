@@ -3,15 +3,15 @@
 ## Required commands
 
 ```powershell
-pytest -q
-python run_daily_story.py --mode test --force
+.\scripts\test_all.ps1
+.\scripts\run_test.ps1 --force
 ```
 
 ## Optional live checks (local `.env` with real keys)
 
 ```powershell
 python scripts/test_whatsapp_cloud.py
-python run_daily_story.py --mode prod
+.\scripts\run_prod.ps1
 ```
 
 ## Required output files

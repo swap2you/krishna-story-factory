@@ -16,7 +16,7 @@
 
 ```
 79 passed (pytest -q)
-python run_daily_story.py --mode test --force  → SUCCESS (queue unchanged)
+.\scripts\run_test.ps1 --force  → SUCCESS (queue unchanged)
 ```
 
 ## Story 003 production
@@ -42,7 +42,7 @@ python run_daily_story.py --mode test --force  → SUCCESS (queue unchanged)
 
 * Task: Krishna Story Factory Daily
 * Time: 5:30 AM local
-* Command: `python run_daily_story.py --mode prod` (no `--force`)
+* Command: `.\scripts\run_prod.ps1` (no `--force`)
 * State: **Disabled** (enable manually after review)
 * Validation: `scripts/test_daily_story_task.ps1` PASS
 
