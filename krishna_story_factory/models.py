@@ -202,6 +202,7 @@ class PackagePaths:
     narration_mp3: Path
     story_poster: Path
     coloring_page: Path
+    simple_coloring_page: Path
     activity_sheet: Path
     whatsapp_caption: Path
     manifest: Path
@@ -217,6 +218,7 @@ class PipelineResult:
     drive_status: str = ""
     poster_score: int = 0
     coloring_score: int = 0
+    simple_coloring_score: int = 0
     reference_used: bool = False
     errors: str = ""
     detail: str = ""

@@ -26,6 +26,7 @@ def write_manifest(
     drive_detail: str = "",
     poster_score: int = 0,
     coloring_score: int = 0,
+    simple_coloring_score: int = 0,
     reference_used: bool = False,
     activity: ActivityPlan | None = None,
     activity_page_count: int = 0,
@@ -77,11 +78,15 @@ def write_manifest(
             "reference_image_used": reference_used,
             "poster_qa_score": poster_score,
             "coloring_qa_score": coloring_score,
+            "simple_coloring_qa_score": simple_coloring_score,
             "coloring_generation": {
                 "poster_reference_used": poster_reference_used,
                 "style_reference_used": style_reference_used,
                 "qa_score": coloring_score,
                 "identity_consistency_score": identity_consistency_score,
+            },
+            "simple_coloring_generation": {
+                "qa_score": simple_coloring_score,
             },
         },
         "activity": {
@@ -121,6 +126,7 @@ def update_component_manifest(
     coloring_model: str = "", model_override: str = "", coloring_requested_size: str = "1024x1536",
     matching_coverage: dict | None = None,
     parent_answer_key: dict | None = None,
+    simple_coloring_score: int | None = None,
 ) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     data["generated_at"] = datetime.now(ZoneInfo("America/New_York")).isoformat(timespec="seconds")
@@ -137,6 +143,9 @@ def update_component_manifest(
     }
     images = data.setdefault("images", {})
     images["coloring_qa_score"] = coloring_score
+    if simple_coloring_score is not None:
+        images["simple_coloring_qa_score"] = simple_coloring_score
+        images["simple_coloring_generation"] = {"qa_score": simple_coloring_score}
     images["coloring_generation"] = {
         "poster_reference_used": poster_reference_used, "style_reference_used": style_reference_used,
         "qa_score": coloring_score, "identity_consistency_score": identity_consistency_score,

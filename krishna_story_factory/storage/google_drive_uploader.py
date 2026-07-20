@@ -9,6 +9,8 @@ import re
 from ..config import Settings
 from ..outputs import FINAL_OUTPUT_FILES
 
+EXPECTED_FINAL_COUNT = len(FINAL_OUTPUT_FILES)
+
 logger = logging.getLogger(__name__)
 
 SCOPES = ["https://www.googleapis.com/auth/drive.file"]
@@ -146,6 +148,7 @@ def upload_files_to_folder(
     source_dir: Path,
     files: tuple[str, ...] = FINAL_OUTPUT_FILES,
     folder_name: str = "",
+    prune_extras: bool = False,
 ) -> DriveUploadResult:
     """Upload/replace selected files into an existing Drive folder."""
     names = tuple(dict.fromkeys(files))
@@ -166,6 +169,8 @@ def upload_files_to_folder(
         for filename in names:
             _upload_file(service, folder_id, source_dir / filename)
             uploaded.append(filename)
+        if prune_extras or set(names) == set(FINAL_OUTPUT_FILES):
+            _prune_non_final_files(service, folder_id)
         return DriveUploadResult(
             status="UPLOADED",
             publish_mode="drive_api",
@@ -325,7 +330,7 @@ upload_story_package = upload_final_package
 
 
 def replace_component_files(settings: Settings, *, source_dir: Path, manifest_path: Path) -> DriveUploadResult:
-    filenames = ("activity_sheet.pdf", "coloring_page.png", "manifest.json")
+    filenames = ("activity_sheet.pdf", "coloring_page.png", "simple_coloring_page.png", "manifest.json")
     missing = [name for name in filenames if not (source_dir / name).exists()]
     if missing:
         return DriveUploadResult(status="FAILED", publish_mode="component_replace", package_link="", detail=f"Missing component files: {missing}")
@@ -337,11 +342,11 @@ def replace_component_files(settings: Settings, *, source_dir: Path, manifest_pa
         import shutil
         dest = settings.google_drive_local_sync_root / source_dir.name
         dest.mkdir(parents=True, exist_ok=True)
-        for name in filenames[:2]:
+        for name in filenames[:-1]:
             shutil.copy2(source_dir / name, dest / name)
         count = len([p for p in dest.iterdir() if p.is_file()])
-        status = "LOCAL_SYNC" if count == 7 else "FAILED"
-        detail = f"Replaced 3 component files; folder contains {count} files."
+        status = "LOCAL_SYNC" if count == len(FINAL_OUTPUT_FILES) else "FAILED"
+        detail = f"Replaced {len(filenames) - 1} component files; folder contains {count} files."
         _set_manifest_drive_result(manifest_path, status, detail)
         shutil.copy2(manifest_path, dest / "manifest.json")
         return DriveUploadResult(status=status, publish_mode="component_replace", package_link=link, folder_id=folder_id,
@@ -355,41 +360,62 @@ def replace_component_files(settings: Settings, *, source_dir: Path, manifest_pa
         token = settings.google_drive_token_file or settings.project_root / "credentials" / "google_drive_token.json"
         service = _build_drive_service(settings.google_drive_credentials_file, token)
         query = f"'{folder_id}' in parents and trashed=false"
+        # Allow migration from legacy 7-file packages by syncing exact finals.
+        for name in filenames:
+            if name != "manifest.json":
+                _upload_file(service, folder_id, source_dir / name)
+        _prune_non_final_files(service, folder_id)
         preflight = service.files().list(
             q=query, fields="files(id,name,modifiedTime)", pageSize=100,
         ).execute().get("files", [])
         preflight_names = {item.get("name", "") for item in preflight}
-        if len(preflight) != 7 or preflight_names != set(FINAL_OUTPUT_FILES):
-            return DriveUploadResult(
-                status="FAILED", publish_mode="component_replace", package_link=link, folder_id=folder_id,
-                detail=f"Drive preflight refused replacement: expected exact seven final files, found {sorted(preflight_names)}.",
-                remote_files=tuple(preflight),
-            )
-        for name in filenames[:2]:
-            _upload_file(service, folder_id, source_dir / name)
-        interim = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
-        status = "UPLOADED" if len(interim) == 7 and {item.get("name", "") for item in interim} == set(FINAL_OUTPUT_FILES) else "FAILED"
-        detail = f"Replaced 3 component files; Drive folder contains {len(interim)} exact final files."
-        _set_manifest_drive_result(manifest_path, status, detail)
+        if len(preflight) != len(FINAL_OUTPUT_FILES) or preflight_names != set(FINAL_OUTPUT_FILES):
+            # Upload remaining finals from source if present, then prune again.
+            for name in FINAL_OUTPUT_FILES:
+                path = source_dir / name
+                if path.exists() and name != "manifest.json":
+                    _upload_file(service, folder_id, path)
+            _prune_non_final_files(service, folder_id)
+            interim = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+            if {item.get("name", "") for item in interim} != set(FINAL_OUTPUT_FILES):
+                return DriveUploadResult(
+                    status="FAILED", publish_mode="component_replace", package_link=link, folder_id=folder_id,
+                    detail=f"Drive exact-final sync failed: found {sorted(item.get('name', '') for item in interim)}.",
+                    remote_files=tuple(interim),
+                )
+        detail = f"Replaced {len(filenames)} component files; Drive folder contains {len(FINAL_OUTPUT_FILES)} exact final files."
+        _set_manifest_drive_result(manifest_path, "UPLOADED", detail)
         _upload_file(service, folder_id, manifest_path)
         final_files = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
-        final_ok = len(final_files) == 7 and {item.get("name", "") for item in final_files} == set(FINAL_OUTPUT_FILES)
-        if not final_ok:
-            status = "FAILED"
-            detail = f"Drive post-replacement verification failed: found {[item.get('name', '') for item in final_files]}."
-            _set_manifest_drive_result(manifest_path, status, detail)
-            _upload_file(service, folder_id, manifest_path)
-        return DriveUploadResult(status=status, publish_mode="component_replace", package_link=link, folder_id=folder_id,
-            detail=detail, uploaded_files=filenames, remote_files=tuple(final_files))
+        final_ok = len(final_files) == len(FINAL_OUTPUT_FILES) and {item.get("name", "") for item in final_files} == set(FINAL_OUTPUT_FILES)
+        return DriveUploadResult(
+            status="UPLOADED" if final_ok else "FAILED",
+            publish_mode="component_replace",
+            package_link=link,
+            folder_id=folder_id,
+            detail=detail if final_ok else "Drive post-replace exact-final validation failed.",
+            uploaded_files=filenames,
+            remote_files=tuple(final_files),
+        )
     except Exception as exc:
         return DriveUploadResult(status="FAILED", publish_mode="component_replace", package_link=link, folder_id=folder_id,
-            detail=f"Drive component replacement failed: {type(exc).__name__}: {exc}")
+            detail=f"Component replace failed: {type(exc).__name__}: {exc}")
+
+
+def _prune_non_final_files(service, folder_id: str) -> None:
+    query = f"'{folder_id}' in parents and trashed=false"
+    remote = service.files().list(q=query, fields="files(id,name)", pageSize=100).execute().get("files", [])
+    allowed = set(FINAL_OUTPUT_FILES)
+    for item in remote:
+        name = item.get("name", "")
+        if name and name not in allowed:
+            service.files().update(fileId=item["id"], body={"trashed": True}).execute()
 
 
 def replace_existing_files(
     settings: Settings, *, source_dir: Path, manifest_path: Path, filenames: tuple[str, ...]
 ) -> DriveUploadResult:
-    """Replace selected files in an existing exact-seven package without creating a new folder.
+    """Replace selected files in an existing exact-final package without creating a new folder.
 
     ``filenames`` may include any final package file such as ``whatsapp_caption.txt``,
     ``manifest.json``, PDFs, images, or audio. Manifest is written last after drive_status update.
@@ -412,19 +438,29 @@ def replace_existing_files(
         service = _build_drive_service(settings.google_drive_credentials_file, token)
         query = f"'{folder_id}' in parents and trashed=false"
         before = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
-        if len(before) != 7 or {item.get("name", "") for item in before} != set(FINAL_OUTPUT_FILES):
-            return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link=link, folder_id=folder_id,
-                detail=f"Drive preflight refused repair: found {[item.get('name', '') for item in before]}.", remote_files=tuple(before))
+        before_names = {item.get("name", "") for item in before}
+        # Allow migration from legacy packages by uploading full finals when source has them.
+        if before_names != set(FINAL_OUTPUT_FILES):
+            for name in FINAL_OUTPUT_FILES:
+                path = source_dir / name
+                if path.exists() and name != "manifest.json":
+                    _upload_file(service, folder_id, path)
+            _prune_non_final_files(service, folder_id)
+            before = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
+            if {item.get("name", "") for item in before} != set(FINAL_OUTPUT_FILES):
+                return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link=link, folder_id=folder_id,
+                    detail=f"Drive preflight refused repair: found {[item.get('name', '') for item in before]}.", remote_files=tuple(before))
         for name in names:
             if name != "manifest.json":
                 _upload_file(service, folder_id, source_dir / name)
-        detail = f"Replaced {len(names)} repaired files; Drive folder contains 7 exact final files."
+        _prune_non_final_files(service, folder_id)
+        detail = f"Replaced {len(names)} repaired files; Drive folder contains {len(FINAL_OUTPUT_FILES)} exact final files."
         _set_manifest_drive_result(manifest_path, "UPLOADED", detail)
         _upload_file(service, folder_id, manifest_path)
         after = service.files().list(q=query, fields="files(id,name,modifiedTime)", pageSize=100).execute().get("files", [])
-        ok = len(after) == 7 and {item.get("name", "") for item in after} == set(FINAL_OUTPUT_FILES)
+        ok = len(after) == len(FINAL_OUTPUT_FILES) and {item.get("name", "") for item in after} == set(FINAL_OUTPUT_FILES)
         return DriveUploadResult(status="UPLOADED" if ok else "FAILED", publish_mode="package_repair", package_link=link,
-            folder_id=folder_id, detail=detail if ok else "Drive post-repair exact-seven validation failed.",
+            folder_id=folder_id, detail=detail if ok else "Drive post-repair exact-final validation failed.",
             uploaded_files=names, remote_files=tuple(after))
     except Exception as exc:
         return DriveUploadResult(status="FAILED", publish_mode="package_repair", package_link=link, folder_id=folder_id,

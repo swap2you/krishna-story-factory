@@ -126,6 +126,73 @@ def generate_coloring(
     )
 
 
+def generate_simple_coloring(
+    settings: Settings,
+    *,
+    story_md: str,
+    content: StoryContent,
+    output_path: Path,
+    work_candidates: Path,
+    work_reviews: Path,
+    poster_path: Path,
+    detailed_coloring_path: Path | None = None,
+    mode: str = "prod",
+) -> tuple[int, bool]:
+    """Cute/simple Bal Gopal coloring page (ages 4–8). Does not replace detailed coloring_page.png."""
+    if mode == "test" or not settings.openai_image_enabled:
+        _placeholder_coloring(output_path, f"Simple: {content.title}")
+        return 90, True
+    if not poster_path.exists():
+        raise RuntimeError(f"Poster required for simple coloring: {poster_path}")
+    client = ImageClient(settings)
+    work_candidates.mkdir(parents=True, exist_ok=True)
+    work_reviews.mkdir(parents=True, exist_ok=True)
+    reference = detailed_coloring_path if detailed_coloring_path and detailed_coloring_path.exists() else poster_path
+    prompt = (
+        "Create a simple, cute devotional coloring page for children ages 4–8 based on this story scene. "
+        "Keep the main characters and emotional focus, but simplify the composition, reduce background clutter, "
+        "enlarge faces and main forms slightly, use bold clean outlines, wide open coloring spaces, "
+        "minimal fine detail, white background, no shading, and a joyful child-friendly look suitable for "
+        "early elementary coloring. Do not become chibi nonsense; remain respectful and Krishna-book faithful.\n\n"
+        f"{_identity_constraints(content.title)}\n\n"
+        f"Scene brief: {content.coloring_visual_brief or content.line_art_prompt or content.title}"
+    )
+    acceptance = max(86, settings.image_min_acceptance_score - 4)
+    last_review = None
+    for idx in range(min(3, settings.image_max_repair_rounds + 1)):
+        cand = work_candidates / f"simple_coloring_candidate_{idx + 1}.png"
+        client.generate(
+            prompt,
+            cand,
+            reference_path=reference,
+            reference_required=True,
+            story_title=content.title,
+            max_api_attempts=2,
+            requested_size="1024x1536",
+        )
+        cleaned = work_candidates / f"simple_coloring_candidate_{idx + 1}_clean.png"
+        _clean_line_art(cand, cleaned)
+        review = review_image(
+            settings,
+            story_md=story_md,
+            image_path=cleaned,
+            kind="coloring",
+            rubric=COLORING_RUBRIC,
+            comparison_path=poster_path,
+        )
+        save_review(work_reviews, f"simple_coloring_candidate_{idx + 1}", review)
+        last_review = review
+        if review.score >= acceptance and not review.hard_rejection:
+            cleaned.replace(output_path)
+            return review.score, True
+        prompt = f"{prompt}\n\nREPAIR: Make it simpler and clearer for ages 4-8: {review.issues[:6]}"
+    if last_review is None:
+        raise RuntimeError("No simple coloring candidate generated.")
+    raise RuntimeError(
+        f"SIMPLE_COLORING_QA_FAILED: score={last_review.score}, issues={last_review.issues}"
+    )
+
+
 def _identity_constraints(title: str) -> str:
     universal = """IDENTITY RULES: Only Krishna may wear a peacock feather or be associated with a flute. Ordinary humans have two arms. No random halos, unrelated deity symbols, childlike adult faces, or identical faces. Vishnu has four arms only when explicitly shown; Brahma has multiple heads only when explicitly shown."""
     if "Earth Prays" in title:

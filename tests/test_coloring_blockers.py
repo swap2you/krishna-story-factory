@@ -103,30 +103,40 @@ def test_poppler_fallback_works_without_pymupdf(tmp_path):
     assert (tmp_path / "rendered" / "activity_page_1.png").exists()
 
 
-def test_drive_replacement_uploads_only_three_files(tmp_path, monkeypatch):
+def test_drive_replacement_uploads_component_files_including_simple_coloring(tmp_path, monkeypatch):
     cfg = replace(settings(tmp_path), google_drive_upload_enabled=True, google_drive_credentials_file=tmp_path / "creds.json")
     source = tmp_path / "001_story"; source.mkdir()
-    for name in ("activity_sheet.pdf", "coloring_page.png"):
+    for name in ("activity_sheet.pdf", "coloring_page.png", "simple_coloring_page.png"):
         (source / name).write_bytes(b"x")
+    # Provide remaining finals so migration sync can succeed in the test mock.
+    for name in FINAL_OUTPUT_FILES:
+        path = source / name
+        if not path.exists():
+            path.write_bytes(b"x")
     manifest = source / "manifest.json"
     manifest.write_text(json.dumps({"package": {"package_link": "https://drive.google.com/drive/folders/existing123"}}), encoding="utf-8")
     uploaded = []
 
     class Files:
         def list(self, **_kwargs): return self
-        def execute(self): return {"files": [{"name": name, "modifiedTime": "now"} for name in FINAL_OUTPUT_FILES]}
+        def execute(self): return {"files": [{"name": name, "id": name, "modifiedTime": "now"} for name in FINAL_OUTPUT_FILES]}
+        def update(self, **_kwargs): return self
 
     class Service:
         def files(self): return Files()
 
     monkeypatch.setattr(drive, "_build_drive_service", lambda *_args: Service())
     monkeypatch.setattr(drive, "_upload_file", lambda _service, folder_id, path: uploaded.append((folder_id, path.name)))
+    monkeypatch.setattr(drive, "_prune_non_final_files", lambda *_args, **_kwargs: None)
     result = drive.replace_component_files(cfg, source_dir=source, manifest_path=manifest)
     assert result.status == "UPLOADED"
-    assert uploaded == [("existing123", "activity_sheet.pdf"), ("existing123", "coloring_page.png"), ("existing123", "manifest.json")]
+    assert ("existing123", "activity_sheet.pdf") in uploaded
+    assert ("existing123", "coloring_page.png") in uploaded
+    assert ("existing123", "simple_coloring_page.png") in uploaded
+    assert ("existing123", "manifest.json") in uploaded
 
 
-def test_component_rebuild_preserves_locked_files_and_seven_file_contract(tmp_path, monkeypatch):
+def test_component_rebuild_preserves_locked_files_and_eight_file_contract(tmp_path, monkeypatch):
     cfg = replace(settings(tmp_path), project_root=tmp_path, output_root=tmp_path / "output", debug_artifacts=False)
     plan = row("001", "The Earth Prays for Krishna to Come")
     package = cfg.output_root / "001_story"; package.mkdir(parents=True)
@@ -161,6 +171,7 @@ coloring
     (package / "narration.mp3").write_bytes(b"audio")
     Image.new("RGB", (32, 32), "white").save(package / "story_poster.png")
     Image.new("RGB", (32, 32), "white").save(package / "coloring_page.png")
+    Image.new("RGB", (32, 32), "white").save(package / "simple_coloring_page.png")
     (package / "activity_sheet.pdf").write_bytes(b"old")
     (package / "whatsapp_caption.txt").write_text("caption", encoding="utf-8")
     (package / "manifest.json").write_text(json.dumps({"package": {}, "images": {}}), encoding="utf-8")
@@ -171,15 +182,20 @@ coloring
         Image.new("RGB", (32, 32), "white").save(kwargs["output_path"])
         return 94, True, False, 95
 
+    def fake_simple(_settings, **kwargs):
+        Image.new("RGB", (32, 32), "white").save(kwargs["output_path"])
+        return 90, True
+
     monkeypatch.setattr("krishna_story_factory.pipeline.generate_coloring", fake_coloring)
+    monkeypatch.setattr("krishna_story_factory.pipeline.generate_simple_coloring", fake_simple)
     result = _rebuild_components(
         cfg, plan, mode="test", no_upload=True, debug=False, now=datetime.now(timezone.utc),
     )
     after = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in locked}
     assert before == after
     assert result["queue_unchanged"] is True
-    assert result["final_file_count"] == 7
+    assert result["final_file_count"] == 8
     assert {path.name for path in package.iterdir()} == {
         "story.md", "narration.mp3", "story_poster.png", "coloring_page.png",
-        "activity_sheet.pdf", "whatsapp_caption.txt", "manifest.json",
+        "simple_coloring_page.png", "activity_sheet.pdf", "whatsapp_caption.txt", "manifest.json",
     }

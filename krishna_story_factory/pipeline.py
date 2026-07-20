@@ -27,7 +27,7 @@ from .csv_store import (
 )
 from .generation.story_generator import StoryGenerator
 from .generation.source_guard import run_source_guard
-from .images.generator import generate_coloring, generate_poster
+from .images.generator import generate_coloring, generate_poster, generate_simple_coloring
 from .images.client import ImageClient
 from .manifest import update_component_manifest, write_manifest
 from .models import PipelineResult, PlanRow, StoryContent
@@ -257,6 +257,19 @@ def _run_once(
         poster_path=paths.story_poster,
         mode=mode,
     )
+    simple_score, _simple_ref = generate_simple_coloring(
+        settings,
+        story_md=story_md,
+        content=content,
+        output_path=paths.simple_coloring_page,
+        work_candidates=work.coloring_candidates,
+        work_reviews=work.reviews,
+        poster_path=paths.story_poster,
+        detailed_coloring_path=paths.coloring_page,
+        mode=mode,
+    )
+    if simple_score < 86 and mode == "prod":
+        raise PipelineError(f"Simple coloring score {simple_score} below threshold 86.")
     reference_used = poster_ref or poster_content_ref or coloring_style_ref
 
     activity_planner = ActivityPlanner(settings.project_root / "tracking" / "activity_history.csv", settings=settings)
@@ -329,6 +342,7 @@ def _run_once(
         drive_detail="" if will_upload else ("Upload disabled by flag." if no_upload else ""),
         poster_score=poster_score,
         coloring_score=coloring_score,
+        simple_coloring_score=simple_score,
         reference_used=reference_used,
         activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
         poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
@@ -373,6 +387,7 @@ def _run_once(
             drive_detail=drive_detail,
             poster_score=poster_score,
             coloring_score=coloring_score,
+            simple_coloring_score=simple_score,
             reference_used=reference_used,
             activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
             poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
@@ -459,6 +474,7 @@ def _run_once(
         drive_detail=drive_detail,
         poster_score=poster_score,
         coloring_score=coloring_score,
+        simple_coloring_score=simple_score,
         reference_used=reference_used,
         activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
         poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
@@ -479,7 +495,9 @@ def _run_once(
 
     final_files = [p for p in paths.root.iterdir() if p.is_file()]
     if {p.name for p in final_files} != set(FINAL_OUTPUT_FILES):
-        raise PipelineError(f"Final folder must contain exactly 7 files, found: {[p.name for p in final_files]}")
+        raise PipelineError(
+            f"Final folder must contain exactly {len(FINAL_OUTPUT_FILES)} files, found: {[p.name for p in final_files]}"
+        )
 
     if mode != "test":
         activity_planner.record(plan, activity)
@@ -497,6 +515,7 @@ def _run_once(
         drive_status=drive_status,
         poster_score=poster_score,
         coloring_score=coloring_score,
+        simple_coloring_score=simple_score,
         reference_used=reference_used,
         detail=drive_detail,
     )
@@ -574,8 +593,23 @@ def _rebuild_components(
     )
     if coloring_score < 90 or identity_score < 90:
         raise PipelineError(f"Coloring score {coloring_score}, identity score {identity_score}; both must be at least 90.")
+    temp_simple = work.root / "simple_coloring_page.png"
+    simple_score, _simple_ref = generate_simple_coloring(
+        settings,
+        story_md=story_md,
+        content=content,
+        output_path=temp_simple,
+        work_candidates=work.coloring_candidates,
+        work_reviews=work.reviews,
+        poster_path=paths.story_poster,
+        detailed_coloring_path=temp_coloring,
+        mode=mode,
+    )
+    if simple_score < 86 and mode == "prod":
+        raise PipelineError(f"Simple coloring score {simple_score} below threshold 86.")
     temp_activity.replace(paths.activity_sheet)
     temp_coloring.replace(paths.coloring_page)
+    temp_simple.replace(paths.simple_coloring_page)
     update_component_manifest(
         paths.manifest, activity=activity, activity_page_count=pdf_check.page_count,
         activity_score=activity_score, coloring_score=coloring_score,
@@ -585,6 +619,7 @@ def _rebuild_components(
         coloring_model=ImageClient(settings).model, model_override=ImageClient(settings).model_override,
         matching_coverage=pdf_check.matching_coverage,
         parent_answer_key=parent_key.to_dict(),
+        simple_coloring_score=simple_score,
     )
     upload = None
     if not no_upload:
@@ -598,6 +633,7 @@ def _rebuild_components(
                 coloring_model=ImageClient(settings).model, model_override=ImageClient(settings).model_override,
                 matching_coverage=pdf_check.matching_coverage,
                 parent_answer_key=parent_key.to_dict(),
+                simple_coloring_score=simple_score,
             )
         if upload.status not in {"UPLOADED", "LOCAL_SYNC", "SKIPPED"}:
             raise PipelineError(upload.detail)
@@ -606,7 +642,7 @@ def _rebuild_components(
         raise PipelineError("Locked package files changed during component-only rebuild.")
     final_names = {path.name for path in paths.root.iterdir() if path.is_file()}
     if final_names != set(FINAL_OUTPUT_FILES):
-        raise PipelineError(f"Final folder must contain exactly 7 files, found: {sorted(final_names)}")
+        raise PipelineError(f"Final folder must contain exactly {len(FINAL_OUTPUT_FILES)} files, found: {sorted(final_names)}")
     planner.record(plan, activity)
     cleanup_work(work, keep=debug or settings.debug_artifacts)
     return {
@@ -614,6 +650,7 @@ def _rebuild_components(
         "whatsapp_status": "SKIPPED_COMPONENT_REBUILD", "activity_type": activity.activity_type,
         "activity_title": activity.activity_title, "activity_score": activity_score,
         "activity_pages": pdf_check.page_count, "coloring_score": coloring_score,
+        "simple_coloring_score": simple_score,
         "identity_consistency_score": identity_score,
         "drive_upload_status": upload.status if upload else "SKIPPED",
         "drive_detail": upload.detail if upload else "Upload disabled by flag.",
@@ -828,3 +865,117 @@ def _sha256(path: Path) -> str:
 def _folder_id(link: str) -> str:
     match = re.search(r"/folders/([A-Za-z0-9_-]+)", link or "")
     return match.group(1) if match else ""
+
+
+def parse_rebuild_range(spec: str) -> tuple[str, str]:
+    raw = (spec or "").strip()
+    if ":" not in raw:
+        raise PipelineError("rebuild-range must look like 001:005")
+    start_s, end_s = raw.split(":", 1)
+    start, end = start_s.strip().zfill(3), end_s.strip().zfill(3)
+    if not (start.isdigit() and end.isdigit() and int(start) <= int(end)):
+        raise PipelineError(f"Invalid rebuild-range: {spec!r}")
+    return start, end
+
+
+def archive_packages_for_range(settings: Settings, *, start: str, end: str) -> Path:
+    stamp = datetime.now(ZoneInfo(settings.app_timezone)).strftime("%Y%m%d_%H%M%S")
+    archive_root = settings.output_root / "_archive" / f"pre_full_v2_rebuild_{stamp}"
+    archive_root.mkdir(parents=True, exist_ok=True)
+    for chapter in range(int(start), int(end) + 1):
+        chapter_no = f"{chapter:03d}"
+        plan = read_plan_by_chapter(settings.project_root, chapter_no)
+        if not plan:
+            continue
+        src = make_package_paths(settings.output_root, plan).root
+        if src.exists():
+            dest = archive_root / src.name
+            if dest.exists():
+                shutil.rmtree(dest, ignore_errors=True)
+            shutil.copytree(src, dest)
+    return archive_root
+
+
+def restore_queue_snapshot(project_root: Path, snapshot: list[dict[str, str]]) -> None:
+    path = project_root / "tracking" / "queue_state.csv"
+    from .csv_store import QUEUE_FIELDS, _write_queue
+
+    rows = []
+    for row in snapshot:
+        cleaned = {field: row.get(field, "") for field in QUEUE_FIELDS}
+        rows.append(cleaned)
+    _write_queue(path, rows)
+
+
+def rebuild_story_range(
+    settings: Settings,
+    *,
+    range_spec: str,
+    mode: str = "prod",
+    preserve_queue: bool = True,
+    replace_drive: bool = True,
+    debug: bool = False,
+    archive: bool = True,
+) -> dict[str, object]:
+    """Rebuild completed stories in a chapter range without advancing past the range."""
+    start, end = parse_rebuild_range(range_spec)
+    if int(end) >= 6:
+        raise PipelineError("Rebuild range must not include Story 006 or later in this release.")
+    from .csv_store import read_queue_state
+
+    queue_before = read_queue_state(settings.project_root)
+    archive_path = ""
+    if archive:
+        archive_path = str(archive_packages_for_range(settings, start=start, end=end))
+    results: list[dict[str, object]] = []
+    try:
+        for chapter in range(int(start), int(end) + 1):
+            chapter_no = f"{chapter:03d}"
+            result = run_daily_story(
+                settings,
+                mode=mode,
+                force=True,
+                chapter=chapter_no,
+                rebuild=True,
+                no_upload=not replace_drive,
+                debug=debug,
+            )
+            results.append({"chapter_no": chapter_no, **result})
+            if result.get("status") != "SUCCESS":
+                raise PipelineError(f"Rebuild failed for {chapter_no}: {result}")
+    finally:
+        if preserve_queue:
+            # Keep Drive IDs / completion metadata for chapters outside the rebuilt set,
+            # and force 001–005 done + 006+ pending for safety.
+            restored = {row.get("chapter_no", "").zfill(3): dict(row) for row in queue_before}
+            for chapter in range(int(start), int(end) + 1):
+                chapter_no = f"{chapter:03d}"
+                row = restored.setdefault(chapter_no, {"chapter_no": chapter_no, "slug": "", "status": "done"})
+                row["status"] = "done"
+                # Prefer freshly uploaded folder ids when present.
+                matching = next((r for r in results if r.get("chapter_no") == chapter_no), None)
+                if matching and matching.get("package_link"):
+                    fid = _folder_id(str(matching.get("package_link") or ""))
+                    if fid:
+                        row["drive_folder_id"] = fid
+            for chapter_no, row in restored.items():
+                if int(chapter_no or "0") >= 6:
+                    row["status"] = "pending"
+            ordered = sorted(restored.values(), key=lambda r: int(r.get("chapter_no") or 0))
+            restore_queue_snapshot(settings.project_root, ordered)
+
+    queue_after = {row["chapter_no"].zfill(3): row["status"] for row in read_queue_state(settings.project_root)}
+    if queue_after.get("006") != "pending":
+        raise PipelineError("Queue integrity failure: Story 006 must remain pending after rebuild.")
+    for chapter in range(int(start), int(end) + 1):
+        if queue_after.get(f"{chapter:03d}") != "done":
+            raise PipelineError(f"Queue integrity failure: Story {chapter:03d} must remain done.")
+    return {
+        "status": "SUCCESS",
+        "rebuild_range": f"{start}:{end}",
+        "preserve_queue": preserve_queue,
+        "archive_path": archive_path,
+        "results": results,
+        "queue": queue_after,
+        "next_pending": "006",
+    }
