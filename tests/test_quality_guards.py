@@ -128,6 +128,17 @@ def test_story_003_guard_stops_before_narada_and_imprisonment() -> None:
     assert any("boundary" in issue.lower() for issue in _generation_issues(_source_content(plan, crossed), plan))
 
 
+def test_story_003_guard_distinguishes_safety_claim_from_caution() -> None:
+    plan = _source_plan("003", "vasudeva-keeps-his-word")
+    factual = (
+        "Devaki's first son Kirtiman was born. Truthful Vasudeva kept his word and brought Kirtiman to Kamsa. "
+        "Kamsa returned Kirtiman. Vasudeva did not assume the family was permanently safe."
+    )
+    assert run_source_guard(plan, _source_content(plan, factual)) == []
+    unsafe = factual.replace("did not assume the family was", "believed the family was")
+    assert any("permanently safe" in error for error in run_source_guard(plan, _source_content(plan, unsafe)))
+
+
 def test_story_003_deterministic_repair_removes_later_episode_and_restores_ending() -> None:
     plan = _source_plan("003", "vasudeva-keeps-his-word")
     broken = _source_content(

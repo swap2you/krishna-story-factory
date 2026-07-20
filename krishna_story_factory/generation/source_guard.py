@@ -71,7 +71,7 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
             errors.append("Story 003 must call Kaṁsa Devakī's brother, not cousin.")
         if re.search(r"ka[mṁ]sa (?:was |is )?(?:also )?keeping his word", combined, re.I):
             errors.append("Story 003 must not say Kaṁsa was keeping his word.")
-        if re.search(r"(?:family|they|everyone) (?:was|were|would be) permanently safe", combined, re.I):
+        if _asserts_permanent_safety(combined):
             errors.append("Story 003 must not imply the family was permanently safe.")
         if not content.bedtime_reflection.strip().endswith("?"):
             errors.append("Story 003 Bedtime Reflection must be a question.")
@@ -95,6 +95,15 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
 
 def _items(value: str) -> list[str]:
     return [item.strip() for item in value.split("|") if item.strip()]
+
+
+def _asserts_permanent_safety(text: str) -> bool:
+    pattern = re.compile(r"(?:family|they|everyone) (?:was|were|would be) permanently safe", re.I)
+    for match in pattern.finditer(text):
+        clause_prefix = text[max(0, match.start() - 80):match.start()]
+        if not re.search(r"\b(?:not|never|did not|didn't)\b[^.!?]{0,60}$", clause_prefix, re.I):
+            return True
+    return False
 
 
 def _require(text: str, choices: tuple[str, ...], message: str, errors: list[str]) -> None:

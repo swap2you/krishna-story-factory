@@ -4,7 +4,7 @@ Validated on 2026-07-20 from branch `fix/activity-engine-v2-production-lock`.
 
 ## Release gates
 
-- Local tests: PASS — 81 tests passed via `scripts/test_all.ps1`.
+- Local tests: PASS — 82 tests passed via `scripts/test_all.ps1`.
 - Test-mode isolation: PASS — Story 005 preview written under `.work/test_preview`; production queue SHA-256 unchanged.
 - Windows CI: PENDING.
 - Ubuntu CI: PENDING.
