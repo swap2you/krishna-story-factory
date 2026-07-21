@@ -2,10 +2,8 @@
 from __future__ import annotations
 
 import json
-import subprocess
-import sys
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -23,12 +21,16 @@ from krishna_story_factory.outputs import FINAL_OUTPUT_FILES
 from krishna_story_factory.package_swap import (
     PHASE_PREPARED,
     PHASE_PRODUCTION_BACKED_UP,
-    PHASE_STAGING_PROMOTED,
+    STATUS_INVALID_SWAP_JOURNAL,
+    InvalidSwapJournalError,
     atomic_replace_package_dir,
     journal_root,
+    parse_and_validate_journal,
+    quarantine_root,
     recover_unfinished_swaps,
 )
 from krishna_story_factory.paths import PackagePaths
+import krishna_story_factory.package_swap as package_swap_mod
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -116,10 +118,8 @@ def test_story_002_audio_rewrite_from_actual_file() -> None:
     assert "she whispered" not in low
     assert "he smiled and told her, in paraphrase" not in low
     assert "thank you for saving my life" not in low
-    assert "<!--" not in repaired.to_markdown().split("## Think About It")[0] or True
     md = repaired.to_markdown()
-    assert not md.lstrip().startswith("---")
-    assert md.count("<!--") == 1
+    _assert_distributed_story_md_has_no_yaml_frontmatter(md)
 
 
 def test_publishable_gate_matrix(tmp_path: Path) -> None:
@@ -318,6 +318,44 @@ def test_story_005_no_shield_language_on_actual_file() -> None:
     assert not run_source_guard(plan, content)
 
 
+def _assert_distributed_story_md_has_no_yaml_frontmatter(md: str) -> None:
+    """Distributed story.md must not expose YAML metadata; keep parent sections visible."""
+    stripped = md.lstrip()
+    assert not stripped.startswith("---"), "distributed story.md must not start with YAML ---"
+    assert "\n---\n" not in md[:400], "distributed story.md must not contain a leading YAML fence"
+
+    visible, sep, hidden = md.partition("<!--")
+    assert sep == "<!--", "exactly one hidden production comment block is required"
+    assert "-->" in hidden
+    assert hidden.count("<!--") == 0
+    assert md.count("<!--") == 1
+    assert md.count("-->") == 1
+
+    # No visible YAML-style metadata keys before the hidden block.
+    for key in (
+        "title:",
+        "source_reference:",
+        "scripture_reference:",
+        "age_range:",
+        "story_number:",
+        "format:",
+    ):
+        assert key not in visible, f"visible metadata key leaked: {key}"
+
+    for section in (
+        "## Recap",
+        "## Main Story",
+        "## Devotional Meaning",
+        "## Five Lessons",
+        "## Think About It",
+        "## Five-Star Challenge",
+        "## Bedtime Prayer",
+        "## Next Story Preview",
+        "## Parent/Teacher Note",
+    ):
+        assert section in visible, f"parent-facing section missing: {section}"
+
+
 def test_frontmatter_absent_from_serialized_story() -> None:
     pkg = StoryPackageContentV2(
         title="T",
@@ -342,6 +380,198 @@ def test_frontmatter_absent_from_serialized_story() -> None:
         activity_data={},
     )
     md = pkg.to_markdown()
-    assert not md.lstrip().startswith("---")
-    assert "title:" not in md.split("## Recap")[0]
-    assert md.count("<!--") == 1
+    _assert_distributed_story_md_has_no_yaml_frontmatter(md)
+
+
+def _valid_journal_paths(output_root: Path) -> dict[str, Path]:
+    production = output_root / "006_story"
+    staging = output_root / "_staging" / "pkg"
+    backup = output_root / "_archive" / "006_story_pre_swap_sim"
+    return {"production": production, "staging": staging, "backup": backup}
+
+
+def _write_journal(output_root: Path, payload: dict, name: str = "swap_bad.json") -> Path:
+    path = journal_root(output_root) / name
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def _base_payload(paths: dict[str, Path], **overrides) -> dict:
+    payload = {
+        "transaction_id": "sim",
+        "production_path": str(paths["production"]),
+        "staging_path": str(paths["staging"]),
+        "backup_path": str(paths["backup"]),
+        "phase": PHASE_PRODUCTION_BACKED_UP,
+    }
+    payload.update(overrides)
+    return payload
+
+
+@pytest.mark.parametrize(
+    "mutator,match",
+    [
+        (lambda p: p.pop("production_path"), "missing"),
+        (lambda p: p.__setitem__("production_path", ""), "empty"),
+        (lambda p: p.__setitem__("production_path", None), "null"),
+        (lambda p: p.__setitem__("production_path", str(Path(""))), "unsafe empty/cwd|current working"),
+        (lambda p: p.__setitem__("production_path", "."), "unsafe empty/cwd|current working"),
+    ],
+)
+def test_journal_rejects_missing_empty_null_cwd_paths(tmp_path: Path, mutator, match: str) -> None:
+    output_root = tmp_path / "output"
+    paths = _valid_journal_paths(output_root)
+    for path in paths.values():
+        path.mkdir(parents=True, exist_ok=True)
+    payload = _base_payload(paths)
+    mutator(payload)
+    with pytest.raises(InvalidSwapJournalError, match=match):
+        parse_and_validate_journal(payload, output_root=output_root, project_root=tmp_path)
+
+
+def test_journal_rejects_output_root_repo_root_traversal_and_outside(tmp_path: Path) -> None:
+    output_root = (tmp_path / "output").resolve()
+    paths = _valid_journal_paths(output_root)
+    for path in paths.values():
+        path.mkdir(parents=True, exist_ok=True)
+
+    with pytest.raises(InvalidSwapJournalError, match="output_root"):
+        parse_and_validate_journal(
+            _base_payload(paths, production_path=str(output_root)),
+            output_root=output_root,
+            project_root=tmp_path,
+        )
+    with pytest.raises(InvalidSwapJournalError, match="repository root"):
+        parse_and_validate_journal(
+            _base_payload(paths),
+            output_root=output_root,
+            project_root=paths["production"],
+        )
+    with pytest.raises(InvalidSwapJournalError, match="parent traversal"):
+        parse_and_validate_journal(
+            _base_payload(paths, production_path=str(output_root / ".." / "outside_pkg")),
+            output_root=output_root,
+            project_root=tmp_path,
+        )
+    outside = (tmp_path / "elsewhere" / "pkg").resolve()
+    outside.mkdir(parents=True)
+    with pytest.raises(InvalidSwapJournalError, match="escapes approved root"):
+        parse_and_validate_journal(
+            _base_payload(paths, production_path=str(outside)),
+            output_root=output_root,
+            project_root=tmp_path,
+        )
+
+
+def test_journal_rejects_identical_operational_paths(tmp_path: Path) -> None:
+    output_root = tmp_path / "output"
+    paths = _valid_journal_paths(output_root)
+    for path in paths.values():
+        path.mkdir(parents=True, exist_ok=True)
+    with pytest.raises(InvalidSwapJournalError, match="distinct"):
+        parse_and_validate_journal(
+            _base_payload(paths, backup_path=str(paths["production"])),
+            output_root=output_root,
+            project_root=tmp_path,
+        )
+    with pytest.raises(InvalidSwapJournalError, match="distinct"):
+        parse_and_validate_journal(
+            _base_payload(paths, staging_path=str(paths["production"])),
+            output_root=output_root,
+            project_root=tmp_path,
+        )
+
+
+def test_invalid_journals_quarantined_without_package_mutation(tmp_path: Path, monkeypatch) -> None:
+    output_root = tmp_path / "output"
+    paths = _valid_journal_paths(output_root)
+    production = paths["production"]
+    staging = paths["staging"]
+    backup = paths["backup"]
+    for path in paths.values():
+        path.mkdir(parents=True, exist_ok=True)
+    (production / "marker.txt").write_text("prod", encoding="utf-8")
+    (staging / "marker.txt").write_text("stage", encoding="utf-8")
+    (backup / "marker.txt").write_text("back", encoding="utf-8")
+
+    rename_spy = MagicMock(side_effect=AssertionError("package rename must not run for invalid journals"))
+    monkeypatch.setattr(package_swap_mod, "_retry_rename", rename_spy)
+
+    # Missing production_path
+    _write_journal(
+        output_root,
+        {
+            "transaction_id": "a",
+            "staging_path": str(staging),
+            "backup_path": str(backup),
+            "phase": PHASE_PRODUCTION_BACKED_UP,
+        },
+        "swap_missing.json",
+    )
+    # Empty production_path
+    _write_journal(output_root, _base_payload(paths, production_path=""), "swap_empty.json")
+    # Path("") / "."
+    _write_journal(output_root, _base_payload(paths, production_path=str(Path(""))), "swap_dot.json")
+    # Malformed JSON
+    bad = journal_root(output_root) / "swap_malformed.json"
+    bad.write_text("{not-json", encoding="utf-8")
+    # Partially written JSON
+    partial = journal_root(output_root) / "swap_partial.json"
+    partial.write_text('{"transaction_id": "x", "production_path":', encoding="utf-8")
+    # Absolute path outside output_root
+    outside = (tmp_path / "outside_pkg").resolve()
+    outside.mkdir()
+    _write_journal(output_root, _base_payload(paths, production_path=str(outside)), "swap_outside.json")
+    # production == backup
+    _write_journal(
+        output_root,
+        _base_payload(paths, backup_path=str(production)),
+        "swap_same_backup.json",
+    )
+
+    recovered = recover_unfinished_swaps(output_root=output_root, project_root=tmp_path)
+    assert rename_spy.call_count == 0
+    assert any(item.get("status") == STATUS_INVALID_SWAP_JOURNAL for item in recovered)
+    assert (production / "marker.txt").read_text(encoding="utf-8") == "prod"
+    assert (staging / "marker.txt").read_text(encoding="utf-8") == "stage"
+    assert (backup / "marker.txt").read_text(encoding="utf-8") == "back"
+    assert production.exists() and staging.exists() and backup.exists()
+    # Evidence preserved in quarantine, not silently discarded.
+    quarantined = list(quarantine_root(output_root).glob("swap_*.json"))
+    assert len(quarantined) >= 6
+    assert not list(journal_root(output_root).glob("swap_*.json"))
+
+    with pytest.raises(RuntimeError, match=STATUS_INVALID_SWAP_JOURNAL):
+        # Quarantine already cleared active journals; seed another invalid one to block swap.
+        _write_journal(output_root, _base_payload(paths, production_path=""), "swap_block.json")
+        atomic_replace_package_dir(
+            staging_dir=staging,
+            production_dir=production,
+            archive_root=output_root / "_archive",
+            output_root=output_root,
+            project_root=tmp_path,
+        )
+
+
+def test_valid_journal_recovery_still_works(tmp_path: Path) -> None:
+    output_root = tmp_path / "output"
+    paths = _valid_journal_paths(output_root)
+    staging = paths["staging"]
+    production = paths["production"]
+    archive = output_root / "_archive"
+    staging.mkdir(parents=True)
+    production.mkdir(parents=True)
+    for name in FINAL_OUTPUT_FILES:
+        (staging / name).write_text(f"new-{name}", encoding="utf-8")
+        (production / name).write_text(f"old-{name}", encoding="utf-8")
+
+    backup = paths["backup"]
+    archive.mkdir(parents=True)
+    production.rename(backup)
+    journal = _write_journal(output_root, _base_payload(paths), "swap_sim.json")
+    recovered = recover_unfinished_swaps(output_root=output_root, project_root=tmp_path)
+    assert recovered
+    assert all(item.get("status") != STATUS_INVALID_SWAP_JOURNAL for item in recovered)
+    assert production.exists()
+    assert (production / "story.md").read_text(encoding="utf-8") == "old-story.md"
+    assert not journal.exists()

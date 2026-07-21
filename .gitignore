@@ -19,3 +19,7 @@ assets/reference/*.jpeg
 *.log
 .DS_Store
 krishna-story-factory-v1-buildpack/
+
+.staging_local/
+_local_regen_*/
+
