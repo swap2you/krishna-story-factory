@@ -778,8 +778,13 @@ def _extract_event_labels(story_text: str, seed: str) -> list[str]:
     if len(labels) < 4:
         raise ValueError("Could not extract concrete story event labels without generic placeholders.")
 
+    # Pad to 6 by cycling through the already-extracted labels (freeze base length;
+    # len(labels) % len(labels) would always be 0 and only duplicate labels[0]).
+    base_count = len(labels)
+    pad_index = 0
     while len(labels) < 6:
-        labels.append(f"{labels[len(labels) % len(labels)]} continues in the pastime")
+        labels.append(f"{labels[pad_index % base_count]} continues in the pastime")
+        pad_index += 1
     return labels[:6]
 
 
