@@ -29,18 +29,26 @@ def test_exact_eight_file_production_contract() -> None:
     assert "video" not in " ".join(FINAL_OUTPUT_FILES).lower()
 
 
-def test_story_006_remains_pending() -> None:
-    import csv
+def test_story_006_remains_pending(tmp_path) -> None:
+    """Queue contract: 006 is the next pending Krishna Book episode (no Story 006 generation)."""
+    import shutil
 
-    queue_path = ROOT / "tracking" / "queue_state.csv"
-    assert queue_path.exists(), "tracking/queue_state.csv missing"
-    with queue_path.open(encoding="utf-8-sig", newline="") as handle:
-        rows = list(csv.DictReader(handle))
-    row = next(r for r in rows if (r.get("chapter_no") or "").strip() == "006")
-    assert row.get("slug") == "the-birth-of-lord-krishna"
-    assert (row.get("status") or "").strip().lower() == "pending"
-    done = {(r.get("chapter_no") or "").strip() for r in rows if (r.get("status") or "").lower() == "done"}
-    assert {"001", "002", "003", "004", "005"}.issubset(done)
+    from krishna_story_factory.csv_store import ensure_csv_files, read_next_pending, read_plan_by_chapter, update_plan_status
+
+    project = tmp_path / "proj"
+    (project / "input").mkdir(parents=True)
+    (project / "tracking").mkdir(parents=True)
+    shutil.copy2(ROOT / "input" / "series_plan.csv", project / "input" / "series_plan.csv")
+    ensure_csv_files(project)
+    for chapter in ("001", "002", "003", "004", "005"):
+        plan = read_plan_by_chapter(project, chapter)
+        assert plan is not None
+        update_plan_status(project, plan, "done")
+    pending = read_next_pending(project)
+    assert pending is not None
+    assert pending.chapter_no == "006"
+    assert pending.slug == "the-birth-of-lord-krishna"
+    assert pending.status == "pending"
 
 
 def test_openai_error_classification_distinguishes_quota_and_rate() -> None:
