@@ -439,6 +439,7 @@ def _rebuild_one(
             production_dir=production.root,
             archive_root=archive_root,
             output_root=settings.output_root,
+            project_root=settings.project_root,
         )
         report["local_replaced"] = True
         report["swap"] = swap
@@ -486,6 +487,20 @@ def main(argv: list[str] | None = None) -> int:
 
     settings = load_settings(ROOT)
     ensure_csv_files(settings.project_root)
+    from krishna_story_factory.package_swap import (
+        STATUS_INVALID_SWAP_JOURNAL,
+        recover_unfinished_swaps,
+    )
+
+    recovery = recover_unfinished_swaps(
+        output_root=settings.output_root,
+        project_root=settings.project_root,
+    )
+    if any(item.get("status") == STATUS_INVALID_SWAP_JOURNAL for item in recovery):
+        raise SystemExit(
+            f"{STATUS_INVALID_SWAP_JOURNAL}: clear or repair quarantined journals under "
+            "output/_swap_journal_invalid/ before rebuilding."
+        )
     chapters = _parse_chapters(args.chapters)
     if any(int(c) > 6 for c in chapters):
         raise SystemExit("This rebuild tool only allows Stories 001–006.")

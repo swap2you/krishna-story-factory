@@ -30,6 +30,83 @@ _METADATA_EVENT_RE = re.compile(
     r"hare\s+k[rṛ][sṣ][nṇ]a,?\s+dear)",
 )
 _YAML_MARKER_RE = re.compile(r"(?m)^---\s*$|^\s*[a-z_]+\s*:\s*")
+_METADATA_KEYS = (
+    "title",
+    "source_reference",
+    "scripture_reference",
+    "age_range",
+    "story_number",
+    "format",
+    "greeting",
+)
+_METADATA_CONCEPTS = frozenset(
+    {
+        "title",
+        "source reference",
+        "scripture reference",
+        "scripture range",
+        "age range",
+        "story number",
+        "format",
+        "greeting",
+    }
+)
+
+
+def normalize_metadata_text(text: str) -> str:
+    """Case-fold, drop punctuation, turn underscores into spaces for concept matching.
+
+    Inserts word boundaries for camelCase/PascalCase before lowercasing so
+    ``sourceReference`` / ``storyNumber`` normalize to metadata concepts.
+    """
+    cleaned = text or ""
+    # sourceREFERENCE → source REFERENCE; SourceReference → Source Reference
+    cleaned = re.sub(r"([a-z])([A-Z]+)", r"\1 \2", cleaned)
+    cleaned = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1 \2", cleaned)
+    cleaned = cleaned.lower().replace("_", " ").replace("-", " ")
+    cleaned = re.sub(r"[^a-z0-9\s]", " ", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+def contains_metadata_concept(text: str) -> bool:
+    """True when a label carries frontmatter concepts after normalization."""
+    normalized = f" {normalize_metadata_text(text)} "
+    if not normalized.strip():
+        return True
+    for concept in _METADATA_CONCEPTS:
+        if f" {concept} " in normalized or normalized.strip() == concept:
+            return True
+    # Token-level key leftovers such as "source"+"reference" pairs already covered;
+    # also reject lone metadata key tokens that survive tokenization.
+    tokens = set(normalized.split())
+    if tokens & {"title", "format", "greeting"} and len(tokens) <= 4:
+        # Short labels dominated by metadata keys are not story events.
+        if tokens <= {"title", "format", "greeting", "source", "reference", "scripture", "range", "age", "story", "number", "in", "the", "pastime"}:
+            return True
+    return False
+
+
+def strip_yaml_frontmatter(text: str) -> str:
+    """Remove leading --- YAML --- blocks before event extraction."""
+    raw = text or ""
+    match = re.match(r"(?s)\A\s*---\s*\n.*?\n---\s*\n?", raw)
+    if match:
+        return raw[match.end() :]
+    return raw
+
+
+def is_metadata_line(text: str) -> bool:
+    cleaned = " ".join((text or "").strip().split())
+    if not cleaned:
+        return True
+    lower = cleaned.lower()
+    if cleaned.startswith("---") or cleaned.startswith("#"):
+        return True
+    if any(lower.startswith(f"{key}:") or f"{key}:" in lower for key in _METADATA_KEYS):
+        return True
+    if lower.startswith("hare kṛṣṇa, dear") or lower.startswith("hare krishna, dear"):
+        return True
+    return contains_metadata_concept(cleaned)
 
 
 def is_metadata_event_label(text: str) -> bool:
@@ -42,19 +119,11 @@ def is_metadata_event_label(text: str) -> bool:
         return True
     if cleaned.startswith("#"):
         return True
-    if any(
-        key in lower
-        for key in (
-            "title:",
-            "source_reference:",
-            "scripture_reference:",
-            "age_range:",
-            "story_number:",
-            "format:",
-        )
-    ):
+    if any(key in lower for key in (f"{k}:" for k in _METADATA_KEYS)):
         return True
     if lower.startswith("hare kṛṣṇa, dear") or lower.startswith("hare krishna, dear"):
+        return True
+    if contains_metadata_concept(cleaned):
         return True
     return False
 
@@ -219,7 +288,11 @@ def activity_presentation_errors(activity: ActivityPack, pdf_text_by_page: list[
 __all__ = [
     "GENERIC_PLACEHOLDERS",
     "MatchingCoverageResult",
+    "contains_metadata_concept",
     "is_metadata_event_label",
+    "is_metadata_line",
+    "normalize_metadata_text",
+    "strip_yaml_frontmatter",
     "semantic_activity_errors",
     "pdf_text_has_generic_placeholders",
     "matching_coverage_from_pdf_text",

@@ -19,6 +19,11 @@ Exact production package is always **eight files**:
 7. `whatsapp_caption.txt`
 8. `manifest.json`
 
+## Parent-facing story.md (no YAML frontmatter)
+
+Distributed `story.md` does **not** include YAML frontmatter. Title/source metadata live in
+`### Scriptural Source` plus `manifest.json`. Parsers remain backward-compatible with older
+YAML-fronted files during rebuild.
 ## Safety checks (before every run)
 
 ```powershell

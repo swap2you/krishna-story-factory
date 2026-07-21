@@ -128,42 +128,49 @@ class ActivityPlanner:
         connection = f"Every printable piece comes from the central scene of {title}."
         seed = (plan.summary_seed or title).strip()
         if kind == "STORY_SEQUENCE":
-            events = _extract_event_labels(story_text, seed)
-            cards = [
-                SequenceCard(event=label, drawing_prompt=f"Draw one detail from: {label}", source_order=index + 1)
-                for index, label in enumerate(events)
-            ]
-            printed = _shuffled_sequence_cards(cards, seed)
-            return ActivityPack(
-                activity_title=f"Put {title} in Order",
-                activity_type=kind,
-                send_mode="SEND_NOW",
-                estimated_minutes=15,
-                parent_effort="Low",
-                learning_goal="Retell the pastime in correct order and name the kind choice.",
-                story_connection=connection,
-                materials=["pencil", "crayons"],
-                pages=[
-                    ActivityPage(
-                        page_title="Story sequence cards",
-                        page_type="STORY_SEQUENCE_CARDS",
-                        instructions=["Number the cards in story order.", "Draw one source-faithful detail on each card."],
-                        components=printed,
-                        story_connection=connection,
-                    ),
-                    ActivityPage(
-                        page_title="Family kindness mission",
-                        page_type="FAMILY_MISSION",
-                        instructions=["Choose one kind action from the story and do it today."],
-                        components=["family mission card", "completion checkbox"],
-                        story_connection=connection,
-                    ),
-                ],
-                age_variants={"ages_6_8": "Use pictures.", "ages_9_13": "Write one sentence per card."},
-                completion_prompt="Retell the story using your numbered cards.",
-                review_questions=["What was the most important choice?"],
-                answer_key=[card.event for card in sorted(cards, key=lambda item: item.source_order)],
-            )
+            try:
+                events = _extract_event_labels(story_text, seed)
+            except ValueError:
+                # Do not invent metadata/generic sequence cards; use a non-sequence pack instead.
+                kind = "FAMILY_MISSION"
+            else:
+                cards = [
+                    SequenceCard(event=label, drawing_prompt=f"Draw one detail from: {label}", source_order=index + 1)
+                    for index, label in enumerate(events)
+                ]
+                printed = _shuffled_sequence_cards(cards, seed)
+                return ActivityPack(
+                    activity_title=f"Put {title} in Order",
+                    activity_type=kind,
+                    send_mode="SEND_NOW",
+                    estimated_minutes=15,
+                    parent_effort="Low",
+                    learning_goal="Retell the pastime in correct order and name the kind choice.",
+                    story_connection=connection,
+                    materials=["pencil", "crayons"],
+                    pages=[
+                        ActivityPage(
+                            page_title="Story sequence cards",
+                            page_type="STORY_SEQUENCE_CARDS",
+                            instructions=["Number the cards in story order.", "Draw one source-faithful detail on each card."],
+                            components=printed,
+                            story_connection=connection,
+                        ),
+                        ActivityPage(
+                            page_title="Family kindness mission",
+                            page_type="FAMILY_MISSION",
+                            instructions=["Choose one kind action from the story and do it today."],
+                            components=["family mission card", "completion checkbox"],
+                            story_connection=connection,
+                        ),
+                    ],
+                    age_variants={"ages_6_8": "Use pictures.", "ages_9_13": "Write one sentence per card."},
+                    completion_prompt="Retell the story using your numbered cards.",
+                    review_questions=["What was the most important choice?"],
+                    answer_key=[card.event for card in sorted(cards, key=lambda item: item.source_order)],
+                )
+        if kind == "STORY_SEQUENCE":
+            kind = "FAMILY_MISSION"
         if kind == "MATCHING_GAME":
             return ActivityPack(
                 activity_title=f"Match Clues from {title}",
@@ -869,17 +876,25 @@ def _pack_006(plan: PlanRow) -> ActivityPack:
 
 
 def _extract_event_labels(story_text: str, seed: str) -> list[str]:
-    from .qa import GENERIC_PLACEHOLDERS, is_metadata_event_label
+    from .qa import (
+        GENERIC_PLACEHOLDERS,
+        contains_metadata_concept,
+        is_metadata_event_label,
+        is_metadata_line,
+        strip_yaml_frontmatter,
+    )
 
     def _accept(label: str) -> bool:
         cleaned = " ".join((label or "").strip().split())
         if len(cleaned) < 12:
             return False
-        if is_metadata_event_label(cleaned):
+        if is_metadata_event_label(cleaned) or contains_metadata_concept(cleaned):
             return False
         if cleaned.lower() in GENERIC_PLACEHOLDERS:
             return False
         if cleaned.startswith("#") or cleaned.startswith("---"):
+            return False
+        if " in the pastime" in cleaned.lower() and contains_metadata_concept(cleaned.replace(" in the pastime", "")):
             return False
         return True
 
@@ -892,8 +907,13 @@ def _extract_event_labels(story_text: str, seed: str) -> list[str]:
         labels.append(cleaned)
 
     labels: list[str] = []
-    # Prefer Main Story body so YAML frontmatter / greetings never become sequence cards.
-    body = story_text or ""
+    # Strip YAML frontmatter before any tokenization so metadata keys never become tokens.
+    body = strip_yaml_frontmatter(story_text or "")
+    seed_clean = strip_yaml_frontmatter(seed or "")
+    seed_is_metadata = bool(seed_clean.strip()) and all(
+        is_metadata_line(part) for part in re.split(r"[;\n]+", seed_clean) if part.strip()
+    )
+
     main_match = re.search(
         r"(?is)(?:^|\n)#+\s*Main Story\s*\n(.*?)(?=\n#+\s|\Z)",
         body,
@@ -904,62 +924,31 @@ def _extract_event_labels(story_text: str, seed: str) -> list[str]:
         cleaned = " ".join(chunk.strip().split())
         if cleaned.startswith("#"):
             cleaned = cleaned.lstrip("#").strip()
+        if is_metadata_line(cleaned):
+            continue
         _add(labels, cleaned)
         if len(labels) >= 6:
             break
 
-    if len(labels) < 4:
-        parts = [p.strip() for p in re.split(r"[.;]", seed or "") if len(p.strip()) >= 8]
+    # Seed fallback only when the seed is not metadata-derived.
+    if len(labels) < 4 and seed_clean.strip() and not seed_is_metadata:
+        parts = [p.strip() for p in re.split(r"[.;]", seed_clean) if len(p.strip()) >= 8]
         for part in parts:
+            if is_metadata_line(part):
+                continue
             _add(labels, part)
             if len(labels) >= 6:
                 break
 
-    if len(labels) < 4:
-        tokens = [t for t in re.findall(r"[A-Za-z]{4,}", f"{seed} {story_text[:800]}")]
-        unique: list[str] = []
-        for token in tokens:
-            low = token.lower()
-            if low in GENERIC_PLACEHOLDERS or low in {item.lower() for item in unique}:
-                continue
-            if is_metadata_event_label(token):
-                continue
-            unique.append(token)
-        titleish = (seed or story_text or "").strip()[:60]
-        if (
-            not titleish
-            or is_metadata_event_label(titleish)
-            or any(key in titleish.lower() for key in ("title:", "source_reference:", "age_range:", "story_number:", "format:"))
-        ):
-            titleish = ""
-        if titleish:
-            synthesized = [
-                f"Opening moment of {titleish}",
-                f"Challenge faced in {titleish}",
-                f"Faithful response in {titleish}",
-                f"Protective action in {titleish}",
-                f"Peaceful result in {titleish}",
-                f"Family takeaway from {titleish}",
-            ]
-            for phrase in synthesized:
-                _add(labels, phrase)
-                if len(labels) >= 6:
-                    break
-        for index in range(0, max(0, len(unique) - 1), 2):
-            phrase = f"{unique[index]} {unique[index + 1]} in the pastime"
-            _add(labels, phrase)
-            if len(labels) >= 6:
-                break
-
-    # Final gate: never return metadata/generic labels. Never invent from metadata-only inputs.
+    # Never tokenize metadata-derived input into "X Y in the pastime" cards.
+    # Prefer failing so chapter preferred packs / semantic QA own the design.
     labels = [item for item in labels if _accept(item)]
     if len(labels) < 4:
         raise ValueError(
             "Could not extract concrete story event labels without generic placeholders or metadata."
         )
 
-    # Pad to 6 by cycling through the already-extracted labels (freeze base length;
-    # len(labels) % len(labels) would always be 0 and only duplicate labels[0]).
+    # Pad to 6 only by repeating already-accepted real events (not metadata synthesis).
     base_count = len(labels)
     pad_index = 0
     while len(labels) < 6:

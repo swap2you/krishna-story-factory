@@ -10,6 +10,46 @@ from .outputs import FINAL_OUTPUT_FILES
 from .activities.planner import ActivityPlan
 
 
+def _is_publishable(
+    *,
+    mode: str,
+    quality_status: str,
+    quality_errors: list[str] | None,
+    audio_metadata: dict | None,
+    narration_source_sha: str = "",
+    audio_source: str = "",
+    package_dir=None,
+) -> bool:
+    """Publishable only for verified, non-stale, error-free production packages.
+
+    Requires generation_verified audio with real provider + hashes and an exact
+    eight-file package. Unknown/preserved/stale audio is never publishable.
+    """
+    meta = dict(audio_metadata or {})
+    audio_stale = bool(meta.get("audio_stale")) or quality_status == "AUDIO_STALE"
+    provider = str(meta.get("provider") or audio_source or "").strip()
+    if provider in {"", "preserved", "unknown_preserved"}:
+        return False
+    if not bool(meta.get("generation_verified")):
+        return False
+    sha_ok = bool(str(narration_source_sha or meta.get("narration_source_sha") or "").strip())
+    audio_sha_ok = bool(str(meta.get("sha256") or "").strip())
+    if not sha_ok or not audio_sha_ok:
+        return False
+    if package_dir is not None:
+        from .package_swap import validate_exact_eight_files
+
+        if validate_exact_eight_files(package_dir):
+            return False
+    return (
+        mode != "test"
+        and quality_status == "PASS"
+        and not list(quality_errors or [])
+        and not audio_stale
+        and bool(meta.get("generation_verified"))
+    )
+
+
 def write_manifest(
     *,
     settings: Settings,
@@ -112,7 +152,6 @@ def write_manifest(
             "drive_status": drive_status,
             "drive_detail": drive_detail,
         },
-        "publishable": mode != "test",
         "queue_transition": "unchanged" if mode == "test" else ("done" if quality_status == "PASS" else "pending"),
         "mode": mode,
         "audio_source": audio_source or "unknown_preserved",
@@ -123,6 +162,10 @@ def write_manifest(
             else ""
         ),
     }
+    # Mirror stale flag onto audio block for consumers.
+    if isinstance(manifest["audio"], dict):
+        stale = bool(manifest["audio"].get("audio_stale")) or quality_status == "AUDIO_STALE"
+        manifest["audio"]["audio_stale"] = stale
     # Only mint a fresh narration_source_sha when audio was just verified/generated.
     # Preserved/stale packages must keep a missing or prior hash so drift stays detectable.
     verified = bool(isinstance(audio_metadata, dict) and audio_metadata.get("generation_verified"))
@@ -137,6 +180,17 @@ def write_manifest(
         if isinstance(manifest["audio"], dict):
             manifest["audio"]["current_narration_source_sha"] = audio_metadata["current_narration_source_sha"]
             manifest["audio"]["audio_stale"] = True
+    # Final publishable gate uses normalized audio + hashes + exact eight-file check.
+    audio_block = manifest["audio"] if isinstance(manifest["audio"], dict) else {}
+    manifest["publishable"] = _is_publishable(
+        mode=mode,
+        quality_status=quality_status,
+        quality_errors=quality_errors,
+        audio_metadata=audio_block,
+        narration_source_sha=str(manifest.get("narration_source_sha") or ""),
+        audio_source=str(manifest.get("audio_source") or ""),
+        package_dir=paths.root,
+    )
     # Never claim an exact seven-file Drive package.
     detail = str(manifest["package"].get("drive_detail") or "")
     if "seven file" in detail.lower() or "seven-file" in detail.lower():

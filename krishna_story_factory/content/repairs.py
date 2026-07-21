@@ -100,13 +100,69 @@ def has_invented_direct_dialogue(text: str, *, allow_heavenly_voice: bool = Fals
     return any(re.search(pat, low) for pat in forbidden)
 
 
+def assert_story_002_audio_clean(audio: str) -> list[str]:
+    """Post-repair assertions for Story 002 audio narration."""
+    errors: list[str] = []
+    text = normalize_story_text(audio or "")
+    low = text.lower()
+    if re.search(r"1\.0s\"\s*/>", text) or re.search(r"(?<!<break time=\")1\.0s\"\s*/>", text):
+        errors.append("broken break fragment")
+    if "1.0s\" />" in text or '1.0s" />' in text:
+        errors.append("orphaned break remnant")
+    if re.search(r"\b(?:he muttered|she whispered)\b", low):
+        errors.append("dangling speech attribution")
+    if "he smiled and told her, in paraphrase" in low:
+        errors.append("incomplete attribution clause")
+    if has_invented_direct_dialogue(text, allow_heavenly_voice=True):
+        # Heavenly voice prophecy may remain quoted; human sentimental dialogue must not.
+        if re.search(r"thank you for (?:saving|protecting)", low) or re.search(
+            r"we (?:must|will) trust(?: in)? krishna", low
+        ):
+            errors.append("forbidden sentimental quotation")
+    for frag in ("he muttered", "she whispered", "told her, in paraphrase"):
+        if frag in low:
+            errors.append(f"incomplete fragment: {frag}")
+    # Rough incomplete sentence: trailing attribution without period before next break.
+    if re.search(r"in paraphrase,[^.<\n]{0,80}\b(?:he|she)\s+(?:muttered|whispered)\b", low):
+        errors.append("incomplete paraphrase sentence")
+    return errors
+
+
+_STORY_002_AUDIO = """Hare Kṛṣṇa, dear children and families! Tonight is Story 002: The Wedding and the Heavenly Voice.
+
+In the ancient city of Mathurā, there was once a celebration more joyful than any before. Lanterns glowed at every doorway, marigold garlands hung from the palace, and sweet music floated through the evening air. Why all this happiness? Because it was the wedding of Princess Devakī and the noble Prince Vasudeva!
+
+Children tossed fragrant flower petals in front of the happy couple. Devakī sparkled in her silk sari, and Vasudeva greeted everyone with kindness and calm. Families gave their blessings as cheerful dancers twirled. Sweets were shared, making the festival even brighter.
+
+Devakī's brother Kaṁsa, the powerful son of King Ugrasena, personally drove the gleaming royal chariot, wanting everyone to see how much he cared for his sister. As the newlyweds rode through the city, everyone clapped and rang bells, sending the couple off with wishes for happiness.
+
+But just then, a strange stillness settled over the road. Suddenly, a deep and powerful voice thundered from the sky. No person was speaking; it was as though the heavens themselves had come alive. In paraphrase of the heavenly warning: Kaṁsa was told that Devakī's eighth child would bring his destruction.
+
+People gasped. Kaṁsa's hands shook. His happiness vanished in an instant, replaced by fear. He looked at Devakī and forgot his affection as a loving brother. Kaṁsa reached for his sword, and some in the crowd watched in disbelief and worry.
+
+But Vasudeva was brave and loving. He stepped between Devakī and Kaṁsa. In paraphrase: Vasudeva calmly asked Kaṁsa not to harm his sister on their wedding day, reminding him that the warning spoke of a future eighth child, not of Devakī herself.
+
+Still, Kaṁsa was afraid. In paraphrase: he worried about what might happen later if he let them go.
+
+Vasudeva took a deep breath. In paraphrase: he promised to bring every child born to them and asked Kaṁsa to trust his truthfulness and spare Devakī.
+
+For a long moment, Kaṁsa was silent. He saw Vasudeva's honesty and finally put away his sword. The chariot moved on, and though the city cheered again, the joy felt softer now. Devakī held Vasudeva's hand with quiet gratitude. In paraphrase: she thanked him for protecting her, and he gently reminded her to trust Krishna's plan even when the path was hard to see.
+
+As the sun set and the city shimmered with tiny lamps, the couple remembered the heavenly voice and prayed quietly for courage. Inside, they knew Krishna was already watching over them.
+
+So, as you snuggle under your covers, remember—when something scary happens, you can be brave and truthful, just like Devakī and Vasudeva. Krishna will always help you through every challenge, just as He watched over them in Mathurā.
+
+Dear Kṛṣṇa, please keep us close to You. We chant: Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare Hare Rāma Hare Rāma Rāma Rāma Hare Hare. Good night.
+
+Next time: Story 003 — Vasudeva Keeps His Word. We will see how truthfulness guides a difficult promise."""
+
+
 def repair_story_002_dialogue(content: StoryContent) -> StoryContent:
-    """Replace invented sentimental dialogue with clearly marked paraphrase."""
+    """Repair Story 002 main and fully rewrite audio from the approved source boundary."""
     content = sanitize_content_fields(content)
     main = normalize_story_text(content.main_story)
-    audio = normalize_story_text(content.audio_script)
 
-    # Text is NFKC-normalized first, so only straight quotes remain.
+    # Structural main-story paraphrase cleanup (Unicode-normalized; idempotent).
     main = re.sub(
         r"Devaki squeezed Vasudeva'?s hand\.\s*"
         r'"Thank you for (?:saving|protecting) my life,"\s*she whispered[^.]{0,80}\.\s*'
@@ -118,7 +174,6 @@ def repair_story_002_dialogue(content: StoryContent) -> StoryContent:
         main,
         flags=re.I | re.S,
     )
-    # Broader cleanup if variants remain.
     main = re.sub(
         r'"Thank you for (?:saving|protecting) my life,"[^.]{0,120}\.',
         "In paraphrase: Devaki thanked Vasudeva for protecting her.",
@@ -146,46 +201,10 @@ def repair_story_002_dialogue(content: StoryContent) -> StoryContent:
         flags=re.I,
     )
 
-    audio = re.sub(
-        r"Devaki squeezed Vasudeva'?s hand\.\s*\"Thank you for (?:saving|protecting) me?[^\"]*\"[^.]{0,40}\.\s*"
-        r"(?:He smiled and told her,\s*)?\"We (?:must|will) trust(?: in)? Krishna'?s plan[^\"]*\"",
-        "Devaki held Vasudeva's hand. In paraphrase: she thanked him for protecting her, "
-        "and he reminded her they would trust Krishna's plan.",
-        audio,
-        flags=re.I | re.S,
-    )
-    audio = re.sub(
-        r'"Thank you for (?:saving|protecting)[^"]*"',
-        "In paraphrase, Devaki thanked Vasudeva for protecting her",
-        audio,
-        flags=re.I,
-    )
-    audio = re.sub(
-        r"\"We (?:must|will) trust(?: in)? Krishna'?s plan[^\"]*\"",
-        "In paraphrase, Vasudeva reminded her to trust Krishna's plan",
-        audio,
-        flags=re.I,
-    )
-    # Keep heavenly-voice prophecy; paraphrase human dialogue attributions in audio.
-    audio = re.sub(
-        r'"Kamsa," he said, "this is Devaki\'?s wedding day\.[^"]*"',
-        "In paraphrase, Vasudeva asked Kamsa to spare Devaki on her wedding day, "
-        "reminding him the warning spoke of a future child.",
-        audio,
-        flags=re.I,
-    )
-    audio = re.sub(
-        r'"I promise," he said kindly, "[^"]*"',
-        "In paraphrase, Vasudeva promised to bring every child and asked Kamsa not to hurt Devaki.",
-        audio,
-        flags=re.I,
-    )
-    audio = re.sub(
-        r'"If I let you both go,[^"]*"',
-        "In paraphrase, Kamsa worried about what might happen later.",
-        audio,
-        flags=re.I,
-    )
+    audio = _STORY_002_AUDIO.strip()
+    audio_errors = assert_story_002_audio_clean(audio)
+    if audio_errors:
+        raise ValueError("Story 002 audio rewrite failed validation: " + "; ".join(audio_errors))
 
     prayer = (content.bedtime_prayer or content.bedtime_reflection or "").strip()
     if "hare k" not in prayer.lower():
@@ -317,8 +336,8 @@ def repair_story_005_philosophy(content: StoryContent) -> StoryContent:
     meaning = (
         "This story reveals how even when all seems lost, the Lord and His loving helpers are always near. "
         "The demigods, though great and powerful, are humble before Krishna and offer praise. "
-        "Devakī teaches courage and trust. The prayers comfort Devakī and teach sincere devotion, "
-        "while the Lord Himself remains the supreme protector who needs no shield."
+        "Devakī teaches courage and trust. The prayers comfort Devakī and teach sincere devotion. "
+        "Lord Krishna is the Supreme Protector, and the demigods offered prayers in loving surrender."
     )
     poster = (
         "Four-headed Brahmā leads luminous exalted demigods in prayer around Devakī in prison; "
@@ -457,11 +476,154 @@ def repair_story_006_content(content: StoryContent) -> StoryContent:
     )
 
 
+# Story 003 closing-fact signatures (semantic dedup; Unicode-normalized matching).
+SIG_VASUDEVA_TRUTHFUL_DELIVERY = "VASUDEVA_TRUTHFUL_DELIVERY"
+SIG_KAMSA_ASTONISHED_HONESTY = "KAMSA_ASTONISHED_HONESTY"
+SIG_WARNING_EIGHTH_CHILD = "WARNING_EIGHTH_CHILD"
+SIG_KAMSA_RETURNS_CHILD = "KAMSA_RETURNS_CHILD"
+
+_STORY_003_SIGNATURES = (
+    SIG_VASUDEVA_TRUTHFUL_DELIVERY,
+    SIG_KAMSA_ASTONISHED_HONESTY,
+    SIG_WARNING_EIGHTH_CHILD,
+    SIG_KAMSA_RETURNS_CHILD,
+)
+
+# Natural bedtime coda — closing-fact summary sentences after this are bolted on.
+_STORY_003_CODA_RE = re.compile(
+    r"trusted in Krishna|steady,?\s+honest love|practice when a promise is hard|"
+    r"never assuming they were safe|watched and waited",
+    re.I,
+)
+
+
+def _normalize_sentence_for_classify(text: str) -> str:
+    cleaned = normalize_story_text(text)
+    cleaned = re.sub(r"<break\s+time=\"[^\"]+\"\s*/>", " ", cleaned, flags=re.I)
+    cleaned = cleaned.lower()
+    cleaned = cleaned.replace("ī", "i").replace("ṁ", "m").replace("ā", "a")
+    cleaned = re.sub(r"[^\w\s]", " ", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+def classify_story_003_fact_sentence(sentence: str) -> set[str]:
+    """Classify didactic closing-fact summary sentences (not mid-story narration)."""
+    norm = _normalize_sentence_for_classify(sentence)
+    if not norm:
+        return set()
+    found: set[str] = set()
+
+    # Closing delivery restatement: brought Kirtiman to Kamsa because of truthfulness/duty.
+    if re.search(
+        r"\bbrought\b.*\bkirtiman\b.*\bkamsa\b.*\b(?:truthfulness|duty)\b",
+        norm,
+    ) or re.search(
+        r"\bcommitted to truthfulness and duty\b",
+        norm,
+    ):
+        found.add(SIG_VASUDEVA_TRUTHFUL_DELIVERY)
+
+    if re.search(r"\bastonish\w*\b.*\b(?:honesty|honest)\b", norm) or re.search(
+        r"\b(?:honesty|honest)\b.*\bastonish\w*\b",
+        norm,
+    ):
+        found.add(SIG_KAMSA_ASTONISHED_HONESTY)
+
+    if re.search(r"\b(?:warning|prophecy)\b.*\bconcern\w*\b.*\beighth\b", norm) or re.search(
+        r"\bbecause the warning concerned the eighth\b",
+        norm,
+    ):
+        found.add(SIG_WARNING_EIGHTH_CHILD)
+
+    if re.search(r"\b(?:initially\s+)?returned\b.*\b(?:the\s+)?(?:child|kirtiman)\b", norm) or re.search(
+        r"\breturned kirtiman\b",
+        norm,
+    ):
+        # Only count return when this is a closing restatement (often with astonish/warning).
+        if found or re.search(r"\b(?:astonish|honesty|warning|at least for now)\b", norm):
+            found.add(SIG_KAMSA_RETURNS_CHILD)
+
+    return found
+
+
+def count_story_003_fact_signatures(text: str) -> dict[str, int]:
+    """Count closing-fact signature occurrences across sentences."""
+    counts = {sig: 0 for sig in _STORY_003_SIGNATURES}
+    for sentence in _split_story_sentences(text):
+        for sig in classify_story_003_fact_sentence(sentence):
+            counts[sig] += 1
+    return counts
+
+
+def _split_story_sentences(text: str) -> list[str]:
+    blob = normalize_story_text(text or "").strip()
+    if not blob:
+        return []
+    parts = re.split(r"(?<=[.!?])\s+(?=(?:<break\b|[A-Z\"“‘]|$))", blob)
+    return [p.strip() for p in parts if p.strip()]
+
+
+def dedupe_story_003_fact_sentences(text: str) -> str:
+    """Keep the first closing-fact summary for each signature; drop later duplicates and post-coda bolts."""
+    sentences = _split_story_sentences(text)
+    coda_idx: int | None = None
+    for index, sentence in enumerate(sentences):
+        if _STORY_003_CODA_RE.search(sentence):
+            coda_idx = index
+            break
+
+    seen: set[str] = set()
+    kept: list[str] = []
+    for index, sentence in enumerate(sentences):
+        sigs = classify_story_003_fact_sentence(sentence)
+        if sigs:
+            # Bolted summary after the natural bedtime coda — remove.
+            if coda_idx is not None and index > coda_idx:
+                continue
+            # Later duplicate of already-stated closing facts.
+            if sigs <= seen:
+                continue
+            seen |= sigs
+        kept.append(sentence)
+
+    result = " ".join(kept)
+    result = re.sub(r" {2,}", " ", result).strip()
+    return result
+
+
+def repair_story_003_dedup(content: StoryContent) -> StoryContent:
+    """Remove duplicated closing fact blocks while keeping required Story 003 events."""
+    content = sanitize_content_fields(content)
+    main = dedupe_story_003_fact_sentences(normalize_story_text(content.main_story))
+    audio = dedupe_story_003_fact_sentences(normalize_story_text(content.audio_script))
+    # Idempotent guarantee for callers.
+    main = dedupe_story_003_fact_sentences(main)
+    audio = dedupe_story_003_fact_sentences(audio)
+    prayer = (content.bedtime_prayer or content.bedtime_reflection or "").strip()
+    if "hare k" not in prayer.lower():
+        prayer = (
+            "Dear Krishna, thank You for Vasudeva's truthful courage with baby Kīrtimān. "
+            "Please help our family keep honest promises and stay close to You. "
+            "We chant: Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare "
+            "Hare Rāma Hare Rāma Rāma Rāma Hare Hare. Good night."
+        )
+    return replace(
+        content,
+        main_story=main,
+        audio_script=audio,
+        bedtime_prayer=prayer,
+        bedtime_reflection=prayer,
+        story_number=content.story_number or "003",
+    )
+
+
 def apply_known_story_repairs(chapter_no: str, content: StoryContent) -> StoryContent:
     chapter = (chapter_no or "").strip().zfill(3)
     content = sanitize_content_fields(content)
     if chapter == "002":
         return repair_story_002_dialogue(content)
+    if chapter == "003":
+        return repair_story_003_dedup(content)
     if chapter == "005":
         return repair_story_005_philosophy(content)
     if chapter == "006":
@@ -470,10 +632,19 @@ def apply_known_story_repairs(chapter_no: str, content: StoryContent) -> StoryCo
 
 
 __all__ = [
+    "SIG_KAMSA_ASTONISHED_HONESTY",
+    "SIG_KAMSA_RETURNS_CHILD",
+    "SIG_VASUDEVA_TRUTHFUL_DELIVERY",
+    "SIG_WARNING_EIGHTH_CHILD",
     "apply_known_story_repairs",
+    "assert_story_002_audio_clean",
+    "classify_story_003_fact_sentence",
+    "count_story_003_fact_signatures",
+    "dedupe_story_003_fact_sentences",
     "has_invented_direct_dialogue",
     "normalize_story_text",
     "repair_story_002_dialogue",
+    "repair_story_003_dedup",
     "repair_story_005_philosophy",
     "repair_story_006_content",
     "sanitize_content_fields",
