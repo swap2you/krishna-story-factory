@@ -239,6 +239,38 @@ def test_one_valid_hidden_comment_block_only() -> None:
     assert "5. <!--" not in md
 
 
+def test_empty_html_comment_does_not_fall_back_to_full_story() -> None:
+    """An empty <!-- --> must not cause production scraping from the visible body."""
+    from krishna_story_factory.pipeline import _content_from_story_md
+
+    story_md = """---
+title: "Test"
+format: v2
+---
+
+## Recap
+A short recap about Devaki.
+
+## Main Story
+Vasudeva drove carefully through Mathura.
+
+## Parent/Teacher Note
+Discuss honesty with your child tonight.
+
+<!-- -->
+
+## Audio Narration
+VISIBLE LEAKED AUDIO THAT MUST NOT BE PARSED AS PRODUCTION
+"""
+    # Trailing visible Audio after empty comment should not be used; empty comment wins.
+    content = _content_from_story_md(story_md, _plan("099", title="Test"))
+    assert content.audio_script == ""
+    assert content.poster_visual_brief == ""
+    assert content.coloring_visual_brief == ""
+    assert "VISIBLE LEAKED AUDIO" not in content.audio_script
+    assert "Discuss honesty" in content.parent_note
+
+
 def test_actual_story_files_round_trip_structure() -> None:
     from krishna_story_factory.pipeline import _content_from_story_md
 

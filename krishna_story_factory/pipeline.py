@@ -872,8 +872,10 @@ def _content_from_story_md(story_md: str, plan: PlanRow) -> StoryContent:
     # Split visible parent-facing body from the single hidden production comment.
     visible = story_md
     hidden = ""
+    comment_found = False
     comment_match = re.search(r"<!--(.*?)-->", story_md, flags=re.S)
     if comment_match:
+        comment_found = True
         hidden = comment_match.group(1)
         visible = story_md[: comment_match.start()] + story_md[comment_match.end() :]
         # Drop any accidental duplicate production headings left in the visible body.
@@ -894,7 +896,9 @@ def _content_from_story_md(story_md: str, plan: PlanRow) -> StoryContent:
     title_match = re.search(r"^##\s+Story\s+\d+\s*[—-]\s*(.+)$", visible, re.M | re.I)
     if not title_match:
         title_match = re.search(r"^#\s+(.+)$", visible, re.M)
-    production = hidden or story_md
+    # Use the comment body whenever a comment exists — even if it is empty/whitespace —
+    # so we never scrape production sections from the parent-facing body by accident.
+    production = hidden if comment_found else story_md
     coloring = section(production, "Coloring Visual Brief", ("Activity Data",))
     poster = section(production, "Poster Visual Brief", ("Coloring Visual Brief",))
     audio = section(production, "Audio Narration", ("Poster Visual Brief", "Audio Performance Script")) or section(
