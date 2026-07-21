@@ -10,6 +10,24 @@ from .outputs import FINAL_OUTPUT_FILES
 from .activities.planner import ActivityPlan
 
 
+def _is_publishable(
+    *,
+    mode: str,
+    quality_status: str,
+    quality_errors: list[str] | None,
+    audio_metadata: dict | None,
+) -> bool:
+    """Publishable only for verified, non-stale, error-free production packages."""
+    meta = audio_metadata or {}
+    audio_stale = bool(meta.get("audio_stale")) or quality_status == "AUDIO_STALE"
+    return (
+        mode != "test"
+        and quality_status == "PASS"
+        and not list(quality_errors or [])
+        and not audio_stale
+    )
+
+
 def write_manifest(
     *,
     settings: Settings,
@@ -112,7 +130,12 @@ def write_manifest(
             "drive_status": drive_status,
             "drive_detail": drive_detail,
         },
-        "publishable": mode != "test",
+        "publishable": _is_publishable(
+            mode=mode,
+            quality_status=quality_status,
+            quality_errors=quality_errors,
+            audio_metadata=audio_metadata if isinstance(audio_metadata, dict) else {},
+        ),
         "queue_transition": "unchanged" if mode == "test" else ("done" if quality_status == "PASS" else "pending"),
         "mode": mode,
         "audio_source": audio_source or "unknown_preserved",
@@ -123,6 +146,12 @@ def write_manifest(
             else ""
         ),
     }
+    # Mirror stale flag onto audio block for consumers.
+    if isinstance(manifest["audio"], dict):
+        stale = bool(manifest["audio"].get("audio_stale")) or quality_status == "AUDIO_STALE"
+        manifest["audio"]["audio_stale"] = stale
+        if stale:
+            manifest["publishable"] = False
     # Only mint a fresh narration_source_sha when audio was just verified/generated.
     # Preserved/stale packages must keep a missing or prior hash so drift stays detectable.
     verified = bool(isinstance(audio_metadata, dict) and audio_metadata.get("generation_verified"))

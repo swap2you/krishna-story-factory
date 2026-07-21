@@ -486,6 +486,9 @@ def main(argv: list[str] | None = None) -> int:
 
     settings = load_settings(ROOT)
     ensure_csv_files(settings.project_root)
+    from krishna_story_factory.package_swap import recover_unfinished_swaps
+
+    recover_unfinished_swaps(output_root=settings.output_root)
     chapters = _parse_chapters(args.chapters)
     if any(int(c) > 6 for c in chapters):
         raise SystemExit("This rebuild tool only allows Stories 001–006.")

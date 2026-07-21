@@ -29,9 +29,10 @@ def source_fact_brief(plan: PlanRow) -> str:
             "Nārada and exalted demigods/sages may accompany. "
             "Summarize their prayers as paraphrase only—never invent verbatim quotations. "
             "Do not invent a heavenly-garden conference scene, Candra/Varuṇa/wind-god special actions, "
-            "or claim prayers are a 'shield for the Lord' (the Lord needs no protection). "
+            "or describe prayers as a protective shield. "
             "They glorify the Lord within Devakī, reassure her, then return to their abodes. "
             "Kṛṣṇa remains unseen within Devakī. Demigods appear exalted and luminous, not ghost-like. "
+            "Lord Krishna is the Supreme Protector, and the demigods offered prayers in loving surrender. "
             "FORBIDDEN in this episode: sleeping/drowsy guards, prison doors opening, Vasudeva escape, "
             "Yamunā crossing, four-armed birth appearance, Yogamāyā arriving, demigods praying to Yogamāyā, "
             "invented verbatim scripture quotations, placeholder lessons like '(3)'. "
@@ -175,17 +176,16 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
             ):
                 if phrase in low:
                     errors.append(f"Story 005 {blob_name} contains forbidden phrase: {phrase!r}")
+            if "shield" in low:
+                errors.append(f"Story 005 {blob_name} must not mention a shield at all.")
             from ..content.repairs import has_invented_direct_dialogue
 
             if has_invented_direct_dialogue(blob, allow_heavenly_voice=False):
                 # Demigod prayers must be paraphrase-only.
                 if re.search(r"[\"'“].{8,160}[\"'”]", blob):
                     errors.append(f"Story 005 {blob_name} must not invent scripture-style quotations.")
-        if "shield for her and for the lord" in combined or re.search(
-            r"prayers?\s+(?:become|are|is)\s+a\s+shield\s+for\s+(?:her\s+and\s+for\s+)?the\s+lord",
-            combined,
-        ):
-            errors.append("Story 005 must not imply Krishna needs protection via a prayer 'shield'.")
+        if "shield" in combined:
+            errors.append("Story 005 must not use shield framing of any kind.")
     if plan.chapter_no == "006":
         _require(combined, ("four-armed", "four armed", "four arms"), "Story 006 must include Krishna's four-armed appearance.", errors)
         _require(combined, ("infant", "baby", "newborn", "child"), "Story 006 must include Krishna becoming an ordinary infant.", errors)

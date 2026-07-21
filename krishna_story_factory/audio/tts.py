@@ -161,6 +161,7 @@ class AudioGenerator:
                 max_input_chars=max_chars,
                 allow_model_fallback=allow_model_fallback,
                 work_dir=work_dir,
+                pinned_model=selected_model if not allow_model_fallback else None,
             )
         except OpenAITtsError as exc:
             status = exc.blocked_status or f"OpenAI TTS failed ({exc.error_class})"

@@ -83,15 +83,9 @@ class StoryPackageContentV2:
         questions = "\n".join(f"{i + 1}. {item}" for i, item in enumerate(self.think_about_it))
         challenge = "\n".join(f"{i + 1}. {item}" for i, item in enumerate(self.five_star_challenge))
         story_label = f"Story {int(self.story_number):03d}" if str(self.story_number).isdigit() else f"Story {self.story_number}"
+        # Option B: parent-facing story.md has no YAML frontmatter. Metadata lives in
+        # Scriptural Source + manifest only. Parsers remain backward-compatible with YAML.
         return (
-            f"---\n"
-            f'title: "{_yaml_escape(self.title)}"\n'
-            f'source_reference: "{_yaml_escape(self.source_reference)}"\n'
-            f'scripture_reference: "{_yaml_escape(self.scripture_reference)}"\n'
-            f"age_range: {self.age_range}\n"
-            f"story_number: {self.story_number}\n"
-            f"format: v2\n"
-            f"---\n\n"
             f"{self.greeting}\n\n"
             f"# 📿 {self.series_name}\n\n"
             f"## {story_label} — {self.title}\n\n"

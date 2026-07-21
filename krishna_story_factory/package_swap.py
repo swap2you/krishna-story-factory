@@ -1,13 +1,22 @@
-"""Atomic directory-level package replacement with rollback."""
+"""Atomic directory-level package replacement with rollback and crash journal."""
 from __future__ import annotations
 
 import hashlib
+import json
 import shutil
 import time
+import uuid
 from pathlib import Path
 
 from .outputs import FINAL_OUTPUT_FILES
 from .paths import assert_path_under_root
+
+JOURNAL_DIRNAME = "_swap_journal"
+PHASE_PREPARED = "PREPARED"
+PHASE_PRODUCTION_BACKED_UP = "PRODUCTION_BACKED_UP"
+PHASE_STAGING_PROMOTED = "STAGING_PROMOTED"
+PHASE_VALIDATED = "VALIDATED"
+PHASE_COMMITTED = "COMMITTED"
 
 
 def sha256_file(path: Path) -> str:
@@ -28,6 +37,72 @@ def validate_exact_eight_files(package_dir: Path) -> list[str]:
     return errors
 
 
+def journal_root(output_root: Path) -> Path:
+    root = output_root / JOURNAL_DIRNAME
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _write_journal(path: Path, payload: dict) -> None:
+    tmp = path.with_suffix(path.suffix + ".partial")
+    tmp.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(path)
+
+
+def recover_unfinished_swaps(*, output_root: Path) -> list[dict]:
+    """Detect unfinished journals and deterministically finish or restore."""
+    root = journal_root(output_root)
+    recovered: list[dict] = []
+    for path in sorted(root.glob("swap_*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            path.unlink(missing_ok=True)
+            continue
+        phase = str(data.get("phase") or "")
+        production = Path(str(data.get("production_path") or ""))
+        staging = Path(str(data.get("staging_path") or ""))
+        backup = Path(str(data.get("backup_path") or ""))
+        action = "noop"
+        if phase in {PHASE_COMMITTED, ""}:
+            path.unlink(missing_ok=True)
+            action = "discard_committed_or_empty"
+        elif phase == PHASE_PREPARED:
+            # Nothing mutated yet.
+            path.unlink(missing_ok=True)
+            action = "discard_prepared"
+        elif phase == PHASE_PRODUCTION_BACKED_UP:
+            # Production moved to backup; staging not promoted. Restore backup.
+            if backup.exists() and not production.exists():
+                _retry_rename(backup, production)
+            path.unlink(missing_ok=True)
+            action = "restore_backup"
+        elif phase in {PHASE_STAGING_PROMOTED, PHASE_VALIDATED}:
+            # Staging already at production path (or should be). Validate or restore.
+            if production.exists() and not validate_exact_eight_files(production):
+                data["phase"] = PHASE_COMMITTED
+                _write_journal(path, data)
+                path.unlink(missing_ok=True)
+                action = "commit_promoted"
+            elif backup.exists():
+                if production.exists():
+                    failed = production.with_name(production.name + f".failed_recovery_{int(time.time())}")
+                    if failed.exists():
+                        shutil.rmtree(failed, ignore_errors=True)
+                    _retry_rename(production, failed)
+                _retry_rename(backup, production)
+                path.unlink(missing_ok=True)
+                action = "restore_after_bad_promote"
+            else:
+                path.unlink(missing_ok=True)
+                action = "discard_orphaned"
+        else:
+            path.unlink(missing_ok=True)
+            action = "discard_unknown"
+        recovered.append({"journal": str(path), "phase": phase, "action": action, "staging": str(staging)})
+    return recovered
+
+
 def atomic_replace_package_dir(
     *,
     staging_dir: Path,
@@ -38,12 +113,11 @@ def atomic_replace_package_dir(
 ) -> dict:
     """Validate staging, archive current package, swap directories atomically, rollback on failure.
 
-    Steps:
-    1. Validate staging has exact eight files.
-    2. Move production -> backup under archive_root.
-    3. Move staging -> production.
-    4. On failure after backup, restore backup to production.
+    Uses a journal outside the production directory so crash recovery can finish or restore.
     """
+    # Never start a new swap while an unfinished journal exists.
+    recover_unfinished_swaps(output_root=output_root)
+
     staging_dir = assert_path_under_root(staging_dir, output_root, label="staging package")
     production_dir = assert_path_under_root(production_dir, output_root, label="production package")
     archive_root = assert_path_under_root(archive_root, output_root, label="archive root")
@@ -64,17 +138,34 @@ def atomic_replace_package_dir(
     }
     after_hashes = {name: sha256_file(staging_dir / name) for name in FINAL_OUTPUT_FILES}
 
+    tx_id = f"{stamp}_{uuid.uuid4().hex[:8]}"
+    journal_path = journal_root(output_root) / f"swap_{tx_id}.json"
+    journal = {
+        "transaction_id": tx_id,
+        "production_path": str(production_dir),
+        "staging_path": str(staging_dir),
+        "backup_path": str(backup_dir),
+        "phase": PHASE_PREPARED,
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        "expected_hashes": after_hashes,
+        "before_hashes": before_hashes,
+    }
+    _write_journal(journal_path, journal)
+
     production_existed = production_dir.exists()
     swapped = False
     try:
         if production_existed:
             _retry_rename(production_dir, backup_dir, attempts=attempts)
+            journal["phase"] = PHASE_PRODUCTION_BACKED_UP
+            _write_journal(journal_path, journal)
         parent = production_dir.parent
         parent.mkdir(parents=True, exist_ok=True)
         _retry_rename(staging_dir, production_dir, attempts=attempts)
         swapped = True
+        journal["phase"] = PHASE_STAGING_PROMOTED
+        _write_journal(journal_path, journal)
     except Exception:
-        # Rollback: restore backup if production is missing/partial.
         if production_existed and backup_dir.exists() and not swapped:
             if production_dir.exists():
                 shutil.rmtree(production_dir, ignore_errors=True)
@@ -84,11 +175,11 @@ def atomic_replace_package_dir(
                 raise RuntimeError(
                     f"Package swap failed and rollback restore also failed: {restore_exc}"
                 ) from restore_exc
+        journal_path.unlink(missing_ok=True)
         raise
 
     post_errors = validate_exact_eight_files(production_dir)
     if post_errors:
-        # Attempt restore from backup.
         if backup_dir.exists():
             if production_dir.exists():
                 failed = production_dir.with_name(production_dir.name + f".failed_{stamp}")
@@ -96,7 +187,14 @@ def atomic_replace_package_dir(
                     shutil.rmtree(failed, ignore_errors=True)
                 _retry_rename(production_dir, failed, attempts=attempts)
             _retry_rename(backup_dir, production_dir, attempts=attempts)
+        journal_path.unlink(missing_ok=True)
         raise RuntimeError("Post-swap validation failed; restored backup: " + " | ".join(post_errors))
+
+    journal["phase"] = PHASE_VALIDATED
+    _write_journal(journal_path, journal)
+    journal["phase"] = PHASE_COMMITTED
+    _write_journal(journal_path, journal)
+    journal_path.unlink(missing_ok=True)
 
     return {
         "status": "REPLACED",
@@ -104,6 +202,7 @@ def atomic_replace_package_dir(
         "backup_dir": str(backup_dir) if backup_dir.exists() else "",
         "before_hashes": before_hashes,
         "after_hashes": after_hashes,
+        "transaction_id": tx_id,
     }
 
 
@@ -122,7 +221,14 @@ def _retry_rename(src: Path, dest: Path, *, attempts: int = 8) -> None:
 
 
 __all__ = [
+    "PHASE_COMMITTED",
+    "PHASE_PREPARED",
+    "PHASE_PRODUCTION_BACKED_UP",
+    "PHASE_STAGING_PROMOTED",
+    "PHASE_VALIDATED",
     "atomic_replace_package_dir",
+    "journal_root",
+    "recover_unfinished_swaps",
     "sha256_file",
     "validate_exact_eight_files",
 ]
