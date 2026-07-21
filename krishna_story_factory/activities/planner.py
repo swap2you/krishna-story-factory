@@ -455,10 +455,30 @@ def _pack_002(plan: PlanRow) -> ActivityPack:
                     "Retell how Vasudeva protected Devaki.",
                 ],
                 components=[
-                    "Narrator: A heavenly voice warns Kamsa about Devaki's eighth child.",
-                    "Kamsa (paraphrase): Fear rises as he hears the warning about the eighth child.",
-                    "Vasudeva (paraphrase): He calmly promises to bring every child and asks Kamsa not to harm Devaki.",
-                    "Devaki (paraphrase): She stays close to Vasudeva and trusts his truthful promise.",
+                    RolePlayCard(
+                        "Narrator",
+                        "A heavenly voice warns Kamsa about Devaki's eighth child.",
+                        "Guide the scene order calmly.",
+                        "story cards",
+                    ),
+                    RolePlayCard(
+                        "Kamsa",
+                        "Fear rises as he hears the warning about the eighth child.",
+                        "Show alarm without shouting.",
+                        "paper crown",
+                    ),
+                    RolePlayCard(
+                        "Vasudeva",
+                        "He calmly promises to bring every child and asks Kamsa not to harm Devaki.",
+                        "Stand protectively beside Devaki.",
+                        "folded cloth",
+                    ),
+                    RolePlayCard(
+                        "Devaki",
+                        "She stays close to Vasudeva and trusts his truthful promise.",
+                        "Stay calm and close to Vasudeva.",
+                        "flower",
+                    ),
                 ],
                 story_connection=connection,
             ),
@@ -851,6 +871,26 @@ def _pack_006(plan: PlanRow) -> ActivityPack:
 def _extract_event_labels(story_text: str, seed: str) -> list[str]:
     from .qa import GENERIC_PLACEHOLDERS, is_metadata_event_label
 
+    def _accept(label: str) -> bool:
+        cleaned = " ".join((label or "").strip().split())
+        if len(cleaned) < 12:
+            return False
+        if is_metadata_event_label(cleaned):
+            return False
+        if cleaned.lower() in GENERIC_PLACEHOLDERS:
+            return False
+        if cleaned.startswith("#") or cleaned.startswith("---"):
+            return False
+        return True
+
+    def _add(labels: list[str], candidate: str) -> None:
+        cleaned = " ".join((candidate or "").strip().split())[:110]
+        if not _accept(cleaned):
+            return
+        if cleaned.lower() in {item.lower() for item in labels}:
+            return
+        labels.append(cleaned)
+
     labels: list[str] = []
     # Prefer Main Story body so YAML frontmatter / greetings never become sequence cards.
     body = story_text or ""
@@ -864,23 +904,14 @@ def _extract_event_labels(story_text: str, seed: str) -> list[str]:
         cleaned = " ".join(chunk.strip().split())
         if cleaned.startswith("#"):
             cleaned = cleaned.lstrip("#").strip()
-        if len(cleaned) < 12:
-            continue
-        if is_metadata_event_label(cleaned):
-            continue
-        if cleaned.lower() in GENERIC_PLACEHOLDERS:
-            continue
-        labels.append(cleaned[:110])
+        _add(labels, cleaned)
         if len(labels) >= 6:
             break
 
     if len(labels) < 4:
         parts = [p.strip() for p in re.split(r"[.;]", seed or "") if len(p.strip()) >= 8]
         for part in parts:
-            if part.lower() in GENERIC_PLACEHOLDERS:
-                continue
-            if part.lower() not in {item.lower() for item in labels}:
-                labels.append(part[:110])
+            _add(labels, part)
             if len(labels) >= 6:
                 break
 
@@ -891,40 +922,56 @@ def _extract_event_labels(story_text: str, seed: str) -> list[str]:
             low = token.lower()
             if low in GENERIC_PLACEHOLDERS or low in {item.lower() for item in unique}:
                 continue
+            if is_metadata_event_label(token):
+                continue
             unique.append(token)
-        titleish = (seed or story_text or "this pastime").strip()[:60] or "this pastime"
-        synthesized = [
-            f"Opening moment of {titleish}",
-            f"Challenge faced in {titleish}",
-            f"Faithful response in {titleish}",
-            f"Protective action in {titleish}",
-            f"Peaceful result in {titleish}",
-            f"Family takeaway from {titleish}",
-        ]
-        for phrase in synthesized:
-            if phrase.lower() not in GENERIC_PLACEHOLDERS and phrase.lower() not in {item.lower() for item in labels}:
-                labels.append(phrase)
-            if len(labels) >= 6:
-                break
+        titleish = (seed or story_text or "").strip()[:60]
+        if (
+            not titleish
+            or is_metadata_event_label(titleish)
+            or any(key in titleish.lower() for key in ("title:", "source_reference:", "age_range:", "story_number:", "format:"))
+        ):
+            titleish = ""
+        if titleish:
+            synthesized = [
+                f"Opening moment of {titleish}",
+                f"Challenge faced in {titleish}",
+                f"Faithful response in {titleish}",
+                f"Protective action in {titleish}",
+                f"Peaceful result in {titleish}",
+                f"Family takeaway from {titleish}",
+            ]
+            for phrase in synthesized:
+                _add(labels, phrase)
+                if len(labels) >= 6:
+                    break
         for index in range(0, max(0, len(unique) - 1), 2):
             phrase = f"{unique[index]} {unique[index + 1]} in the pastime"
-            if phrase.lower() in GENERIC_PLACEHOLDERS:
-                continue
-            if phrase.lower() not in {item.lower() for item in labels}:
-                labels.append(phrase)
+            _add(labels, phrase)
             if len(labels) >= 6:
                 break
 
+    # Final gate: never return metadata/generic labels. Never invent from metadata-only inputs.
+    labels = [item for item in labels if _accept(item)]
     if len(labels) < 4:
-        raise ValueError("Could not extract concrete story event labels without generic placeholders.")
+        raise ValueError(
+            "Could not extract concrete story event labels without generic placeholders or metadata."
+        )
 
     # Pad to 6 by cycling through the already-extracted labels (freeze base length;
     # len(labels) % len(labels) would always be 0 and only duplicate labels[0]).
     base_count = len(labels)
     pad_index = 0
     while len(labels) < 6:
-        labels.append(f"{labels[pad_index % base_count]} continues in the pastime")
+        candidate = f"{labels[pad_index % base_count]} continues in the pastime"
+        if _accept(candidate):
+            labels.append(candidate)
         pad_index += 1
+        if pad_index > 20:
+            break
+    labels = [item for item in labels if _accept(item)]
+    if len(labels) < 4:
+        raise ValueError("Could not extract concrete story event labels without generic placeholders or metadata.")
     return labels[:6]
 
 

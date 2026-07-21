@@ -6,6 +6,7 @@ Authoritative tools:
 
 - `scripts/rebuild_story_packages.py`
 - `scripts/manual_rebuild_story.ps1` (venv wrapper; never silently adds `--force`)
+- `scripts/repair_story_markdown_local.py` (structure/content repairs only; never calls paid APIs)
 
 Exact production package is always **eight files**:
 
@@ -100,10 +101,19 @@ Drive mutation requires the explicit `--upload-drive` / `-UploadDrive` flag. Do 
 
 ## Backup and rollback
 
+- Local replace uses directory-level atomic swap (`package_swap.atomic_replace_package_dir`): staging validated → production renamed to archive backup → staging renamed into place; failed final rename restores the backup.
 - Backups: `output/_archive/manual_rebuild_<stamp>/`
 - Staging: `output/_staging/manual_rebuild_<stamp>/`
 - On failure before local replace, production packages remain unchanged
 - To roll back after a bad local replace, copy the matching archive folder back over `output/<chapter>_<slug>/`
+
+## Audio drift / AUDIO_STALE
+
+Preserved narration must not claim PASS when story narration text changed:
+
+- Manifest stores `narration_source_sha` only for generation-verified audio.
+- Mismatch or missing hash → `AUDIO_STALE` until narration is regenerated.
+- Local markdown repair never clears this gate and never invents provider identity (`unknown_preserved`).
 
 ## Final report
 
@@ -118,3 +128,4 @@ Confirm in the report:
 - queue unchanged / next pending = 007
 - Drive modified only when upload was requested
 - real audio provider metadata when narration was rebuilt
+- AUDIO_STALE when narration was preserved after story-text repair

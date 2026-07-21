@@ -154,18 +154,38 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
                 errors.append(f"Story 005 has placeholder lesson text: {lesson!r}")
         if not (content.bedtime_reflection.strip().endswith("?") or any(str(q).strip().endswith("?") for q in content.think_about_it)):
             errors.append("Story 005 must include a child reflection question.")
-        if "celestial garden" in combined or "heavenly garden" in combined or "sweet-smelling gardens of the heavenly" in combined:
-            errors.append("Story 005 must not invent a heavenly/celestial garden meeting scene.")
+        # Explicitly scan both main_story and audio_script for known defective phrases.
+        for blob_name, blob in (("main_story", content.main_story), ("audio_script", content.audio_script)):
+            low = blob.lower()
+            for phrase in (
+                "celestial garden",
+                "heavenly garden",
+                "sweet-smelling gardens",
+                "shield for her and for the lord",
+                "become a shield",
+                "ghost-like",
+                "candra",
+                "varuṇa",
+                "varuna",
+                "wind gods",
+                "moon and the wind",
+                "in the of the heavenly",
+                "become a , teaching",
+                "the the demigods",
+            ):
+                if phrase in low:
+                    errors.append(f"Story 005 {blob_name} contains forbidden phrase: {phrase!r}")
+            from ..content.repairs import has_invented_direct_dialogue
+
+            if has_invented_direct_dialogue(blob, allow_heavenly_voice=False):
+                # Demigod prayers must be paraphrase-only.
+                if re.search(r"[\"'“].{8,160}[\"'”]", blob):
+                    errors.append(f"Story 005 {blob_name} must not invent scripture-style quotations.")
         if "shield for her and for the lord" in combined or re.search(
             r"prayers?\s+(?:become|are|is)\s+a\s+shield\s+for\s+(?:her\s+and\s+for\s+)?the\s+lord",
             combined,
         ):
             errors.append("Story 005 must not imply Krishna needs protection via a prayer 'shield'.")
-        if re.search(r"[\"'“].{8,160}[\"'”]", content.main_story) and any(
-            marker in content.main_story.lower()
-            for marker in ("you are the supreme", "you are never touched", "do not be afraid", "you are blessed")
-        ):
-            errors.append("Story 005 must paraphrase demigod prayers; do not invent scripture-style quotations.")
     if plan.chapter_no == "006":
         _require(combined, ("four-armed", "four armed", "four arms"), "Story 006 must include Krishna's four-armed appearance.", errors)
         _require(combined, ("infant", "baby", "newborn", "child"), "Story 006 must include Krishna becoming an ordinary infant.", errors)
@@ -177,10 +197,17 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
             errors.append("Story 006 Lesson 1 must not duplicate the full Devotional Meaning.")
         if "celestial garden" in combined:
             errors.append("Story 006 recap must not invent celestial gardens from Story 005.")
-        if re.search(r'Vasudeva softly spoke,\s*"', content.main_story) or re.search(
-            r'Vasudeva softly spoke,\s*"', content.audio_script
-        ):
-            errors.append("Story 006 must not invent a direct Vasudeva quotation; paraphrase instead.")
+        from ..content.repairs import has_invented_direct_dialogue
+
+        for blob_name, blob in (("main_story", content.main_story), ("audio_script", content.audio_script)):
+            if has_invented_direct_dialogue(blob, allow_heavenly_voice=False):
+                # Allow Krishna's narrative speech paraphrase only when not quoted.
+                if re.search(
+                    r"\b(?:spoke|said|whispered|replied|promised|explained)\b[,:]?\s*[\"“]",
+                    blob,
+                    flags=re.I,
+                ):
+                    errors.append(f"Story 006 {blob_name} contains unsupported invented dialogue quotations.")
     return errors
 
 

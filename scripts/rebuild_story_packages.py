@@ -128,6 +128,7 @@ def _archive_chapters(settings, chapters: list[str], stamp: str) -> Path:
 
 def _load_content(settings, plan, story_path: Path):
     from krishna_story_factory.content.repairs import apply_known_story_repairs
+    from krishna_story_factory.content.story_format_v2 import validate_story_markdown_v2
     from krishna_story_factory.generation.source_guard import run_source_guard
     from krishna_story_factory.pipeline import _content_from_story_md
 
@@ -138,7 +139,13 @@ def _load_content(settings, plan, story_path: Path):
     errors = run_source_guard(plan, content)
     if errors:
         raise SystemExit(f"Source guard failed for {plan.chapter_no}: " + " | ".join(errors))
-    return content
+    # Round-trip through serializer to guarantee one valid hidden comment block.
+    markdown = content.to_markdown()
+    md_errors = validate_story_markdown_v2(markdown)
+    hard = [e for e in md_errors if "word count" not in e.lower()]
+    if hard:
+        raise SystemExit(f"Story markdown structure failed for {plan.chapter_no}: " + " | ".join(hard))
+    return content, markdown
 
 
 def _existing_package_link(manifest_path: Path) -> str:
@@ -213,12 +220,15 @@ def _rebuild_one(
                 shutil.copy2(src, stage_paths.root / name)
 
     work = new_work_paths(settings.project_root, debug=True)
-    content = _load_content(settings, plan, production.story_md if production.story_md.exists() else stage_paths.story_md)
+    content, repaired_md = _load_content(
+        settings, plan, production.story_md if production.story_md.exists() else stage_paths.story_md
+    )
 
     poster_score = 0
     coloring_score = 0
     simple_score = 0
     audio_source = ""
+    audio_metadata = None
     wave = None
     activity = None
     pdf_check = None
@@ -226,9 +236,23 @@ def _rebuild_one(
     package_link = _existing_package_link(production.manifest)
 
     if "story" in components:
-        stage_paths.story_md.write_text(content.to_markdown(), encoding="utf-8")
+        stage_paths.story_md.write_text(repaired_md, encoding="utf-8")
     story_md = stage_paths.story_md.read_text(encoding="utf-8")
-    content = _load_content(settings, plan, stage_paths.story_md)
+    content, story_md = _load_content(settings, plan, stage_paths.story_md)
+    stage_paths.story_md.write_text(story_md, encoding="utf-8")
+
+    from krishna_story_factory.audio.drift import (
+        detect_audio_stale,
+        narration_source_sha,
+        preserved_audio_metadata,
+        read_manifest_audio,
+    )
+
+    stale, stale_detail = detect_audio_stale(audio_script=content.audio_script, manifest_path=production.manifest)
+    report["audio_stale"] = stale
+    report["audio_stale_detail"] = stale_detail
+    if stale and "story" in components and "narration" not in components:
+        report["quality_override"] = "AUDIO_STALE"
 
     if "narration" in components:
         audio = AudioGenerator(settings, mode="prod")
@@ -244,6 +268,38 @@ def _rebuild_one(
         report["audio_provider"] = audio_source
         report["audio_model"] = audio.last_model_id
         report["audio_voice"] = audio.last_voice_name or audio.last_voice_id
+        audio_metadata = {
+            "provider": audio.last_provider or audio_source,
+            "model_id": audio.last_model_id,
+            "voice": audio.last_voice_name or audio.last_voice_id,
+            "generation_verified": True,
+            "narration_source_sha": narration_source_sha(content.audio_script),
+            "chunks": list(audio.last_chunk_metadata or []),
+        }
+    else:
+        duration = float(MP3(stage_paths.narration_mp3).info.length) if stage_paths.narration_mp3.exists() else None
+        wave = (
+            validate_mp3_waveform(stage_paths.narration_mp3, expected_duration=duration)
+            if stage_paths.narration_mp3.exists()
+            else None
+        )
+        audio_source, audio_metadata = preserved_audio_metadata(
+            narration_path=stage_paths.narration_mp3,
+            prior_manifest=production.manifest,
+            waveform_status=getattr(wave, "status", "UNKNOWN"),
+            duration_seconds=duration,
+        )
+        prior_info = read_manifest_audio(production.manifest) if production.manifest.exists() else {}
+        if stale:
+            # Preserve prior hash so drift remains detectable until narration is regenerated.
+            audio_metadata["narration_source_sha"] = prior_info.get("narration_source_sha") or ""
+            audio_metadata["current_narration_source_sha"] = narration_source_sha(content.audio_script)
+            audio_metadata["audio_stale"] = True
+        else:
+            audio_metadata["narration_source_sha"] = (
+                prior_info.get("narration_source_sha") or narration_source_sha(content.audio_script)
+            )
+            audio_metadata["audio_stale"] = False
 
     if "poster" in components:
         poster_score, _ = generate_poster(
@@ -335,19 +391,20 @@ def _rebuild_one(
     if not ok:
         raise SystemExit(f"{chapter} quality failed: " + " | ".join(quality_errors))
 
+    quality_status = "AUDIO_STALE" if report.get("quality_override") == "AUDIO_STALE" else ("PASS" if ok else "FAIL")
     write_manifest(
         settings=settings,
         plan=plan,
         content=content,
         paths=stage_paths,
         mode="prod",
-        quality_status="PASS" if ok else "FAIL",
-        quality_errors=quality_errors,
+        quality_status=quality_status,
+        quality_errors=quality_errors + ([stale_detail] if report.get("quality_override") == "AUDIO_STALE" and stale_detail else []),
         quality_warnings=quality_warnings,
-        audio_source=audio_source or "preserved",
+        audio_source=audio_source or "unknown_preserved",
         package_link=package_link,
         drive_status="LOCAL_ONLY",
-        drive_detail="Manual rebuild staging; Drive not modified unless --upload-drive.",
+        drive_detail="Manual rebuild staging; Drive not modified unless --upload-drive. Exact eight-file package.",
         poster_score=poster_score or 90,
         coloring_score=coloring_score or 90,
         simple_coloring_score=simple_score or 90,
@@ -357,6 +414,7 @@ def _rebuild_one(
         waveform_metrics=wave,
         matching_coverage=getattr(pdf_check, "matching_coverage", None) if pdf_check else None,
         parent_answer_key=parent_key.to_dict() if parent_key else None,
+        audio_metadata=audio_metadata,
     )
     prune_output_folder(stage_paths.root)
     final_names = {p.name for p in stage_paths.root.iterdir() if p.is_file()}
@@ -373,15 +431,17 @@ def _rebuild_one(
     report["preserved_hashes"] = preserved
 
     if replace_local:
-        production.root.mkdir(parents=True, exist_ok=True)
-        for name in FINAL_OUTPUT_FILES:
-            src = stage_paths.root / name
-            dest = production.root / name
-            tmp = dest.with_suffix(dest.suffix + ".partial")
-            shutil.copy2(src, tmp)
-            tmp.replace(dest)
-        prune_output_folder(production.root)
+        from krishna_story_factory.package_swap import atomic_replace_package_dir
+
+        archive_root = settings.output_root / "_archive" / f"swap_{chapter}"
+        swap = atomic_replace_package_dir(
+            staging_dir=stage_paths.root,
+            production_dir=production.root,
+            archive_root=archive_root,
+            output_root=settings.output_root,
+        )
         report["local_replaced"] = True
+        report["swap"] = swap
 
     if upload_drive:
         from krishna_story_factory.outputs import FINAL_OUTPUT_FILES as FILES

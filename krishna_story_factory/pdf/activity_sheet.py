@@ -538,16 +538,33 @@ def _render_matching_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page
 
 def _render_role_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
     cards = [item for item in page.components if isinstance(item, RolePlayCard)]
-    for index, card in enumerate(cards[:5]):
+    if not cards:
+        # Accept plain string components as complete paraphrase lines.
+        cards = []
+        for item in page.components:
+            label = component_label(item).strip()
+            if not label:
+                continue
+            if ":" in label:
+                role, line = label.split(":", 1)
+            else:
+                role, line = "Role", label
+            cards.append(RolePlayCard(role.strip()[:40], line.strip(), "Act the moment calmly.", "simple prop"))
+    count = min(len(cards), 6)
+    card_h = 1.55 * inch if count <= 4 else 1.25 * inch
+    for index, card in enumerate(cards[:count]):
         row, col = divmod(index, 2)
         x = MARGIN + col * 3.65 * inch
-        yy = 6.35 * inch - row * 1.65 * inch
-        c.roundRect(x, yy, 3.3 * inch, 1.4 * inch, 8, stroke=1, fill=0)
+        yy = 6.45 * inch - row * (card_h + 0.18 * inch)
+        c.roundRect(x, yy, 3.35 * inch, card_h, 8, stroke=1, fill=0)
         c.setFont(FONT_BOLD, 11)
-        c.drawString(x + 0.12 * inch, yy + 1.12 * inch, card.role[:35])
+        c.drawString(x + 0.12 * inch, yy + card_h - 0.28 * inch, card.role[:40])
         c.setFont(FONT_REGULAR, 9.5)
-        _wrapped(c, f'Line: “{card.line}”', x + 0.12 * inch, yy + 0.87 * inch, 3.0 * inch, 9.5, 11)
-        _wrapped(c, f"Action: {card.action}", x + 0.12 * inch, yy + 0.48 * inch, 3.0 * inch, 9.5, 11)
+        text_top = yy + card_h - 0.52 * inch
+        text_top = _wrapped(c, f"Line: {card.line}", x + 0.12 * inch, text_top, 3.05 * inch, 9.5, 11)
+        text_top -= 0.08 * inch
+        text_top = _wrapped(c, f"Action: {card.action}", x + 0.12 * inch, text_top, 3.05 * inch, 9.5, 11)
+        c.setFont(FONT_REGULAR, 9)
         c.drawString(x + 0.12 * inch, yy + 0.12 * inch, f"Prop: {card.prop}"[:52])
 
 

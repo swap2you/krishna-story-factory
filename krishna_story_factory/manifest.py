@@ -115,10 +115,60 @@ def write_manifest(
         "publishable": mode != "test",
         "queue_transition": "unchanged" if mode == "test" else ("done" if quality_status == "PASS" else "pending"),
         "mode": mode,
-        "audio_source": audio_source,
-        "audio": audio_metadata or {},
+        "audio_source": audio_source or "unknown_preserved",
+        "audio": _normalize_audio_metadata(audio_metadata, paths=paths, waveform_metrics=waveform_metrics),
+        "narration_source_sha": (
+            (audio_metadata or {}).get("narration_source_sha")
+            if isinstance(audio_metadata, dict) and audio_metadata.get("narration_source_sha")
+            else ""
+        ),
     }
+    # Only mint a fresh narration_source_sha when audio was just verified/generated.
+    # Preserved/stale packages must keep a missing or prior hash so drift stays detectable.
+    verified = bool(isinstance(audio_metadata, dict) and audio_metadata.get("generation_verified"))
+    stale_flag = bool(isinstance(audio_metadata, dict) and audio_metadata.get("audio_stale"))
+    if not manifest["narration_source_sha"] and content.audio_script and verified and not stale_flag:
+        from .audio.drift import narration_source_sha
+
+        manifest["narration_source_sha"] = narration_source_sha(content.audio_script)
+        if isinstance(manifest["audio"], dict):
+            manifest["audio"]["narration_source_sha"] = manifest["narration_source_sha"]
+    elif isinstance(audio_metadata, dict) and audio_metadata.get("current_narration_source_sha"):
+        if isinstance(manifest["audio"], dict):
+            manifest["audio"]["current_narration_source_sha"] = audio_metadata["current_narration_source_sha"]
+            manifest["audio"]["audio_stale"] = True
+    # Never claim an exact seven-file Drive package.
+    detail = str(manifest["package"].get("drive_detail") or "")
+    if "seven file" in detail.lower() or "seven-file" in detail.lower():
+        manifest["package"]["drive_detail"] = detail.replace("seven", "eight").replace("Seven", "Eight")
     paths.manifest.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def _normalize_audio_metadata(audio_metadata: dict | None, *, paths: PackagePaths, waveform_metrics=None) -> dict:
+    meta = dict(audio_metadata or {})
+    if not meta:
+        meta = {
+            "provider": "unknown_preserved",
+            "model_id": None,
+            "voice": None,
+            "generation_verified": False,
+        }
+    if meta.get("provider") in {"", "preserved"}:
+        meta["provider"] = "unknown_preserved"
+        meta["generation_verified"] = False
+        meta.setdefault("model_id", None)
+        meta.setdefault("voice", None)
+    if paths.narration_mp3.exists() and not meta.get("sha256"):
+        import hashlib
+
+        raw = paths.narration_mp3.read_bytes()
+        meta["sha256"] = hashlib.sha256(raw).hexdigest().upper()
+        meta["bytes"] = len(raw)
+    if meta.get("duration_seconds") is None:
+        meta["duration_seconds"] = _mp3_duration(paths.narration_mp3)
+    if waveform_metrics is not None:
+        meta["waveform_validation_status"] = getattr(waveform_metrics, "status", None)
+    return meta
 
 
 def update_component_manifest(

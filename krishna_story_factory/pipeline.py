@@ -869,43 +869,70 @@ def _activity_contact_sheet(pages: list[Path], output: Path) -> Path:
 
 
 def _content_from_story_md(story_md: str, plan: PlanRow) -> StoryContent:
-    def section(name: str, next_names: tuple[str, ...]) -> str:
+    # Split visible parent-facing body from the single hidden production comment.
+    visible = story_md
+    hidden = ""
+    comment_match = re.search(r"<!--(.*?)-->", story_md, flags=re.S)
+    if comment_match:
+        hidden = comment_match.group(1)
+        visible = story_md[: comment_match.start()] + story_md[comment_match.end() :]
+        # Drop any accidental duplicate production headings left in the visible body.
+        visible = re.split(
+            r"(?im)^##\s+(?:Audio Narration|Audio Performance Script|Poster Visual Brief|Coloring Visual Brief|Activity Data)\s*$",
+            visible,
+            maxsplit=1,
+        )[0]
+
+    def section(source: str, name: str, next_names: tuple[str, ...]) -> str:
         match = re.search(
-            rf"## {re.escape(name)}\s*\n(.*?)(?=\n## (?:{'|'.join(map(re.escape, next_names))})|\n-->|\Z)",
-            story_md,
+            rf"## {re.escape(name)}\s*\n(.*?)(?=\n## (?:{'|'.join(map(re.escape, next_names))})|\Z)",
+            source,
             re.S | re.I,
         )
         return match.group(1).strip() if match else ""
 
-    title_match = re.search(r"^##\s+Story\s+\d+\s*[—-]\s*(.+)$", story_md, re.M | re.I)
+    title_match = re.search(r"^##\s+Story\s+\d+\s*[—-]\s*(.+)$", visible, re.M | re.I)
     if not title_match:
-        title_match = re.search(r"^#\s+(.+)$", story_md, re.M)
-    coloring = section("Coloring Visual Brief", ("Activity Data",))
-    audio = section("Audio Narration", ("Poster Visual Brief", "Audio Performance Script")) or section(
-        "Audio Performance Script", ("Poster Visual Brief",)
+        title_match = re.search(r"^#\s+(.+)$", visible, re.M)
+    production = hidden or story_md
+    coloring = section(production, "Coloring Visual Brief", ("Activity Data",))
+    poster = section(production, "Poster Visual Brief", ("Coloring Visual Brief",))
+    audio = section(production, "Audio Narration", ("Poster Visual Brief", "Audio Performance Script")) or section(
+        production, "Audio Performance Script", ("Poster Visual Brief",)
     )
-    meaning = section("Devotional Meaning", ("Five Lessons", "Moral")) or section("Moral", ("Takeaway", "Five Lessons"))
-    lessons_raw = section("Five Lessons", ("Think About It", "Takeaway", "Five-Star Challenge"))
+    meaning = section(visible, "Devotional Meaning", ("Five Lessons", "Moral")) or section(
+        visible, "Moral", ("Takeaway", "Five Lessons")
+    )
+    lessons_raw = section(visible, "Five Lessons", ("Think About It", "Takeaway", "Five-Star Challenge"))
     lessons = [re.sub(r"^\d+\.\s*", "", line).strip() for line in lessons_raw.splitlines() if line.strip()]
-    questions_raw = section("Think About It", ("Five-Star Challenge",))
+    questions_raw = section(visible, "Think About It", ("Five-Star Challenge",))
     questions = [re.sub(r"^\d+\.\s*", "", line).strip() for line in questions_raw.splitlines() if line.strip()]
-    challenge_raw = section("Five-Star Challenge", ("Bedtime Prayer", "Parent Discussion Note", "Parent/Teacher Note"))
+    challenge_raw = section(
+        visible, "Five-Star Challenge", ("Bedtime Prayer", "Parent Discussion Note", "Parent/Teacher Note")
+    )
     challenge = [re.sub(r"^\d+\.\s*", "", line).strip() for line in challenge_raw.splitlines() if line.strip()]
-    prayer = section("Bedtime Prayer", ("Next Story Preview", "Parent/Teacher Note")) or section(
-        "Bedtime Reflection", ("Parent Discussion Note", "Parent/Teacher Note")
+    prayer = section(visible, "Bedtime Prayer", ("Next Story Preview", "Parent/Teacher Note")) or section(
+        visible, "Bedtime Reflection", ("Parent Discussion Note", "Parent/Teacher Note")
     )
-    parent = section("Parent/Teacher Note", ("Audio Narration", "Audio Performance Script")) or section(
-        "Parent Discussion Note", ("Bedtime Reflection", "Audio Performance Script")
+    parent = section(visible, "Parent/Teacher Note", ("Audio Narration", "Audio Performance Script")) or section(
+        visible, "Parent Discussion Note", ("Bedtime Reflection", "Audio Performance Script")
     )
-    greeting_match = re.search(r"^(Hare\s+K[^\n]+)", story_md, re.M | re.I)
+    preview = section(visible, "Next Story Preview", ("Parent/Teacher Note",))
+    # Sanitize leaked headings from earlier malformed round-trips.
+    if re.search(r"(?im)^##\s+", preview or ""):
+        preview = re.split(r"(?im)^##\s+", preview, maxsplit=1)[0].strip()
+    if re.search(r"(?im)^##\s+", parent or ""):
+        parent = re.split(r"(?im)^##\s+", parent, maxsplit=1)[0].strip()
+    greeting_match = re.search(r"^(Hare\s+K[^\n]+)", visible, re.M | re.I)
     return StoryContent(
         title=title_match.group(1).strip() if title_match else plan.title,
-        recap=section("Recap", ("Main Story",)),
-        main_story=section("Main Story", ("Devotional Meaning", "Moral")),
+        recap=section(visible, "Recap", ("Main Story",)),
+        main_story=section(visible, "Main Story", ("Devotional Meaning", "Moral")),
         moral=meaning or (lessons[0] if lessons else ""),
-        takeaway=lessons[-1] if lessons else section("Takeaway", ("Five-Star Challenge",)),
+        takeaway=lessons[-1] if lessons else section(visible, "Takeaway", ("Five-Star Challenge",)),
         five_star_challenge=challenge[:5],
         audio_script=audio,
+        poster_visual_brief=poster,
         coloring_visual_brief=coloring,
         line_art_prompt=coloring,
         coloring_page_prompt=coloring,
@@ -918,7 +945,7 @@ def _content_from_story_md(story_md: str, plan: PlanRow) -> StoryContent:
         five_lessons=lessons[:5],
         think_about_it=questions[:5],
         bedtime_prayer=prayer,
-        next_story_preview=section("Next Story Preview", ("Parent/Teacher Note",)),
+        next_story_preview=preview,
         parent_note=parent,
         parent_notes=parent,
         parent_discussion_note=parent,

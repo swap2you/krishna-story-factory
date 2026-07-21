@@ -215,7 +215,14 @@ def test_failed_chunk_does_not_leave_complete_candidate(tmp_path, monkeypatch) -
             raise oa.OpenAITtsError("fail chunk 2", error_class="server_error")
         path = kwargs.get("output_path")
         # synthesize_openai_speech_once doesn't take output_path — patch speech once
-        return b"ID3fakeaudio" * 40, "req", "gpt-4o-mini-tts"
+        return b"ID3fakeaudio" * 40, "req", "gpt-4o-mini-tts", {
+            "model_attempts": ["gpt-4o-mini-tts"],
+            "request_attempt_count": 1,
+            "retryable_error_classes": [],
+            "final_successful_attempt": 1,
+            "fallback_model_used": False,
+            "estimated_extra_paid_attempts": 0,
+        }
 
     monkeypatch.setattr(oa, "synthesize_openai_speech_once", boom)
     monkeypatch.setattr(
