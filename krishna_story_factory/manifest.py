@@ -37,6 +37,7 @@ def write_manifest(
     waveform_metrics=None,
     matching_coverage: dict | None = None,
     parent_answer_key: dict | None = None,
+    audio_metadata: dict | None = None,
 ) -> None:
     now = datetime.now(ZoneInfo(settings.app_timezone)).isoformat(timespec="seconds")
     story_text = paths.story_md.read_text(encoding="utf-8") if paths.story_md.exists() else ""
@@ -115,6 +116,7 @@ def write_manifest(
         "queue_transition": "unchanged" if mode == "test" else ("done" if quality_status == "PASS" else "pending"),
         "mode": mode,
         "audio_source": audio_source,
+        "audio": audio_metadata or {},
     }
     paths.manifest.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
 

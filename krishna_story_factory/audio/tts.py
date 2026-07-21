@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import base64
 import logging
-import re
 from pathlib import Path
 
 import requests
@@ -49,17 +48,104 @@ class AudioGenerator:
         self.last_output_format = ""
         self.last_voice_id = ""
         self.last_request_metadata: dict = {}
+        self.last_provider = ""
+        self.last_provider_decision = None
+        self.last_chunk_metadata: list = []
 
-    def generate_mp3(self, text: str, output_path) -> str:
-        if self.mode == "test" or not self.settings.elevenlabs_enabled:
-            normalized = normalize_for_tts(text, project_root=self.settings.project_root)
-            self.last_pronunciation = normalized
-            sanitized = sanitize_audio_script(normalized.audio_text, model_id=self.settings.elevenlabs_model_id)
+    def generate_mp3(
+        self,
+        text: str,
+        output_path,
+        *,
+        provider_decision=None,
+        preferred_provider: str | None = None,
+        work_dir: Path | None = None,
+    ) -> str:
+        normalized = normalize_for_tts(text, project_root=self.settings.project_root)
+        self.last_pronunciation = normalized
+        narration_text = sanitize_audio_script(normalized.audio_text, model_id=self.settings.elevenlabs_model_id)
+        if "<break" in narration_text.lower() or "[pause]" in narration_text.lower():
+            raise AudioGenerationError("Narration text still contains forbidden SSML/pause markup.")
+
+        if self.mode == "test":
             output_path.write_bytes(_TEST_MP3_PLACEHOLDER)
+            self.last_provider = "placeholder"
             return "placeholder"
 
+        decision = provider_decision
+        if decision is None:
+            from .provider import get_cached_provider_decision, select_audio_provider
+
+            decision = get_cached_provider_decision()
+            if decision is None:
+                decision = select_audio_provider(self.settings, estimated_chars=len(narration_text))
+        self.last_provider_decision = decision
+
+        provider = (preferred_provider or (decision.provider if decision else "") or "").strip().lower()
+        if decision is not None and decision.status != "READY" and not preferred_provider:
+            raise AudioGenerationError(f"{decision.status}: {decision.reason}")
+        if not provider:
+            raise AudioGenerationError("No audio provider selected.")
+
+        if provider == "openai":
+            return self._synthesize_openai(narration_text, output_path, work_dir=work_dir)
+        if provider == "elevenlabs":
+            return self._synthesize_elevenlabs(narration_text, output_path)
+        raise AudioGenerationError(f"Unsupported audio provider: {provider!r}")
+
+    def _synthesize_openai(self, narration_text: str, output_path, *, work_dir: Path | None = None) -> str:
+        from .openai_tts import OpenAITtsError, synthesize_openai_tts
+
+        max_chars = int(getattr(self.settings, "openai_tts_max_input_chars", 3600) or 3600)
+        # Never compress, truncate, or rewrite approved narration.
+        text = sanitize_audio_script(narration_text, model_id="openai")
+        try:
+            result = synthesize_openai_tts(
+                api_key=self.settings.openai_api_key,
+                text=text,
+                output_path=Path(output_path),
+                model=getattr(self.settings, "openai_tts_model", "gpt-4o-mini-tts-2025-12-15"),
+                voice=getattr(self.settings, "openai_tts_voice", "marin"),
+                speed=float(getattr(self.settings, "openai_tts_speed", 0.92) or 0.92),
+                response_format=getattr(self.settings, "openai_tts_response_format", "mp3"),
+                max_input_chars=max_chars,
+                allow_model_fallback=True,
+                work_dir=work_dir,
+            )
+        except OpenAITtsError as exc:
+            status = exc.blocked_status or f"OpenAI TTS failed ({exc.error_class})"
+            raise AudioGenerationError(f"{status}: {exc}") from exc
+
+        self.last_provider = "openai"
+        self.last_voice_name = result.voice
+        self.last_voice_id = result.voice
+        self.last_model_id = result.model_id
+        self.last_output_format = result.response_format
+        self.last_request_id = result.request_id
+        self.last_dictionary_attached = False
+        self.last_chunk_metadata = list(result.chunk_metadata)
+        self.last_request_metadata = {
+            "provider": "openai",
+            "model_id": result.model_id,
+            "voice": result.voice,
+            "speed": result.speed,
+            "response_format": result.response_format,
+            "request_id": result.request_id,
+            "used_instructions": result.used_instructions,
+            "chunk_count": result.chunk_count,
+            "original_text_sha256": result.chunk_plan.original_sha256 if result.chunk_plan else "",
+            "reconstructed_text_sha256": result.chunk_plan.reconstructed_sha256 if result.chunk_plan else "",
+            "reconstruction_equal": bool(result.chunk_plan.reconstruction_equal) if result.chunk_plan else False,
+            "chunks": result.chunk_metadata,
+        }
+        self.low_credit_mode = False
+        return "openai"
+
+    def _synthesize_elevenlabs(self, narration_text: str, output_path) -> str:
+        if not self.settings.elevenlabs_enabled:
+            raise AudioGenerationError("ElevenLabs provider selected but ELEVENLABS_ENABLED=false.")
         if not self.settings.elevenlabs_api_key:
-            raise AudioGenerationError("ELEVENLABS_API_KEY is required when ELEVENLABS_ENABLED=true.")
+            raise AudioGenerationError("ELEVENLABS_API_KEY is required when ElevenLabs is selected.")
         lock_errors = validate_locked_voice(
             voice_id=self.settings.elevenlabs_voice_id,
             voice_name=getattr(self.settings, "elevenlabs_voice_name", ""),
@@ -76,22 +162,11 @@ class AudioGenerator:
         except Exception as exc:
             raise AudioGenerationError(str(exc)) from exc
 
-        normalized = normalize_for_tts(text, project_root=self.settings.project_root)
-        self.last_pronunciation = normalized
-        narration_text = sanitize_audio_script(normalized.audio_text, model_id=self.settings.elevenlabs_model_id)
-        try:
-            self._synthesize(narration_text, output_path)
-            self.low_credit_mode = False
-            return "elevenlabs"
-        except AudioGenerationError as exc:
-            if not self._is_quota_error(str(exc)):
-                raise
-            logger.warning("ElevenLabs quota/credits low; retrying with concise narration (420-560 words).")
-            concise = _to_concise_narration(narration_text, target_min=420, target_max=560)
-            concise = sanitize_audio_script(concise, model_id=self.settings.elevenlabs_model_id)
-            self._synthesize(concise, output_path)
-            self.low_credit_mode = True
-            return "elevenlabs_low_credit"
+        # No concise/compressed narration path — quota must be gated by preflight.
+        self._synthesize(narration_text, output_path)
+        self.low_credit_mode = False
+        self.last_provider = "elevenlabs"
+        return "elevenlabs"
 
     def _synthesize(self, narration_text: str, output_path) -> None:
         voice_id = self.settings.elevenlabs_voice_id or LOCKED_VOICE_ID
@@ -156,6 +231,7 @@ class AudioGenerator:
         except ValueError:
             self.last_character_cost = 0
         self.last_request_metadata = {
+            "provider": "elevenlabs",
             "voice_id": voice_id,
             "voice_name": self.last_voice_name or LOCKED_VOICE_NAME,
             "model_id": model_id,
@@ -197,25 +273,3 @@ class AudioGenerator:
         if not path.exists():
             return True
         return path.stat().st_size <= _PLACEHOLDER_MAX_BYTES
-
-
-def _to_concise_narration(text: str, *, target_min: int, target_max: int) -> str:
-    """Compress narration while preserving expressive tags and story arc; never pads."""
-    cleaned = re.sub(r"\n{3,}", "\n\n", text.strip())
-    words = re.findall(r"\S+", cleaned)
-    if len(words) <= target_max:
-        return cleaned
-    sentences = re.split(r"(?<=[.!?])\s+", cleaned)
-    if len(sentences) <= 4:
-        return " ".join(words[:target_max])
-    keep_head = max(2, len(sentences) // 4)
-    keep_tail = max(2, len(sentences) // 5)
-    middle = sentences[keep_head:-keep_tail]
-    reduced_middle = middle[::2] if len(middle) > 2 else middle
-    candidate = " ".join(sentences[:keep_head] + reduced_middle + sentences[-keep_tail:])
-    candidate_words = re.findall(r"\S+", candidate)
-    if len(candidate_words) > target_max:
-        candidate = " ".join(candidate_words[:target_max])
-    if len(re.findall(r"\S+", candidate)) < target_min:
-        candidate = " ".join(words[: max(target_min, min(target_max, len(words)))])
-    return candidate
