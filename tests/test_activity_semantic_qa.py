@@ -67,3 +67,22 @@ def test_story_005_pack_passes_semantic_qa(tmp_path: Path) -> None:
     assert len(pack.pages) == 3
     assert pack.age_variants.get("ages_6_8")
     assert pack.age_variants.get("ages_9_13")
+
+
+def test_event_label_padding_cycles_existing_labels() -> None:
+    """Padding from 4→6 must cycle labels[0], labels[1], … — not always labels[0]."""
+    from krishna_story_factory.activities.planner import _extract_event_labels
+
+    story = (
+        "Brahma leads the demigods in prayer. "
+        "Shiva joins with loving devotion. "
+        "Narada accompanies them invisibly. "
+        "Devaki carries Krishna within her heart."
+    )
+    labels = _extract_event_labels(story, seed="")
+    assert len(labels) == 6
+    pads = [item for item in labels if "continues in the pastime" in item]
+    assert len(pads) == 2
+    assert pads[0] == f"{labels[0]} continues in the pastime"
+    assert pads[1] == f"{labels[1]} continues in the pastime"
+    assert pads[0] != pads[1]

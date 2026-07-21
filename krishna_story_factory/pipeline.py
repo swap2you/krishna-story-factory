@@ -130,6 +130,33 @@ def run_daily_story(
                 return {"status": "INVALID_COMPONENTS", "detail": "This release supports exactly: activity,coloring"}
             return _rebuild_components(settings, plan, mode=mode, no_upload=no_upload, debug=debug, now=now)
 
+        if mode == "prod" and getattr(settings, "audio_required", True):
+            from .audio.provider import reset_provider_preflight_cache, select_audio_provider
+
+            reset_provider_preflight_cache()
+            # Conservative estimate before story generation (~full bedtime narration).
+            preflight = select_audio_provider(settings, estimated_chars=4500)
+            if preflight.status == "SKIPPED_AUDIO_PROVIDER_UNAVAILABLE":
+                append_run_history(
+                    settings.project_root,
+                    {
+                        "started_at": now.isoformat(timespec="seconds"),
+                        "completed_at": datetime.now(ZoneInfo(settings.app_timezone)).isoformat(timespec="seconds"),
+                        "status": "SKIPPED_AUDIO_PROVIDER_UNAVAILABLE",
+                        "chapter_no": plan.chapter_no,
+                        "slug": plan.slug,
+                        "detail": preflight.reason,
+                        "exit_code": "0",
+                    },
+                )
+                return {
+                    "status": "SKIPPED_AUDIO_PROVIDER_UNAVAILABLE",
+                    "detail": preflight.reason,
+                    "chapter_no": plan.chapter_no,
+                    "provider_detail": preflight.detail or {},
+                    "errors": "",
+                }
+
         if mode != "test":
             update_plan_status(settings.project_root, plan, "processing")
         result = _run_with_repairs(settings, plan, mode=mode, no_upload=no_upload, debug=debug, now=now)
@@ -234,8 +261,24 @@ def _run_once(
     story_md = content.to_markdown()
     paths.story_md.write_text(story_md, encoding="utf-8")
 
+    from .audio.provider import get_cached_provider_decision, select_audio_provider
+
     audio_gen = AudioGenerator(settings, mode)
-    audio_source = audio_gen.generate_mp3(content.audio_script, paths.narration_mp3)
+    provider_decision = get_cached_provider_decision()
+    if provider_decision is None and mode != "test":
+        provider_decision = select_audio_provider(
+            settings, estimated_chars=len(content.audio_script or "")
+        )
+        if provider_decision.status == "SKIPPED_AUDIO_PROVIDER_UNAVAILABLE":
+            raise PipelineError(
+                f"SKIPPED_AUDIO_PROVIDER_UNAVAILABLE: {provider_decision.reason}"
+            )
+    audio_source = audio_gen.generate_mp3(
+        content.audio_script,
+        paths.narration_mp3,
+        provider_decision=provider_decision,
+    )
+    audio_metadata = _audio_provider_manifest(audio_source, audio_gen)
     waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
 
     poster_score, poster_ref = generate_poster(
@@ -350,6 +393,7 @@ def _run_once(
         waveform_metrics=waveform_metrics,
         matching_coverage=pdf_check.matching_coverage,
         parent_answer_key=parent_key.to_dict(),
+        audio_metadata=audio_metadata,
     )
 
     drive_status = "SKIPPED"
@@ -395,6 +439,7 @@ def _run_once(
             waveform_metrics=waveform_metrics,
             matching_coverage=pdf_check.matching_coverage,
             parent_answer_key=parent_key.to_dict(),
+            audio_metadata=audio_metadata,
         )
         paths.whatsapp_caption.write_text(
             format_whatsapp_caption(
@@ -482,6 +527,7 @@ def _run_once(
         waveform_metrics=waveform_metrics,
         matching_coverage=pdf_check.matching_coverage,
         parent_answer_key=parent_key.to_dict(),
+        audio_metadata=audio_metadata,
     )
 
     ok, quality_errors, quality_warnings = run_quality_checks(
@@ -519,6 +565,31 @@ def _run_once(
         reference_used=reference_used,
         detail=drive_detail,
     )
+
+
+def _audio_provider_manifest(audio_source: str, audio_gen: AudioGenerator) -> dict:
+    """Provider-truth metadata for manifests — never claim Renee for OpenAI audio."""
+    meta = dict(getattr(audio_gen, "last_request_metadata", None) or {})
+    provider = (getattr(audio_gen, "last_provider", "") or audio_source or "").strip().lower()
+    if provider.startswith("elevenlabs"):
+        return {
+            "provider": "elevenlabs",
+            "voice_name": meta.get("voice_name") or getattr(audio_gen, "last_voice_name", ""),
+            "voice_id": meta.get("voice_id") or getattr(audio_gen, "last_voice_id", ""),
+            "model_id": meta.get("model_id") or getattr(audio_gen, "last_model_id", ""),
+            "output_format": meta.get("output_format") or getattr(audio_gen, "last_output_format", ""),
+        }
+    if provider == "openai":
+        return {
+            "provider": "openai",
+            "model_id": meta.get("model_id") or getattr(audio_gen, "last_model_id", ""),
+            "voice": meta.get("voice") or getattr(audio_gen, "last_voice_name", ""),
+            "speed": meta.get("speed"),
+            "response_format": meta.get("response_format") or getattr(audio_gen, "last_output_format", "mp3"),
+        }
+    if provider == "placeholder":
+        return {"provider": "placeholder"}
+    return meta
 
 
 def _validate_audio(

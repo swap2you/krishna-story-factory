@@ -104,6 +104,17 @@ class Settings:
     elevenlabs_voice_name: str = ""
     elevenlabs_output_format: str = "mp3_44100_128"
     elevenlabs_pronunciation_dictionary_version_id: str = ""
+    audio_provider_mode: str = "auto"
+    audio_provider_primary: str = "elevenlabs"
+    audio_provider_fallback: str = "openai"
+    audio_required: bool = True
+    openai_tts_enabled: bool = False
+    openai_tts_model: str = "gpt-4o-mini-tts-2025-12-15"
+    openai_tts_voice: str = "marin"
+    openai_tts_speed: float = 0.92
+    openai_tts_response_format: str = "mp3"
+    openai_tts_max_input_chars: int = 3600
+    openai_tts_monthly_budget_usd: float = 10.0
 
 
 def _optional_float(env_name: str) -> float | None:
@@ -208,6 +219,18 @@ def load_settings(project_root: Path) -> Settings:
         elevenlabs_pronunciation_dictionary_version_id=os.getenv(
             "ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID", ""
         ).strip(),
+        audio_provider_mode=os.getenv("AUDIO_PROVIDER_MODE", "auto").strip().lower() or "auto",
+        audio_provider_primary=os.getenv("AUDIO_PROVIDER_PRIMARY", "elevenlabs").strip().lower() or "elevenlabs",
+        audio_provider_fallback=os.getenv("AUDIO_PROVIDER_FALLBACK", "openai").strip().lower() or "openai",
+        audio_required=str_to_bool(os.getenv("AUDIO_REQUIRED"), True),
+        openai_tts_enabled=str_to_bool(os.getenv("OPENAI_TTS_ENABLED"), False),
+        openai_tts_model=os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts-2025-12-15").strip()
+        or "gpt-4o-mini-tts-2025-12-15",
+        openai_tts_voice=os.getenv("OPENAI_TTS_VOICE", "marin").strip() or "marin",
+        openai_tts_speed=float(os.getenv("OPENAI_TTS_SPEED", "0.92") or "0.92"),
+        openai_tts_response_format=os.getenv("OPENAI_TTS_RESPONSE_FORMAT", "mp3").strip() or "mp3",
+        openai_tts_max_input_chars=int(os.getenv("OPENAI_TTS_MAX_INPUT_CHARS", "3600") or "3600"),
+        openai_tts_monthly_budget_usd=float(os.getenv("OPENAI_TTS_MONTHLY_BUDGET_USD", "10") or "10"),
         package_publish_mode=os.getenv("PACKAGE_PUBLISH_MODE", "local"),
         google_drive_upload_enabled=str_to_bool(os.getenv("GOOGLE_DRIVE_UPLOAD_ENABLED"), False),
         google_drive_folder_id=os.getenv("GOOGLE_DRIVE_FOLDER_ID", ""),

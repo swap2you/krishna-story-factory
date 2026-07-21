@@ -35,12 +35,8 @@ def test_v3_mode_preserves_only_conservative_tags() -> None:
     assert "[with wonder]" not in cleaned
 
 
-def test_low_credit_mode_shortens_narration_without_placeholder() -> None:
-    from krishna_story_factory.audio.tts import _to_concise_narration
+def test_no_low_credit_compression_path() -> None:
+    """Approved narration must not be compressed for OpenAI or production ElevenLabs."""
+    import krishna_story_factory.audio.tts as tts
 
-    long = " ".join([f"Sentence {i} about Vasudeva keeping his word carefully." for i in range(120)])
-    concise = _to_concise_narration(long, target_min=420, target_max=560)
-    words = concise.split()
-    assert 420 <= len(words) <= 560
-    assert "placeholder" not in concise.lower()
-    assert "Vasudeva" in concise
+    assert not hasattr(tts, "_to_concise_narration")

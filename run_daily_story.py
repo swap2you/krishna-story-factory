@@ -73,6 +73,7 @@ def main() -> int:
         "NO_PENDING_STORY",
         "SKIPPED_ALREADY_COMPLETED_TODAY",
         "ALREADY_DONE",
+        "SKIPPED_AUDIO_PROVIDER_UNAVAILABLE",
     } else 1
 
 
