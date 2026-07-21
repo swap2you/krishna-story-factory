@@ -96,17 +96,41 @@ def test_exact_eight_files_contract() -> None:
     )
 
 
-def test_story_007_remains_pending_on_live_queue() -> None:
-    from krishna_story_factory.csv_store import ensure_csv_files, read_next_pending, read_plan_by_chapter
+def test_story_007_remains_pending_after_001_to_006_done(tmp_path: Path) -> None:
+    """Portable queue contract: after 001–006 are done, next pending must be 007.
 
-    ensure_csv_files(ROOT)
-    pending = read_next_pending(ROOT)
-    assert pending is not None
-    assert pending.chapter_no == "007"
+    Does not read the gitignored live tracking/queue_state.csv (absent on CI).
+    """
+    import shutil
+
+    from krishna_story_factory.csv_store import (
+        ensure_csv_files,
+        read_next_pending,
+        read_plan_by_chapter,
+        update_plan_status,
+    )
+
+    project = tmp_path / "proj"
+    (project / "input").mkdir(parents=True)
+    (project / "tracking").mkdir(parents=True)
+    shutil.copy2(ROOT / "input" / "series_plan.csv", project / "input" / "series_plan.csv")
+    ensure_csv_files(project)
+
     for chapter in ("001", "002", "003", "004", "005", "006"):
-        plan = read_plan_by_chapter(ROOT, chapter)
+        plan = read_plan_by_chapter(project, chapter)
+        assert plan is not None
+        update_plan_status(project, plan, "done")
+
+    for chapter in ("001", "002", "003", "004", "005", "006"):
+        plan = read_plan_by_chapter(project, chapter)
         assert plan is not None
         assert plan.status == "done"
+
+    pending = read_next_pending(project)
+    assert pending is not None
+    assert pending.chapter_no == "007"
+    assert pending.slug == "kamsa-begins-his-persecutions"
+    assert pending.status == "pending"
 
 
 def test_alias_word_boundaries_do_not_rewrite_drama(tmp_path: Path) -> None:
