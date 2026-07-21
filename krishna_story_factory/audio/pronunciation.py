@@ -74,7 +74,8 @@ def normalize_for_tts(text: str, *, project_root: Path | None = None) -> Pronunc
     audio = text or ""
     applied: list[str] = []
     for source, target in _cached_aliases(root):
-        pattern = re.compile(re.escape(source), re.IGNORECASE)
+        # Word/token boundaries so "Rama" does not rewrite "drama".
+        pattern = re.compile(rf"(?<!\w){re.escape(source)}(?!\w)", re.IGNORECASE)
         if pattern.search(audio):
             audio = pattern.sub(target, audio)
             applied.append(f"{source}->{target}")

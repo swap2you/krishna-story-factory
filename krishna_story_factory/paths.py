@@ -13,8 +13,18 @@ def safe_slug(value: str) -> str:
     return value or "story"
 
 
+def assert_path_under_root(path: Path, root: Path, *, label: str = "path") -> Path:
+    """Reject path traversal; require resolved path to stay under an approved root."""
+    resolved = Path(path).resolve()
+    root_resolved = Path(root).resolve()
+    if resolved != root_resolved and not resolved.is_relative_to(root_resolved):
+        raise ValueError(f"{label} escapes approved root: {resolved} not under {root_resolved}")
+    return resolved
+
+
 def make_package_paths(output_root: Path, plan: PlanRow) -> PackagePaths:
     folder = output_root / f"{plan.chapter_no}_{safe_slug(plan.slug or plan.title)}"
+    folder = assert_path_under_root(folder, output_root, label="package folder")
     folder.mkdir(parents=True, exist_ok=True)
     return PackagePaths(
         root=folder,

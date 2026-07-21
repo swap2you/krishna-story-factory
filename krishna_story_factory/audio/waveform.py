@@ -107,14 +107,12 @@ def validate_mp3_waveform(
 
     mono = samples
     silent = np.abs(mono) < silence_threshold
-    longest_run = 0
-    current = 0
-    for flag in silent.tolist():
-        if flag:
-            current += 1
-            longest_run = max(longest_run, current)
-        else:
-            current = 0
+    # Vectorized longest-run of True values (silence).
+    padded = np.concatenate(([False], silent.astype(bool), [False]))
+    edges = np.diff(padded.astype(np.int8))
+    starts = np.where(edges == 1)[0]
+    ends = np.where(edges == -1)[0]
+    longest_run = int(np.max(ends - starts)) if starts.size else 0
     longest_silence_seconds = longest_run / float(sample_rate)
     if longest_silence_seconds > max_silence_seconds:
         reasons.append(

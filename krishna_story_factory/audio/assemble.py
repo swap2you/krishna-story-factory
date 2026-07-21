@@ -104,7 +104,7 @@ def assemble_mp3_chunks(
         audio_bytes = staged.read_bytes()
         tmp_out = output_path.with_suffix(output_path.suffix + ".partial")
         tmp_out.write_bytes(audio_bytes)
-        tmp_out.replace(output_path)
+        _atomic_replace(tmp_out, output_path)
 
     return {
         "path": str(output_path),
@@ -139,3 +139,21 @@ def _make_silence_mp3(ffmpeg: str, path: Path, *, pause_ms: int) -> None:
 
 def _ffmpeg_path(path: Path) -> str:
     return path.resolve().as_posix().replace("'", r"'\''")
+
+
+def _atomic_replace(src: Path, dest: Path, *, attempts: int = 8) -> None:
+    """Replace dest with src, retrying transient Windows file locks without regenerating audio."""
+    import time
+
+    last_exc: OSError | None = None
+    for attempt in range(max(1, attempts)):
+        try:
+            src.replace(dest)
+            return
+        except OSError as exc:
+            last_exc = exc
+            # WinError 5/32 and sharing violations are common when players lock MP3s.
+            if attempt + 1 >= attempts:
+                break
+            time.sleep(min(2.0, 0.05 * (2**attempt)))
+    raise OSError(f"Atomic replace failed after {attempts} attempts: {dest}") from last_exc

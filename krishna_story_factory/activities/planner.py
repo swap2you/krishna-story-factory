@@ -76,6 +76,7 @@ class ActivityPlanner:
             "003": _pack_003,
             "004": _pack_004,
             "005": _pack_005,
+            "006": _pack_006,
         }
         builder = builders.get(plan.chapter_no.strip().zfill(3))
         return builder(plan) if builder else None
@@ -448,8 +449,17 @@ def _pack_002(plan: PlanRow) -> ActivityPack:
             ActivityPage(
                 page_title="Role-play the chariot scene",
                 page_type="ROLE_PLAY_CARDS",
-                instructions=["Choose a role and speak the short line.", "Retell how Vasudeva protected Devaki."],
-                components=["Narrator card", "Kamsa line", "Devaki line", "Vasudeva line"],
+                instructions=[
+                    "Choose a role.",
+                    "Use the paraphrase lines (not invented quotations).",
+                    "Retell how Vasudeva protected Devaki.",
+                ],
+                components=[
+                    "Narrator: A heavenly voice warns Kamsa about Devaki's eighth child.",
+                    "Kamsa (paraphrase): Fear rises as he hears the warning about the eighth child.",
+                    "Vasudeva (paraphrase): He calmly promises to bring every child and asks Kamsa not to harm Devaki.",
+                    "Devaki (paraphrase): She stays close to Vasudeva and trusts his truthful promise.",
+                ],
                 story_connection=connection,
             ),
         ],
@@ -463,8 +473,8 @@ def _pack_002(plan: PlanRow) -> ActivityPack:
             "The heavenly voice",
             "Vasudeva protects Devaki",
         ],
-        parent_note="Weekend project. No peacock feathers on any character.",
-        qa_requirements=["cut lines", "fold lines", "standees", "sequence cards", "role cards"],
+        parent_note="Weekend project. No peacock feathers. Role lines are paraphrase only—not scripture quotations.",
+        qa_requirements=["cut lines", "fold lines", "named standee characters", "sequence cards", "paraphrase role cards"],
     )
 
 
@@ -718,15 +728,145 @@ def _pack_005(plan: PlanRow) -> ActivityPack:
     )
 
 
+def _pack_006(plan: PlanRow) -> ActivityPack:
+    connection = (
+        "This activity follows Krishna Book Chapter 3: auspicious signs, Krishna's four-armed appearance, "
+        "the parents' prayers, His infant form, and the prison doors opening so Vasudeva can carry Him."
+    )
+    sequence = [
+        SequenceCard(
+            "Auspicious signs appeared as the sacred night approached.",
+            "Draw gentle signs of a holy night around the prison.",
+            1,
+        ),
+        SequenceCard(
+            "Krishna appeared before Devaki and Vasudeva in His four-armed form.",
+            "Draw the Lord with four arms, shining with kindness.",
+            2,
+        ),
+        SequenceCard(
+            "Devaki and Vasudeva offered prayers.",
+            "Draw the parents praying with folded hands.",
+            3,
+        ),
+        SequenceCard(
+            "Krishna assumed the form of an ordinary infant.",
+            "Draw a soft newborn Krishna without a peacock feather.",
+            4,
+        ),
+        SequenceCard(
+            "Vasudeva's chains loosened and the prison doors opened.",
+            "Draw chains falling away while guards sleep.",
+            5,
+        ),
+        SequenceCard(
+            "Vasudeva prepared to carry Krishna according to the Lord's arrangement.",
+            "Draw Vasudeva gently holding baby Krishna.",
+            6,
+        ),
+    ]
+    printed = [
+        sequence[3],
+        sequence[0],
+        sequence[4],
+        sequence[1],
+        sequence[5],
+        sequence[2],
+    ]
+    return ActivityPack(
+        activity_title="The Sacred Night of Krishna's Birth",
+        activity_type="STORY_SEQUENCE",
+        send_mode="SEND_NOW",
+        estimated_minutes=18,
+        parent_effort="Low: help younger children number the cards.",
+        learning_goal="Put the birth-night events in true order and notice Krishna's kindness.",
+        story_connection=connection,
+        materials=["pencil or crayons"],
+        pages=[
+            ActivityPage(
+                page_title="Put the Birth Night in Order",
+                page_type="STORY_SEQUENCE_CARDS",
+                instructions=[
+                    "The six cards are shuffled on purpose.",
+                    "Number them in true story order.",
+                    "Do not look for an answer key on the page.",
+                ],
+                components=printed,
+                story_connection=connection,
+            ),
+            ActivityPage(
+                page_title="Who Was There?",
+                page_type="MATCHING_CARDS",
+                instructions=[
+                    "Match each person to their part in the pastime.",
+                    "Younger path: draw lines.",
+                    "Older path: write one sentence for each match.",
+                ],
+                components=[
+                    MatchingCard("Devaki", "receives Lord Krishna with love", "who", pair_id="A"),
+                    MatchingCard("Vasudeva", "carries Krishna by the Lord's arrangement", "who", pair_id="B"),
+                    MatchingCard("Krishna", "appears and then becomes a baby", "who", pair_id="C"),
+                    MatchingCard("the prison", "opens when Krishna arranges it", "where", pair_id="D"),
+                ],
+                story_connection=connection,
+            ),
+            ActivityPage(
+                page_title="Family Courage Prayer",
+                page_type="FAMILY_MISSION",
+                instructions=[
+                    "Talk about one fear your family can place before Krishna.",
+                    "Younger path: draw a calm night scene.",
+                    "Older path: write two sentences of gratitude.",
+                ],
+                components=[
+                    "One fear we can give to Krishna",
+                    "One way Krishna protects devotees",
+                    "One kind action we will do tomorrow",
+                ],
+                story_connection=connection,
+            ),
+        ],
+        age_variants={
+            "ages_6_8": "number cards and draw one birth-night detail.",
+            "ages_9_13": "explain why Vasudeva obeyed Krishna's arrangement.",
+        },
+        safety_note="PARENT HELP: Keep scissors away unless an adult is supervising craft extras.",
+        completion_prompt="Share one way Krishna brings light into difficult places.",
+        review_questions=[
+            "In what form did Krishna first appear?",
+            "What happened to Vasudeva's chains?",
+        ],
+        answer_key=[card.event for card in sequence],
+        parent_note="Keep the scene inside Chapter 3; do not include Kamsa's later persecutions.",
+        qa_requirements=[
+            "three meaningful pages",
+            "shuffled sequence cards",
+            "no frontmatter metadata events",
+            "younger and older paths",
+            "answers only in manifest",
+        ],
+    )
+
+
 def _extract_event_labels(story_text: str, seed: str) -> list[str]:
-    from .qa import GENERIC_PLACEHOLDERS
+    from .qa import GENERIC_PLACEHOLDERS, is_metadata_event_label
 
     labels: list[str] = []
-    for chunk in re.split(r"[.!?\n]+", story_text or ""):
+    # Prefer Main Story body so YAML frontmatter / greetings never become sequence cards.
+    body = story_text or ""
+    main_match = re.search(
+        r"(?is)(?:^|\n)#+\s*Main Story\s*\n(.*?)(?=\n#+\s|\Z)",
+        body,
+    )
+    if main_match:
+        body = main_match.group(1)
+    for chunk in re.split(r"[.!?\n]+", body):
         cleaned = " ".join(chunk.strip().split())
         if cleaned.startswith("#"):
             cleaned = cleaned.lstrip("#").strip()
         if len(cleaned) < 12:
+            continue
+        if is_metadata_event_label(cleaned):
             continue
         if cleaned.lower() in GENERIC_PLACEHOLDERS:
             continue

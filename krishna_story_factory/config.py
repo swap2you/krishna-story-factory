@@ -114,7 +114,8 @@ class Settings:
     openai_tts_speed: float = 0.92
     openai_tts_response_format: str = "mp3"
     openai_tts_max_input_chars: int = 3600
-    openai_tts_monthly_budget_usd: float = 10.0
+    # Advisory planning figure only — not enforced as a hard spending cap.
+    openai_tts_monthly_budget_usd_advisory: float = 10.0
 
 
 def _optional_float(env_name: str) -> float | None:
@@ -230,7 +231,11 @@ def load_settings(project_root: Path) -> Settings:
         openai_tts_speed=float(os.getenv("OPENAI_TTS_SPEED", "0.92") or "0.92"),
         openai_tts_response_format=os.getenv("OPENAI_TTS_RESPONSE_FORMAT", "mp3").strip() or "mp3",
         openai_tts_max_input_chars=int(os.getenv("OPENAI_TTS_MAX_INPUT_CHARS", "3600") or "3600"),
-        openai_tts_monthly_budget_usd=float(os.getenv("OPENAI_TTS_MONTHLY_BUDGET_USD", "10") or "10"),
+        openai_tts_monthly_budget_usd_advisory=float(
+            os.getenv("OPENAI_TTS_MONTHLY_BUDGET_USD_ADVISORY")
+            or os.getenv("OPENAI_TTS_MONTHLY_BUDGET_USD", "10")
+            or "10"
+        ),
         package_publish_mode=os.getenv("PACKAGE_PUBLISH_MODE", "local"),
         google_drive_upload_enabled=str_to_bool(os.getenv("GOOGLE_DRIVE_UPLOAD_ENABLED"), False),
         google_drive_folder_id=os.getenv("GOOGLE_DRIVE_FOLDER_ID", ""),

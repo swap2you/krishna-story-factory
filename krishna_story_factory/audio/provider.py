@@ -54,16 +54,27 @@ def estimate_narration_chars(text: str) -> int:
 def elevenlabs_available_characters(api_key: str) -> tuple[int, dict[str, Any]]:
     if not api_key:
         return 0, {"error": "missing_api_key"}
-    response = requests.get(
-        "https://api.elevenlabs.io/v1/user/subscription",
-        headers={"xi-api-key": api_key},
-        timeout=30,
-    )
+    try:
+        response = requests.get(
+            "https://api.elevenlabs.io/v1/user/subscription",
+            headers={"xi-api-key": api_key},
+            timeout=30,
+        )
+    except (requests.Timeout, requests.ConnectionError, requests.RequestException) as exc:
+        return 0, {"error": f"subscription_transport_{type(exc).__name__}"}
     if response.status_code >= 400:
         return 0, {"error": f"subscription_lookup_{response.status_code}"}
-    data = response.json()
-    used = int(data.get("character_count") or 0)
-    limit = int(data.get("character_limit") or 0)
+    try:
+        data = response.json()
+    except ValueError:
+        return 0, {"error": "subscription_malformed_json"}
+    if not isinstance(data, dict):
+        return 0, {"error": "subscription_invalid_payload"}
+    try:
+        used = int(data.get("character_count") or 0)
+        limit = int(data.get("character_limit") or 0)
+    except (TypeError, ValueError):
+        return 0, {"error": "subscription_invalid_numeric_fields"}
     return max(0, limit - used), {
         "character_count": used,
         "character_limit": limit,
@@ -74,16 +85,34 @@ def elevenlabs_available_characters(api_key: str) -> tuple[int, dict[str, Any]]:
 def elevenlabs_voice_resolves(api_key: str, voice_id: str) -> tuple[bool, str]:
     if not api_key or not voice_id:
         return False, ""
-    response = requests.get(
-        f"https://api.elevenlabs.io/v1/voices/{voice_id}",
-        headers={"xi-api-key": api_key},
-        timeout=30,
-    )
+    try:
+        response = requests.get(
+            f"https://api.elevenlabs.io/v1/voices/{voice_id}",
+            headers={"xi-api-key": api_key},
+            timeout=30,
+        )
+    except (requests.Timeout, requests.ConnectionError, requests.RequestException):
+        return False, ""
     if response.status_code >= 400:
         return False, ""
-    name = str(response.json().get("name") or "")
+    try:
+        data = response.json()
+    except ValueError:
+        return False, ""
+    if not isinstance(data, dict):
+        return False, ""
+    name = str(data.get("name") or "")
     ok = voice_id == LOCKED_VOICE_ID and "renee" in name.lower()
     return ok, name
+
+
+def invalidate_elevenlabs_cache(*, reason: str = "") -> None:
+    """Mark ElevenLabs unavailable for the remainder of this run after a synthesis failure."""
+    detail = dict(_CACHE.elevenlabs or {})
+    detail.update({"ok": False, "runtime_invalidated": True, "invalidate_reason": reason[:200]})
+    _CACHE.elevenlabs = detail
+    if _CACHE.decision is not None and _CACHE.decision.provider == "elevenlabs":
+        _CACHE.decision = None
 
 
 def preflight_elevenlabs(settings: Settings, *, estimated_chars: int, require_dictionary: bool = True) -> dict[str, Any]:
@@ -103,7 +132,17 @@ def preflight_elevenlabs(settings: Settings, *, estimated_chars: int, require_di
         "dictionary_ok": False,
     }
     if not settings.elevenlabs_enabled or not settings.elevenlabs_api_key:
-        detail["error"] = "elevenlabs_disabled_or_missing_key"
+        detail["error"] = (
+            "elevenlabs_missing_api_key"
+            if settings.elevenlabs_enabled and not settings.elevenlabs_api_key
+            else "elevenlabs_disabled_or_missing_key"
+        )
+        detail["actionable"] = (
+            "Set ELEVENLABS_API_KEY in .env (never commit secrets), confirm ELEVENLABS_ENABLED=true, "
+            "then re-run provider preflight. Without a key, ElevenLabs cannot be selected."
+            if settings.elevenlabs_enabled and not settings.elevenlabs_api_key
+            else "Enable ElevenLabs and provide ELEVENLABS_API_KEY, or rely on OpenAI TTS fallback."
+        )
         _CACHE.elevenlabs = detail
         return detail
 

@@ -93,6 +93,9 @@ def run_daily_story(
     now = datetime.now(ZoneInfo(settings.app_timezone))
     plan: PlanRow | None = None
     try:
+        from .audio.provider import reset_provider_preflight_cache
+
+        reset_provider_preflight_cache()
         normal_prod = mode == "prod" and not force and not rebuild and not rebuild_components
         if normal_prod and already_completed_production_today(settings.project_root, settings.app_timezone):
             detail = "A successful production story already completed today."
@@ -131,9 +134,8 @@ def run_daily_story(
             return _rebuild_components(settings, plan, mode=mode, no_upload=no_upload, debug=debug, now=now)
 
         if mode == "prod" and getattr(settings, "audio_required", True):
-            from .audio.provider import reset_provider_preflight_cache, select_audio_provider
+            from .audio.provider import select_audio_provider
 
-            reset_provider_preflight_cache()
             # Conservative estimate before story generation (~full bedtime narration).
             preflight = select_audio_provider(settings, estimated_chars=4500)
             if preflight.status == "SKIPPED_AUDIO_PROVIDER_UNAVAILABLE":

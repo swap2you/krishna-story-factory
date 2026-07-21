@@ -11,6 +11,7 @@ from typing import Any
 
 from .assemble import assemble_mp3_chunks, sha256_bytes
 from .chunking import ChunkPlan, chunk_narration
+from .redact import sanitize_error_text
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +153,18 @@ def _retry_after_seconds(exc: BaseException, attempt: int) -> float:
         try:
             return max(0.5, float(raw))
         except ValueError:
-            pass
+            try:
+                from email.utils import parsedate_to_datetime
+                from datetime import datetime, timezone
+
+                when = parsedate_to_datetime(str(raw))
+                if when.tzinfo is None:
+                    when = when.replace(tzinfo=timezone.utc)
+                delay = (when - datetime.now(timezone.utc)).total_seconds()
+                if delay > 0:
+                    return min(60.0, max(0.5, delay))
+            except (TypeError, ValueError, OverflowError, OSError):
+                pass
     base = min(20.0, (2**attempt) * 0.75)
     return base + random.uniform(0.05, 0.45)
 
@@ -206,7 +218,7 @@ def synthesize_openai_speech_once(
             retryable = error_class in {"rate_limit", "network", "timeout", "server_error"}
             if error_class in NO_RETRY_CLASSES or not retryable or attempt >= max_retries:
                 raise OpenAITtsError(
-                    str(exc),
+                    sanitize_error_text(str(exc)),
                     error_class=error_class,
                     blocked_status=blocked,
                     retryable=False,
@@ -221,7 +233,10 @@ def synthesize_openai_speech_once(
             time.sleep(delay)
 
     assert last_exc is not None
-    raise OpenAITtsError(str(last_exc), error_class=classify_openai_error(last_exc)) from last_exc
+    raise OpenAITtsError(
+        sanitize_error_text(str(last_exc)),
+        error_class=classify_openai_error(last_exc),
+    ) from last_exc
 
 
 def synthesize_openai_tts(
@@ -378,7 +393,7 @@ def preflight_openai_tts(*, api_key: str, model: str, voice: str, speed: float) 
             "bytes": 0,
             "error_class": exc.error_class,
             "blocked_status": exc.blocked_status,
-            "detail": str(exc)[:300],
+            "detail": sanitize_error_text(str(exc), limit=300),
         }
     finally:
         try:
