@@ -265,8 +265,14 @@ def synthesize_openai_tts(
     allow_model_fallback: bool = True,
     work_dir: Path | None = None,
     pause_ms: int = 280,
+    pinned_model: str | None = None,
 ) -> OpenAITtsResult:
-    """Lossless chunked OpenAI TTS with atomic final write."""
+    """Lossless chunked OpenAI TTS with atomic final write.
+
+    Prefer ``pinned_model`` from provider preflight. Fallback across models is
+    allowed only before any chunk is billed. Mid-run model_access after billed
+    chunks raises MODEL_SWITCH_RESTART_REQUIRED without regenerating successes.
+    """
     plan = chunk_narration(text, max_input_chars=max_input_chars)
     candidates = [model]
     if allow_model_fallback:
@@ -277,7 +283,6 @@ def synthesize_openai_tts(
     output_path = Path(output_path)
     base_work = Path(work_dir) if work_dir else output_path.parent / f".{output_path.stem}_chunks"
     if base_work.exists():
-        # Keep diagnostics; clear previous chunk mp3s for this run.
         for stale in base_work.glob("chunk_*.mp3"):
             try:
                 stale.unlink()
@@ -285,95 +290,130 @@ def synthesize_openai_tts(
                 pass
     base_work.mkdir(parents=True, exist_ok=True)
 
+    # Prefer an explicitly preflight-pinned model. Otherwise start with the requested model
+    # and allow fallback only before any chunk has been billed.
+    active = (pinned_model or model or "").strip() or model
     last_error: OpenAITtsError | None = None
-    for candidate in candidates:
-        chunk_paths: list[Path] = []
-        chunk_meta: list[dict[str, Any]] = []
-        try:
-            for chunk in plan.chunks:
-                chunk_path = base_work / f"chunk_{chunk.sequence:03d}.mp3"
+
+    chunk_paths: list[Path] = []
+    chunk_meta: list[dict[str, Any]] = []
+    billed_sequences: list[int] = []
+    try:
+        for chunk in plan.chunks:
+            chunk_path = base_work / f"chunk_{chunk.sequence:03d}.mp3"
+            try:
                 audio_bytes, request_id, used_model, attempt_meta = synthesize_openai_speech_once(
                     api_key=api_key,
                     text=chunk.text,
-                    model=candidate,
+                    model=active,
                     voice=voice,
                     speed=speed,
                     response_format=response_format,
                 )
-                chunk_path.write_bytes(audio_bytes)
-                chunk_paths.append(chunk_path)
-                chunk_meta.append(
-                    {
-                        "sequence": chunk.sequence,
-                        "char_count": chunk.char_count,
-                        "word_count": chunk.word_count,
-                        "text_sha256": chunk.text_sha256,
-                        "boundary": chunk.boundary,
-                        "model_id": used_model,
-                        "voice": voice,
-                        "speed": speed,
-                        "response_format": response_format,
-                        "request_id": request_id,
-                        "api_error_class": "",
-                        "audio_sha256": sha256_bytes(audio_bytes),
-                        "byte_size": len(audio_bytes),
-                        "model_attempts": list(attempt_meta.get("model_attempts") or [used_model]),
-                        "request_attempt_count": int(attempt_meta.get("request_attempt_count") or 1),
-                        "retryable_error_classes": list(attempt_meta.get("retryable_error_classes") or []),
-                        "final_successful_attempt": int(attempt_meta.get("final_successful_attempt") or 1),
-                        "fallback_model_used": bool(candidate != model),
-                        "estimated_extra_paid_attempts": int(attempt_meta.get("estimated_extra_paid_attempts") or 0),
+            except OpenAITtsError as exc:
+                last_error = exc
+                if billed_sequences and exc.error_class == "model_access":
+                    evidence = {
+                        "billed_chunk_sequences": list(billed_sequences),
+                        "pinned_model": active,
+                        "work_dir": str(base_work),
+                        "chunk_metadata": list(chunk_meta),
                     }
-                )
+                    (base_work / "MODEL_SWITCH_RESTART_REQUIRED.json").write_text(
+                        __import__("json").dumps(evidence, indent=2),
+                        encoding="utf-8",
+                    )
+                    raise OpenAITtsError(
+                        "MODEL_SWITCH_RESTART_REQUIRED: later chunk model_access after billed chunks; "
+                        "will not regenerate successful chunks. Restart with an explicit pinned model.",
+                        error_class="model_access",
+                        blocked_status="MODEL_SWITCH_RESTART_REQUIRED",
+                        retryable=False,
+                    ) from exc
+                # No billed chunks yet: allow one fallback pin switch only before any success.
+                if (
+                    not billed_sequences
+                    and allow_model_fallback
+                    and not pinned_model
+                    and exc.error_class == "model_access"
+                ):
+                    for candidate in candidates:
+                        if candidate == active:
+                            continue
+                        try:
+                            audio_bytes, request_id, used_model, attempt_meta = synthesize_openai_speech_once(
+                                api_key=api_key,
+                                text=chunk.text,
+                                model=candidate,
+                                voice=voice,
+                                speed=speed,
+                                response_format=response_format,
+                            )
+                            active = used_model or candidate
+                            break
+                        except OpenAITtsError as inner:
+                            last_error = inner
+                            continue
+                    else:
+                        raise last_error or exc
+                else:
+                    raise
 
-            assemble_mp3_chunks(chunk_paths, output_path, pause_ms=pause_ms)
-            final_bytes = output_path.read_bytes()
-            return OpenAITtsResult(
-                provider="openai",
-                model_id=chunk_meta[0]["model_id"] if chunk_meta else candidate,
-                voice=voice,
-                speed=speed,
-                response_format=response_format,
-                request_id=chunk_meta[0].get("request_id", "") if chunk_meta else "",
-                audio_bytes=final_bytes,
-                used_instructions="tts-1" not in candidate,
-                chunk_count=len(chunk_paths),
-                chunk_plan=plan,
-                chunk_metadata=chunk_meta,
+            chunk_path.write_bytes(audio_bytes)
+            chunk_paths.append(chunk_path)
+            billed_sequences.append(chunk.sequence)
+            chunk_meta.append(
+                {
+                    "sequence": chunk.sequence,
+                    "char_count": chunk.char_count,
+                    "word_count": chunk.word_count,
+                    "text_sha256": chunk.text_sha256,
+                    "boundary": chunk.boundary,
+                    "model_id": used_model,
+                    "voice": voice,
+                    "speed": speed,
+                    "response_format": response_format,
+                    "request_id": request_id,
+                    "api_error_class": "",
+                    "audio_sha256": sha256_bytes(audio_bytes),
+                    "byte_size": len(audio_bytes),
+                    "model_attempts": list(attempt_meta.get("model_attempts") or [used_model]),
+                    "request_attempt_count": int(attempt_meta.get("request_attempt_count") or 1),
+                    "retryable_error_classes": list(attempt_meta.get("retryable_error_classes") or []),
+                    "final_successful_attempt": int(attempt_meta.get("final_successful_attempt") or 1),
+                    "fallback_model_used": bool(active != model),
+                    "estimated_extra_paid_attempts": int(attempt_meta.get("estimated_extra_paid_attempts") or 0),
+                    "pinned_model": active,
+                }
             )
-        except OpenAITtsError as exc:
-            last_error = exc
-            # Quarantine incomplete assembly — never leave a partial final candidate.
-            partial = output_path.with_suffix(output_path.suffix + ".partial")
-            for path in (output_path, partial):
-                try:
-                    path.unlink(missing_ok=True)
-                except OSError:
-                    pass
-            for path in chunk_paths:
-                try:
-                    # Keep chunk diagnostics under work_dir; mark failed metadata.
-                    pass
-                except OSError:
-                    pass
-            logger.warning(
-                "OpenAI TTS model %s failed (%s): %s",
-                candidate,
-                exc.error_class,
-                type(exc).__name__,
-            )
-            if exc.error_class in {"authentication_invalid_key", "insufficient_quota", "billing_payment_failure"}:
-                raise
-            if exc.error_class != "model_access":
-                raise
-            continue
 
-    assert last_error is not None
-    raise last_error
+        assemble_mp3_chunks(chunk_paths, output_path, pause_ms=pause_ms)
+        final_bytes = output_path.read_bytes()
+        return OpenAITtsResult(
+            provider="openai",
+            model_id=chunk_meta[0]["model_id"] if chunk_meta else active,
+            voice=voice,
+            speed=speed,
+            response_format=response_format,
+            request_id=chunk_meta[0].get("request_id", "") if chunk_meta else "",
+            audio_bytes=final_bytes,
+            used_instructions="tts-1" not in active,
+            chunk_count=len(chunk_paths),
+            chunk_plan=plan,
+            chunk_metadata=chunk_meta,
+        )
+    except OpenAITtsError:
+        partial = output_path.with_suffix(output_path.suffix + ".partial")
+        for path in (output_path, partial):
+            try:
+                path.unlink(missing_ok=True)
+            except OSError:
+                pass
+        raise
 
 
 def preflight_openai_tts(*, api_key: str, model: str, voice: str, speed: float) -> dict[str, Any]:
-    """One minimal speech request to validate key/model/voice access."""
+    """One minimal speech request to validate key/model/voice access and pin a model."""
     import tempfile
 
     tmp = Path(tempfile.gettempdir()) / "krishna_openai_tts_preflight.mp3"
