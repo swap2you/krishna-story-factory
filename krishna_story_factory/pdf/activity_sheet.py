@@ -795,14 +795,22 @@ def _render_prayer_wheel(c: Canvas, plan: PlanRow, a: ActivityPack) -> None:
     story_y = 8.15 * inch
     story_boxes = ["Mother Earth as a sacred cow", "Brahma leads the prayers", "Vishnu promises Krishna will come"]
     c.setDash()
-    c.setFont(FONT_BOLD, 9)
     for idx, story_step in enumerate(story_boxes):
         x = MARGIN + idx * 2.48 * inch
-        c.roundRect(x, story_y, 2.1 * inch, 0.48 * inch, 5, stroke=1, fill=0)
-        c.drawCentredString(x + 1.05 * inch, story_y + 0.19 * inch, story_step)
+        c.roundRect(x, story_y, 2.1 * inch, 0.55 * inch, 5, stroke=1, fill=0)
+        _wrapped_font(
+            c,
+            story_step,
+            x + 0.08 * inch,
+            story_y + 0.36 * inch,
+            1.94 * inch,
+            font=FONT_BOLD,
+            size=8,
+            leading=9.5,
+        )
         if idx < 2:
             c.setFont(FONT_BOLD, 14)
-            c.drawString(x + 2.18 * inch, story_y + 0.15 * inch, ">")
+            c.drawString(x + 2.18 * inch, story_y + 0.18 * inch, ">")
             c.setFont(FONT_BOLD, 9)
     prompts = ["My family", "Animals", "Mother Earth", "Someone who feels sad", "My community", "My special prayer"]
     c.setDash(3, 3)
@@ -901,23 +909,31 @@ def _render_cut_and_build(c: Canvas, plan: PlanRow, a: ActivityPack) -> None:
     c.roundRect(MARGIN, 8.15 * inch, PAGE_W - 2 * MARGIN, 0.55 * inch, 6, stroke=1, fill=0)
     c.setFont(FONT_BOLD, 10.5)
     c.drawCentredString(PAGE_W / 2, 8.47 * inch, "TURNING POINT: The heavenly voice changes joy to fear - Vasudeva responds calmly.")
-    labels = [("KAMSA", "adult charioteer - front"), ("DEVAKI", "adult royal bride - behind"), ("VASUDEVA", "adult noble bridegroom - behind")]
+    labels = [
+        ("KAMSA", "adult charioteer"),
+        ("DEVAKI", "adult royal bride"),
+        ("VASUDEVA", "adult noble groom"),
+    ]
     c.setDash(4, 3)
     for i, (name, role) in enumerate(labels):
         x = MARGIN + i * 2.35 * inch
-        c.roundRect(x, 6.1 * inch, 1.85 * inch, 1.7 * inch, 8, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 12)
-        c.drawCentredString(x + 0.925 * inch, 7.27 * inch, name)
-        c.setFont(FONT_REGULAR, 9.5)
-        c.drawCentredString(x + 0.925 * inch, 7.02 * inch, role)
-        c.circle(x + 0.925 * inch, 6.75 * inch, 0.14 * inch, stroke=1, fill=0)
-        c.line(x + 0.55 * inch, 6.5 * inch, x + 1.3 * inch, 6.5 * inch)
-        c.line(x + 0.55 * inch, 6.5 * inch, x + 0.72 * inch, 6.22 * inch)
-        c.line(x + 1.3 * inch, 6.5 * inch, x + 1.13 * inch, 6.22 * inch)
-        c.line(x + 0.25 * inch, 6.2 * inch, x + 1.6 * inch, 6.2 * inch)
-        c.setDash()
+        c.roundRect(x, 6.25 * inch, 1.85 * inch, 1.55 * inch, 8, stroke=1, fill=0)
+        c.setFont(FONT_BOLD, 11)
+        c.drawCentredString(x + 0.925 * inch, 7.4 * inch, name)
         c.setFont(FONT_REGULAR, 8)
-        c.drawCentredString(x + 0.925 * inch, 6.11 * inch, "fold base")
+        c.drawCentredString(x + 0.925 * inch, 7.18 * inch, role)
+        c.drawCentredString(x + 0.925 * inch, 7.04 * inch, "behind" if name != "KAMSA" else "front")
+        c.circle(x + 0.925 * inch, 6.82 * inch, 0.12 * inch, stroke=1, fill=0)
+        c.line(x + 0.55 * inch, 6.6 * inch, x + 1.3 * inch, 6.6 * inch)
+        c.line(x + 0.55 * inch, 6.6 * inch, x + 0.72 * inch, 6.38 * inch)
+        c.line(x + 1.3 * inch, 6.6 * inch, x + 1.13 * inch, 6.38 * inch)
+        c.setDash()
+        c.setStrokeColorRGB(0.2, 0.2, 0.2)
+        c.setDash(1, 2)
+        c.line(x + 0.2 * inch, 6.32 * inch, x + 1.65 * inch, 6.32 * inch)
+        c.setDash()
+        c.setFont(FONT_REGULAR, 7.5)
+        c.drawCentredString(x + 0.925 * inch, 6.08 * inch, "fold base")
         c.setDash(4, 3)
     events = ["The wedding celebration", "The chariot procession", "The heavenly voice", "Vasudeva protects Devaki"]
     for i, event in enumerate(events):

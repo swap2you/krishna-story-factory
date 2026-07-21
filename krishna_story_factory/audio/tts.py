@@ -42,6 +42,13 @@ class AudioGenerator:
         self.last_pronunciation = None
         self.last_voice_name = ""
         self.last_dictionary_attached = False
+        self.last_request_id = ""
+        self.last_trace_id = ""
+        self.last_character_cost = 0
+        self.last_model_id = ""
+        self.last_output_format = ""
+        self.last_voice_id = ""
+        self.last_request_metadata: dict = {}
 
     def generate_mp3(self, text: str, output_path) -> str:
         if self.mode == "test" or not self.settings.elevenlabs_enabled:
@@ -138,6 +145,28 @@ class AudioGenerator:
             response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
         if response.status_code >= 400:
             raise AudioGenerationError(f"ElevenLabs TTS failed: {response.status_code} {response.text[:500]}")
+        self.last_voice_id = voice_id
+        self.last_model_id = model_id
+        self.last_output_format = output_format
+        self.last_request_id = response.headers.get("request-id") or response.headers.get("x-request-id") or ""
+        self.last_trace_id = response.headers.get("x-trace-id") or response.headers.get("trace-id") or ""
+        cost_raw = response.headers.get("character-cost") or response.headers.get("x-character-count") or "0"
+        try:
+            self.last_character_cost = int(float(cost_raw))
+        except ValueError:
+            self.last_character_cost = 0
+        self.last_request_metadata = {
+            "voice_id": voice_id,
+            "voice_name": self.last_voice_name or LOCKED_VOICE_NAME,
+            "model_id": model_id,
+            "output_format": output_format,
+            "pronunciation_dictionary_attached": self.last_dictionary_attached,
+            "request_id": self.last_request_id,
+            "trace_id": self.last_trace_id,
+            "character_cost": self.last_character_cost,
+        }
+        if "<break" in narration_text.lower() or "[pause]" in narration_text.lower():
+            raise AudioGenerationError("Narration text still contains forbidden SSML/pause markup.")
         output_path.write_bytes(response.content)
 
     def _voice_settings(self, model_id: str) -> dict:
