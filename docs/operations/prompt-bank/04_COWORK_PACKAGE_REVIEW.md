@@ -1,7 +1,7 @@
 Review repaired Story 005 as a parent/teacher package. Do not modify files.
 
 Validate:
-- exactly seven local and Drive files;
+- exactly eight local and Drive files;
 - caption link works and points to containing folder;
 - activity has 3 useful story-specific pages;
 - matching activity is usable;

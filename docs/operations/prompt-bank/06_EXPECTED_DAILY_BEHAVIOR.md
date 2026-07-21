@@ -7,9 +7,9 @@ At 6:00 AM local time:
 3. It runs `run_daily_story.py --mode prod`.
 4. The daily guard permits at most one successful normal production story per local calendar day.
 5. It selects exactly one next-pending episode.
-6. It generates and validates the seven final files.
+6. It generates and validates the eight final files.
 7. Only after quality PASS does it create the story-specific Drive folder.
-8. It uploads exactly seven files.
+8. It uploads exactly eight files.
 9. It writes the Drive link into caption and manifest.
 10. It marks the episode done and advances once.
 11. It leaves Git clean.

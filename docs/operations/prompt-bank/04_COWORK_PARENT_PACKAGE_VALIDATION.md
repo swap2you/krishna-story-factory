@@ -5,10 +5,10 @@ C:\Development\Workspace\DevotionalRepo\krishna-story-factory
 
 Review only. Do not modify files.
 
-Inspect the actual seven final files and matching Google Drive folder.
+Inspect the actual eight final files and matching Google Drive folder.
 
 Validate:
-- exactly seven clear files;
+- exactly eight clear files;
 - caption link works and send-mode wording is correct;
 - parents understand what to read, play, print, and optionally complete;
 - package does not overwhelm;
@@ -20,7 +20,7 @@ Validate:
 - answer keys are hidden;
 - no blank/near-blank pages or generic filler;
 - parent effort estimate is honest;
-- Drive has exactly seven files;
+- Drive has exactly eight files;
 - scheduler is enabled at 6:00 AM and queue advanced once.
 
 Return:

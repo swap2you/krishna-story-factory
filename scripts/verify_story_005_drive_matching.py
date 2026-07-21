@@ -48,7 +48,10 @@ def main() -> int:
     ]
     missing = [label for label in labels if label not in text]
     print("DRIVE_PDF_MISSING", missing or "none")
-    return 0 if not missing and len(names) == 7 else 1
+    from krishna_story_factory.outputs import FINAL_OUTPUT_FILES
+
+    expected = set(FINAL_OUTPUT_FILES)
+    return 0 if not missing and set(names) == expected else 1
 
 
 if __name__ == "__main__":

@@ -103,8 +103,8 @@ def main() -> int:
             detailed_coloring_path=paths.coloring_page,
             mode="prod",
         )
-    if simple_score < 60:
-        raise SystemExit(f"{chapter} simple coloring score {simple_score}")
+        if simple_score < 60:
+            raise SystemExit(f"{chapter} simple coloring score {simple_score}")
 
         planner = ActivityPlanner(ROOT / "tracking" / "activity_history.csv", settings=settings)
         # Preserve existing activity PDFs for 001-004; only replan metadata for manifest.

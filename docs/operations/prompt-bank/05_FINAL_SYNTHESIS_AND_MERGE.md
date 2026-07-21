@@ -10,7 +10,7 @@ Do not broadly redesign locked systems.
 3. Add regression tests.
 4. Rebuild only affected Story 005 components.
 5. Replace only changed Drive files.
-6. Revalidate source, waveform, poster, coloring, activity, Drive read-back, seven-file contract, daily guard, scheduler, Git, and security.
+6. Revalidate source, waveform, poster, coloring, activity, Drive read-back, eight-file contract, daily guard, scheduler, Git, and security.
 7. Require local tests and Windows/Ubuntu CI.
 8. Ensure PR #3 excludes outputs, runtime state, secrets, prompt ZIPs, and local QA artifacts.
 9. When all three reviewers PASS and CI passes:
@@ -40,7 +40,7 @@ Coloring:
 Activity:
 Activity Pages:
 Activity QA:
-Drive Seven Files:
+Drive eight files:
 Drive Link Readback:
 Daily Guard:
 Scheduler:

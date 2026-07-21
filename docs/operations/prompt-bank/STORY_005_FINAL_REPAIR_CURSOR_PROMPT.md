@@ -13,7 +13,7 @@ Goal:
 Fix all verified Story 005, activity, Drive consistency, audio-validation, Git hygiene, and PR defects in one autonomous pass. Do not ask the user to run commands. Do not broadly redesign approved systems. Do not send WhatsApp or Telegram. Do not generate Story 006.
 
 Locked:
-- seven-file package contract
+- eight-file package contract
 - runtime queue architecture
 - same-day production guard design
 - 6:00 AM scheduler design
@@ -179,7 +179,7 @@ Correct upload flow:
 For Story 005, reuse:
 `1qqox6hHQzMR3HQU12TQv2xRb2IUlbXU3`
 
-Replace only changed files. Confirm exactly seven Drive files remain.
+Replace only changed files. Confirm exactly eight Drive files remain.
 
 ## G. Add portable audio waveform validation
 
@@ -231,8 +231,8 @@ Validate:
 - poster iconography PASS
 - coloring PASS
 - activity 3 pages and QA >= 90
-- exactly seven local files
-- exactly seven Drive files
+- exactly eight local files
+- exactly eight Drive files
 - Drive manifest/caption read-back links correct
 - queue remains 005 done and 006 pending
 - same-day guard PASS
@@ -259,7 +259,7 @@ Coloring QA:
 Activity Title:
 Activity Pages:
 Activity QA:
-Drive Seven Files:
+Drive eight files:
 Drive Manifest Link:
 Drive Caption Link:
 Daily Guard:

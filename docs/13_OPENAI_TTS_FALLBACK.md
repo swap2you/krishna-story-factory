@@ -48,5 +48,5 @@ No video. Pilot audio stays under `output/_audio_validation/` only.
 .\.venv\Scripts\python.exe scripts\openai_tts_fallback_pilot.py
 ```
 
-Current queue truth: Stories 001–005 done; Story 006 pending. Do not generate Story 006
-during the pilot. Scheduler must remain disabled.
+Current queue truth after the OpenAI TTS fallback merge: Stories 001–005 done;
+Story 006 (`the-birth-of-lord-krishna`) is next pending when the queue is ready.

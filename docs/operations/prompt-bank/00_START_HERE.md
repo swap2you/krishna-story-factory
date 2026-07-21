@@ -3,14 +3,15 @@
 Repository:
 `C:\Development\Workspace\DevotionalRepo\krishna-story-factory`
 
-Current production contract:
+Current production contract (exact eight files):
 1. `story.md`
 2. `narration.mp3`
 3. `story_poster.png`
 4. `coloring_page.png`
-5. `activity_sheet.pdf`
-6. `whatsapp_caption.txt`
-7. `manifest.json`
+5. `simple_coloring_page.png`
+6. `activity_sheet.pdf`
+7. `whatsapp_caption.txt`
+8. `manifest.json`
 
 Important operating rules:
 - Normal runs use `--mode prod`.
@@ -24,7 +25,7 @@ Important operating rules:
 - The scheduled task must not overlap another run.
 - Test mode must not mutate production queue state.
 - A manual production run plus a scheduler run on the same calendar day must not produce two stories unless an explicit force/rebuild option is used.
-- No video is currently part of the seven-file contract. Treat video as a future feature, not a missing output.
+- No video is currently part of the eight-file contract. Treat video as a future feature, not a missing output.
 
 Recommended sequence:
 1. Run `01_CURSOR_RUN_NEXT_STORY_AND_SET_6AM.md` in Cursor Agent mode.

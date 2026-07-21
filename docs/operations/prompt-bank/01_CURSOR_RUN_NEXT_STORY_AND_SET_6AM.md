@@ -3,7 +3,7 @@ You are the autonomous operator for:
 C:\Development\Workspace\DevotionalRepo\krishna-story-factory
 
 Goal:
-Generate exactly one next-pending Krishna Book story from scratch, validate its complete seven-file package, upload it to its own Google Drive folder, advance the queue exactly once, and change the existing Windows scheduled task to run every morning at 6:00 AM local time.
+Generate exactly one next-pending Krishna Book story from scratch, validate its complete eight-file package, upload it to its own Google Drive folder, advance the queue exactly once, and change the existing Windows scheduled task to run every morning at 6:00 AM local time.
 
 Do not ask the user to run terminal commands.
 Do not send WhatsApp or Telegram.
@@ -68,7 +68,7 @@ Expected:
 - Story 005 is selected.
 - Stories 001–004 are not regenerated.
 - The pipeline performs its own bounded repair loops.
-- The run creates exactly seven final files.
+- The run creates exactly eight final files.
 - The package is uploaded to a new per-story Drive folder.
 - Story 005 becomes done.
 - Story 006 becomes next pending.
@@ -146,7 +146,7 @@ Validate actual files, not just manifest claims.
 - parent-friendly and concise.
 
 ### manifest.json
-- exactly seven final filenames;
+- exactly eight final filenames;
 - correct episode metadata;
 - correct Drive folder ID/link;
 - correct audio/image/activity QA metrics;
@@ -157,11 +157,12 @@ Validate actual files, not just manifest claims.
 ## 5. Validate Google Drive
 
 1. Open/list the created Story 005 Drive folder.
-2. Confirm exactly these seven filenames:
+2. Confirm exactly these eight filenames:
    - story.md
    - narration.mp3
    - story_poster.png
    - coloring_page.png
+   - simple_coloring_page.png
    - activity_sheet.pdf
    - whatsapp_caption.txt
    - manifest.json
@@ -220,9 +221,9 @@ Tests:
 Daily Guard:
 Generated Story:
 Story Source Boundary:
-Local Seven Files:
+Local eight files:
 Drive Folder:
-Drive Seven Files:
+Drive eight files:
 Story Words:
 Audio Duration:
 Audio Size:
