@@ -108,7 +108,10 @@ def save_review(work_reviews: Path, name: str, review: VisionReview) -> None:
 POSTER_RUBRIC = """Score 0-100:
 story fidelity 20, facial expression 15, character-role correctness 15, composition 15,
 anatomy 10, devotional mood 10, cinematic richness 10, child safety 5.
-Reject below 86 for wrong roles, duplicated people, malformed hands, modern objects, cropped elements."""
+Reject below 86 for wrong roles, duplicated people, malformed hands, modern objects, cropped elements.
+Hard reject a separate visible sky Krishna/Vishnu figure when the story says Krishna remains unseen in the womb;
+the sacred presence should be shown as effulgence around Devaki, not a distinct crowned sky deity.
+When Brahma is present, he must be clearly four-headed."""
 
 COLORING_RUBRIC = """Score 0-100 by comparing the approved poster with the coloring page:
 character identity consistency 25, story accuracy 20, emotional expression 15, coloring usability 15,

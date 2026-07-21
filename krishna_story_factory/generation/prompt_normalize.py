@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 from ..models import PlanRow, StoryContent
 
 _STORY_CARD_STYLE = (
@@ -44,36 +46,16 @@ def normalize_image_prompts(content: StoryContent, plan: PlanRow) -> StoryConten
     hero = _ensure_story_card_square_prompt(content.hero_image_prompt or content.image_prompt or square, plan)
     line_art = _ensure_coloring_prompt(content.line_art_prompt, plan)
     coloring = _ensure_coloring_prompt(content.coloring_page_prompt or line_art, plan)
-    return StoryContent(
-        title=content.title,
-        recap=content.recap,
-        main_story=content.main_story,
-        moral=content.moral,
-        takeaway=content.takeaway,
-        five_star_challenge=content.five_star_challenge,
-        audio_script=content.audio_script,
-        whatsapp_caption=content.whatsapp_caption,
+    return replace(
+        content,
         image_prompt=hero,
         line_art_prompt=line_art,
-        story_card_text=content.story_card_text,
-        parent_notes=content.parent_notes,
         hero_image_prompt=hero,
         story_card_square_prompt=square,
         story_card_wide_prompt=wide,
         coloring_page_prompt=coloring,
-        recall_questions=content.recall_questions,
-        thinking_questions=content.thinking_questions,
-        word_search_words=content.word_search_words,
-        draw_activity=content.draw_activity,
-        family_activity=content.family_activity,
-        parent_discussion_note=content.parent_discussion_note,
-        bedtime_reflection=content.bedtime_reflection,
-        poster_visual_brief=content.poster_visual_brief,
-        coloring_visual_brief=content.coloring_visual_brief,
-        poster_one_liner=content.poster_one_liner,
-        scripture_reference=content.scripture_reference,
-        age_range=content.age_range,
-        source_reference=content.source_reference,
+        poster_visual_brief=content.poster_visual_brief or hero,
+        coloring_visual_brief=content.coloring_visual_brief or coloring,
     )
 
 

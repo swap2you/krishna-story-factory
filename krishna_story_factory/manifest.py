@@ -26,6 +26,7 @@ def write_manifest(
     drive_detail: str = "",
     poster_score: int = 0,
     coloring_score: int = 0,
+    simple_coloring_score: int = 0,
     reference_used: bool = False,
     activity: ActivityPlan | None = None,
     activity_page_count: int = 0,
@@ -33,6 +34,9 @@ def write_manifest(
     poster_reference_used: bool = False,
     style_reference_used: bool = False,
     identity_consistency_score: int = 0,
+    waveform_metrics=None,
+    matching_coverage: dict | None = None,
+    parent_answer_key: dict | None = None,
 ) -> None:
     now = datetime.now(ZoneInfo(settings.app_timezone)).isoformat(timespec="seconds")
     story_text = paths.story_md.read_text(encoding="utf-8") if paths.story_md.exists() else ""
@@ -40,6 +44,21 @@ def write_manifest(
     audio_words = word_count(content.audio_script)
     audio_duration = _mp3_duration(paths.narration_mp3)
     audio_size = paths.narration_mp3.stat().st_size if paths.narration_mp3.exists() else 0
+    metrics = {
+        "main_story_words": main_story_words,
+        "audio_script_words": audio_words,
+        "audio_duration_seconds": audio_duration,
+        "audio_bytes": audio_size,
+    }
+    if waveform_metrics is not None:
+        metrics.update(
+            {
+                "peak": getattr(waveform_metrics, "peak", None),
+                "clipping_ratio": getattr(waveform_metrics, "clipping_ratio", None),
+                "longest_silence_seconds": getattr(waveform_metrics, "longest_silence_seconds", None),
+                "waveform_validation_status": getattr(waveform_metrics, "status", None),
+            }
+        )
     manifest = {
         "app": "krishna-story-factory",
         "version": "2.0",
@@ -51,12 +70,7 @@ def write_manifest(
         "scripture_reference": plan.scripture_reference,
         "age_range": plan.age_range,
         "outputs": list(FINAL_OUTPUT_FILES),
-        "metrics": {
-            "main_story_words": main_story_words,
-            "audio_script_words": audio_words,
-            "audio_duration_seconds": audio_duration,
-            "audio_bytes": audio_size,
-        },
+        "metrics": metrics,
         "images": {
             "model": settings.openai_image_model,
             "quality": settings.openai_image_quality,
@@ -64,11 +78,15 @@ def write_manifest(
             "reference_image_used": reference_used,
             "poster_qa_score": poster_score,
             "coloring_qa_score": coloring_score,
+            "simple_coloring_qa_score": simple_coloring_score,
             "coloring_generation": {
                 "poster_reference_used": poster_reference_used,
                 "style_reference_used": style_reference_used,
                 "qa_score": coloring_score,
                 "identity_consistency_score": identity_consistency_score,
+            },
+            "simple_coloring_generation": {
+                "qa_score": simple_coloring_score,
             },
         },
         "activity": {
@@ -80,6 +98,8 @@ def write_manifest(
             "page_count": activity_page_count,
             "qa_score": activity_score,
             "answer_key": activity.answer_key if activity and activity.answer_key else [],
+            "matching_coverage": matching_coverage or {},
+            "parent_answer_key": parent_answer_key or {},
         },
         "quality": {
             "status": quality_status,
@@ -104,6 +124,9 @@ def update_component_manifest(
     coloring_score: int, identity_consistency_score: int, poster_reference_used: bool,
     style_reference_used: bool, drive_status: str | None = None, drive_detail: str | None = None,
     coloring_model: str = "", model_override: str = "", coloring_requested_size: str = "1024x1536",
+    matching_coverage: dict | None = None,
+    parent_answer_key: dict | None = None,
+    simple_coloring_score: int | None = None,
 ) -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     data["generated_at"] = datetime.now(ZoneInfo("America/New_York")).isoformat(timespec="seconds")
@@ -113,9 +136,16 @@ def update_component_manifest(
         "estimated_minutes": activity.estimated_minutes, "parent_effort": activity.parent_effort,
         "page_count": activity_page_count, "qa_score": activity_score,
         "answer_key": activity.answer_key,
+        "matching_coverage": matching_coverage or data.get("activity", {}).get("matching_coverage") or {},
+        "parent_answer_key": parent_answer_key
+        if parent_answer_key is not None
+        else data.get("activity", {}).get("parent_answer_key") or {},
     }
     images = data.setdefault("images", {})
     images["coloring_qa_score"] = coloring_score
+    if simple_coloring_score is not None:
+        images["simple_coloring_qa_score"] = simple_coloring_score
+        images["simple_coloring_generation"] = {"qa_score": simple_coloring_score}
     images["coloring_generation"] = {
         "poster_reference_used": poster_reference_used, "style_reference_used": style_reference_used,
         "qa_score": coloring_score, "identity_consistency_score": identity_consistency_score,

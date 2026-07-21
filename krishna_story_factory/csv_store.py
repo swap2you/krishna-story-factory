@@ -224,3 +224,43 @@ def already_sent_today(project_root: Path, timezone_name: str) -> bool:
     if not path.exists(): return False
     with path.open("r", newline="", encoding="utf-8-sig") as handle:
         return any(row.get("date") == today and (row.get("whatsapp_status", "").upper().startswith("SENT") or row.get("whatsapp_status") == "DELIVERED") for row in csv.DictReader(handle))
+
+
+def already_completed_production_today(project_root: Path, timezone_name: str) -> bool:
+    """True when a successful production package was logged today (local app timezone).
+
+    Test previews and failed runs do not count. Used to block a second normal prod run
+    on the same calendar day.
+    """
+    today = datetime.now(ZoneInfo(timezone_name)).date().isoformat()
+    story_log = project_root / "tracking" / "story_log.csv"
+    if story_log.exists():
+        with story_log.open("r", newline="", encoding="utf-8-sig") as handle:
+            for row in csv.DictReader(handle):
+                if row.get("date") != today:
+                    continue
+                if (row.get("status") or "").upper() != "SUCCESS":
+                    continue
+                quality = (row.get("quality_status") or "").upper()
+                if quality in {"TEST_PASS", "TEST"}:
+                    continue
+                output_dir = (row.get("output_dir") or "").replace("\\", "/").lower()
+                if "test_preview" in output_dir or "/.work/" in output_dir:
+                    continue
+                return True
+    run_history = project_root / "tracking" / "run_history.csv"
+    if run_history.exists():
+        with run_history.open("r", newline="", encoding="utf-8-sig") as handle:
+            for row in csv.DictReader(handle):
+                if (row.get("status") or "").upper() != "SUCCESS":
+                    continue
+                started = row.get("started_at") or row.get("completed_at") or ""
+                if not started.startswith(today):
+                    continue
+                detail = (row.get("detail") or "").lower()
+                if "skipped_already_completed_today" in detail:
+                    continue
+                if "test_preview" in detail:
+                    continue
+                return True
+    return False

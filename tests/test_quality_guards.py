@@ -19,6 +19,7 @@ def _paths(tmp_path: Path) -> PackagePaths:
         narration_mp3=root / "narration.mp3",
         story_poster=root / "story_poster.png",
         coloring_page=root / "coloring_page.png",
+        simple_coloring_page=root / "simple_coloring_page.png",
         activity_sheet=root / "activity_sheet.pdf",
         whatsapp_caption=root / "whatsapp_caption.txt",
         manifest=root / "manifest.json",

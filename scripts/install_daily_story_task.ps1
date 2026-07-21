@@ -1,4 +1,4 @@
-param([string]$TaskName = "Krishna Story Factory Daily", [string]$DailyTime = "05:30")
+param([string]$TaskName = "Krishna Story Factory Daily", [string]$DailyTime = "06:00", [switch]$Enable)
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -16,7 +16,11 @@ $Settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances 
 $Principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
 Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings `
     -Principal $Principal -Description "Generate and upload the next Krishna Story package; delivery senders disabled." -Force | Out-Null
-# Leave disabled by default; enable manually after validating a prod run.
-Disable-ScheduledTask -TaskName $TaskName | Out-Null
+if ($Enable) {
+    Enable-ScheduledTask -TaskName $TaskName | Out-Null
+} else {
+    # Leave disabled by default; pass -Enable after a validated prod run.
+    Disable-ScheduledTask -TaskName $TaskName | Out-Null
+}
 & (Join-Path $ProjectRoot "scripts\test_daily_story_task.ps1") -TaskName $TaskName
 

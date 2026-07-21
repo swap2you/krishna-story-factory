@@ -44,6 +44,7 @@ class MatchingCard:
     left: str
     right: str
     category: str
+    pair_id: str = ""
 
 
 @dataclass(slots=True)
@@ -133,6 +134,28 @@ class ActivityPage:
 
     def __post_init__(self) -> None:
         self.components = [_component_from_raw(self.page_type, item, index) for index, item in enumerate(self.components)]
+        if self.page_type in {"MATCHING_CARDS", "SORTING_CARDS"}:
+            cards = [c for c in self.components if isinstance(c, MatchingCard)]
+            # Flat string lists are authored as [lefts..., rights...]; raw conversion
+            # temporarily stores each string as left with a placeholder right.
+            if (
+                len(cards) >= 2
+                and len(cards) % 2 == 0
+                and all((c.right or "").startswith("Story match ") for c in cards)
+            ):
+                half = len(cards) // 2
+                lefts = [c.left for c in cards[:half]]
+                rights = [c.left for c in cards[half:]]
+                self.components = [
+                    MatchingCard(lefts[i], rights[i], "story", pair_id=chr(65 + i))
+                    for i in range(half)
+                ]
+            letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            next_id = 0
+            for component in self.components:
+                if isinstance(component, MatchingCard) and not (component.pair_id or "").strip():
+                    component.pair_id = letters[next_id % len(letters)]
+                    next_id += 1
 
     def to_dict(self) -> dict:
         return asdict(self)

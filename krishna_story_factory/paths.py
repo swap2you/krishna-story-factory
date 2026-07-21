@@ -22,6 +22,7 @@ def make_package_paths(output_root: Path, plan: PlanRow) -> PackagePaths:
         narration_mp3=folder / "narration.mp3",
         story_poster=folder / "story_poster.png",
         coloring_page=folder / "coloring_page.png",
+        simple_coloring_page=folder / "simple_coloring_page.png",
         activity_sheet=folder / "activity_sheet.pdf",
         whatsapp_caption=folder / "whatsapp_caption.txt",
         manifest=folder / "manifest.json",

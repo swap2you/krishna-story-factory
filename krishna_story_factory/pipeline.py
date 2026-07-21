@@ -12,8 +12,11 @@ from zoneinfo import ZoneInfo
 from .audio.tts import AudioGenerator
 from .config import Settings
 from .content.caption import format_whatsapp_caption
+from .content.parent_answer_key import build_parent_answer_key, validate_parent_answer_key
 from .csv_store import (
     acquire_pipeline_lock,
+    already_completed_production_today,
+    append_run_history,
     append_storage_log,
     append_story_log,
     read_next_pending,
@@ -24,7 +27,7 @@ from .csv_store import (
 )
 from .generation.story_generator import StoryGenerator
 from .generation.source_guard import run_source_guard
-from .images.generator import generate_coloring, generate_poster
+from .images.generator import generate_coloring, generate_poster, generate_simple_coloring
 from .images.client import ImageClient
 from .manifest import update_component_manifest, write_manifest
 from .models import PipelineResult, PlanRow, StoryContent
@@ -33,8 +36,16 @@ from .paths import make_package_paths
 from .activities.planner import ActivityPlanner
 from .pdf.activity_sheet import ActivitySheetGenerator, validate_activity_pdf
 from .quality.checks import run_quality_checks
-from .storage.google_drive_uploader import replace_component_files, upload_final_package
+from .storage.google_drive_uploader import (
+    ensure_story_folder,
+    replace_component_files,
+    upload_files_to_folder,
+    upload_final_package,
+    verify_drive_text_links,
+)
 from .images.vision_qa import review_image, save_review
+from .audio.waveform import WaveformMetrics, validate_mp3_waveform
+from .activities.qa import semantic_activity_errors
 from .work import cleanup_work, new_work_paths, prune_output_folder
 
 logger = logging.getLogger(__name__)
@@ -82,6 +93,27 @@ def run_daily_story(
     now = datetime.now(ZoneInfo(settings.app_timezone))
     plan: PlanRow | None = None
     try:
+        normal_prod = mode == "prod" and not force and not rebuild and not rebuild_components
+        if normal_prod and already_completed_production_today(settings.project_root, settings.app_timezone):
+            detail = "A successful production story already completed today."
+            append_run_history(
+                settings.project_root,
+                {
+                    "started_at": now.isoformat(timespec="seconds"),
+                    "completed_at": now.isoformat(timespec="seconds"),
+                    "status": "SKIPPED_ALREADY_COMPLETED_TODAY",
+                    "chapter_no": "",
+                    "slug": "",
+                    "detail": detail,
+                    "exit_code": "0",
+                },
+            )
+            return {
+                "status": "SKIPPED_ALREADY_COMPLETED_TODAY",
+                "detail": detail,
+                "errors": "",
+            }
+
         if chapter:
             plan = read_plan_by_chapter(settings.project_root, chapter)
             if not plan:
@@ -123,6 +155,19 @@ def run_daily_story(
                 "errors": result.errors,
             },
         )
+        if mode == "prod":
+            append_run_history(
+                settings.project_root,
+                {
+                    "started_at": now.isoformat(timespec="seconds"),
+                    "completed_at": datetime.now(ZoneInfo(settings.app_timezone)).isoformat(timespec="seconds"),
+                    "status": result.status,
+                    "chapter_no": plan.chapter_no,
+                    "slug": plan.slug,
+                    "detail": result.detail or result.errors,
+                    "exit_code": "0" if result.status == "SUCCESS" else "1",
+                },
+            )
         return {
             "status": result.status,
             "output_dir": result.output_dir,
@@ -137,12 +182,11 @@ def run_daily_story(
             "errors": result.errors,
         }
     except Exception as exc:
-        if plan and plan.row_index is not None and not rebuild_components:
+        if plan and plan.row_index is not None and not rebuild_components and mode != "test":
             update_plan_status(settings.project_root, plan, "pending")
         raise PipelineError(str(exc)) from exc
     finally:
         release_pipeline_lock(lock)
-
 
 def _run_with_repairs(
     settings: Settings,
@@ -192,7 +236,7 @@ def _run_once(
 
     audio_gen = AudioGenerator(settings, mode)
     audio_source = audio_gen.generate_mp3(content.audio_script, paths.narration_mp3)
-    _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
+    waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
 
     poster_score, poster_ref = generate_poster(
         settings,
@@ -213,6 +257,19 @@ def _run_once(
         poster_path=paths.story_poster,
         mode=mode,
     )
+    simple_score, _simple_ref = generate_simple_coloring(
+        settings,
+        story_md=story_md,
+        content=content,
+        output_path=paths.simple_coloring_page,
+        work_candidates=work.coloring_candidates,
+        work_reviews=work.reviews,
+        poster_path=paths.story_poster,
+        detailed_coloring_path=paths.coloring_page,
+        mode=mode,
+    )
+    if simple_score < 86 and mode == "prod":
+        raise PipelineError(f"Simple coloring score {simple_score} below threshold 86.")
     reference_used = poster_ref or poster_content_ref or coloring_style_ref
 
     activity_planner = ActivityPlanner(settings.project_root / "tracking" / "activity_history.csv", settings=settings)
@@ -222,17 +279,37 @@ def _run_once(
     pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir, activity=activity)
     if pdf_check.errors:
         raise PipelineError("Activity PDF validation failed: " + " | ".join(pdf_check.errors))
-    activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
-    if activity_score < 88:
+    parent_key = build_parent_answer_key(activity)
+    key_errors = validate_parent_answer_key(activity, parent_key)
+    if key_errors:
+        raise PipelineError("Parent answer key incomplete: " + " | ".join(key_errors))
+    activity_score = _review_activity(
+        settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
+    )
+    if activity_score < 90:
         activity = _repair_activity_pack(settings, plan, story_md, activity, activity_score)
+        parent_key = build_parent_answer_key(activity)
+        key_errors = validate_parent_answer_key(activity, parent_key)
+        if key_errors:
+            raise PipelineError("Repaired parent answer key incomplete: " + " | ".join(key_errors))
         pdf_check = ActivitySheetGenerator().generate(plan, activity, paths.activity_sheet)
         pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir, activity=activity)
         if pdf_check.errors:
             raise PipelineError("Repaired activity PDF validation failed: " + " | ".join(pdf_check.errors))
-        activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
-        if activity_score < 88:
-            raise PipelineError(f"Activity vision score {activity_score} below threshold 88 after repair.")
+        activity_score = _review_activity(
+            settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
+        )
+        if activity_score < 90:
+            raise PipelineError(f"Activity vision score {activity_score} below threshold 90 after repair.")
+    will_upload = mode != "test" and not no_upload and settings.google_drive_upload_enabled
     package_link = None if mode == "test" else (settings.package_public_link or settings.google_drive_folder_url)
+    drive_folder_id = ""
+    if will_upload:
+        folder = ensure_story_folder(settings, folder_name=paths.root.name)
+        if folder.status != "READY" or not folder.folder_id or not folder.package_link:
+            raise PipelineError(f"Drive folder ensure failed: {folder.detail}")
+        package_link = folder.package_link
+        drive_folder_id = folder.folder_id
     caption = (
         f"TEST PREVIEW — NOT PUBLISHABLE\n\n{content.title}\nNo upload or parent delivery was performed."
         if mode == "test" else
@@ -247,6 +324,9 @@ def _run_once(
     if not ok:
         raise PipelineError(" | ".join(quality_errors))
 
+    initial_drive_status = "SKIPPED" if mode == "test" else ("UPLOADING" if will_upload else "PENDING")
+    if no_upload and mode != "test":
+        initial_drive_status = "SKIPPED"
     write_manifest(
         settings=settings,
         plan=plan,
@@ -258,19 +338,102 @@ def _run_once(
         quality_warnings=quality_warnings,
         audio_source=audio_source,
         package_link=package_link,
-        drive_status="SKIPPED" if mode == "test" else "PENDING",
-        drive_detail="",
+        drive_status=initial_drive_status,
+        drive_detail="" if will_upload else ("Upload disabled by flag." if no_upload else ""),
         poster_score=poster_score,
         coloring_score=coloring_score,
+        simple_coloring_score=simple_score,
         reference_used=reference_used,
         activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
         poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
         identity_consistency_score=identity_score,
+        waveform_metrics=waveform_metrics,
+        matching_coverage=pdf_check.matching_coverage,
+        parent_answer_key=parent_key.to_dict(),
     )
 
     drive_status = "SKIPPED"
     drive_detail = "Upload disabled by flag." if no_upload else ""
-    if mode != "test" and not no_upload and settings.google_drive_upload_enabled:
+    if will_upload:
+        upload = upload_files_to_folder(
+            settings,
+            folder_id=drive_folder_id,
+            package_link=package_link or "",
+            source_dir=paths.root,
+            files=FINAL_OUTPUT_FILES,
+            folder_name=paths.root.name,
+        )
+        if upload.status != "UPLOADED":
+            raise PipelineError(f"Drive upload failed: {upload.detail}")
+        ok_verify, verify_detail = verify_drive_text_links(
+            settings, folder_id=drive_folder_id, package_link=package_link or ""
+        )
+        if not ok_verify:
+            raise PipelineError(f"Drive verify failed after upload: {verify_detail}")
+        drive_status = "UPLOADED"
+        drive_detail = upload.detail
+        write_manifest(
+            settings=settings,
+            plan=plan,
+            content=content,
+            paths=paths,
+            mode=mode,
+            quality_status="PASS",
+            quality_errors=quality_errors,
+            quality_warnings=quality_warnings,
+            audio_source=audio_source,
+            package_link=package_link,
+            drive_status="UPLOADED",
+            drive_detail=drive_detail,
+            poster_score=poster_score,
+            coloring_score=coloring_score,
+            simple_coloring_score=simple_score,
+            reference_used=reference_used,
+            activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
+            poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
+            identity_consistency_score=identity_score,
+            waveform_metrics=waveform_metrics,
+            matching_coverage=pdf_check.matching_coverage,
+            parent_answer_key=parent_key.to_dict(),
+        )
+        paths.whatsapp_caption.write_text(
+            format_whatsapp_caption(
+                story_title=content.title,
+                package_link=package_link,
+                activity_title=activity.activity_title,
+                recommended_send_mode=activity.recommended_send_mode,
+            ),
+            encoding="utf-8",
+        )
+        reupload = upload_files_to_folder(
+            settings,
+            folder_id=drive_folder_id,
+            package_link=package_link or "",
+            source_dir=paths.root,
+            files=("manifest.json", "whatsapp_caption.txt"),
+            folder_name=paths.root.name,
+        )
+        if reupload.status != "UPLOADED":
+            raise PipelineError(f"Drive manifest re-upload failed: {reupload.detail}")
+        ok_verify2, verify_detail2 = verify_drive_text_links(
+            settings, folder_id=drive_folder_id, package_link=package_link or ""
+        )
+        if not ok_verify2:
+            raise PipelineError(f"Drive verify failed after manifest finalize: {verify_detail2}")
+        append_storage_log(
+            settings.project_root,
+            {
+                "date": now.date().isoformat(),
+                "chapter_no": plan.chapter_no,
+                "slug": plan.slug,
+                "mode": mode,
+                "status": drive_status,
+                "detail": drive_detail,
+                "folder_link": package_link,
+                "created_at": now.isoformat(timespec="seconds"),
+            },
+        )
+    elif mode != "test" and not no_upload and settings.google_drive_local_sync_root:
         upload = upload_final_package(settings, folder_name=paths.root.name, source_dir=paths.root)
         drive_status = upload.status
         drive_detail = upload.detail
@@ -307,14 +470,18 @@ def _run_once(
         quality_warnings=quality_warnings,
         audio_source=audio_source,
         package_link=package_link,
-        drive_status=drive_status,
+        drive_status=drive_status if mode != "test" else "SKIPPED",
         drive_detail=drive_detail,
         poster_score=poster_score,
         coloring_score=coloring_score,
+        simple_coloring_score=simple_score,
         reference_used=reference_used,
         activity=activity, activity_page_count=pdf_check.page_count, activity_score=activity_score,
         poster_reference_used=poster_content_ref, style_reference_used=coloring_style_ref,
         identity_consistency_score=identity_score,
+        waveform_metrics=waveform_metrics,
+        matching_coverage=pdf_check.matching_coverage,
+        parent_answer_key=parent_key.to_dict(),
     )
 
     ok, quality_errors, quality_warnings = run_quality_checks(
@@ -328,7 +495,9 @@ def _run_once(
 
     final_files = [p for p in paths.root.iterdir() if p.is_file()]
     if {p.name for p in final_files} != set(FINAL_OUTPUT_FILES):
-        raise PipelineError(f"Final folder must contain exactly 7 files, found: {[p.name for p in final_files]}")
+        raise PipelineError(
+            f"Final folder must contain exactly {len(FINAL_OUTPUT_FILES)} files, found: {[p.name for p in final_files]}"
+        )
 
     if mode != "test":
         activity_planner.record(plan, activity)
@@ -346,16 +515,20 @@ def _run_once(
         drive_status=drive_status,
         poster_score=poster_score,
         coloring_score=coloring_score,
+        simple_coloring_score=simple_score,
         reference_used=reference_used,
         detail=drive_detail,
     )
 
 
-def _validate_audio(path: Path, settings: Settings, mode: str, *, low_credit: bool = False) -> None:
+def _validate_audio(
+    path: Path, settings: Settings, mode: str, *, low_credit: bool = False
+) -> WaveformMetrics | None:
     if mode == "test":
-        return
+        return None
     if not path.exists() or path.stat().st_size <= 500 * 1024:
         raise PipelineError("narration.mp3 missing or below 500 KB.")
+    duration: float | None = None
     try:
         from mutagen.mp3 import MP3
 
@@ -366,6 +539,11 @@ def _validate_audio(path: Path, settings: Settings, mode: str, *, low_credit: bo
             raise PipelineError(f"Audio duration {duration:.0f}s outside {window} minute window.")
     except ImportError:
         pass
+
+    metrics = validate_mp3_waveform(path, expected_duration=duration)
+    if metrics.status != "PASS":
+        raise PipelineError(f"Audio waveform validation failed: {metrics.detail}")
+    return metrics
 
 
 def _rebuild_components(
@@ -389,16 +567,25 @@ def _rebuild_components(
     pdf_check = validate_activity_pdf(temp_activity, render_dir, activity=activity)
     if pdf_check.errors:
         raise PipelineError("Activity PDF validation failed: " + " | ".join(pdf_check.errors))
-    activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
-    if activity_score < 88:
+    parent_key = build_parent_answer_key(activity)
+    key_errors = validate_parent_answer_key(activity, parent_key)
+    if key_errors:
+        raise PipelineError("Parent answer key incomplete: " + " | ".join(key_errors))
+    activity_score = _review_activity(
+        settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
+    )
+    if activity_score < 90:
         activity = _repair_activity_pack(settings, plan, story_md, activity, activity_score)
+        parent_key = build_parent_answer_key(activity)
         ActivitySheetGenerator().generate(plan, activity, temp_activity)
         pdf_check = validate_activity_pdf(temp_activity, render_dir, activity=activity)
         if pdf_check.errors:
             raise PipelineError("Repaired activity PDF validation failed: " + " | ".join(pdf_check.errors))
-        activity_score = _review_activity(settings, story_md, render_dir, work.reviews, mode, activity=activity)
-        if activity_score < 88:
-            raise PipelineError(f"Activity vision score {activity_score} below threshold 88 after repair.")
+        activity_score = _review_activity(
+            settings, story_md, render_dir, work.reviews, mode, activity=activity, chapter_no=plan.chapter_no, slug=plan.slug,
+        )
+        if activity_score < 90:
+            raise PipelineError(f"Activity vision score {activity_score} below threshold 90 after repair.")
     coloring_score, poster_ref, style_ref, identity_score = generate_coloring(
         settings, story_md=story_md, content=content, output_path=temp_coloring,
         work_candidates=work.coloring_candidates, work_reviews=work.reviews,
@@ -406,8 +593,23 @@ def _rebuild_components(
     )
     if coloring_score < 90 or identity_score < 90:
         raise PipelineError(f"Coloring score {coloring_score}, identity score {identity_score}; both must be at least 90.")
+    temp_simple = work.root / "simple_coloring_page.png"
+    simple_score, _simple_ref = generate_simple_coloring(
+        settings,
+        story_md=story_md,
+        content=content,
+        output_path=temp_simple,
+        work_candidates=work.coloring_candidates,
+        work_reviews=work.reviews,
+        poster_path=paths.story_poster,
+        detailed_coloring_path=temp_coloring,
+        mode=mode,
+    )
+    if simple_score < 86 and mode == "prod":
+        raise PipelineError(f"Simple coloring score {simple_score} below threshold 86.")
     temp_activity.replace(paths.activity_sheet)
     temp_coloring.replace(paths.coloring_page)
+    temp_simple.replace(paths.simple_coloring_page)
     update_component_manifest(
         paths.manifest, activity=activity, activity_page_count=pdf_check.page_count,
         activity_score=activity_score, coloring_score=coloring_score,
@@ -415,6 +617,9 @@ def _rebuild_components(
         style_reference_used=style_ref, drive_status="SKIPPED" if no_upload else "PENDING_COMPONENT_REPLACE",
         drive_detail="Upload disabled by flag." if no_upload else "",
         coloring_model=ImageClient(settings).model, model_override=ImageClient(settings).model_override,
+        matching_coverage=pdf_check.matching_coverage,
+        parent_answer_key=parent_key.to_dict(),
+        simple_coloring_score=simple_score,
     )
     upload = None
     if not no_upload:
@@ -426,6 +631,9 @@ def _rebuild_components(
                 identity_consistency_score=identity_score, poster_reference_used=poster_ref,
                 style_reference_used=style_ref, drive_status=upload.status, drive_detail=upload.detail,
                 coloring_model=ImageClient(settings).model, model_override=ImageClient(settings).model_override,
+                matching_coverage=pdf_check.matching_coverage,
+                parent_answer_key=parent_key.to_dict(),
+                simple_coloring_score=simple_score,
             )
         if upload.status not in {"UPLOADED", "LOCAL_SYNC", "SKIPPED"}:
             raise PipelineError(upload.detail)
@@ -434,7 +642,7 @@ def _rebuild_components(
         raise PipelineError("Locked package files changed during component-only rebuild.")
     final_names = {path.name for path in paths.root.iterdir() if path.is_file()}
     if final_names != set(FINAL_OUTPUT_FILES):
-        raise PipelineError(f"Final folder must contain exactly 7 files, found: {sorted(final_names)}")
+        raise PipelineError(f"Final folder must contain exactly {len(FINAL_OUTPUT_FILES)} files, found: {sorted(final_names)}")
     planner.record(plan, activity)
     cleanup_work(work, keep=debug or settings.debug_artifacts)
     return {
@@ -442,6 +650,7 @@ def _rebuild_components(
         "whatsapp_status": "SKIPPED_COMPONENT_REBUILD", "activity_type": activity.activity_type,
         "activity_title": activity.activity_title, "activity_score": activity_score,
         "activity_pages": pdf_check.page_count, "coloring_score": coloring_score,
+        "simple_coloring_score": simple_score,
         "identity_consistency_score": identity_score,
         "drive_upload_status": upload.status if upload else "SKIPPED",
         "drive_detail": upload.detail if upload else "Upload disabled by flag.",
@@ -489,9 +698,27 @@ def _repair_activity_pack(settings: Settings, plan: PlanRow, story_md: str, acti
 
 def _review_activity(
     settings: Settings, story_md: str, render_dir: Path, reviews_dir: Path, mode: str,
-    *, activity=None,
+    *, activity=None, chapter_no: str = "", slug: str = "",
 ) -> int:
     pages = sorted(render_dir.glob("activity_page_*.png"))
+    if activity is not None:
+        semantic_errors = semantic_activity_errors(activity)
+        if semantic_errors:
+            _retain_activity_qa_evidence(
+                settings,
+                chapter_no=chapter_no,
+                activity=activity,
+                contact_sheet=None,
+                review_payload={
+                    "score": 0,
+                    "issues": semantic_errors,
+                    "hard_rejection": True,
+                    "hard_rejection_reasons": semantic_errors,
+                },
+            )
+            if mode == "test":
+                return 0
+            return 0
     if mode == "test" or not settings.openai_api_key:
         return 90
     if not pages:
@@ -512,7 +739,44 @@ incomplete assembly, repetitive or burdensome activities, visible answer keys, o
     contact_sheet = _activity_contact_sheet(pages, reviews_dir / "activity_contact_sheet.png")
     review = review_image(settings, story_md=story_md, image_path=contact_sheet, kind="activity", rubric=rubric)
     save_review(reviews_dir, "activity_final", review)
+    _retain_activity_qa_evidence(
+        settings,
+        chapter_no=chapter_no,
+        activity=activity,
+        contact_sheet=contact_sheet,
+        review_payload={
+            "score": review.score,
+            "issues": review.issues,
+            "hard_rejection": review.hard_rejection,
+            "hard_rejection_reasons": review.hard_rejection_reasons,
+            "raw": review.raw,
+        },
+    )
     return review.score
+
+
+def _retain_activity_qa_evidence(
+    settings: Settings,
+    *,
+    chapter_no: str,
+    activity=None,
+    contact_sheet: Path | None,
+    review_payload: dict,
+) -> None:
+    chapter = (chapter_no or "unknown").strip() or "unknown"
+    qa_dir = settings.project_root / ".work" / "qa" / chapter
+    qa_dir.mkdir(parents=True, exist_ok=True)
+    (qa_dir / "activity_final.json").write_text(
+        json.dumps(review_payload, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    if activity is not None:
+        (qa_dir / "activity_pack.json").write_text(
+            json.dumps(activity.to_dict(), indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    if contact_sheet and contact_sheet.exists():
+        shutil.copy2(contact_sheet, qa_dir / "activity_contact_sheet.png")
 
 
 def _activity_contact_sheet(pages: list[Path], output: Path) -> Path:
@@ -533,17 +797,60 @@ def _activity_contact_sheet(pages: list[Path], output: Path) -> Path:
 
 def _content_from_story_md(story_md: str, plan: PlanRow) -> StoryContent:
     def section(name: str, next_names: tuple[str, ...]) -> str:
-        match = re.search(rf"## {re.escape(name)}\s*\n(.*?)(?=\n## (?:{'|'.join(map(re.escape, next_names))})|\n-->|\Z)", story_md, re.S | re.I)
+        match = re.search(
+            rf"## {re.escape(name)}\s*\n(.*?)(?=\n## (?:{'|'.join(map(re.escape, next_names))})|\n-->|\Z)",
+            story_md,
+            re.S | re.I,
+        )
         return match.group(1).strip() if match else ""
-    title_match = re.search(r"^#\s+(.+)$", story_md, re.M)
+
+    title_match = re.search(r"^##\s+Story\s+\d+\s*[—-]\s*(.+)$", story_md, re.M | re.I)
+    if not title_match:
+        title_match = re.search(r"^#\s+(.+)$", story_md, re.M)
     coloring = section("Coloring Visual Brief", ("Activity Data",))
+    audio = section("Audio Narration", ("Poster Visual Brief", "Audio Performance Script")) or section(
+        "Audio Performance Script", ("Poster Visual Brief",)
+    )
+    meaning = section("Devotional Meaning", ("Five Lessons", "Moral")) or section("Moral", ("Takeaway", "Five Lessons"))
+    lessons_raw = section("Five Lessons", ("Think About It", "Takeaway", "Five-Star Challenge"))
+    lessons = [re.sub(r"^\d+\.\s*", "", line).strip() for line in lessons_raw.splitlines() if line.strip()]
+    questions_raw = section("Think About It", ("Five-Star Challenge",))
+    questions = [re.sub(r"^\d+\.\s*", "", line).strip() for line in questions_raw.splitlines() if line.strip()]
+    challenge_raw = section("Five-Star Challenge", ("Bedtime Prayer", "Parent Discussion Note", "Parent/Teacher Note"))
+    challenge = [re.sub(r"^\d+\.\s*", "", line).strip() for line in challenge_raw.splitlines() if line.strip()]
+    prayer = section("Bedtime Prayer", ("Next Story Preview", "Parent/Teacher Note")) or section(
+        "Bedtime Reflection", ("Parent Discussion Note", "Parent/Teacher Note")
+    )
+    parent = section("Parent/Teacher Note", ("Audio Narration", "Audio Performance Script")) or section(
+        "Parent Discussion Note", ("Bedtime Reflection", "Audio Performance Script")
+    )
+    greeting_match = re.search(r"^(Hare\s+K[^\n]+)", story_md, re.M | re.I)
     return StoryContent(
         title=title_match.group(1).strip() if title_match else plan.title,
-        recap=section("Recap", ("Main Story",)), main_story=section("Main Story", ("Moral",)),
-        moral=section("Moral", ("Takeaway",)), takeaway=section("Takeaway", ("Five-Star Challenge",)),
-        five_star_challenge=[], audio_script=section("Audio Performance Script", ("Poster Visual Brief",)),
-        coloring_visual_brief=coloring, line_art_prompt=coloring, coloring_page_prompt=coloring,
-        source_reference=plan.source_reference, scripture_reference=plan.scripture_reference, age_range=plan.age_range,
+        recap=section("Recap", ("Main Story",)),
+        main_story=section("Main Story", ("Devotional Meaning", "Moral")),
+        moral=meaning or (lessons[0] if lessons else ""),
+        takeaway=lessons[-1] if lessons else section("Takeaway", ("Five-Star Challenge",)),
+        five_star_challenge=challenge[:5],
+        audio_script=audio,
+        coloring_visual_brief=coloring,
+        line_art_prompt=coloring,
+        coloring_page_prompt=coloring,
+        source_reference=plan.source_reference,
+        scripture_reference=plan.scripture_reference,
+        age_range=plan.age_range,
+        greeting=greeting_match.group(1).strip() if greeting_match else "",
+        story_number=plan.chapter_no,
+        devotional_meaning=meaning,
+        five_lessons=lessons[:5],
+        think_about_it=questions[:5],
+        bedtime_prayer=prayer,
+        next_story_preview=section("Next Story Preview", ("Parent/Teacher Note",)),
+        parent_note=parent,
+        parent_notes=parent,
+        parent_discussion_note=parent,
+        bedtime_reflection=questions[0] if questions else prayer,
+        story_format="v2",
     )
 
 
@@ -558,3 +865,117 @@ def _sha256(path: Path) -> str:
 def _folder_id(link: str) -> str:
     match = re.search(r"/folders/([A-Za-z0-9_-]+)", link or "")
     return match.group(1) if match else ""
+
+
+def parse_rebuild_range(spec: str) -> tuple[str, str]:
+    raw = (spec or "").strip()
+    if ":" not in raw:
+        raise PipelineError("rebuild-range must look like 001:005")
+    start_s, end_s = raw.split(":", 1)
+    start, end = start_s.strip().zfill(3), end_s.strip().zfill(3)
+    if not (start.isdigit() and end.isdigit() and int(start) <= int(end)):
+        raise PipelineError(f"Invalid rebuild-range: {spec!r}")
+    return start, end
+
+
+def archive_packages_for_range(settings: Settings, *, start: str, end: str) -> Path:
+    stamp = datetime.now(ZoneInfo(settings.app_timezone)).strftime("%Y%m%d_%H%M%S")
+    archive_root = settings.output_root / "_archive" / f"pre_full_v2_rebuild_{stamp}"
+    archive_root.mkdir(parents=True, exist_ok=True)
+    for chapter in range(int(start), int(end) + 1):
+        chapter_no = f"{chapter:03d}"
+        plan = read_plan_by_chapter(settings.project_root, chapter_no)
+        if not plan:
+            continue
+        src = make_package_paths(settings.output_root, plan).root
+        if src.exists():
+            dest = archive_root / src.name
+            if dest.exists():
+                shutil.rmtree(dest, ignore_errors=True)
+            shutil.copytree(src, dest)
+    return archive_root
+
+
+def restore_queue_snapshot(project_root: Path, snapshot: list[dict[str, str]]) -> None:
+    path = project_root / "tracking" / "queue_state.csv"
+    from .csv_store import QUEUE_FIELDS, _write_queue
+
+    rows = []
+    for row in snapshot:
+        cleaned = {field: row.get(field, "") for field in QUEUE_FIELDS}
+        rows.append(cleaned)
+    _write_queue(path, rows)
+
+
+def rebuild_story_range(
+    settings: Settings,
+    *,
+    range_spec: str,
+    mode: str = "prod",
+    preserve_queue: bool = True,
+    replace_drive: bool = True,
+    debug: bool = False,
+    archive: bool = True,
+) -> dict[str, object]:
+    """Rebuild completed stories in a chapter range without advancing past the range."""
+    start, end = parse_rebuild_range(range_spec)
+    if int(end) >= 6:
+        raise PipelineError("Rebuild range must not include Story 006 or later in this release.")
+    from .csv_store import read_queue_state
+
+    queue_before = read_queue_state(settings.project_root)
+    archive_path = ""
+    if archive:
+        archive_path = str(archive_packages_for_range(settings, start=start, end=end))
+    results: list[dict[str, object]] = []
+    try:
+        for chapter in range(int(start), int(end) + 1):
+            chapter_no = f"{chapter:03d}"
+            result = run_daily_story(
+                settings,
+                mode=mode,
+                force=True,
+                chapter=chapter_no,
+                rebuild=True,
+                no_upload=not replace_drive,
+                debug=debug,
+            )
+            results.append({"chapter_no": chapter_no, **result})
+            if result.get("status") != "SUCCESS":
+                raise PipelineError(f"Rebuild failed for {chapter_no}: {result}")
+    finally:
+        if preserve_queue:
+            # Keep Drive IDs / completion metadata for chapters outside the rebuilt set,
+            # and force 001–005 done + 006+ pending for safety.
+            restored = {row.get("chapter_no", "").zfill(3): dict(row) for row in queue_before}
+            for chapter in range(int(start), int(end) + 1):
+                chapter_no = f"{chapter:03d}"
+                row = restored.setdefault(chapter_no, {"chapter_no": chapter_no, "slug": "", "status": "done"})
+                row["status"] = "done"
+                # Prefer freshly uploaded folder ids when present.
+                matching = next((r for r in results if r.get("chapter_no") == chapter_no), None)
+                if matching and matching.get("package_link"):
+                    fid = _folder_id(str(matching.get("package_link") or ""))
+                    if fid:
+                        row["drive_folder_id"] = fid
+            for chapter_no, row in restored.items():
+                if int(chapter_no or "0") >= 6:
+                    row["status"] = "pending"
+            ordered = sorted(restored.values(), key=lambda r: int(r.get("chapter_no") or 0))
+            restore_queue_snapshot(settings.project_root, ordered)
+
+    queue_after = {row["chapter_no"].zfill(3): row["status"] for row in read_queue_state(settings.project_root)}
+    if queue_after.get("006") != "pending":
+        raise PipelineError("Queue integrity failure: Story 006 must remain pending after rebuild.")
+    for chapter in range(int(start), int(end) + 1):
+        if queue_after.get(f"{chapter:03d}") != "done":
+            raise PipelineError(f"Queue integrity failure: Story {chapter:03d} must remain done.")
+    return {
+        "status": "SUCCESS",
+        "rebuild_range": f"{start}:{end}",
+        "preserve_queue": preserve_queue,
+        "archive_path": archive_path,
+        "results": results,
+        "queue": queue_after,
+        "next_pending": "006",
+    }

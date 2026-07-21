@@ -110,6 +110,23 @@ if latest_dir:
                 "whatsapp_template": manifest.get("whatsapp", {}).get("template_name"),
             }
         )
+        activity = manifest.get("activity", {})
+        parent_key = activity.get("parent_answer_key") or {}
+        with st.expander("Parent Answer Key", expanded=False):
+            if parent_key:
+                st.json(parent_key)
+                from krishna_story_factory.content.parent_answer_key import render_parent_answer_key_text
+
+                key_text = render_parent_answer_key_text(parent_key, title=activity.get("title") or manifest.get("title") or "")
+                st.code(key_text)
+                st.download_button(
+                    "Download Parent Key",
+                    data=key_text,
+                    file_name=f"parent_answer_key_{manifest.get('chapter_no', 'story')}.txt",
+                    mime="text/plain",
+                )
+            else:
+                st.info("No parent_answer_key in this manifest yet.")
     images = [p.name for p in latest_dir.glob("*.png")]
     st.write("Images:", images)
     audio = mp3_info(latest_dir / "narration.mp3")

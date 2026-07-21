@@ -14,6 +14,12 @@ from ..activities.models import (
     ActivityPack, ActivityPage, DecisionNode, MatchingCard, RolePlayCard, SequenceCard, SIMPLE_TYPES,
     component_label,
 )
+from ..activities.qa import (
+    activity_presentation_errors,
+    matching_coverage_from_pdf_text,
+    pdf_text_has_generic_placeholders,
+    retain_matching_coverage_evidence,
+)
 from ..models import PlanRow
 
 PAGE_W, PAGE_H = letter
@@ -42,12 +48,15 @@ class PdfCheckResult:
     coverage: list[float]
     minimum_font_size: float
     errors: list[str]
+    matching_coverage: dict | None = None
 
 
 class ActivitySheetGenerator:
     def generate(self, plan: PlanRow, activity: ActivityPack, output_path: Path) -> PdfCheckResult:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         canvas = Canvas(str(output_path), pagesize=letter, pageCompression=1)
+        canvas.setTitle(activity.activity_title or "Activity Sheet")
+        canvas.setAuthor("Krishna Story Factory")
         # Prefer rich deterministic layouts for known packs; otherwise render each page.
         if activity.activity_type == "PRAYER_OR_GRATITUDE_CRAFT" and any(
             p.page_type == "PRAYER_WHEEL" for p in activity.pages
@@ -66,7 +75,10 @@ class ActivitySheetGenerator:
             for page in activity.pages:
                 if page.page_type == "ANSWER_KEY_INTERNAL_ONLY":
                     continue
-                _render_page(canvas, plan, activity, page)
+                if page.page_type == "PRAYER_WHEEL":
+                    _render_lotus_prayer_page(canvas, plan, activity, page)
+                else:
+                    _render_page(canvas, plan, activity, page)
         canvas.save()
         return validate_activity_pdf(output_path, activity=activity)
 
@@ -129,9 +141,15 @@ def validate_activity_pdf(
     text_blob = " ".join(page.get_text() for page in doc).lower()
     if "coloring_page.png" in text_blob or "embedded coloring" in text_blob:
         errors.append("Activity PDF must not embed coloring_page.png.")
+    placeholder_hits = pdf_text_has_generic_placeholders(text_blob)
+    if placeholder_hits:
+        errors.append("Activity PDF contains generic placeholders: " + ", ".join(placeholder_hits[:6]))
+    matching_meta = None
+    if activity is not None:
+        matching_meta = _append_matching_coverage_errors(errors, activity, text_blob, render_dir)
     if min_font < 9.8:
         errors.append(f"Minimum font size is {min_font:.1f} pt; expected about 10 pt or larger.")
-    return PdfCheckResult(page_count, coverage, 0 if min_font == 99 else min_font, errors)
+    return PdfCheckResult(page_count, coverage, 0 if min_font == 99 else min_font, errors, matching_meta)
 
 
 def _pdfium_pdf_check(
@@ -171,10 +189,47 @@ def _pdfium_pdf_check(
     joined = " ".join(text_blob).lower()
     if "coloring_page.png" in joined or "embedded coloring" in joined:
         errors.append("Activity PDF must not embed coloring_page.png.")
+    placeholder_hits = pdf_text_has_generic_placeholders(joined)
+    if placeholder_hits:
+        errors.append("Activity PDF contains generic placeholders: " + ", ".join(placeholder_hits[:6]))
+    matching_meta = _append_matching_coverage_errors(errors, activity, joined, render_dir)
+    if activity is not None:
+        errors.extend(activity_presentation_errors(activity, text_blob))
+        for index, ratio in enumerate(coverage, start=1):
+            if ratio < 0.55 and activity.pages and index <= len(activity.pages):
+                page = activity.pages[index - 1]
+                if page.page_type == "PRAYER_WHEEL" and ratio < 0.45:
+                    errors.append(f"Page {index} lotus layout under-uses the page ({ratio:.0%} coverage).")
     doc.close()
     if temporary:
         temporary.cleanup()
-    return PdfCheckResult(page_count, coverage, 10.0, errors)
+    return PdfCheckResult(page_count, coverage, 10.0, errors, matching_meta)
+
+
+def _append_matching_coverage_errors(
+    errors: list[str], activity: ActivityPack | None, text_blob: str, render_dir: Path | None
+) -> dict | None:
+    if activity is None:
+        return None
+    coverage_check = matching_coverage_from_pdf_text(activity, text_blob)
+    if not coverage_check.pass_:
+        if coverage_check.missing_labels:
+            errors.append("Matching coverage missing labels: " + ", ".join(coverage_check.missing_labels[:8]))
+        if coverage_check.orphan_labels:
+            errors.append("Matching coverage orphans: " + "; ".join(coverage_check.orphan_labels[:6]))
+    try:
+        chapter_guess = ""
+        if render_dir and render_dir.parent:
+            chapter_guess = render_dir.parent.name[:3]
+        retain_matching_coverage_evidence(
+            Path.cwd(),
+            chapter_no=chapter_guess or "005",
+            coverage=coverage_check,
+            pdf_text=text_blob,
+        )
+    except Exception:
+        pass
+    return coverage_check.to_dict()
 
 
 def _page_bounds(activity: ActivityPack | None) -> tuple[int, int]:
@@ -225,7 +280,23 @@ def _fallback_pdf_check(path: Path, render_dir: Path | None, activity: ActivityP
         temporary.cleanup()
     if not coverage:
         coverage = [0.0] * count
-    return PdfCheckResult(count, coverage, 10.0, errors)
+    matching_meta = None
+    # Fallback path may lack text extraction; still fail closed if activity provided and no text.
+    if activity is not None:
+        text_blob = ""
+        try:
+            import fitz
+            doc = fitz.open(path)
+            text_blob = "\n".join(page.get_text() for page in doc)
+            doc.close()
+        except Exception:
+            try:
+                data = path.read_bytes()
+                text_blob = data.decode("latin-1", errors="ignore")
+            except Exception:
+                text_blob = ""
+        matching_meta = _append_matching_coverage_errors(errors, activity, text_blob, render_dir)
+    return PdfCheckResult(count, coverage, 10.0, errors, matching_meta)
 
 
 def _find_pdftoppm() -> Path | None:
@@ -390,39 +461,79 @@ def _render_decision_tree(c: Canvas, plan: PlanRow, activity: ActivityPack, page
 
 
 def _render_matching_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
+    """Render every MatchingCard pair. Never silently truncate; paginate when needed."""
     c.setFont(FONT_BOLD, 12)
-    c.drawString(MARGIN, y, "Match the helpers and actions")
-    y -= 0.25 * inch
-    for step in page.instructions[:3]:
-        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
-        y -= 0.04 * inch
+    c.drawString(MARGIN, y, "Match each figure to why they came")
+    y -= 0.22 * inch
+    for step in page.instructions[:4]:
+        y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN, 10.5, 13)
+        y -= 0.02 * inch
     pairs = [item for item in page.components if isinstance(item, MatchingCard)]
-    if pairs:
-        left = [item.left for item in pairs]
-        right = [item.right for item in reversed(pairs)]
-    else:
-        comps = [component_label(item) for item in page.components] or ["A", "B", "C", "D", "1", "2", "3", "4"]
-        left = comps[: len(comps) // 2] or comps[:4]
-        right = comps[len(comps) // 2 :] or comps[4:8]
-    c.setDash(4, 3)
-    for i, label in enumerate(left[:4]):
-        yy = 6.2 * inch - i * 1.15 * inch
-        c.roundRect(MARGIN, yy, 3.1 * inch, 0.9 * inch, 8, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 11)
-        c.drawString(MARGIN + 0.15 * inch, yy + 0.4 * inch, label[:36])
-    for i, label in enumerate(right[:4]):
-        yy = 6.2 * inch - i * 1.15 * inch
-        c.roundRect(PAGE_W / 2 + 0.15 * inch, yy, 3.1 * inch, 0.9 * inch, 8, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 11)
-        c.drawString(PAGE_W / 2 + 0.3 * inch, yy + 0.4 * inch, label[:36])
-    c.setDash()
-    if activity.safety_note:
-        c.setFont(FONT_BOLD, 10)
-        c.drawString(MARGIN, 1.0 * inch, activity.safety_note[:110])
-    # Family reflection footer area
-    c.roundRect(MARGIN, 1.35 * inch, PAGE_W - 2 * MARGIN, 0.7 * inch, 6, stroke=1, fill=0)
-    c.setFont(FONT_REGULAR, 10.5)
-    c.drawString(MARGIN + 0.15 * inch, 1.7 * inch, "Family reflection: My prayer for the world is ________________________________")
+    if not pairs:
+        comps = [component_label(item) for item in page.components]
+        half = max(1, len(comps) // 2)
+        pairs = [
+            MatchingCard(comps[i], comps[half + i] if half + i < len(comps) else f"Match {i + 1}", "story", pair_id=chr(65 + i))
+            for i in range(min(half, len(comps)))
+        ]
+    # Stable IDs on the left; shuffle rights without dropping any pair.
+    left_items = [(p.pair_id or chr(65 + i), p.left) for i, p in enumerate(pairs)]
+    right_items = list(pairs)
+    # Deterministic shuffle by reverse + rotate so answers are not in printed left order.
+    if len(right_items) > 1:
+        right_items = list(reversed(right_items))
+        right_items = right_items[1:] + right_items[:1]
+
+    per_page = 5
+    remaining_left = left_items
+    remaining_right = [(p.pair_id or "", p.right) for p in right_items]
+    first = True
+    while remaining_left or remaining_right:
+        if not first:
+            c.showPage()
+            y = _header(c, plan, activity, c.getPageNumber(), page.page_title)
+            y = _story_box(c, page.story_connection or activity.story_connection, y)
+            y -= 0.15 * inch
+            c.setFont(FONT_BOLD, 11)
+            c.drawString(MARGIN, y, "Match continued")
+            y -= 0.25 * inch
+        first = False
+        batch_left = remaining_left[:per_page]
+        batch_right = remaining_right[:per_page]
+        remaining_left = remaining_left[per_page:]
+        remaining_right = remaining_right[per_page:]
+        row_h = 0.95 * inch if len(batch_left) >= 5 else 1.1 * inch
+        top = min(y - 0.1 * inch, 6.35 * inch)
+        c.setDash(4, 3)
+        for i, (pair_id, label) in enumerate(batch_left):
+            yy = top - i * row_h
+            c.roundRect(MARGIN, yy, 3.15 * inch, row_h - 0.12 * inch, 8, stroke=1, fill=0)
+            c.setFont(FONT_BOLD, 10)
+            c.drawString(MARGIN + 0.12 * inch, yy + row_h - 0.32 * inch, f"{pair_id}.")
+            _wrapped_font(c, label, MARGIN + 0.4 * inch, yy + row_h - 0.32 * inch, 2.55 * inch, font=FONT_BOLD, size=10.5, leading=12)
+        for i, (_pair_id, label) in enumerate(batch_right):
+            yy = top - i * row_h
+            c.roundRect(PAGE_W / 2 + 0.1 * inch, yy, 3.15 * inch, row_h - 0.12 * inch, 8, stroke=1, fill=0)
+            _wrapped_font(
+                c, label, PAGE_W / 2 + 0.25 * inch, yy + row_h - 0.32 * inch, 2.85 * inch,
+                font=FONT_BOLD, size=10.5, leading=12,
+            )
+        c.setDash()
+        if remaining_left or remaining_right:
+            continue
+        if activity.safety_note:
+            c.setFont(FONT_BOLD, 10)
+            c.drawString(MARGIN, 0.85 * inch, activity.safety_note[:110])
+        ages = activity.age_variants or {}
+        younger = _strip_age_prefix(ages.get("ages_6_8", "draw lines or cut-and-match."))
+        older = _strip_age_prefix(ages.get("ages_9_13", "write one reason for each match."))
+        # Page-1 matching must never leak lotus-petal instructions.
+        if "lotus" in younger.lower() or "petal" in younger.lower():
+            younger = "draw lines or cut-and-match."
+        if "lotus" in older.lower() or "petal" in older.lower():
+            older = "write one reason for each match."
+        note = f"Younger: {younger}  Older: {older}"
+        _wrapped(c, note[:160], MARGIN, 1.15 * inch, PAGE_W - 2 * MARGIN, 9.5, 11)
 
 
 def _render_role_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
@@ -520,7 +631,7 @@ def _render_draw_reflect(c: Canvas, plan: PlanRow, activity: ActivityPack, page:
         y -= 0.05 * inch
     c.rect(MARGIN, 2.4 * inch, PAGE_W - 2 * MARGIN, 3.6 * inch, stroke=1, fill=0)
     c.setFont(FONT_REGULAR, 10)
-    c.drawCentredString(PAGE_W / 2, 5.8 * inch, "Draw the turning point here")
+    c.drawCentredString(PAGE_W / 2, 5.8 * inch, "Draw the central story moment here")
     c.drawString(MARGIN, 1.9 * inch, "One sentence reflection: _______________________________________________")
 
 
@@ -600,6 +711,75 @@ def _render_generic_cards(
 
 
 # --- Rich legacy layouts retained and extended ---
+
+def _strip_age_prefix(text: str) -> str:
+    value = (text or "").strip()
+    for prefix in ("Younger:", "Older:", "Family:"):
+        if value.lower().startswith(prefix.lower()):
+            value = value[len(prefix):].strip()
+    return value
+
+
+def _render_lotus_prayer_page(c: Canvas, plan: PlanRow, a: ActivityPack, page: ActivityPage) -> None:
+    """Render a real five-petal lotus around a center circle."""
+    import math
+
+    page_no = c.getPageNumber()
+    y = _header(c, plan, a, page_no, page.page_title)
+    y = _story_box(c, page.story_connection or a.story_connection, y)
+    y -= 0.12 * inch
+    for instruction in page.instructions[:4]:
+        y = _wrapped(c, f"• {instruction}", MARGIN, y, PAGE_W - 2 * MARGIN, 10.5, 13)
+        y -= 0.03 * inch
+    petals = [component_label(item) for item in page.components]
+    if not petals:
+        petals = [
+            "Someone to protect",
+            "A fear I can offer",
+            "Something I am thankful for",
+            "One kind action",
+            "A prayer for the world",
+        ]
+    petals = petals[:5]
+    cx = PAGE_W / 2
+    cy = 4.35 * inch
+    outer_r = 2.55 * inch
+    petal_rx = 1.15 * inch
+    petal_ry = 0.78 * inch
+    c.setStrokeColorRGB(0.12, 0.12, 0.12)
+    c.setLineWidth(1.4)
+    # Five petals around center (point-up flower).
+    for idx, label in enumerate(petals):
+        angle = math.radians(-90 + idx * 72)
+        px = cx + math.cos(angle) * (outer_r * 0.62)
+        py = cy + math.sin(angle) * (outer_r * 0.62)
+        c.saveState()
+        c.translate(px, py)
+        c.rotate(-90 + idx * 72)
+        c.setDash(3, 2)
+        c.ellipse(-petal_rx, -petal_ry, petal_rx, petal_ry, stroke=1, fill=0)
+        c.setDash()
+        c.setFont(FONT_BOLD, 8.5)
+        _wrapped_font(c, label, -0.95 * inch, 0.15 * inch, 1.9 * inch, font=FONT_BOLD, size=8.5, leading=10)
+        c.setFont(FONT_REGULAR, 8)
+        c.drawCentredString(0, -0.35 * inch, "draw or write")
+        c.restoreState()
+    # Center circle
+    c.setDash()
+    c.circle(cx, cy, 0.85 * inch, stroke=1, fill=0)
+    c.setFont(FONT_BOLD, 11)
+    c.drawCentredString(cx, cy + 0.12 * inch, "My Lotus")
+    c.drawCentredString(cx, cy - 0.12 * inch, "Prayer")
+    younger = _strip_age_prefix((a.age_variants or {}).get("ages_6_8", "draw inside each lotus petal."))
+    older = _strip_age_prefix((a.age_variants or {}).get("ages_9_13", "write one or two sentences in each petal."))
+    if "match" in younger.lower():
+        younger = "draw inside each lotus petal."
+    if "match" in older.lower():
+        older = "write one or two sentences in each petal."
+    note = f"Younger: {younger}  Older: {older}  Family: discuss one chosen petal together."
+    _wrapped(c, note, MARGIN, 1.15 * inch, PAGE_W - 2 * MARGIN, 10)
+    c.showPage()
+
 
 def _render_prayer_wheel(c: Canvas, plan: PlanRow, a: ActivityPack) -> None:
     y = _header(c, plan, a, 1)

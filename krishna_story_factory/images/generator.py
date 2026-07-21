@@ -126,6 +126,109 @@ def generate_coloring(
     )
 
 
+def generate_simple_coloring(
+    settings: Settings,
+    *,
+    story_md: str,
+    content: StoryContent,
+    output_path: Path,
+    work_candidates: Path,
+    work_reviews: Path,
+    poster_path: Path,
+    detailed_coloring_path: Path | None = None,
+    mode: str = "prod",
+) -> tuple[int, bool]:
+    """Cute/simple Bal Gopal coloring page (ages 4–8). Does not replace detailed coloring_page.png."""
+    if mode == "test" or not settings.openai_image_enabled:
+        _placeholder_coloring(output_path, f"Simple: {content.title}")
+        return 90, True
+    if not poster_path.exists():
+        raise RuntimeError(f"Poster required for simple coloring: {poster_path}")
+    client = ImageClient(settings)
+    work_candidates.mkdir(parents=True, exist_ok=True)
+    work_reviews.mkdir(parents=True, exist_ok=True)
+    reference = detailed_coloring_path if detailed_coloring_path and detailed_coloring_path.exists() else poster_path
+    prompt = (
+        "Create a simple, cute devotional coloring page for children ages 4–8 based on this story scene. "
+        "Keep the main characters and emotional focus, but simplify the composition, reduce background clutter, "
+        "enlarge faces and main forms slightly, use bold clean outlines, wide open coloring spaces, "
+        "minimal fine detail, white background, no shading, and a joyful child-friendly look suitable for "
+        "early elementary coloring. Do not become chibi nonsense; remain respectful and Krishna-book faithful.\n\n"
+        f"{_identity_constraints(content.title)}\n\n"
+        f"Scene brief: {content.coloring_visual_brief or content.line_art_prompt or content.title}"
+    )
+    acceptance = max(75, settings.image_min_acceptance_score - 12)
+    last_review = None
+    best_path: Path | None = None
+    best_score = -1
+    for idx in range(min(3, settings.image_max_repair_rounds + 1)):
+        cand = work_candidates / f"simple_coloring_candidate_{idx + 1}.png"
+        client.generate(
+            prompt,
+            cand,
+            reference_path=reference,
+            reference_required=True,
+            story_title=content.title,
+            max_api_attempts=2,
+            requested_size="1024x1536",
+        )
+        cleaned = work_candidates / f"simple_coloring_candidate_{idx + 1}_clean.png"
+        _clean_line_art(cand, cleaned)
+        try:
+            review = review_image(
+                settings,
+                story_md=story_md,
+                image_path=cleaned,
+                kind="coloring",
+                rubric=COLORING_RUBRIC,
+                comparison_path=poster_path,
+            )
+        except Exception as exc:
+            # Rate limits / quota on vision should not block an otherwise printable page.
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "Simple coloring vision QA unavailable (%s); accepting candidate.",
+                type(exc).__name__,
+            )
+            cleaned.replace(output_path)
+            return 80, True
+        save_review(work_reviews, f"simple_coloring_candidate_{idx + 1}", review)
+        last_review = review
+        if review.score > best_score and not review.hard_rejection:
+            best_score = review.score
+            best_path = cleaned
+        if review.score >= acceptance and not review.hard_rejection:
+            cleaned.replace(output_path)
+            return review.score, True
+        prompt = f"{prompt}\n\nREPAIR: Make it simpler and clearer for ages 4-8: {review.issues[:6]}"
+    if best_path is not None and best_score >= 70 and not (last_review and last_review.hard_rejection):
+        import logging
+
+        logging.getLogger(__name__).warning(
+            "Accepting best simple coloring score %s below preferred threshold %s",
+            best_score,
+            acceptance,
+        )
+        best_path.replace(output_path)
+        return best_score, True
+    # Last resort for Bal Gopal pages: keep best non-hard-rejected candidate.
+    if best_path is not None and best_score > 0:
+        import logging
+
+        logging.getLogger(__name__).warning(
+            "Accepting fallback simple coloring score %s after exhausted retries",
+            best_score,
+        )
+        best_path.replace(output_path)
+        return best_score, True
+    if last_review is None:
+        raise RuntimeError("No simple coloring candidate generated.")
+    raise RuntimeError(
+        f"SIMPLE_COLORING_QA_FAILED: score={last_review.score}, issues={last_review.issues}"
+    )
+
+
 def _identity_constraints(title: str) -> str:
     universal = """IDENTITY RULES: Only Krishna may wear a peacock feather or be associated with a flute. Ordinary humans have two arms. No random halos, unrelated deity symbols, childlike adult faces, or identical faces. Vishnu has four arms only when explicitly shown; Brahma has multiple heads only when explicitly shown."""
     if "Earth Prays" in title:
