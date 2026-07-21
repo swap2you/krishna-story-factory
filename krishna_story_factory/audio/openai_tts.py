@@ -11,6 +11,7 @@ from typing import Any
 
 from .assemble import assemble_mp3_chunks, sha256_bytes
 from .chunking import ChunkPlan, chunk_narration
+from .redact import sanitize_error_text
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +153,18 @@ def _retry_after_seconds(exc: BaseException, attempt: int) -> float:
         try:
             return max(0.5, float(raw))
         except ValueError:
-            pass
+            try:
+                from email.utils import parsedate_to_datetime
+                from datetime import datetime, timezone
+
+                when = parsedate_to_datetime(str(raw))
+                if when.tzinfo is None:
+                    when = when.replace(tzinfo=timezone.utc)
+                delay = (when - datetime.now(timezone.utc)).total_seconds()
+                if delay > 0:
+                    return min(60.0, max(0.5, delay))
+            except (TypeError, ValueError, OverflowError, OSError):
+                pass
     base = min(20.0, (2**attempt) * 0.75)
     return base + random.uniform(0.05, 0.45)
 
@@ -166,8 +178,11 @@ def synthesize_openai_speech_once(
     speed: float,
     response_format: str = "mp3",
     max_retries: int = 3,
-) -> tuple[bytes, str, str]:
-    """Single-request OpenAI speech synthesis with bounded retries for retryable errors."""
+) -> tuple[bytes, str, str, dict]:
+    """Single-request OpenAI speech synthesis with bounded retries for retryable errors.
+
+    Returns (audio_bytes, request_id, model, attempt_meta).
+    """
     if not api_key:
         raise OpenAITtsError(
             "OPENAI_API_KEY is required for OpenAI TTS.",
@@ -190,6 +205,7 @@ def synthesize_openai_speech_once(
         kwargs["instructions"] = BEDTIME_INSTRUCTIONS
 
     last_exc: BaseException | None = None
+    retryable_classes: list[str] = []
     for attempt in range(max_retries + 1):
         try:
             response = client.audio.speech.create(**kwargs)
@@ -198,15 +214,24 @@ def synthesize_openai_speech_once(
             headers = getattr(response, "response", None)
             if headers is not None and getattr(headers, "headers", None):
                 request_id = headers.headers.get("x-request-id") or headers.headers.get("request-id") or ""
-            return audio_bytes, request_id, model
+            return audio_bytes, request_id, model, {
+                "model_attempts": [model],
+                "request_attempt_count": attempt + 1,
+                "retryable_error_classes": retryable_classes,
+                "final_successful_attempt": attempt + 1,
+                "fallback_model_used": False,
+                "estimated_extra_paid_attempts": max(0, attempt),
+            }
         except Exception as exc:  # noqa: BLE001
             last_exc = exc
             error_class = classify_openai_error(exc)
             blocked = blocked_status_for(error_class)
             retryable = error_class in {"rate_limit", "network", "timeout", "server_error"}
+            if retryable:
+                retryable_classes.append(error_class)
             if error_class in NO_RETRY_CLASSES or not retryable or attempt >= max_retries:
                 raise OpenAITtsError(
-                    str(exc),
+                    sanitize_error_text(str(exc)),
                     error_class=error_class,
                     blocked_status=blocked,
                     retryable=False,
@@ -221,7 +246,10 @@ def synthesize_openai_speech_once(
             time.sleep(delay)
 
     assert last_exc is not None
-    raise OpenAITtsError(str(last_exc), error_class=classify_openai_error(last_exc)) from last_exc
+    raise OpenAITtsError(
+        sanitize_error_text(str(last_exc)),
+        error_class=classify_openai_error(last_exc),
+    ) from last_exc
 
 
 def synthesize_openai_tts(
@@ -264,7 +292,7 @@ def synthesize_openai_tts(
         try:
             for chunk in plan.chunks:
                 chunk_path = base_work / f"chunk_{chunk.sequence:03d}.mp3"
-                audio_bytes, request_id, used_model = synthesize_openai_speech_once(
+                audio_bytes, request_id, used_model, attempt_meta = synthesize_openai_speech_once(
                     api_key=api_key,
                     text=chunk.text,
                     model=candidate,
@@ -289,6 +317,12 @@ def synthesize_openai_tts(
                         "api_error_class": "",
                         "audio_sha256": sha256_bytes(audio_bytes),
                         "byte_size": len(audio_bytes),
+                        "model_attempts": list(attempt_meta.get("model_attempts") or [used_model]),
+                        "request_attempt_count": int(attempt_meta.get("request_attempt_count") or 1),
+                        "retryable_error_classes": list(attempt_meta.get("retryable_error_classes") or []),
+                        "final_successful_attempt": int(attempt_meta.get("final_successful_attempt") or 1),
+                        "fallback_model_used": bool(candidate != model),
+                        "estimated_extra_paid_attempts": int(attempt_meta.get("estimated_extra_paid_attempts") or 0),
                     }
                 )
 
@@ -378,7 +412,7 @@ def preflight_openai_tts(*, api_key: str, model: str, voice: str, speed: float) 
             "bytes": 0,
             "error_class": exc.error_class,
             "blocked_status": exc.blocked_status,
-            "detail": str(exc)[:300],
+            "detail": sanitize_error_text(str(exc), limit=300),
         }
     finally:
         try:

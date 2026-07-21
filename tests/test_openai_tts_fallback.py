@@ -29,8 +29,8 @@ def test_exact_eight_file_production_contract() -> None:
     assert "video" not in " ".join(FINAL_OUTPUT_FILES).lower()
 
 
-def test_story_006_remains_pending(tmp_path) -> None:
-    """Queue contract: 006 is the next pending Krishna Book episode (no Story 006 generation)."""
+def test_story_007_is_next_pending(tmp_path) -> None:
+    """Queue contract after Stories 001–006: next pending is 007."""
     import shutil
 
     from krishna_story_factory.csv_store import ensure_csv_files, read_next_pending, read_plan_by_chapter, update_plan_status
@@ -40,14 +40,14 @@ def test_story_006_remains_pending(tmp_path) -> None:
     (project / "tracking").mkdir(parents=True)
     shutil.copy2(ROOT / "input" / "series_plan.csv", project / "input" / "series_plan.csv")
     ensure_csv_files(project)
-    for chapter in ("001", "002", "003", "004", "005"):
+    for chapter in ("001", "002", "003", "004", "005", "006"):
         plan = read_plan_by_chapter(project, chapter)
         assert plan is not None
         update_plan_status(project, plan, "done")
     pending = read_next_pending(project)
     assert pending is not None
-    assert pending.chapter_no == "006"
-    assert pending.slug == "the-birth-of-lord-krishna"
+    assert pending.chapter_no == "007"
+    assert pending.slug == "kamsa-begins-his-persecutions"
     assert pending.status == "pending"
 
 
@@ -215,7 +215,14 @@ def test_failed_chunk_does_not_leave_complete_candidate(tmp_path, monkeypatch) -
             raise oa.OpenAITtsError("fail chunk 2", error_class="server_error")
         path = kwargs.get("output_path")
         # synthesize_openai_speech_once doesn't take output_path — patch speech once
-        return b"ID3fakeaudio" * 40, "req", "gpt-4o-mini-tts"
+        return b"ID3fakeaudio" * 40, "req", "gpt-4o-mini-tts", {
+            "model_attempts": ["gpt-4o-mini-tts"],
+            "request_attempt_count": 1,
+            "retryable_error_classes": [],
+            "final_successful_attempt": 1,
+            "fallback_model_used": False,
+            "estimated_extra_paid_attempts": 0,
+        }
 
     monkeypatch.setattr(oa, "synthesize_openai_speech_once", boom)
     monkeypatch.setattr(

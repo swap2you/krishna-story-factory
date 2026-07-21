@@ -42,7 +42,7 @@ page tied to the current pastime. See [11_ACTIVITY_ENGINE_V2.md](11_ACTIVITY_ENG
 .\scripts\run_prod.ps1
 ```
 
-This generates the full package and uploads exactly seven files to Google Drive when
+This generates the full package and uploads exactly eight files to Google Drive when
 Drive upload is enabled. WhatsApp/Telegram remain disabled.
 
 ## 7. Confirm output folder
@@ -51,8 +51,8 @@ Drive upload is enabled. WhatsApp/Telegram remain disabled.
 Get-ChildItem output | Sort-Object Name -Descending | Select-Object -First 3
 ```
 
-Expected: `output/003_vasudeva-keeps-his-word/` with exactly seven final files, including
-the multi-page activity sheet and manifest `package.package_link`.
+Expected: `output/003_vasudeva-keeps-his-word/` with exactly eight final files, including
+the multi-page activity sheet, `simple_coloring_page.png`, and manifest `package.package_link`.
 
 ## Component-only rebuild
 

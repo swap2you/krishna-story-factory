@@ -235,6 +235,27 @@ def _identity_constraints(title: str) -> str:
         return universal + " Mother Earth is a gentle sacred cow with devotional expression. Brahma leads the prayer. Vishnu, Brahma, and supporting demigods must remain distinct; do not crowd the scene. Vishnu must have NO peacock feather, feather plume, or feather-shaped ornament on, beside, or behind His crown."
     if "Wedding" in title or "Heavenly Voice" in title:
         return universal + " Devaki is an adult royal bride; Vasudeva is an adult noble bridegroom, calm and protective; Kamsa is an adult warrior prince driving the chariot, shocked and fearful. Devaki and Vasudeva sit behind him. No peacock feathers, Krishna-like crowns, toddler faces, or cheerful Kamsa."
+    if "Narada" in title or "Nārada" in title or "Warns" in title:
+        return (
+            universal
+            + " Simple coloring must stay gentle for ages 4–8: reduce visible chains and distress; soft expressions; "
+            "Devakī and Vasudeva remembering the Lord calmly; Kaṁsa alarmed but not gory."
+        )
+    if "Demigods" in title or "Womb" in title:
+        return (
+            universal
+            + " Four-headed Brahmā (exactly four heads, never five) leads exalted luminous demigods (not ghost-like). "
+            "Krishna remains unseen within Devakī—do not show a visible baby in the womb. "
+            "No sleeping-guard miracles, open prison doors, Yamunā crossing, or Yogamāyā."
+        )
+    if "Birth of Lord Krishna" in title or "Birth of Lord Kṛṣṇa" in title:
+        return (
+            universal
+            + " Newborn Krishna must NOT wear a peacock feather. Prefer the divine four-armed appearance with conch, disc, club, and lotus "
+            "OR a later ordinary infant scene—never both conflicting. If guards are shown, they must be asleep (or omit guards). "
+            "Do not show awake/alert guards. Reduce excessive chain clutter. Do not show baby Krishna visible inside Devakī's womb. "
+            "Hands, faces, chains, and prison structures must be anatomically coherent. Simple coloring stays gentle for ages 4–8."
+        )
     return universal
 
 

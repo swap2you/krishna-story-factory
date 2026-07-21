@@ -25,14 +25,28 @@ def source_fact_brief(plan: PlanRow) -> str:
     if plan.chapter_no == "005":
         brief += (
             "\nSTORY 005 HARD BOUNDARY (Krishna Book Ch. 2 / SB 10.2.25–42): "
-            "Devakī carries Kṛṣṇa within her womb. Invisible demigods approach, led by Brahmā and Śiva; "
-            "Nārada and other demigods/sages may accompany (Indra, Candra, Varuṇa acceptable). "
-            "They glorify the Lord within Devakī, pray for protection and the Lord's descent, reassure Devakī, "
-            "then return to their heavenly homes. Kṛṣṇa remains unseen within Devakī. "
+            "Devakī carries Kṛṣṇa within her womb. Invisible demigods approach, led by four-headed Brahmā and Śiva; "
+            "Nārada and exalted demigods/sages may accompany. "
+            "Summarize their prayers as paraphrase only—never invent verbatim quotations. "
+            "Do not invent a heavenly-garden conference scene, Candra/Varuṇa/wind-god special actions, "
+            "or claim prayers are a 'shield for the Lord' (the Lord needs no protection). "
+            "They glorify the Lord within Devakī, reassure her, then return to their abodes. "
+            "Kṛṣṇa remains unseen within Devakī. Demigods appear exalted and luminous, not ghost-like. "
             "FORBIDDEN in this episode: sleeping/drowsy guards, prison doors opening, Vasudeva escape, "
             "Yamunā crossing, four-armed birth appearance, Yogamāyā arriving, demigods praying to Yogamāyā, "
             "invented verbatim scripture quotations, placeholder lessons like '(3)'. "
             "Prison setting from the previous episode may be acknowledged, but do not invent guard-sleep miracles."
+        )
+    if plan.chapter_no == "006":
+        brief += (
+            "\nSTORY 006 HARD BOUNDARY (Krishna Book Ch. 3): "
+            "Auspicious signs; Krishna appears in four-armed form; parents pray; He becomes an ordinary infant; "
+            "chains loosen and doors open; Vasudeva prepares to carry Him. Include Chapter 3 events only. "
+            "Recap Story 005 without inventing celestial gardens. "
+            "Do not invent direct quotations; paraphrase prayers and speech. "
+            "No peacock feather on newborn Krishna. Guards sleep when the source says they sleep. "
+            "Do not show baby Krishna visible in Devakī's womb. "
+            "FORBIDDEN: material from Chapter 4 (Kamsa's later persecutions), invented scripture quotations."
         )
     return brief
 
@@ -46,7 +60,8 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
         narration = narration.replace(content.next_story_preview.lower(), " ")
     combined = f"{story}\n{narration}"
     for phrase in _items(plan.must_avoid):
-        if phrase.lower() in story:
+        needle = phrase.lower()
+        if needle in story or needle in narration:
             errors.append(f"Source boundary violation: forbidden later/unrelated event {phrase!r}.")
     for pastime in UNRELATED_PASTIMES:
         if pastime in combined and pastime not in plan.summary_seed.lower() and pastime not in plan.must_include.lower():
@@ -139,6 +154,60 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
                 errors.append(f"Story 005 has placeholder lesson text: {lesson!r}")
         if not (content.bedtime_reflection.strip().endswith("?") or any(str(q).strip().endswith("?") for q in content.think_about_it)):
             errors.append("Story 005 must include a child reflection question.")
+        # Explicitly scan both main_story and audio_script for known defective phrases.
+        for blob_name, blob in (("main_story", content.main_story), ("audio_script", content.audio_script)):
+            low = blob.lower()
+            for phrase in (
+                "celestial garden",
+                "heavenly garden",
+                "sweet-smelling gardens",
+                "shield for her and for the lord",
+                "become a shield",
+                "ghost-like",
+                "candra",
+                "varuṇa",
+                "varuna",
+                "wind gods",
+                "moon and the wind",
+                "in the of the heavenly",
+                "become a , teaching",
+                "the the demigods",
+            ):
+                if phrase in low:
+                    errors.append(f"Story 005 {blob_name} contains forbidden phrase: {phrase!r}")
+            from ..content.repairs import has_invented_direct_dialogue
+
+            if has_invented_direct_dialogue(blob, allow_heavenly_voice=False):
+                # Demigod prayers must be paraphrase-only.
+                if re.search(r"[\"'“].{8,160}[\"'”]", blob):
+                    errors.append(f"Story 005 {blob_name} must not invent scripture-style quotations.")
+        if "shield for her and for the lord" in combined or re.search(
+            r"prayers?\s+(?:become|are|is)\s+a\s+shield\s+for\s+(?:her\s+and\s+for\s+)?the\s+lord",
+            combined,
+        ):
+            errors.append("Story 005 must not imply Krishna needs protection via a prayer 'shield'.")
+    if plan.chapter_no == "006":
+        _require(combined, ("four-armed", "four armed", "four arms"), "Story 006 must include Krishna's four-armed appearance.", errors)
+        _require(combined, ("infant", "baby", "newborn", "child"), "Story 006 must include Krishna becoming an ordinary infant.", errors)
+        _require(combined, ("chain",), "Story 006 must include chains loosening.", errors)
+        lessons = [str(item).strip() for item in (content.five_lessons or []) if str(item).strip()]
+        if len(lessons) != 5:
+            errors.append("Story 006 must have exactly five lessons.")
+        elif content.devotional_meaning.strip() and lessons and lessons[0] == content.devotional_meaning.strip():
+            errors.append("Story 006 Lesson 1 must not duplicate the full Devotional Meaning.")
+        if "celestial garden" in combined:
+            errors.append("Story 006 recap must not invent celestial gardens from Story 005.")
+        from ..content.repairs import has_invented_direct_dialogue
+
+        for blob_name, blob in (("main_story", content.main_story), ("audio_script", content.audio_script)):
+            if has_invented_direct_dialogue(blob, allow_heavenly_voice=False):
+                # Allow Krishna's narrative speech paraphrase only when not quoted.
+                if re.search(
+                    r"\b(?:spoke|said|whispered|replied|promised|explained)\b[,:]?\s*[\"“]",
+                    blob,
+                    flags=re.I,
+                ):
+                    errors.append(f"Story 006 {blob_name} contains unsupported invented dialogue quotations.")
     return errors
 
 

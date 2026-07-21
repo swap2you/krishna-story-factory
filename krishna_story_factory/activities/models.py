@@ -109,7 +109,7 @@ def _component_from_raw(page_type: str, raw, index: int) -> ActivityComponent:
     if text.startswith("{") or "components:" in text.lower():
         raise ValueError(f"Raw dictionary/JSON component rejected for {page_type}.")
     if page_type in {"ROLE_PLAY_CARDS", "PUPPET_CARDS"}:
-        return RolePlayCard(text, f"I will help in {text}'s part of the story.", "Act the story moment.", "simple cloth")
+        return RolePlayCard(text, f"In paraphrase: I remember my part in {text}.", "Act the story moment calmly.", "simple cloth")
     if page_type == "STORY_SEQUENCE_CARDS":
         return SequenceCard(text, f"Draw one detail from: {text}", index + 1)
     if page_type in {"MATCHING_CARDS", "SORTING_CARDS"}:

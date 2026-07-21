@@ -293,7 +293,64 @@ def validate_story_markdown_v2(story_md: str) -> list[str]:
         errors.append("story.md visible sections are out of order")
     if "## moral" in lowered or "## takeaway" in lowered or "## bedtime reflection" in lowered:
         errors.append("story.md still uses legacy Moral/Takeaway/Bedtime Reflection headings")
+    errors.extend(validate_story_comment_structure(text))
     return errors
+
+
+def validate_story_comment_structure(story_md: str) -> list[str]:
+    """Require exactly one balanced hidden production block with required briefs."""
+    errors: list[str] = []
+    text = story_md or ""
+    openers = list(re.finditer(r"<!--", text))
+    closers = list(re.finditer(r"-->", text))
+    if len(openers) != 1 or len(closers) != 1:
+        errors.append(
+            f"story.md must contain exactly one HTML comment block "
+            f"(found {len(openers)} openers and {len(closers)} closers)"
+        )
+        return errors
+    open_idx = openers[0].start()
+    close_idx = closers[0].start()
+    if close_idx <= open_idx:
+        errors.append("story.md HTML comment closer appears before opener")
+        return errors
+    # Parent-facing body must not contain a comment opener mid-section.
+    visible = text[:open_idx]
+    if re.search(r"(?m)^\s*\d+\.\s*<!--", visible):
+        errors.append("story.md has a comment opener inside a numbered parent-facing item")
+    if "<!--" in visible:
+        errors.append("story.md has a comment opener before the production block")
+    hidden = text[open_idx + 4 : close_idx]
+    if "<!--" in hidden or "-->" in hidden:
+        errors.append("story.md has nested/duplicated comment markers inside the production block")
+    for heading in ("## Audio Narration", "## Poster Visual Brief", "## Coloring Visual Brief", "## Activity Data"):
+        count = len(re.findall(rf"(?im)^{re.escape(heading)}\s*$", hidden))
+        if count != 1:
+            errors.append(f"story.md production block must contain exactly one {heading} (found {count})")
+    # Visible body must keep required sections outside the comment.
+    for section in ("## Main Story", "## Parent/Teacher Note"):
+        if section.lower() not in visible.lower():
+            errors.append(f"parent-facing section swallowed by comments: {section}")
+    audio = _section_after(hidden, "Audio Narration", ("Poster Visual Brief",))
+    poster = _section_after(hidden, "Poster Visual Brief", ("Coloring Visual Brief",))
+    coloring = _section_after(hidden, "Coloring Visual Brief", ("Activity Data",))
+    if not (audio or "").strip():
+        errors.append("Audio Narration section is empty")
+    if not (poster or "").strip():
+        errors.append("Poster Visual Brief is empty")
+    if not (coloring or "").strip():
+        errors.append("Coloring Visual Brief is empty")
+    # Duplicate tails after closer are forbidden.
+    after = text[closers[0].end() :]
+    if re.search(r"(?im)^##\s+(Audio Narration|Poster Visual Brief|Coloring Visual Brief)\s*$", after):
+        errors.append("story.md has duplicated production sections after the comment closer")
+    return errors
+
+
+def _section_after(text: str, heading: str, next_names: tuple[str, ...]) -> str:
+    pattern = rf"##\s+{re.escape(heading)}\s*\n(.*?)(?=\n##\s+(?:{'|'.join(map(re.escape, next_names))})|\Z)"
+    match = re.search(pattern, text, flags=re.I | re.S)
+    return match.group(1).strip() if match else ""
 
 
 def _split_long_paragraphs(main_story: str) -> str:
@@ -446,6 +503,7 @@ __all__ = [
     "validate_story_format_v2",
     "validate_audio_consistency",
     "validate_story_markdown_v2",
+    "validate_story_comment_structure",
     "package_from_llm_dict",
     "extract_section",
     "has_maha_mantra",

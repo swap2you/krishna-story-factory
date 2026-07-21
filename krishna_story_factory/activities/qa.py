@@ -25,6 +25,39 @@ GENERIC_PLACEHOLDERS = frozenset(
     }
 )
 
+_METADATA_EVENT_RE = re.compile(
+    r"(?is)^(?:---|\s*(?:title|source_reference|scripture_reference|age_range|story_number|format|greeting)\s*:|"
+    r"hare\s+k[rṛ][sṣ][nṇ]a,?\s+dear)",
+)
+_YAML_MARKER_RE = re.compile(r"(?m)^---\s*$|^\s*[a-z_]+\s*:\s*")
+
+
+def is_metadata_event_label(text: str) -> bool:
+    """True when a label is frontmatter/YAML/greeting/heading rather than a story event."""
+    cleaned = " ".join((text or "").strip().split())
+    if not cleaned:
+        return True
+    lower = cleaned.lower()
+    if _METADATA_EVENT_RE.search(cleaned):
+        return True
+    if cleaned.startswith("#"):
+        return True
+    if any(
+        key in lower
+        for key in (
+            "title:",
+            "source_reference:",
+            "scripture_reference:",
+            "age_range:",
+            "story_number:",
+            "format:",
+        )
+    ):
+        return True
+    if lower.startswith("hare kṛṣṇa, dear") or lower.startswith("hare krishna, dear"):
+        return True
+    return False
+
 
 @dataclass(slots=True)
 class MatchingCoverageResult:
@@ -55,13 +88,20 @@ def semantic_activity_errors(pack: ActivityPack) -> list[str]:
             label = component_label(component).strip()
             if _is_generic_placeholder(label):
                 errors.append(f"Generic placeholder label rejected: {label!r}")
+            if is_metadata_event_label(label):
+                errors.append(f"Metadata/frontmatter label rejected: {label!r}")
 
         if page.page_type == "STORY_SEQUENCE_CARDS":
             cards = [item for item in page.components if isinstance(item, SequenceCard)]
             if len(cards) < 4:
                 errors.append("STORY_SEQUENCE_CARDS requires at least four SequenceCard events.")
-            elif any(_is_generic_placeholder(card.event) or len(card.event.strip()) < 8 for card in cards):
-                errors.append("STORY_SEQUENCE_CARDS require concrete story events, not placeholders.")
+            elif any(
+                _is_generic_placeholder(card.event)
+                or is_metadata_event_label(card.event)
+                or len(card.event.strip()) < 8
+                for card in cards
+            ):
+                errors.append("STORY_SEQUENCE_CARDS require concrete story events, not placeholders or metadata.")
             else:
                 printed = [card.event for card in cards]
                 chronological = [card.event for card in sorted(cards, key=lambda c: c.source_order)]
@@ -179,6 +219,7 @@ def activity_presentation_errors(activity: ActivityPack, pdf_text_by_page: list[
 __all__ = [
     "GENERIC_PLACEHOLDERS",
     "MatchingCoverageResult",
+    "is_metadata_event_label",
     "semantic_activity_errors",
     "pdf_text_has_generic_placeholders",
     "matching_coverage_from_pdf_text",

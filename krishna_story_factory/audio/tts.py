@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import logging
+import re
 from pathlib import Path
 
 import requests
@@ -88,33 +89,82 @@ class AudioGenerator:
             raise AudioGenerationError("No audio provider selected.")
 
         if provider == "openai":
-            return self._synthesize_openai(narration_text, output_path, work_dir=work_dir)
+            model = (decision.model_id if decision else "") or None
+            return self._synthesize_openai(
+                narration_text,
+                output_path,
+                work_dir=work_dir,
+                model=model,
+                allow_model_fallback=not bool(model),
+            )
         if provider == "elevenlabs":
-            return self._synthesize_elevenlabs(narration_text, output_path)
+            try:
+                return self._synthesize_elevenlabs(narration_text, output_path)
+            except AudioGenerationError as exc:
+                if not self._is_eligible_elevenlabs_runtime_fallback(str(exc)):
+                    raise
+                from .provider import invalidate_elevenlabs_cache, preflight_openai
+                from .redact import sanitize_error_text
+
+                logger.warning(
+                    "ElevenLabs synthesis failed after preflight; attempting OpenAI fallback once (%s).",
+                    type(exc).__name__,
+                )
+                try:
+                    Path(output_path).unlink(missing_ok=True)
+                except OSError:
+                    pass
+                invalidate_elevenlabs_cache(reason=sanitize_error_text(str(exc), limit=160))
+                openai_pf = preflight_openai(self.settings)
+                if not openai_pf.get("ok"):
+                    raise AudioGenerationError(
+                        f"ElevenLabs synthesis failed and OpenAI fallback unavailable: {exc}"
+                    ) from exc
+                return self._synthesize_openai(
+                    narration_text,
+                    output_path,
+                    work_dir=work_dir,
+                    model=str(openai_pf.get("model_id") or "") or None,
+                    allow_model_fallback=False,
+                )
         raise AudioGenerationError(f"Unsupported audio provider: {provider!r}")
 
-    def _synthesize_openai(self, narration_text: str, output_path, *, work_dir: Path | None = None) -> str:
+    def _synthesize_openai(
+        self,
+        narration_text: str,
+        output_path,
+        *,
+        work_dir: Path | None = None,
+        model: str | None = None,
+        allow_model_fallback: bool = True,
+    ) -> str:
         from .openai_tts import OpenAITtsError, synthesize_openai_tts
+        from .redact import sanitize_error_text
 
         max_chars = int(getattr(self.settings, "openai_tts_max_input_chars", 3600) or 3600)
-        # Never compress, truncate, or rewrite approved narration.
+        # Always sanitize with OpenAI rules — never pass SSML or expressive bracket tags.
         text = sanitize_audio_script(narration_text, model_id="openai")
+        if "<break" in text.lower() or re.search(r"\[[^\]]+\]", text):
+            text = sanitize_audio_script(text, model_id="openai")
+            text = re.sub(r"\[[^\]]+\]", "", text)
+            text = re.sub(r"<break\b[^>]*/?>", "", text, flags=re.IGNORECASE)
+        selected_model = (model or getattr(self.settings, "openai_tts_model", "gpt-4o-mini-tts-2025-12-15")).strip()
         try:
             result = synthesize_openai_tts(
                 api_key=self.settings.openai_api_key,
                 text=text,
                 output_path=Path(output_path),
-                model=getattr(self.settings, "openai_tts_model", "gpt-4o-mini-tts-2025-12-15"),
+                model=selected_model,
                 voice=getattr(self.settings, "openai_tts_voice", "marin"),
                 speed=float(getattr(self.settings, "openai_tts_speed", 0.92) or 0.92),
                 response_format=getattr(self.settings, "openai_tts_response_format", "mp3"),
                 max_input_chars=max_chars,
-                allow_model_fallback=True,
+                allow_model_fallback=allow_model_fallback,
                 work_dir=work_dir,
             )
         except OpenAITtsError as exc:
             status = exc.blocked_status or f"OpenAI TTS failed ({exc.error_class})"
-            raise AudioGenerationError(f"{status}: {exc}") from exc
+            raise AudioGenerationError(f"{status}: {sanitize_error_text(str(exc))}") from exc
 
         self.last_provider = "openai"
         self.last_voice_name = result.voice
@@ -194,32 +244,43 @@ class AudioGenerator:
                 }
             ]
 
-        response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
-        self.last_dictionary_attached = bool(dictionary_id)
-        if response.status_code >= 400 and "pronunciation_dictionary" in response.text.lower():
-            logger.warning("ElevenLabs pronunciation dictionary not supported; retrying with normalized audio text only.")
-            payload.pop("pronunciation_dictionary_locators", None)
-            self.last_dictionary_attached = False
-            if self.last_pronunciation:
-                self.last_pronunciation = type(self.last_pronunciation)(
-                    display_text=self.last_pronunciation.display_text,
-                    audio_text=self.last_pronunciation.audio_text,
-                    aliases_applied=self.last_pronunciation.aliases_applied,
-                    dictionary_id=dictionary_id,
-                    dictionary_version_id=version_id,
-                    dictionary_attached=False,
-                    dictionary_fallback_reason="API rejected pronunciation_dictionary_locators",
-                )
+        try:
             response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
-        if response.status_code >= 400 and self._has_optional_voice_fields(payload):
-            logger.warning("ElevenLabs rejected optional voice settings; retrying with core settings only.")
-            payload["voice_settings"] = {
-                "stability": payload["voice_settings"].get("stability", 0.42),
-                "similarity_boost": payload["voice_settings"].get("similarity_boost", 0.78),
-            }
-            response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
+            self.last_dictionary_attached = bool(dictionary_id)
+            if response.status_code >= 400 and "pronunciation_dictionary" in response.text.lower():
+                logger.warning("ElevenLabs pronunciation dictionary not supported; retrying with normalized audio text only.")
+                payload.pop("pronunciation_dictionary_locators", None)
+                self.last_dictionary_attached = False
+                if self.last_pronunciation:
+                    self.last_pronunciation = type(self.last_pronunciation)(
+                        display_text=self.last_pronunciation.display_text,
+                        audio_text=self.last_pronunciation.audio_text,
+                        aliases_applied=self.last_pronunciation.aliases_applied,
+                        dictionary_id=dictionary_id,
+                        dictionary_version_id=version_id,
+                        dictionary_attached=False,
+                        dictionary_fallback_reason="API rejected pronunciation_dictionary_locators",
+                    )
+                response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
+            if response.status_code >= 400 and self._has_optional_voice_fields(payload):
+                logger.warning("ElevenLabs rejected optional voice settings; retrying with core settings only.")
+                payload["voice_settings"] = {
+                    "stability": payload["voice_settings"].get("stability", 0.42),
+                    "similarity_boost": payload["voice_settings"].get("similarity_boost", 0.78),
+                }
+                response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
+        except (requests.Timeout, requests.ConnectionError, requests.RequestException) as exc:
+            from .redact import sanitize_error_text
+
+            raise AudioGenerationError(
+                f"ElevenLabs TTS network/timeout failure: {sanitize_error_text(str(exc))}"
+            ) from exc
         if response.status_code >= 400:
-            raise AudioGenerationError(f"ElevenLabs TTS failed: {response.status_code} {response.text[:500]}")
+            from .redact import sanitize_error_text
+
+            raise AudioGenerationError(
+                f"ElevenLabs TTS failed: {response.status_code} {sanitize_error_text(response.text[:500])}"
+            )
         self.last_voice_id = voice_id
         self.last_model_id = model_id
         self.last_output_format = output_format
@@ -262,6 +323,25 @@ class AudioGenerator:
     def _has_optional_voice_fields(payload: dict) -> bool:
         voice = payload.get("voice_settings", {})
         return "style" in voice or "speed" in voice or "use_speaker_boost" in voice
+
+    @staticmethod
+    def _is_eligible_elevenlabs_runtime_fallback(message: str) -> bool:
+        lower = (message or "").lower()
+        markers = (
+            "quota",
+            "credit",
+            "insufficient",
+            "timeout",
+            "timed out",
+            "connection",
+            "network",
+            "temporarily unavailable",
+            "503",
+            "502",
+            "429",
+            "service unavailable",
+        )
+        return any(marker in lower for marker in markers)
 
     @staticmethod
     def _is_quota_error(message: str) -> bool:
