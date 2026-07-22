@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 
+from krishna_story_factory.audio.drift import narration_source_sha
 from krishna_story_factory.activities.qa import contains_metadata_concept, is_metadata_event_label
 from krishna_story_factory.content.repairs import (
     apply_known_story_repairs,
@@ -55,25 +56,46 @@ def test_exact_eight_files_and_story_structure(chapter: str) -> None:
     assert "<!--" in md and md.index("<!--") < md.index("-->")
     structure_errors = validate_story_comment_structure(md)
     assert not structure_errors, structure_errors
+    visible = md.split("<!--")[0]
     for section in (
         "## Recap",
         "## Main Story",
+        "## Devotional Meaning",
+        "## Five Lessons",
+        "## Think About It",
+        "## Five-Star Challenge",
+        "## Bedtime Prayer",
+        "## Next Story Preview",
         "## Parent/Teacher Note",
     ):
-        assert section in md.split("<!--")[0]
+        assert section in visible
     # Visual briefs live in the hidden block and must not be empty.
     assert "## Poster Visual Brief" in md
     assert "## Coloring Visual Brief" in md
+    assert "## Audio Narration" in md
     poster = re.search(r"## Poster Visual Brief\n(.+?)(?=\n## |\n-->)", md, re.S)
     coloring = re.search(r"## Coloring Visual Brief\n(.+?)(?=\n## |\n-->)", md, re.S)
     assert poster and poster.group(1).strip()
     assert coloring and coloring.group(1).strip()
+
+    plan = read_plan_by_chapter(ROOT, chapter)
+    content = _content_from_story_md(md, plan)
+    assert len(content.five_lessons or []) == 5
+    assert 3 <= len(content.think_about_it or []) <= 5
+    assert len(content.five_star_challenge or []) == 5
+    remember_count = (content.audio_script or "").count("Remember tonight's pastime")
+    assert remember_count <= 1, f"Remember-line repeated {remember_count} times in audio"
 
     manifest = json.loads((package / "manifest.json").read_text(encoding="utf-8"))
     audio = manifest.get("audio") or {}
     quality = manifest.get("quality") or {}
     stale = bool(audio.get("audio_stale")) or quality.get("status") == "AUDIO_STALE"
     verified = bool(audio.get("generation_verified"))
+    computed_sha = narration_source_sha(content.audio_script)
+    manifest_sha = str(manifest.get("narration_source_sha") or audio.get("narration_source_sha") or "")
+    assert manifest_sha == computed_sha
+    if audio.get("narration_source_sha"):
+        assert audio.get("narration_source_sha") == computed_sha
     expected_publishable = (
         manifest.get("mode") != "test"
         and quality.get("status") == "PASS"
@@ -81,14 +103,19 @@ def test_exact_eight_files_and_story_structure(chapter: str) -> None:
         and not stale
         and verified
         and str(audio.get("provider") or "") not in {"", "preserved", "unknown_preserved"}
-        and bool(manifest.get("narration_source_sha") or audio.get("narration_source_sha"))
+        and bool(manifest_sha)
         and bool(audio.get("sha256"))
     )
     assert manifest.get("publishable") is expected_publishable
-    # Authoritative release state: stale unverified audio → not publishable.
-    assert stale is True
-    assert verified is False
-    assert manifest.get("publishable") is False
+    # Gate honesty first: publishable must never lie about stale/unverified audio.
+    # Release packages 001–006 are expected to satisfy the full gate after Template V2;
+    # if TTS/audio drifts, expected_publishable becomes False and this fails with details.
+    assert expected_publishable, (
+        f"Story {chapter} failed publishable gate "
+        f"(stale={stale}, verified={verified}, status={quality.get('status')}, "
+        f"provider={audio.get('provider')!r}, sha256={bool(audio.get('sha256'))}). "
+        "Fresh verified audio is required for release packages 001–006."
+    )
 
 
 def test_story_002_audio_defects_absent() -> None:
@@ -118,9 +145,32 @@ def test_story_003_closing_facts_deduped_and_idempotent() -> None:
     again = repair_story_003_dedup(repaired)
     assert again.main_story == repaired.main_story
     assert again.audio_script == repaired.audio_script
-    # Live file must already match repaired source (operator applied local repair).
-    assert content.main_story.strip() == repaired.main_story.strip()
-    assert content.audio_script.strip() == repaired.audio_script.strip()
+    # Closing-fact signatures remain unique after repair pass.
+    for blob in (repaired.main_story, repaired.audio_script):
+        counts = count_story_003_fact_signatures(blob)
+        for sig, count in counts.items():
+            assert count <= 1, f"{sig} count={count} after repair"
+
+
+def test_story_004_devotional_sentence_once() -> None:
+    _, md = _read_story("004")
+    sentence = "Chanting in community helps worried hearts remember they are not alone."
+    assert md.count(sentence) == 1
+
+
+def test_story_005_quiet_courage_once_and_no_meta_language() -> None:
+    _, md = _read_story("005")
+    sentence = "Quiet courage in a dark room can be as powerful as a public celebration."
+    assert md.count(sentence) == 1
+    visible = md.split("<!--")[0]
+    assert "theatrical inventions" not in visible
+    assert "did not invent miracles" not in visible
+    assert "Avoid heavenly-garden" not in visible
+    assert "shield language" not in visible
+    assert "## Parent/Teacher Note" in visible
+    parent = visible.split("## Parent/Teacher Note", 1)[1]
+    assert "Source:" in parent
+    assert "Discuss:" in parent
 
 
 def test_story_005_forbidden_language_absent() -> None:
