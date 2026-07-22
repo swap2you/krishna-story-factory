@@ -10,6 +10,16 @@ const body = Source_Sans_3({ subsets: ["latin"], variable: "--font-body" });
 export const metadata: Metadata = {
   title: { default: "Bhāva — Stories for the heart", template: "%s | Bhāva" },
   description: "A gentle devotional learning home for Krishna stories and family practice.",
+  manifest: "/manifest.webmanifest",
+  openGraph: {
+    title: "Bhāva",
+    description: "Devotional learning for children, parents, and teachers.",
+    siteName: "Bhāva",
+    type: "website",
+  },
+  other: {
+    "theme-color": "#071b34",
+  },
 };
 
 const nav = [["Home", "/"], ["Library", "/library"], ["For Teachers", "/teachers"], ["Prabhupāda Vāṇī", "/vanani"], ["Bhakti Blog", "/blog"], ["About", "/about"], ["Contact", "/contact"]];

@@ -1,8 +1,23 @@
-import { getStories, type Story } from "@/lib/catalog";
+import { PageIntro } from "@/components/page-intro";
 import { StoryGrid } from "@/components/story-grid";
+import { getStories } from "@/lib/catalog";
 
 export default async function KrishnaBookPage() {
-  let stories: Story[] = [];
-  try { stories = await getStories(); } catch { /* catalog is optional for this shell */ }
-  return <><section className="page-hero"><div className="container"><p className="eyebrow">The Krishna Book</p><h1>A sequence of divine childhood pastimes.</h1><p>Each story is shared in order, with listening, reading, activities, and source notes.</p></div></section><section className="section"><div className="container"><StoryGrid stories={stories} /></div></section></>;
+  const stories = await getStories();
+  return (
+    <>
+      <PageIntro
+        eyebrow="Krishna Book"
+        title="Chapter timeline for Stories 001–007."
+        body="Each card opens listening, reading, activities, coloring, source references, and device-local notes. Story 008 stays pending in the factory queue and is not listed until released."
+      />
+      <section className="section">
+        <div className="container">
+          <ol className="story-grid" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <StoryGrid stories={stories} empty="Run the Bhāva API so the catalog can discover locked packages." />
+          </ol>
+        </div>
+      </section>
+    </>
+  );
 }

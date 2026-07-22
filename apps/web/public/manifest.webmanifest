@@ -1,0 +1,21 @@
+{
+  "name": "Bhāva",
+  "short_name": "Bhāva",
+  "description": "Devotional learning portal for Krishna Book stories",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffaf0",
+  "theme_color": "#071b34",
+  "icons": [
+    {
+      "src": "/icons/bhava-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/bhava-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

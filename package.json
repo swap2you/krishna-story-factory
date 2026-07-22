@@ -18,5 +18,12 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@next/swc-win32-x64-msvc": "^15.3.5",
+    "@rollup/rollup-win32-x64-msvc": "^4.62.2"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1"
   }
 }
