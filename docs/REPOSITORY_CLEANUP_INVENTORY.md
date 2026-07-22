@@ -26,7 +26,8 @@ Use a separate docs-only PR (`chore/repository-documentation-cleanup`) after hum
 | `scripts/test_google_drive_upload.*` / `test_whatsapp_*` | Channel smoke tests |
 | `scripts/validate_master_plan.py` / `validate_story_visuals.py` / `check_audio_quality.py` / `diagnose_local_config.py` | Diagnostics |
 | `scripts/generate_story_visuals.*` | Supported visual tooling |
-| `scripts/manual_rebuild_story.ps1` | Documented rebuild path |
+| `scripts/manual_rebuild_story.ps1` | Documented rebuild wrapper |
+| `scripts/rebuild_story_packages.py` | Required by `manual_rebuild_story.ps1` (do not delete while wrapper is kept) |
 
 ### Durable tests
 | Path | Reason |
@@ -79,7 +80,6 @@ Do **not** delete in the pilot lock PR. Review in `chore/repository-documentatio
 | `scripts/rebuild_001_005_v2_safe.py` | One-time Template V2 rebuild | No durable test import | High | Release lock evidence |
 | `scripts/rebuild_story_005_format_v2.py` | One-time Story 005 rebuild | No | High | Release lock |
 | `scripts/rebuild_story_005_matching.py` | One-time matching repair | No | High | Activity engine docs |
-| `scripts/rebuild_story_packages.py` | Broad rebuild helper | Possibly referenced in runbooks | Medium | `scripts/manual_rebuild_story.ps1` |
 | `scripts/repair_story_005*.py` | One-time Story 005 repairs | No | High | Release lock |
 | `scripts/repair_story_markdown_local.py` | One-time markdown repair | No | Medium | Content repair modules in package |
 | `scripts/expand_story_005_v2_lengths.py` | One-time length expander | No | High | — |
