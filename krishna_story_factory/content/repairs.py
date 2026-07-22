@@ -716,7 +716,23 @@ def apply_known_story_repairs(chapter_no: str, content: StoryContent) -> StoryCo
         return repair_story_005_philosophy(content)
     if chapter == "006":
         return repair_story_006_content(content)
+    if chapter == "007":
+        return repair_story_007_chapter4(content)
     return content
+
+
+def repair_story_007_chapter4(content: StoryContent) -> StoryContent:
+    """Replace failed Story 007 packages with locked Krishna Book Chapter 4 content."""
+    from .story_007_locked import build_story_007_locked
+
+    locked = build_story_007_locked()
+    return replace(
+        locked,
+        title=content.title or locked.title,
+        source_reference=content.source_reference or locked.source_reference,
+        scripture_reference=content.scripture_reference or locked.scripture_reference,
+        age_range=content.age_range or locked.age_range,
+    )
 
 
 __all__ = [
@@ -737,5 +753,6 @@ __all__ = [
     "repair_story_004_lessons",
     "repair_story_005_philosophy",
     "repair_story_006_content",
+    "repair_story_007_chapter4",
     "sanitize_content_fields",
 ]

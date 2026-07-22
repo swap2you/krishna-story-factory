@@ -49,6 +49,20 @@ def source_fact_brief(plan: PlanRow) -> str:
             "Do not show baby Krishna visible in Devakī's womb. "
             "FORBIDDEN: material from Chapter 4 (Kamsa's later persecutions), invented scripture quotations."
         )
+    if plan.chapter_no == "007":
+        brief += (
+            "\nSTORY 007 HARD BOUNDARY (Krishna Book Ch. 4 / SB 10.4): "
+            "Include in order: Yoga-māyā cries; guards tell Kaṁsa; Kaṁsa rushes; Devakī pleads; "
+            "Kaṁsa attempts to destroy the child (child-safe, no gore); Yoga-māyā rises as eight-armed Durgā; "
+            "she says the enemy already appeared elsewhere; Kaṁsa astonished; he releases and asks forgiveness; "
+            "Vasudeva teaches bodily identification; next-day demonic ministers advise killing children born "
+            "within ten days and attacking brāhmaṇas, cows, sages, Vedic culture, and Vaiṣṇavas; Kaṁsa authorizes "
+            "persecution; close on offenses destroying auspiciousness. "
+            "FORBIDDEN: claiming Devakī/Vasudeva remain imprisoned after release; 'every baby boy'; "
+            "named demon lists not in Ch. 4; magicians/potions; invented families fleeing rivers; "
+            "fabricated Kamsa dialogue quotations; absolute claims that Krishna prevents all physical suffering; "
+            "Chapter 5 meeting of Nanda as main-story content."
+        )
     return brief
 
 
@@ -208,6 +222,54 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
                     flags=re.I,
                 ):
                     errors.append(f"Story 006 {blob_name} contains unsupported invented dialogue quotations.")
+    if plan.chapter_no == "007":
+        _require(combined, ("yoga-māyā", "yogamaya", "yoga maya", "yogamāyā"), "Story 007 must include Yoga-māyā.", errors)
+        _require(combined, ("cried", "cry"), "Story 007 must include Yoga-māyā crying.", errors)
+        _require(combined, ("guard",), "Story 007 must include the guards awakening/reporting.", errors)
+        _require(combined, ("eight-armed", "eight armed", "eight arms"), "Story 007 must include eight-armed Durgā/Yoga-māyā.", errors)
+        _require(combined, ("durgā", "durga"), "Story 007 must identify the form as Durgā.", errors)
+        _require(combined, ("already", "elsewhere"), "Story 007 must say the enemy already appeared elsewhere.", errors)
+        _require(combined, ("release", "released", "set free", "freed"), "Story 007 must include Kaṁsa releasing Devakī and Vasudeva.", errors)
+        _require(combined, ("forgiv",), "Story 007 must include Kaṁsa asking forgiveness.", errors)
+        _require(combined, ("bodily", "body", "identify"), "Story 007 must include Vasudeva's teaching on bodily identification.", errors)
+        _require(combined, ("minister", "counsel", "adviser", "advisor"), "Story 007 must include Kaṁsa consulting demonic ministers.", errors)
+        _require(combined, ("ten day", "ten days", "10 day", "10 days"), "Story 007 must include the ten-day newborn counsel.", errors)
+        _require(combined, ("brāhmaṇa", "brahmana", "brāhmaṇas", "brahmanas"), "Story 007 must include persecution of brāhmaṇas.", errors)
+        _require(combined, ("vaiṣṇava", "vaisnava", "vaiṣṇavas", "vaisnavas"), "Story 007 must include persecution of Vaiṣṇavas.", errors)
+        _require(combined, ("cow",), "Story 007 must include persecution advice against cows.", errors)
+        for phrase in (
+            "every baby boy",
+            "kill every baby",
+            "remained in prison",
+            "remained imprisoned",
+            "still imprisoned",
+            "magician",
+            "potion",
+            "dark chants",
+            "pralamba",
+            "aghasura",
+            "trinavarta",
+            "tṛṇāvarta",
+            "mushtika",
+            "dhenuka",
+            "fleeing across the river",
+            "fled across the river",
+            "prevents all",
+            "never suffer",
+            "no suffering",
+        ):
+            if phrase in combined:
+                errors.append(f"Story 007 forbidden invention or false claim: {phrase!r}.")
+        # False imprisonment after release: detect "remain/stayed in prison" after release context is hard;
+        # block explicit remaining-imprisoned claims.
+        if re.search(r"(devak[iī].{0,40}|vasudeva.{0,40})(remain|stayed|still).{0,20}(prison|imprison)", combined):
+            errors.append("Story 007 must not claim Devakī and Vasudeva remained imprisoned after release.")
+        if len([x for x in (content.five_lessons or []) if str(x).strip()]) != 5:
+            errors.append("Story 007 must have exactly five lessons.")
+        if len([x for x in (content.think_about_it or []) if str(x).strip()]) < 5:
+            errors.append("Story 007 must have exactly five reflection questions.")
+        if len([x for x in (content.five_star_challenge or []) if str(x).strip()]) != 5:
+            errors.append("Story 007 must have exactly five challenges.")
     return errors
 
 

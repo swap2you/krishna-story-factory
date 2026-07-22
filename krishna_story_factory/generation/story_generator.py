@@ -43,6 +43,10 @@ class StoryGenerator:
         self.mode = mode
 
     def generate(self, plan: PlanRow) -> StoryContent:
+        if plan.chapter_no.strip().zfill(3) == "007":
+            from ..content.story_007_locked import build_story_007_locked
+
+            return _finalize_content(build_story_007_locked(plan), plan)
         if self.mode == "test" or not self.settings.openai_text_enabled:
             return _finalize_content(self._mock_story(plan), plan)
         return _finalize_content(self._openai_story(plan), plan)

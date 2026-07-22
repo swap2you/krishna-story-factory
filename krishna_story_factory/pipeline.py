@@ -320,6 +320,9 @@ def _run_once(
     content.source_reference = plan.source_reference
     content.scripture_reference = plan.scripture_reference
     content.age_range = plan.age_range
+    from .content.repairs import apply_known_story_repairs
+
+    content = apply_known_story_repairs(plan.chapter_no, content)
     source_errors = run_source_guard(plan, content)
     if source_errors:
         raise PipelineError("Source-fact validation failed: " + " | ".join(source_errors))

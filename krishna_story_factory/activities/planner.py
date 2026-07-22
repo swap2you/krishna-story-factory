@@ -881,40 +881,41 @@ def _pack_006(plan: PlanRow) -> ActivityPack:
 
 
 def _pack_007(plan: PlanRow) -> ActivityPack:
-    """Child-safe Chapter 4 pack: fear, persecution of devotees, and steadfast faith—no gore."""
+    """Chapter 4 pack: Yoga-māyā revelation, release, bad association, persecution counsel."""
     connection = (
-        "This activity follows Krishna Book Chapter 4: Kaṁsa's fear after the Lord's appearance, "
-        "his harsh orders against devotees, and Devakī and Vasudeva's steadfast faith in prison."
+        "This activity follows Krishna Book Chapter 4: Yoga-māyā's revelation as eight-armed Durgā, "
+        "Kaṁsa's temporary release of Devakī and Vasudeva, and the demonic ministers' counsel to persecute "
+        "devotees and saintly culture."
     )
     sequence = [
         SequenceCard(
-            "Kaṁsa became afraid when he understood the Lord's appearance.",
-            "Draw Kaṁsa looking worried in the palace, without violence.",
+            "Yoga-māyā cried and the guards told Kaṁsa.",
+            "Draw guards hurrying to report, without weapons harming anyone.",
             1,
         ),
         SequenceCard(
-            "He ordered harsh persecution against devotees and innocent families.",
-            "Draw frightened families leaving while soldiers stand at a distance.",
+            "Kaṁsa rushed in; Devakī pleaded for the baby girl.",
+            "Draw Devakī pleading calmly while Kaṁsa looks fearful.",
             2,
         ),
         SequenceCard(
-            "Devakī and Vasudeva remained in prison with steady faith.",
-            "Draw the parents praying calmly behind gentle prison bars.",
+            "Yoga-māyā rose as eight-armed Durgā and warned Kaṁsa.",
+            "Draw eight-armed Durgā in the sky; Kaṁsa looks up astonished.",
             3,
         ),
         SequenceCard(
-            "Devotees turned to the Lord with sincere prayer.",
-            "Draw folded hands and soft lamp light, not fighting.",
+            "Kaṁsa released Devakī and Vasudeva and asked forgiveness.",
+            "Draw the parents free, with Kaṁsa bowing in temporary regret.",
             4,
         ),
         SequenceCard(
-            "The Lord heard their prayers and protected His devotees in His own way.",
-            "Draw a calm sky and a hopeful path of light.",
+            "Vasudeva taught about bodily identification and enmity.",
+            "Draw Vasudeva speaking calmly with open hands.",
             5,
         ),
         SequenceCard(
-            "Faith grew stronger even while danger surrounded Mathurā.",
-            "Draw a family remembering Krishna together with courage.",
+            "Demonic ministers advised persecution; Kaṁsa authorized it.",
+            "Draw dark counselors speaking while Kaṁsa listens with a troubled face.",
             6,
         ),
     ]
@@ -927,32 +928,15 @@ def _pack_007(plan: PlanRow) -> ActivityPack:
         sequence[3],
     ]
     return ActivityPack(
-        activity_title="Courage When Fear Spreads",
-        activity_type="MATCHING_GAME",
+        activity_title="Yoga-māyā Warns Kaṁsa",
+        activity_type="STORY_SEQUENCE",
         send_mode="SEND_NOW",
         estimated_minutes=18,
-        parent_effort="Low: help younger children match and number cards.",
-        learning_goal="Match Chapter 4 people to their roles and put the child-safe events in order.",
+        parent_effort="Low: help younger children number cards and discuss association.",
+        learning_goal="Order Chapter 4 events and contrast bad association with wise shelter.",
         story_connection=connection,
         materials=["pencil or crayons"],
         pages=[
-            ActivityPage(
-                page_title="Who Chose What?",
-                page_type="MATCHING_CARDS",
-                instructions=[
-                    "Match each person or group to their part in Chapter 4.",
-                    "Younger path: draw lines.",
-                    "Older path: write one gentle sentence for each match.",
-                ],
-                components=[
-                    MatchingCard("Kaṁsa", "acts from fear and issues harsh orders", "who", pair_id="A"),
-                    MatchingCard("Devakī", "stays faithful while imprisoned", "who", pair_id="B"),
-                    MatchingCard("Vasudeva", "keeps courage and remembers the Lord", "who", pair_id="C"),
-                    MatchingCard("devotees", "pray for protection with sincerity", "who", pair_id="D"),
-                    MatchingCard("Mathurā", "feels danger as persecution begins", "where", pair_id="E"),
-                ],
-                story_connection=connection,
-            ),
             ActivityPage(
                 page_title="Put Chapter 4 in Order",
                 page_type="STORY_SEQUENCE_CARDS",
@@ -965,40 +949,57 @@ def _pack_007(plan: PlanRow) -> ActivityPack:
                 story_connection=connection,
             ),
             ActivityPage(
-                page_title="Family Courage Mission",
+                page_title="Bad Association or Wise Shelter?",
+                page_type="MATCHING_CARDS",
+                instructions=[
+                    "Match each choice to its fruit.",
+                    "Younger path: draw lines.",
+                    "Older path: write one sentence for each match.",
+                ],
+                components=[
+                    MatchingCard("demonic ministers", "pull Kaṁsa back into fear and persecution", "association", pair_id="A"),
+                    MatchingCard("Vasudeva's teaching", "explains bodily identification and enmity", "wisdom", pair_id="B"),
+                    MatchingCard("temporary regret alone", "fades without purified association", "warning", pair_id="C"),
+                    MatchingCard("honoring Vaiṣṇavas and brāhmaṇas", "protects auspiciousness", "shelter", pair_id="D"),
+                    MatchingCard("Yoga-māyā's warning", "tells Kaṁsa the enemy already appeared elsewhere", "revelation", pair_id="E"),
+                ],
+                story_connection=connection,
+            ),
+            ActivityPage(
+                page_title="Family Shelter Prayer",
                 page_type="FAMILY_MISSION",
                 instructions=[
-                    "Talk about one fear your family can give to Krishna.",
-                    "Younger path: draw a calm prayer scene.",
-                    "Older path: write two sentences about choosing faith over fear.",
+                    "Talk about one counselor or friend who helps your family choose kindness.",
+                    "Younger path: draw Yoga-māyā's gentle sky form.",
+                    "Older path: write two sentences about offenses against devotees.",
                 ],
                 components=[
                     "One fear we can place before Krishna",
-                    "One way devotees stayed faithful",
-                    "One kind protective action we will take tomorrow",
+                    "One way bad association can change choices",
+                    "One way we will honor a devotee or teacher tomorrow",
                 ],
                 story_connection=connection,
             ),
         ],
         age_variants={
-            "ages_6_8": "match and number with adult help; keep drawings gentle.",
-            "ages_9_13": "explain how faith can stay strong when others act from fear.",
+            "ages_6_8": "number cards and draw the sky warning scene gently.",
+            "ages_9_13": "explain why temporary repentance failed after bad counsel.",
         },
-        safety_note="PARENT HELP: Keep the discussion child-safe; do not dwell on violent details.",
-        completion_prompt="Share one way your family can choose faith when fear feels loud.",
+        safety_note="PARENT HELP: Keep Kaṁsa's attempt child-safe; do not describe graphic harm.",
+        completion_prompt="Share why offenses against devotees destroy auspiciousness.",
         review_questions=[
-            "Why did Kaṁsa become afraid?",
-            "How did Devakī and Vasudeva respond in prison?",
+            "What did Yoga-māyā tell Kaṁsa from the sky?",
+            "What did the ministers advise the next day?",
         ],
         answer_key=[card.event for card in sequence],
         parent_note=(
-            "Stay inside Chapter 4. Avoid graphic harm. Do not include Nanda's meeting (Chapter 5) "
-            "or birth-night details already covered in Chapter 3."
+            "Stay inside Chapter 4. Kaṁsa releases Devakī and Vasudeva after the revelation; "
+            "do not teach that they remained imprisoned. Avoid graphic infant harm."
         ),
         qa_requirements=[
-            "three meaningful pages",
-            "matching cards",
-            "shuffled sequence cards",
+            "six Chapter 4 sequence events",
+            "bad vs wise association matching",
+            "family shelter reflection",
             "child-safe wording",
             "answers only in manifest",
         ],

@@ -284,9 +284,10 @@ def _identity_constraints(title: str) -> str:
     if "Persecution" in title or "Persecutions" in title or "Kamsa Begins" in title or "Kaṁsa Begins" in title:
         return (
             universal
-            + " Child-safe depiction of Kaṁsa's fear after Krishna's birth: no gore, no graphic violence, no infant harm. "
-            "Poster may show alarmed Kaṁsa in court; coloring/simple coloring should stay gentle—calm Devakī and Vasudeva "
-            "remembering the Lord in prison, or a soft non-graphic court scene. Do not show weapons used against babies."
+            + " Central scene: Yoga-māyā as eight-armed Durgā in the sky; Kaṁsa astonished below; "
+            "Devakī and Vasudeva nearby respectfully. Child-safe: no gore, no graphic infant harm, "
+            "no dashed baby, no visible baby Krishna, no peacock feather. Simple coloring may show "
+            "Kaṁsa releasing the parents or Durgā warning Kaṁsa with large open spaces for ages 4–8."
         )
     if "Demigods" in title or "Womb" in title:
         return (
