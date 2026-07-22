@@ -57,4 +57,4 @@ Re-running `install_mwf_story_task.ps1` without `-Enable` re-registers the task 
 - `tracking/run_history.csv`  
 - Optional `tracking/latest_run_summary.json` / `logs/latest_run_summary.txt`
 
-Senior devotee review is pending for the 001–006 lock; enable the task only when operations intentionally start MWF production.
+Senior devotee review remains pending for the 001–006 pilot lock. The MWF task is the production schedule once enabled (`-Enable`); do not leave the legacy Daily task enabled alongside it.

@@ -143,19 +143,22 @@ Test mode must not call paid APIs and is never publishable.
 
 Installer defaults to **Disabled** unless `-Enable`. See [SCHEDULER.md](SCHEDULER.md).
 
-## Release state (pilot 001–006)
+## Release state (current)
 
 | Item | State |
 | --- | --- |
 | Stories 001–006 | Locked (Story Format V2); do not modify without approval |
-| Next pending at snapshot | **007** (`kamsa-begins-his-persecutions`) |
-| Senior devotee review | **Pending** |
-| Planned Git tag | `v1.0.0-pilot-stories-001-006` |
-| Evidence | [releases/PILOT_001_006_RELEASE_LOCK.md](releases/PILOT_001_006_RELEASE_LOCK.md), [releases/PILOT_001_006_HASHES.json](releases/PILOT_001_006_HASHES.json) |
+| Stories 001–007 | **done** (runtime queue) |
+| Next pending | **008** (`the-meeting-of-nanda-and-vasudeva`) |
+| Story 007 Drive | Released — [STORY_007_RELEASE.md](releases/STORY_007_RELEASE.md) |
+| Scheduler | **`Krishna Story Factory MWF` enabled** — Mon/Wed/Fri **06:00 Eastern** |
+| Senior devotee review (001–006 pilot) | **Pending** |
+| Git tag (001–006 pilot baseline) | `v1.0.0-pilot-stories-001-006` |
+| Evidence (001–006) | [releases/PILOT_001_006_RELEASE_LOCK.md](releases/PILOT_001_006_RELEASE_LOCK.md), [releases/PILOT_001_006_HASHES.json](releases/PILOT_001_006_HASHES.json) |
 | Messaging | WhatsApp / Telegram disabled |
 | Distribution | Google Drive |
 
-Pilot narration for 001–006 used OpenAI Marin when ElevenLabs Renee was unavailable; policy still prefers Renee first.
+Pilot narration for 001–006 (and Story 007) used OpenAI Marin when ElevenLabs Renee was unavailable; policy still prefers Renee first.
 
 ## Manual generation
 

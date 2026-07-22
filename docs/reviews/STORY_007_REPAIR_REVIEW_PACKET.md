@@ -1,22 +1,38 @@
 # Story 007 Content Repair — Review Packet
 
-**Status:** LOCAL CANDIDATE ONLY — Drive upload and queue advancement are blocked pending human approval.
+**Status:** RELEASED — PHASE 7 COMPLETE
 
-**Scheduler:** `Krishna Story Factory MWF` = **Disabled**
+**Scheduler:** `Krishna Story Factory MWF` = **Enabled / Ready** (Mon/Wed/Fri 6:00 AM Eastern)
 
 **Source boundary:** Krishna Book Chapter 4 / Śrīmad-Bhāgavatam 10.4
 
-**Archive of failed package:** `output/_archive/007_content_review_failed_*`
+**Drive folder:** https://drive.google.com/drive/folders/12KjkBOc42AFvIlbUSFZHPZdCDUlZRW8v
 
-## Required reviewer verdicts before Drive
+**Local package:** `output/007_kamsa-begins-his-persecutions/` (exact eight files; gitignored)
 
-| Reviewer | Required verdict | Notes |
-|----------|------------------|-------|
-| Codex (narrow source-boundary) | APPROVE | Compare story.md + audio against Chapter 4 event list |
-| Claude Code (adversarial content) | SAFE FOR RELEASE | Child-safety, no inventions, no false imprisonment |
-| CoWork / parent package | APPROVE or APPROVE WITH NON-BLOCKING NOTES | Parent note, activity, visuals |
+## Phase 7 outcome (2026-07-22)
+
+| Item | Result |
+|------|--------|
+| Human listen-through / visual inspection | Complete — operator approved |
+| Codex (narrow source-boundary) | **APPROVE** |
+| Claude Code (adversarial content) | **SAFE FOR RELEASE** |
+| CoWork / parent package | **APPROVE WITH NON-BLOCKING NOTES** |
+| Drive replacement (all eight files) | Complete |
+| Drive readback + SHA-256 compare (all eight) | **PASS** |
+| Story 007 queue status | **done** |
+| Story 008 | **pending** (next) |
+| Scheduler re-enabled | Yes (not manually triggered) |
+| Paid APIs during Phase 7 | **None** |
+| Stories 001–006 | **Unchanged** |
+
+CoWork non-blocking notes (retained): sober theme may need extra parent help for ages 6–8; activity is text-heavy. WhatsApp Drive link was corrected before release.
+
+Release record: [../releases/STORY_007_RELEASE.md](../releases/STORY_007_RELEASE.md)
 
 ## Event checklist (must all be present)
+
+Durable regression requirements for Story 007 / Chapter 4:
 
 1. Yoga-māyā cries after Vasudeva returns
 2. Guards awaken and tell Kaṁsa
@@ -44,28 +60,3 @@
 - Invented families fleeing across rivers
 - Fabricated Kamsa dialogue quotations
 - Absolute claim that Krishna prevents all physical suffering
-
-## Local package path
-
-`output/007_kamsa-begins-his-persecutions/`
-
-## After all three approvals
-
-Operator must explicitly approve Phase 7:
-
-1. Replace eight files in existing Drive folder `12KjkBOc42AFvIlbUSFZHPZdCDUlZRW8v`
-2. Read back + hash verify
-3. Mark 007 done; leave 008 pending
-4. Re-enable MWF only after separate operator approval
-
-## Automated review results (2026-07-22 local candidate)
-
-| Reviewer | Verdict |
-|----------|---------|
-| Codex (source-boundary) | **APPROVE** |
-| Claude Code (adversarial) | **SAFE FOR RELEASE** |
-| CoWork (parent package) | **APPROVE WITH NON-BLOCKING NOTES** |
-
-CoWork non-blocking notes: sync WhatsApp Drive link (fixed locally); sober theme may need extra parent help for ages 6–8; activity is text-heavy.
-
-**Human listen-through and visual inspection still required before Phase 7.**

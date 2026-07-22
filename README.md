@@ -9,14 +9,16 @@ Local Python automation for **daily Krishna Book bedtime story packages** (child
 
 Repository: [github.com/swap2you/krishna-story-factory](https://github.com/swap2you/krishna-story-factory)
 
-## Current pilot lock
+## Current operational state
 
-- **Locked packages:** Stories **001–006** (Story Format V2)
-- **Next pending:** Story **007**
-- **Senior devotee review:** pending
-- **Planned tag:** `v1.0.0-pilot-stories-001-006`
-- **Scheduler:** `Krishna Story Factory MWF` (Mon/Wed/Fri 6:00) via [docs/SCHEDULER.md](docs/SCHEDULER.md); enable only when intentionally starting MWF production
-- Release record: [docs/releases/PILOT_001_006_RELEASE_LOCK.md](docs/releases/PILOT_001_006_RELEASE_LOCK.md)
+- **Locked pilot packages:** Stories **001–006** (Story Format V2); senior devotee review **pending**
+- **Released:** Stories **001–007** done on the live queue
+- **Next pending:** Story **008** — The Meeting of Nanda and Vasudeva
+- **Story 007 release:** [docs/releases/STORY_007_RELEASE.md](docs/releases/STORY_007_RELEASE.md)
+- **Pilot tag:** `v1.0.0-pilot-stories-001-006` (001–006 baseline; not moved for Story 007)
+- **Scheduler:** `Krishna Story Factory MWF` enabled (Mon/Wed/Fri 6:00 Eastern) — [docs/SCHEDULER.md](docs/SCHEDULER.md)
+- **Messaging:** WhatsApp / Telegram disabled; Google Drive distribution
+- Pilot 001–006 lock record: [docs/releases/PILOT_001_006_RELEASE_LOCK.md](docs/releases/PILOT_001_006_RELEASE_LOCK.md)
 - Hash evidence: [docs/releases/PILOT_001_006_HASHES.json](docs/releases/PILOT_001_006_HASHES.json)
 
 ## Start here
