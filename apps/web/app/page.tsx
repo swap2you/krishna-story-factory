@@ -1,0 +1,6 @@
+import Link from "next/link";
+
+export default function Home() {
+  return <><section className="hero"><div className="container hero-content"><p className="eyebrow">A devotional learning home</p><h1>Stories that bring little hearts closer to Krishna.</h1><p className="hero-copy">Listen, read, make, and wonder together through the timeless world of the Krishna Book.</p><div className="actions"><Link className="bhava-button bhava-button--accent" href="/library">Explore the library</Link><Link className="bhava-button bhava-button--quiet" href="/teachers">For teachers</Link></div></div></section>
+  <section className="section"><div className="container"><p className="eyebrow">Made for unhurried moments</p><h2 className="section-heading">A small practice for every family’s rhythm.</h2><div className="story-grid"><article><h3>Listen together</h3><p>Warm narrations for a quiet car ride, bedtime, or a moment between busy things.</p></article><article><h3>Read and reflect</h3><p>Kind, age-aware retellings that keep the sacred sources close at hand.</p></article><article><h3>Make and remember</h3><p>Activities and coloring pages that let the story continue off the screen.</p></article></div></div></section></>;
+}

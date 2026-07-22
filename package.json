@@ -1,0 +1,22 @@
+{
+  "name": "bhava-portal",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Bhāva devotional learning portal (local v1)",
+  "workspaces": [
+    "apps/web",
+    "packages/ui",
+    "packages/contracts"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @bhava/web",
+    "build:web": "npm run build -w @bhava/web",
+    "lint:web": "npm run lint -w @bhava/web",
+    "typecheck:web": "npm run typecheck -w @bhava/web",
+    "test:web": "npm run test -w @bhava/web",
+    "test:e2e": "npm run test:e2e -w @bhava/web"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

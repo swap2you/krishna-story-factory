@@ -1,0 +1,10 @@
+{
+  "name": "@bhava/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./story.schema.json",
+  "types": "./story.schema.json",
+  "exports": {
+    "./story.schema.json": "./story.schema.json"
+  }
+}
