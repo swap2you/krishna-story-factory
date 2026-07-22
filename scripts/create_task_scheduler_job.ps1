@@ -1,6 +1,6 @@
-param([string]$TaskName = "Krishna Story Factory Daily", [string]$DailyTime = "06:00")
+param([string]$TaskName = "Krishna Story Factory MWF", [string]$DailyTime = "06:00", [switch]$Enable)
 
-Write-Warning "Deprecated: delegating to install_daily_story_task.ps1."
-$Installer = Join-Path $PSScriptRoot "install_daily_story_task.ps1"
-& $Installer -TaskName $TaskName -DailyTime $DailyTime
+Write-Warning "Deprecated: use scripts/install_mwf_story_task.ps1. Delegating now."
+$Installer = Join-Path $PSScriptRoot "install_mwf_story_task.ps1"
+& $Installer -TaskName $TaskName -DailyTime $DailyTime -Enable:$Enable -RemoveLegacyDaily
 exit $LASTEXITCODE

@@ -10,6 +10,7 @@ whatsapp_test_outbox/
 .work/
 logs/
 tracking/*.csv
+tracking/latest_run_summary.json
 !tracking/templates/
 !tracking/templates/*.csv
 credentials/

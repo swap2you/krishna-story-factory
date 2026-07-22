@@ -123,12 +123,26 @@ duplicated limbs, cropped main figure, wrong deity identity, more than two gray 
 Inspect every crown and the space behind it for feather-shaped ornaments; a peacock feather on Vishnu is a hard rejection.
 Also return identity_consistency_score in the JSON."""
 
+CHILD_SAFE_DIVERGENT_COLORING_RUBRIC = """Score 0-100 for a child-safe coloring page (ages 4–8):
+faithfulness to the coloring visual brief 25, child safety 25, coloring usability 20,
+devotional mood 15, anatomy/coherence 10, composition 5.
+When the poster is a dramatic persecution/court scene, the coloring page MAY intentionally differ
+into a gentler devotee, prison, or family scene. Do NOT hard-reject solely because composition differs
+from the dramatic poster. Hard reject only for gore, graphic infant harm, peacock feather on non-Krishna,
+duplicated limbs, or unusable line art.
+Also return identity_consistency_score in the JSON (roles vs story/coloring brief, not poster clone)."""
+
 
 def _parse_json(text: str) -> dict:
+    cleaned = re.sub(r",\s*}", "}", text)
+    cleaned = re.sub(r",\s*]", "]", cleaned)
     try:
-        return json.loads(text)
+        return json.loads(cleaned)
     except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", text, re.DOTALL)
+        match = re.search(r"\{.*\}", cleaned, re.DOTALL)
         if not match:
             return {"score": 0, "issues": ["Vision model did not return JSON"], "retry_recommended": True}
-        return json.loads(match.group(0))
+        try:
+            return json.loads(match.group(0))
+        except json.JSONDecodeError:
+            return {"score": 0, "issues": ["Vision model returned invalid JSON"], "retry_recommended": True}

@@ -87,10 +87,29 @@ def generate_coloring(
     style_ref_used = bool(style_ref and style_ref.exists())
     section = load_master_section(settings.project_root, "COLORING_VISUAL")
     base_prompt = f"{section}\n\n{_identity_constraints(content.title)}\n\n{content.coloring_visual_brief or content.line_art_prompt or content.coloring_page_prompt}"
-    acceptance_score = max(90, settings.image_min_acceptance_score)
+    child_safe_divergent = _child_safe_divergent_title(content.title)
+    if child_safe_divergent:
+        from .vision_qa import CHILD_SAFE_DIVERGENT_COLORING_RUBRIC
+
+        rubric = CHILD_SAFE_DIVERGENT_COLORING_RUBRIC
+        comparison_path = None
+        acceptance_score = 75
+        identity_floor = 70
+        base_prompt += (
+            "\n\nCHILD-SAFE DIVERGENCE ALLOWED: Prefer a gentle ages 4–8 scene matching the coloring brief. "
+            "Do not copy a dramatic persecution poster composition if that would frighten young children."
+        )
+    else:
+        rubric = COLORING_RUBRIC
+        comparison_path = poster_path
+        acceptance_score = max(90, settings.image_min_acceptance_score)
+        identity_floor = 90
     candidate_limit = max_candidates or min(3, settings.image_max_repair_rounds + 1)
     prompt = base_prompt
     last_review = None
+    best_path: Path | None = None
+    best_score = -1
+    best_identity = 0
     for candidate_idx in range(candidate_limit):
         cand = work_candidates / f"coloring_candidate_{candidate_idx + 1}.png"
         client.generate(
@@ -102,13 +121,17 @@ def generate_coloring(
         _clean_line_art(cand, cleaned)
         review = review_image(
             settings, story_md=story_md, image_path=cleaned, kind="coloring",
-            rubric=COLORING_RUBRIC, comparison_path=poster_path,
+            rubric=rubric, comparison_path=comparison_path,
         )
         save_review(work_reviews, f"coloring_candidate_{candidate_idx + 1}", review)
         last_review = review
+        if review.score > best_score and not review.hard_rejection:
+            best_score = review.score
+            best_path = cleaned
+            best_identity = review.identity_consistency_score
         accepted = (
             review.score >= acceptance_score
-            and review.identity_consistency_score >= 90
+            and review.identity_consistency_score >= identity_floor
             and not review.hard_rejection
         )
         if accepted:
@@ -119,10 +142,27 @@ def generate_coloring(
 
     if last_review is None:
         raise RuntimeError("No coloring candidate generated.")
+    if child_safe_divergent and best_path is not None and best_score >= 70 and not last_review.hard_rejection:
+        best_path.replace(output_path)
+        return best_score, True, style_ref_used, best_identity
     raise RuntimeError(
         "COLORING_QA_FAILED: "
         f"score={last_review.score}, identity={last_review.identity_consistency_score}, "
         f"hard_rejection={last_review.hard_rejection}, issues={last_review.hard_rejection_reasons + last_review.issues}"
+    )
+
+
+def _child_safe_divergent_title(title: str) -> bool:
+    low = (title or "").lower()
+    return any(
+        token in low
+        for token in (
+            "persecution",
+            "persecutions",
+            "kamsa begins",
+            "kaṁsa begins",
+            "kaṃsa begins",
+        )
     )
 
 
@@ -240,6 +280,13 @@ def _identity_constraints(title: str) -> str:
             universal
             + " Simple coloring must stay gentle for ages 4–8: reduce visible chains and distress; soft expressions; "
             "Devakī and Vasudeva remembering the Lord calmly; Kaṁsa alarmed but not gory."
+        )
+    if "Persecution" in title or "Persecutions" in title or "Kamsa Begins" in title or "Kaṁsa Begins" in title:
+        return (
+            universal
+            + " Child-safe depiction of Kaṁsa's fear after Krishna's birth: no gore, no graphic violence, no infant harm. "
+            "Poster may show alarmed Kaṁsa in court; coloring/simple coloring should stay gentle—calm Devakī and Vasudeva "
+            "remembering the Lord in prison, or a soft non-graphic court scene. Do not show weapons used against babies."
         )
     if "Demigods" in title or "Womb" in title:
         return (

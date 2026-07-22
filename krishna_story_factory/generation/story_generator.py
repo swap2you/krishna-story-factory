@@ -59,27 +59,48 @@ class StoryGenerator:
         best = content
 
         for attempt in range(2):
+            best = _trim_overlong_audio(best)
             issues = _generation_issues(best, plan)
             if not issues:
                 return best
+            over_long = any("should be at most" in issue for issue in issues)
+            length_instruction = (
+                "Shorten over-long fields while keeping every required source fact, recap, and ending. "
+                "Target main_story 750-900 words and audio_script 650-850 spoken words."
+                if over_long
+                else (
+                    f"{_EXPAND_INSTRUCTION}\n"
+                    "Expand main_story toward 850 words and audio_script toward 700 words using source-faithful detail only."
+                )
+            )
             expand_prompt = f"""{prompt}
 
 REGENERATION REQUEST (attempt {attempt + 1}):
 Fix these issues without repeating closings or padding with filler:
 {chr(10).join(f"- {issue}" for issue in issues)}
-{_EXPAND_INSTRUCTION}
-Expand main_story toward 850 words and audio_script toward 600 words using source-faithful detail only.
+{length_instruction}
 Return only valid JSON matching the schema.
 """
             candidate = _prepare_generated(self._fetch_openai_story(client, expand_prompt, plan), plan)
-            if _content_score(candidate) >= _content_score(best):
+            candidate = _trim_overlong_audio(candidate)
+            if over_long:
+                # Prefer a candidate that clears length/source issues even if slightly shorter.
+                if not _generation_issues(candidate, plan) or (
+                    len(_generation_issues(candidate, plan)) < len(issues)
+                ):
+                    best = candidate
+                elif _content_score(candidate) >= _content_score(best):
+                    best = candidate
+            elif _content_score(candidate) >= _content_score(best):
                 best = candidate
 
         if _generation_issues(best, plan):
             expanded = _prepare_generated(self._expand_short_fields(client, plan, best), plan)
-            if _content_score(expanded) >= _content_score(best):
+            expanded = _trim_overlong_audio(expanded)
+            if _content_score(expanded) >= _content_score(best) or not _generation_issues(expanded, plan):
                 best = expanded
 
+        best = _trim_overlong_audio(best)
         remaining = _generation_issues(best, plan)
         if remaining:
             raise StoryGenerationError(
@@ -117,7 +138,8 @@ Fix ONLY these issues by lengthening main_story and/or audio_script:
 
 Rules:
 - main_story target: 800-950 words
-- audio_script target: 550-650 spoken words with <break time="1.0s" /> tags only
+- audio_script target: 650-850 spoken words with <break time="1.0s" /> tags only
+- If audio_script is over 900 words, shorten it; do not expand further.
 - Add source-faithful scenes and gentle narration; do not repeat closings or morals
 - Keep title, recap, moral, takeaway, activity_sheet, and image prompts aligned with the story
 - Return only valid JSON with the same keys as the input
@@ -410,6 +432,51 @@ def _content_score(content: StoryContent) -> int:
     story_words = _word_count(content.main_story)
     audio_words = _word_count(content.audio_script)
     return min(story_words, _MIN_STORY_WORDS) + min(audio_words, _MIN_AUDIO_WORDS)
+
+
+def _trim_overlong_audio(content: StoryContent) -> StoryContent:
+    """Deterministically trim spoken audio to the max word budget without dropping the closing mantra."""
+    audio = (content.audio_script or "").strip()
+    if _word_count(audio) <= _MAX_AUDIO_WORDS:
+        return content
+
+    # Strip SSML-ish break tags so word budget matches spoken length checks.
+    spoken = re.sub(r"<break\b[^>]*/?>", " ", audio, flags=re.IGNORECASE)
+    spoken = re.sub(r"\s+", " ", spoken).strip()
+    lower = spoken.lower()
+    mantra_idx = lower.rfind("hare kṛṣṇa")
+    if mantra_idx < 0:
+        mantra_idx = lower.rfind("hare krishna")
+
+    if mantra_idx >= 0:
+        head = spoken[:mantra_idx].strip()
+        tail = spoken[mantra_idx:].strip()
+        head_tokens = re.findall(r"\b[\w']+\b", head, flags=re.UNICODE)
+        tail_tokens = re.findall(r"\b[\w']+\b", tail, flags=re.UNICODE)
+        budget = max(0, _MAX_AUDIO_WORDS - len(tail_tokens))
+        if budget < _MIN_AUDIO_WORDS and len(tail_tokens) < _MAX_AUDIO_WORDS:
+            budget = max(budget, min(len(head_tokens), _MAX_AUDIO_WORDS - len(tail_tokens)))
+        kept_head = " ".join(head_tokens[:budget])
+        trimmed = f"{kept_head} {tail}".strip() if kept_head else tail
+    else:
+        tokens = re.findall(r"\b[\w']+\b", spoken, flags=re.UNICODE)
+        trimmed = " ".join(tokens[:_MAX_AUDIO_WORDS])
+
+    # Re-insert a single calm break before the mantra if present.
+    if "hare kṛṣṇa" in trimmed.lower() or "hare krishna" in trimmed.lower():
+        trimmed = re.sub(
+            r"\s+(Hare\s+K[rṛ][sṣ][nṇ]a)",
+            r' <break time="1.0s" /> \1',
+            trimmed,
+            count=1,
+            flags=re.IGNORECASE,
+        )
+    while _word_count(trimmed) > _MAX_AUDIO_WORDS:
+        parts = trimmed.split()
+        if len(parts) <= 1:
+            break
+        trimmed = " ".join(parts[:-1])
+    return replace(content, audio_script=trimmed)
 
 
 def _regeneration_issues(content: StoryContent) -> list[str]:

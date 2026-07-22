@@ -13,15 +13,19 @@ Repository: [github.com/swap2you/krishna-story-factory](https://github.com/swap2
 
 - **Locked packages:** Stories **001–006** (Story Format V2)
 - **Next pending:** Story **007**
-- **Scheduler:** disabled pending senior devotee review
+- **Senior devotee review:** pending
+- **Planned tag:** `v1.0.0-pilot-stories-001-006`
+- **Scheduler:** `Krishna Story Factory MWF` (Mon/Wed/Fri 6:00) via [docs/SCHEDULER.md](docs/SCHEDULER.md); enable only when intentionally starting MWF production
 - Release record: [docs/releases/PILOT_001_006_RELEASE_LOCK.md](docs/releases/PILOT_001_006_RELEASE_LOCK.md)
 - Hash evidence: [docs/releases/PILOT_001_006_HASHES.json](docs/releases/PILOT_001_006_HASHES.json)
 
 ## Start here
 
-1. [docs/01_DAILY_RUNBOOK.md](docs/01_DAILY_RUNBOOK.md) — morning production steps
-2. [docs/02_SETUP_AND_KEYS.md](docs/02_SETUP_AND_KEYS.md) — install and API keys
-3. [docs/04_CONTENT_GUIDE_KRISHNA_BOOK.md](docs/04_CONTENT_GUIDE_KRISHNA_BOOK.md) — content rules and queue
+1. [docs/PROJECT_SNAPSHOT_V1.md](docs/PROJECT_SNAPSHOT_V1.md) — canonical project snapshot
+2. [prompts/KRISHNA_STORY_FACTORY_MASTER_AGENT.md](prompts/KRISHNA_STORY_FACTORY_MASTER_AGENT.md) — agent handoff rules
+3. [docs/DAILY_OPERATIONS.md](docs/DAILY_OPERATIONS.md) — Windows inspect / generate / validate / rollback
+4. [docs/SETUP_AND_CREDENTIALS.md](docs/SETUP_AND_CREDENTIALS.md) — install and API keys
+5. [docs/CONTENT_STANDARD.md](docs/CONTENT_STANDARD.md) — Story Format V2 and content rules
 
 ## Supported Python
 

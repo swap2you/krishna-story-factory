@@ -399,12 +399,18 @@ def test_waveform_vectorized_longest_silence() -> None:
 
 def test_changed_docs_no_seven_file_claims() -> None:
     for rel in (
-        "docs/01_DAILY_RUNBOOK.md",
-        "docs/15_MANUAL_STORY_REBUILD_RUNBOOK.md",
+        "docs/DAILY_OPERATIONS.md",
+        "docs/DRIVE_AND_PACKAGE_LAYOUT.md",
+        "docs/PROJECT_SNAPSHOT_V1.md",
         "scripts/rebuild_story_packages.py",
-        "scripts/manual_rebuild_story.ps1",
     ):
         text = (ROOT / rel).read_text(encoding="utf-8").lower()
         assert "seven-file" not in text
         assert "seven file" not in text
         assert "exactly seven" not in text
+        assert "eight-file" in text or "eight file" in text or "eight files" in text
+    # Wrapper must not claim seven-file contract.
+    wrapper = (ROOT / "scripts" / "manual_rebuild_story.ps1").read_text(encoding="utf-8").lower()
+    assert "seven-file" not in wrapper
+    assert "seven file" not in wrapper
+    assert "exactly seven" not in wrapper

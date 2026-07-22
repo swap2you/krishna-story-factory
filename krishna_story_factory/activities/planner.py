@@ -77,6 +77,7 @@ class ActivityPlanner:
             "004": _pack_004,
             "005": _pack_005,
             "006": _pack_006,
+            "007": _pack_007,
         }
         builder = builders.get(plan.chapter_no.strip().zfill(3))
         return builder(plan) if builder else None
@@ -119,7 +120,11 @@ class ActivityPlanner:
             pack.validate()
             return pack
         except Exception as exc:
-            logger.warning("LLM activity pack failed (%s); using deterministic pack.", type(exc).__name__)
+            logger.warning(
+                "LLM activity pack failed (%s: %s); using deterministic pack.",
+                type(exc).__name__,
+                str(exc)[:240],
+            )
             return None
 
     def _dynamic_pack(self, plan: PlanRow, story_text: str, history: list[dict[str, str]]) -> ActivityPack:
@@ -875,6 +880,131 @@ def _pack_006(plan: PlanRow) -> ActivityPack:
     )
 
 
+def _pack_007(plan: PlanRow) -> ActivityPack:
+    """Child-safe Chapter 4 pack: fear, persecution of devotees, and steadfast faith—no gore."""
+    connection = (
+        "This activity follows Krishna Book Chapter 4: Kaṁsa's fear after the Lord's appearance, "
+        "his harsh orders against devotees, and Devakī and Vasudeva's steadfast faith in prison."
+    )
+    sequence = [
+        SequenceCard(
+            "Kaṁsa became afraid when he understood the Lord's appearance.",
+            "Draw Kaṁsa looking worried in the palace, without violence.",
+            1,
+        ),
+        SequenceCard(
+            "He ordered harsh persecution against devotees and innocent families.",
+            "Draw frightened families leaving while soldiers stand at a distance.",
+            2,
+        ),
+        SequenceCard(
+            "Devakī and Vasudeva remained in prison with steady faith.",
+            "Draw the parents praying calmly behind gentle prison bars.",
+            3,
+        ),
+        SequenceCard(
+            "Devotees turned to the Lord with sincere prayer.",
+            "Draw folded hands and soft lamp light, not fighting.",
+            4,
+        ),
+        SequenceCard(
+            "The Lord heard their prayers and protected His devotees in His own way.",
+            "Draw a calm sky and a hopeful path of light.",
+            5,
+        ),
+        SequenceCard(
+            "Faith grew stronger even while danger surrounded Mathurā.",
+            "Draw a family remembering Krishna together with courage.",
+            6,
+        ),
+    ]
+    printed = [
+        sequence[2],
+        sequence[0],
+        sequence[4],
+        sequence[1],
+        sequence[5],
+        sequence[3],
+    ]
+    return ActivityPack(
+        activity_title="Courage When Fear Spreads",
+        activity_type="MATCHING_GAME",
+        send_mode="SEND_NOW",
+        estimated_minutes=18,
+        parent_effort="Low: help younger children match and number cards.",
+        learning_goal="Match Chapter 4 people to their roles and put the child-safe events in order.",
+        story_connection=connection,
+        materials=["pencil or crayons"],
+        pages=[
+            ActivityPage(
+                page_title="Who Chose What?",
+                page_type="MATCHING_CARDS",
+                instructions=[
+                    "Match each person or group to their part in Chapter 4.",
+                    "Younger path: draw lines.",
+                    "Older path: write one gentle sentence for each match.",
+                ],
+                components=[
+                    MatchingCard("Kaṁsa", "acts from fear and issues harsh orders", "who", pair_id="A"),
+                    MatchingCard("Devakī", "stays faithful while imprisoned", "who", pair_id="B"),
+                    MatchingCard("Vasudeva", "keeps courage and remembers the Lord", "who", pair_id="C"),
+                    MatchingCard("devotees", "pray for protection with sincerity", "who", pair_id="D"),
+                    MatchingCard("Mathurā", "feels danger as persecution begins", "where", pair_id="E"),
+                ],
+                story_connection=connection,
+            ),
+            ActivityPage(
+                page_title="Put Chapter 4 in Order",
+                page_type="STORY_SEQUENCE_CARDS",
+                instructions=[
+                    "The six cards are shuffled on purpose.",
+                    "Number them in true story order.",
+                    "Do not look for an answer key on the page.",
+                ],
+                components=printed,
+                story_connection=connection,
+            ),
+            ActivityPage(
+                page_title="Family Courage Mission",
+                page_type="FAMILY_MISSION",
+                instructions=[
+                    "Talk about one fear your family can give to Krishna.",
+                    "Younger path: draw a calm prayer scene.",
+                    "Older path: write two sentences about choosing faith over fear.",
+                ],
+                components=[
+                    "One fear we can place before Krishna",
+                    "One way devotees stayed faithful",
+                    "One kind protective action we will take tomorrow",
+                ],
+                story_connection=connection,
+            ),
+        ],
+        age_variants={
+            "ages_6_8": "match and number with adult help; keep drawings gentle.",
+            "ages_9_13": "explain how faith can stay strong when others act from fear.",
+        },
+        safety_note="PARENT HELP: Keep the discussion child-safe; do not dwell on violent details.",
+        completion_prompt="Share one way your family can choose faith when fear feels loud.",
+        review_questions=[
+            "Why did Kaṁsa become afraid?",
+            "How did Devakī and Vasudeva respond in prison?",
+        ],
+        answer_key=[card.event for card in sequence],
+        parent_note=(
+            "Stay inside Chapter 4. Avoid graphic harm. Do not include Nanda's meeting (Chapter 5) "
+            "or birth-night details already covered in Chapter 3."
+        ),
+        qa_requirements=[
+            "three meaningful pages",
+            "matching cards",
+            "shuffled sequence cards",
+            "child-safe wording",
+            "answers only in manifest",
+        ],
+    )
+
+
 def _extract_event_labels(story_text: str, seed: str) -> list[str]:
     from .qa import (
         GENERIC_PLACEHOLDERS,
@@ -1018,10 +1148,12 @@ def _word_bank(plan: PlanRow) -> list[str]:
 
 
 def _parse_json(text: str) -> dict:
+    cleaned = re.sub(r",\s*}", "}", text)
+    cleaned = re.sub(r",\s*]", "]", cleaned)
     try:
-        return json.loads(text)
+        return json.loads(cleaned)
     except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", text, re.DOTALL)
+        match = re.search(r"\{.*\}", cleaned, re.DOTALL)
         if not match:
             raise ValueError("Activity planner response did not contain JSON.")
         return json.loads(match.group(0))

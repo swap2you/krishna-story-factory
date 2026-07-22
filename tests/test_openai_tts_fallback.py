@@ -260,12 +260,12 @@ def test_pilot_outputs_must_not_target_production_paths() -> None:
 
 def test_changed_docs_have_no_stale_seven_file_claims() -> None:
     docs = [
-        ROOT / "docs" / "13_OPENAI_TTS_FALLBACK.md",
-        ROOT / "docs" / "14_STORY_002_005_REPAIR_BACKLOG.md",
+        ROOT / "docs" / "PROJECT_SNAPSHOT_V1.md",
+        ROOT / "docs" / "DRIVE_AND_PACKAGE_LAYOUT.md",
+        ROOT / "docs" / "TESTING_AND_RELEASE_GATES.md",
     ]
     for path in docs:
         text = path.read_text(encoding="utf-8").lower()
         assert "seven-file" not in text
         assert "seven file" not in text
-        if "13_OPENAI" in path.name:
-            assert "eight-file" in text or "eight file" in text or "eight-file" in text.replace(" ", "-")
+        assert "eight-file" in text or "eight file" in text or "eight files" in text
