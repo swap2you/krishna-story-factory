@@ -152,6 +152,27 @@ def test_story_003_closing_facts_deduped_and_idempotent() -> None:
             assert count <= 1, f"{sig} count={count} after repair"
 
 
+def test_story_004_devotional_sentence_once() -> None:
+    _, md = _read_story("004")
+    sentence = "Chanting in community helps worried hearts remember they are not alone."
+    assert md.count(sentence) == 1
+
+
+def test_story_005_quiet_courage_once_and_no_meta_language() -> None:
+    _, md = _read_story("005")
+    sentence = "Quiet courage in a dark room can be as powerful as a public celebration."
+    assert md.count(sentence) == 1
+    visible = md.split("<!--")[0]
+    assert "theatrical inventions" not in visible
+    assert "did not invent miracles" not in visible
+    assert "Avoid heavenly-garden" not in visible
+    assert "shield language" not in visible
+    assert "## Parent/Teacher Note" in visible
+    parent = visible.split("## Parent/Teacher Note", 1)[1]
+    assert "Source:" in parent
+    assert "Discuss:" in parent
+
+
 def test_story_005_forbidden_language_absent() -> None:
     package, md = _read_story("005")
     plan = read_plan_by_chapter(ROOT, "005")

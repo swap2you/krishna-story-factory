@@ -15,6 +15,7 @@ Repository: [github.com/swap2you/krishna-story-factory](https://github.com/swap2
 - **Next pending:** Story **007**
 - **Scheduler:** disabled pending senior devotee review
 - Release record: [docs/releases/PILOT_001_006_RELEASE_LOCK.md](docs/releases/PILOT_001_006_RELEASE_LOCK.md)
+- Hash evidence: [docs/releases/PILOT_001_006_HASHES.json](docs/releases/PILOT_001_006_HASHES.json)
 
 ## Start here
 

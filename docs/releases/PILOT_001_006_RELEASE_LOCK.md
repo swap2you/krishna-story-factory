@@ -88,15 +88,21 @@ ElevenLabs Renee was preferred in policy but unavailable/insufficient during gen
 4. To roll back a single story package, restore the corresponding pre-swap archive directory contents into `output/<chapter>_<slug>/` and replace Drive files only under an approved change request.
 5. Do not force-push `main`. Revert via a new PR if needed after merge.
 
+## Hash evidence
+
+Committed non-media freeze: [PILOT_001_006_HASHES.json](PILOT_001_006_HASHES.json).
+
+CI always validates that evidence structure (six stories, eight hashes each, Story 006 lock, narration/Drive fields) even when local `output/` packages are absent.
+
 ## Verification commands
 
 ```powershell
 .\scripts\test_all.ps1
-.\.venv\Scripts\python.exe -m pytest tests/test_release_artifacts_001_006.py tests/test_post_pr7_release_blockers.py -q
+.\.venv\Scripts\python.exe -m pytest tests/test_pilot_release_hash_evidence.py tests/test_release_artifacts_001_006.py tests/test_post_pr7_release_blockers.py -q
 Get-ScheduledTask -TaskName "Krishna Story Factory Daily" | Select-Object TaskName, State
 ```
 
-Offline artifact regressions skip gracefully if a local `output/` package is absent. They must not call Drive or paid APIs.
+Local `output/` artifact regressions skip gracefully if a package is absent. Committed hash-evidence tests never skip. Neither suite may call Drive or paid APIs.
 
 ## Release acceptance checklist
 
