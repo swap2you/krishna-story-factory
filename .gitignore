@@ -23,3 +23,5 @@ krishna-story-factory-v1-buildpack/
 .staging_local/
 _local_regen_*/
 
+.local_release_archive/
+

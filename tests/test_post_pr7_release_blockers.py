@@ -224,16 +224,38 @@ def test_publishable_gate_matrix(tmp_path: Path) -> None:
     assert data["audio"]["audio_stale"] is True
 
 
-def test_actual_manifests_001_006_not_publishable_while_stale() -> None:
+def test_actual_manifests_001_006_publishable_matches_gate() -> None:
+    """Publishable must match the gate formula; release packages must currently pass it.
+
+    Synthetic stale/unverified cases are covered by test_publishable_gate_matrix.
+    This test only locks live 001–006 packages to an honest, currently publishable state.
+    """
     for chapter in ("001", "002", "003", "004", "005", "006"):
         folders = list((ROOT / "output").glob(f"{chapter}_*"))
         if not folders:
             pytest.skip(f"Story {chapter} package missing locally")
         data = json.loads((folders[0] / "manifest.json").read_text(encoding="utf-8"))
         audio = data.get("audio") or {}
-        assert data.get("publishable") is False
-        assert audio.get("audio_stale") is True or data.get("quality", {}).get("status") == "AUDIO_STALE"
-        assert not audio.get("generation_verified")
+        quality = data.get("quality") or {}
+        stale = bool(audio.get("audio_stale")) or quality.get("status") == "AUDIO_STALE"
+        verified = bool(audio.get("generation_verified"))
+        expected_publishable = (
+            data.get("mode") != "test"
+            and quality.get("status") == "PASS"
+            and not list(quality.get("errors") or [])
+            and not stale
+            and verified
+            and str(audio.get("provider") or "") not in {"", "preserved", "unknown_preserved"}
+            and bool(data.get("narration_source_sha") or audio.get("narration_source_sha"))
+            and bool(audio.get("sha256"))
+        )
+        assert data.get("publishable") is expected_publishable
+        assert expected_publishable, (
+            f"Story {chapter} failed publishable gate "
+            f"(stale={stale}, verified={verified}, status={quality.get('status')}, "
+            f"provider={audio.get('provider')!r}). "
+            "Fresh verified audio is required for release packages 001–006."
+        )
 
 
 def test_openai_mid_run_model_access_does_not_rebill_chunk1(tmp_path: Path, monkeypatch) -> None:
