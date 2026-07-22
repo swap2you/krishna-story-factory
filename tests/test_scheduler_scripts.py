@@ -12,8 +12,13 @@ def test_scheduler_is_unattended_and_non_overlapping() -> None:
     assert '$env:WHATSAPP_SEND_ENABLED = "false"' in runner
     assert '$env:TELEGRAM_SEND_ENABLED = "false"' in runner
     assert '$env:GOOGLE_DRIVE_UPLOAD_ENABLED = "true"' in runner
-    assert 'DailyTime = "06:00"' in mwf
-    assert "Monday,Wednesday,Friday" in mwf
+    assert 'PrimaryTime = "10:00"' in mwf
+    assert 'BackupTime = "12:00"' in mwf
+    assert "StartWhenAvailable = $false" in mwf
+    assert "WakeToRun = $false" in mwf
+    assert "-DaysOfWeek Monday" in mwf
+    assert "-DaysOfWeek Wednesday" in mwf
+    assert "-DaysOfWeek Friday" in mwf
     assert "Krishna Story Factory MWF" in mwf
     assert "MultipleInstances IgnoreNew" in mwf
     assert "RestartCount 2" in mwf
@@ -21,5 +26,5 @@ def test_scheduler_is_unattended_and_non_overlapping() -> None:
     assert "Disable-ScheduledTask" in daily
     legacy = (ROOT / "scripts" / "create_task_scheduler_job.ps1").read_text(encoding="utf-8")
     assert "install_mwf_story_task.ps1" in legacy
-    assert 'DailyTime = "06:00"' in legacy
+    assert 'PrimaryTime = "10:00"' in legacy
     assert "Register-ScheduledTask" not in legacy

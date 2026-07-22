@@ -70,14 +70,16 @@ Drive readback and all eight hash comparisons: **PASS**. Phase 7 used upload/rea
 | Task | Krishna Story Factory MWF |
 | State | Enabled / Ready |
 | Days | Monday, Wednesday, Friday |
-| Time | 6:00 AM Eastern |
-| StartWhenAvailable | true |
+| Times | 10:00 AM primary + 12:00 PM backup (local) |
+| StartWhenAvailable | false |
 | MultipleInstances | IgnoreNew |
 | Timeout | 60 minutes |
 | Retries | 2 × 30 minutes |
 | Drive | enabled |
 | WhatsApp / Telegram | disabled |
 | `--force` | not used |
+
+*(Historical note: at Phase 7 release the task briefly ran Mon/Wed/Fri 6:00 AM Eastern with StartWhenAvailable=true. Current ops use 10:00/12:00 and StartWhenAvailable=false — see [SCHEDULER.md](../SCHEDULER.md).)*
 
 ## Stories 001–006
 

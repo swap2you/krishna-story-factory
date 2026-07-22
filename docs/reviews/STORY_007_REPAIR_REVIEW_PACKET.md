@@ -2,7 +2,7 @@
 
 **Status:** RELEASED — PHASE 7 COMPLETE
 
-**Scheduler:** `Krishna Story Factory MWF` = **Enabled / Ready** (Mon/Wed/Fri 6:00 AM Eastern)
+**Scheduler:** `Krishna Story Factory MWF` = **Enabled / Ready** (Mon/Wed/Fri 10:00 AM + 12:00 PM backup, local)
 
 **Source boundary:** Krishna Book Chapter 4 / Śrīmad-Bhāgavatam 10.4
 

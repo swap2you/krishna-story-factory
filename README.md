@@ -16,7 +16,7 @@ Repository: [github.com/swap2you/krishna-story-factory](https://github.com/swap2
 - **Next pending:** Story **008** — The Meeting of Nanda and Vasudeva
 - **Story 007 release:** [docs/releases/STORY_007_RELEASE.md](docs/releases/STORY_007_RELEASE.md)
 - **Pilot tag:** `v1.0.0-pilot-stories-001-006` (001–006 baseline; not moved for Story 007)
-- **Scheduler:** `Krishna Story Factory MWF` enabled (Mon/Wed/Fri 6:00 Eastern) — [docs/SCHEDULER.md](docs/SCHEDULER.md)
+- **Scheduler:** `Krishna Story Factory MWF` enabled (Mon/Wed/Fri 10:00 AM + 12:00 PM backup, local) — [docs/SCHEDULER.md](docs/SCHEDULER.md)
 - **Messaging:** WhatsApp / Telegram disabled; Google Drive distribution
 - Pilot 001–006 lock record: [docs/releases/PILOT_001_006_RELEASE_LOCK.md](docs/releases/PILOT_001_006_RELEASE_LOCK.md)
 - Hash evidence: [docs/releases/PILOT_001_006_HASHES.json](docs/releases/PILOT_001_006_HASHES.json)

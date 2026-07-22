@@ -45,7 +45,7 @@ Documented optional args on `run_daily_story.py`: `--force`, `--chapter`, `--reb
 - Static plan: `input/series_plan.csv` (no runtime status).  
 - Runtime: `tracking/queue_state.csv`.  
 - Distribution: Drive via `GOOGLE_DRIVE_UPLOAD_ENABLED`.  
-- Scheduler: `Krishna Story Factory MWF` (Mon/Wed/Fri 06:00) via `scripts/install_mwf_story_task.ps1` + `scripts/run_daily_story_scheduled.ps1`.
+- Scheduler: `Krishna Story Factory MWF` (Mon/Wed/Fri 10:00 AM + 12:00 PM backup) via `scripts/install_mwf_story_task.ps1` + `scripts/run_daily_story_scheduled.ps1`. Same-day production guard is mandatory (noon no-ops after a successful 10 AM run).
 
 ## Finish criteria
 

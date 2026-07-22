@@ -135,10 +135,11 @@ Test mode must not call paid APIs and is never publishable.
 ## Scheduler
 
 - Task name: **`Krishna Story Factory MWF`**  
-- Schedule: Monday / Wednesday / Friday **06:00** local  
+- Schedule: Monday / Wednesday / Friday **10:00 AM** primary + **12:00 PM** backup (local); six weekly triggers  
 - Installer: `scripts/install_mwf_story_task.ps1`  
 - Runner: `scripts/run_daily_story_scheduled.ps1` → `run_daily_story.py --mode prod`  
-- Overlap: IgnoreNew; 60-minute limit; 2 retries / 30 minutes  
+- Overlap: IgnoreNew; `StartWhenAvailable=False`; 60-minute limit; 2 retries / 30 minutes  
+- Same-day guard: noon exits with `SKIPPED_ALREADY_COMPLETED_TODAY` after a successful morning run  
 - Legacy **`Krishna Story Factory Daily`** must not remain enabled  
 
 Installer defaults to **Disabled** unless `-Enable`. See [SCHEDULER.md](SCHEDULER.md).
@@ -151,7 +152,7 @@ Installer defaults to **Disabled** unless `-Enable`. See [SCHEDULER.md](SCHEDULE
 | Stories 001–007 | **done** (runtime queue) |
 | Next pending | **008** (`the-meeting-of-nanda-and-vasudeva`) |
 | Story 007 Drive | Released — [STORY_007_RELEASE.md](releases/STORY_007_RELEASE.md) |
-| Scheduler | **`Krishna Story Factory MWF` enabled** — Mon/Wed/Fri **06:00 Eastern** |
+| Scheduler | **`Krishna Story Factory MWF` enabled** — Mon/Wed/Fri **10:00 + 12:00** local |
 | Senior devotee review (001–006 pilot) | **Pending** |
 | Git tag (001–006 pilot baseline) | `v1.0.0-pilot-stories-001-006` |
 | Evidence (001–006) | [releases/PILOT_001_006_RELEASE_LOCK.md](releases/PILOT_001_006_RELEASE_LOCK.md), [releases/PILOT_001_006_HASHES.json](releases/PILOT_001_006_HASHES.json) |

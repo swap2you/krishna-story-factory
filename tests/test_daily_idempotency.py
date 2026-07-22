@@ -39,7 +39,7 @@ def test_test_preview_does_not_count_as_production_completion(tmp_path: Path) ->
             "whatsapp_status": "SKIPPED_DISABLED",
             "sender_type": "cloud",
             "manifest_path": "",
-            "created_at": f"{today}T06:00:00",
+            "created_at": f"{today}T10:00:00",
             "errors": "",
         }],
     )
@@ -69,12 +69,75 @@ def test_normal_prod_skips_second_same_day_run(tmp_path: Path) -> None:
             "whatsapp_status": "SKIPPED_DISABLED",
             "sender_type": "cloud",
             "manifest_path": "",
-            "created_at": f"{today}T06:00:00",
+            "created_at": f"{today}T10:00:00",
             "errors": "",
         }],
     )
     result = run_daily_story(settings, mode="prod", no_upload=True)
     assert result["status"] == "SKIPPED_ALREADY_COMPLETED_TODAY"
+
+
+def test_noon_backup_noop_after_morning_success(tmp_path: Path) -> None:
+    """Simulate successful 10:00 AM prod, then noon wrapper path (prod, no force, no upload)."""
+    source = Path(__file__).resolve().parents[1]
+    project = tmp_path / "project"
+    ignore = shutil.ignore_patterns(
+        ".git", ".pytest_cache", ".codex_validation_tmp", ".cursor", ".venv", "output", "__pycache__", ".env"
+    )
+    shutil.copytree(source, project, ignore=ignore)
+    ensure_csv_files(project)
+    settings = load_settings(project)
+    today = datetime.now(ZoneInfo(settings.app_timezone)).date().isoformat()
+    _write_story_log(
+        project / "tracking" / "story_log.csv",
+        [{
+            "date": today,
+            "chapter_no": "008",
+            "slug": "morning-success",
+            "title": "Morning Success",
+            "output_dir": str(project / "output" / "008_morning-success"),
+            "status": "SUCCESS",
+            "quality_status": "PASS",
+            "whatsapp_status": "SKIPPED_DISABLED",
+            "sender_type": "cloud",
+            "manifest_path": "",
+            "created_at": f"{today}T10:00:00",
+            "errors": "",
+        }],
+    )
+    assert already_completed_production_today(project, settings.app_timezone) is True
+    result = run_daily_story(settings, mode="prod", no_upload=True)
+    assert result["status"] == "SKIPPED_ALREADY_COMPLETED_TODAY"
+    # Isolated: no queue advancement side-effect beyond the skip path
+    queue_path = project / "tracking" / "queue_state.csv"
+    before = queue_path.read_text(encoding="utf-8")
+    again = run_daily_story(settings, mode="prod", no_upload=True)
+    assert again["status"] == "SKIPPED_ALREADY_COMPLETED_TODAY"
+    assert queue_path.read_text(encoding="utf-8") == before
+
+
+def test_noon_eligible_when_morning_did_not_run(tmp_path: Path) -> None:
+    """If 10:00 did not complete, noon remains eligible for one production attempt (no APIs called here)."""
+    ensure_csv_files(tmp_path)
+    today = datetime.now(ZoneInfo("America/New_York")).date().isoformat()
+    _write_story_log(
+        tmp_path / "tracking" / "story_log.csv",
+        [{
+            "date": today,
+            "chapter_no": "008",
+            "slug": "failed-morning",
+            "title": "Failed Morning",
+            "output_dir": str(tmp_path / ".work" / "008_failed"),
+            "status": "FAILED",
+            "quality_status": "FAIL",
+            "whatsapp_status": "SKIPPED_DISABLED",
+            "sender_type": "cloud",
+            "manifest_path": "",
+            "created_at": f"{today}T10:00:00",
+            "errors": "simulated miss",
+        }],
+    )
+    assert already_completed_production_today(tmp_path, "America/New_York") is False
 
 
 def test_force_overrides_same_day_guard(tmp_path: Path) -> None:
@@ -100,7 +163,7 @@ def test_force_overrides_same_day_guard(tmp_path: Path) -> None:
             "whatsapp_status": "SKIPPED_DISABLED",
             "sender_type": "cloud",
             "manifest_path": "",
-            "created_at": f"{today}T06:00:00",
+            "created_at": f"{today}T10:00:00",
             "errors": "",
         }],
     )

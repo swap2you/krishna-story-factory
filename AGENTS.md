@@ -19,7 +19,7 @@ Rules:
 6. Exact **eight-file** package only: `story.md`, `narration.mp3`, `story_poster.png`, `coloring_page.png`, `simple_coloring_page.png`, `activity_sheet.pdf`, `whatsapp_caption.txt`, `manifest.json`. (`line_art_prompt.txt` is not a required final output.)  
 7. TTS: ElevenLabs Renee primary, OpenAI Marin fallback. Drive via `GOOGLE_DRIVE_UPLOAD_ENABLED`. WhatsApp/Telegram disabled for the pilot.  
 8. Never modify locked Stories **001–006** without explicit approval. Senior devotee review pending.  
-9. Scheduler: `Krishna Story Factory MWF` (Mon/Wed/Fri 6:00) via `scripts/install_mwf_story_task.ps1` and `scripts/run_daily_story_scheduled.ps1`.
+9. Scheduler: `Krishna Story Factory MWF` (Mon/Wed/Fri 10:00 AM + 12:00 PM backup) via `scripts/install_mwf_story_task.ps1` and `scripts/run_daily_story_scheduled.ps1`.
 
 Before finishing:
 

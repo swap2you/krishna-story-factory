@@ -18,8 +18,11 @@ Optional:
 
 ```powershell
 Get-ScheduledTask -TaskName "Krishna Story Factory MWF" | Select-Object TaskName, State
+Get-ScheduledTaskInfo -TaskName "Krishna Story Factory MWF" | Select-Object NextRunTime, LastRunTime, LastTaskResult
 Import-Csv tracking\queue_state.csv | Select-Object chapter_no, slug, status | Format-Table
 ```
+
+Production schedule: Mon/Wed/Fri **10:00 AM** + **12:00 PM** backup. Same-day guard prevents a second story if morning already succeeded. Details: [SCHEDULER.md](SCHEDULER.md).
 
 ## B. Check next pending story
 
@@ -35,7 +38,7 @@ Or:
 
 (`diagnose_local_config.py` prints `Next pending story`.)
 
-After the 001–006 lock, expect **007** pending until it is successfully generated.
+Stories **001–007** are done. Expect **008** as next pending until it is successfully generated.
 
 ## C. Dry run / test mode (no paid APIs)
 
