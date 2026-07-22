@@ -26,3 +26,21 @@ _local_regen_*/
 
 .local_release_archive/
 
+# Bhāva web workspace
+node_modules/
+.next/
+data/catalog/*.sqlite
+playwright-report/
+test-results/
+
+
+# Bhava portal
+node_modules/
+apps/web/.next/
+apps/web/out/
+apps/web/test-results/
+apps/web/playwright-report/
+data/catalog/bhava.sqlite
+data/catalog/*.sqlite-*
+.bhava/
+bhava_portal_cursor_bootstrap_v1.zip

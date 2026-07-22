@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BhavaStory",
+  "type": "object",
+  "required": ["story_no", "slug", "title"],
+  "properties": {
+    "story_no": {"type": "string", "pattern": "^\\d{3}$"},
+    "slug": {"type": "string"},
+    "title": {"type": "string"},
+    "source_reference": {"type": ["string", "null"]},
+    "scripture_reference": {"type": ["string", "null"]},
+    "age_range": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}
