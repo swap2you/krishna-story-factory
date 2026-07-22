@@ -391,6 +391,33 @@ def _rebuild_one(
     if not ok:
         raise SystemExit(f"{chapter} quality failed: " + " | ".join(quality_errors))
 
+    prior_manifest: dict = {}
+    if production.manifest.exists():
+        try:
+            prior_manifest = json.loads(production.manifest.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            prior_manifest = {}
+    prior_images = prior_manifest.get("images") or {}
+    prior_activity = prior_manifest.get("activity") or {}
+
+    # Preserve prior QA scores when those components were not rebuilt.
+    if "poster" not in components:
+        poster_score = int(prior_images.get("poster_qa_score") or poster_score or 90)
+    if "coloring" not in components:
+        coloring_score = int(prior_images.get("coloring_qa_score") or coloring_score or 90)
+    if "simple_coloring" not in components:
+        simple_score = int(prior_images.get("simple_coloring_qa_score") or simple_score or 90)
+    activity_page_count = getattr(pdf_check, "page_count", 0) if pdf_check else int(prior_activity.get("page_count") or 0)
+    activity_score = int(report.get("activity_score") or prior_activity.get("qa_score") or 0)
+    matching_coverage = (
+        getattr(pdf_check, "matching_coverage", None)
+        if pdf_check
+        else (prior_activity.get("matching_coverage") or None)
+    )
+    parent_answer_key_payload = (
+        parent_key.to_dict() if parent_key else (prior_activity.get("parent_answer_key") or None)
+    )
+
     quality_status = "AUDIO_STALE" if report.get("quality_override") == "AUDIO_STALE" else ("PASS" if ok else "FAIL")
     write_manifest(
         settings=settings,
@@ -409,13 +436,39 @@ def _rebuild_one(
         coloring_score=coloring_score or 90,
         simple_coloring_score=simple_score or 90,
         activity=activity,
-        activity_page_count=getattr(pdf_check, "page_count", 0) if pdf_check else 0,
-        activity_score=int(report.get("activity_score") or 0),
+        activity_page_count=activity_page_count,
+        activity_score=activity_score,
         waveform_metrics=wave,
-        matching_coverage=getattr(pdf_check, "matching_coverage", None) if pdf_check else None,
-        parent_answer_key=parent_key.to_dict() if parent_key else None,
+        matching_coverage=matching_coverage,
+        parent_answer_key=parent_answer_key_payload,
         audio_metadata=audio_metadata,
     )
+    # Narration-only (and similar) rebuilds must not wipe activity metadata.
+    if "activity" not in components and prior_activity:
+        staged = json.loads(stage_paths.manifest.read_text(encoding="utf-8"))
+        staged["activity"] = prior_activity
+        # Keep freshly computed QA scores that we merged above when present.
+        if activity_score:
+            staged["activity"]["qa_score"] = activity_score
+        if activity_page_count:
+            staged["activity"]["page_count"] = activity_page_count
+        stage_paths.manifest.write_text(json.dumps(staged, indent=2, ensure_ascii=False), encoding="utf-8")
+    # Recompute publishable after any post-write manifest merge.
+    if stage_paths.manifest.exists():
+        staged = json.loads(stage_paths.manifest.read_text(encoding="utf-8"))
+        from krishna_story_factory.manifest import _is_publishable
+
+        audio_block = staged.get("audio") if isinstance(staged.get("audio"), dict) else {}
+        staged["publishable"] = _is_publishable(
+            mode=str(staged.get("mode") or "prod"),
+            quality_status=str((staged.get("quality") or {}).get("status") or ""),
+            quality_errors=list((staged.get("quality") or {}).get("errors") or []),
+            audio_metadata=audio_block,
+            narration_source_sha=str(staged.get("narration_source_sha") or ""),
+            audio_source=str(staged.get("audio_source") or ""),
+            package_dir=stage_paths.root,
+        )
+        stage_paths.manifest.write_text(json.dumps(staged, indent=2, ensure_ascii=False), encoding="utf-8")
     prune_output_folder(stage_paths.root)
     final_names = {p.name for p in stage_paths.root.iterdir() if p.is_file()}
     if final_names != set(FINAL_OUTPUT_FILES):

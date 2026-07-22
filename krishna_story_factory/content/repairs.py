@@ -591,6 +591,81 @@ def dedupe_story_003_fact_sentences(text: str) -> str:
     return result
 
 
+def _replace_placeholder_lessons(lessons: list[str], replacements: list[str]) -> list[str]:
+    """Replace Remember Krishna (N) placeholders while keeping real lessons."""
+    out: list[str] = []
+    rep_idx = 0
+    for lesson in lessons or []:
+        text = (lesson or "").strip()
+        if re.search(r"remember k[rṛ][sṣ][nṇ]a with love\s*\(\s*[345]\s*\)", text, flags=re.I) or re.search(
+            r"\(\s*[345]\s*\)\s*$", text
+        ):
+            if rep_idx < len(replacements):
+                out.append(replacements[rep_idx])
+                rep_idx += 1
+            continue
+        if text:
+            out.append(text)
+    while len(out) < 5 and rep_idx < len(replacements):
+        out.append(replacements[rep_idx])
+        rep_idx += 1
+    return out[:5]
+
+
+def repair_story_001_lessons(content: StoryContent) -> StoryContent:
+    content = sanitize_content_fields(content)
+    lessons = _replace_placeholder_lessons(
+        list(content.five_lessons or []),
+        [
+            "Brahma carries the Earth's prayer to the Lord with humility and care.",
+            "Hope grows when we remember Krishna even before we see the answer.",
+            "Caring for others is a prayer that Krishna gladly hears.",
+        ],
+    )
+    prayer = (content.bedtime_prayer or content.bedtime_reflection or "").strip()
+    if "hare k" not in prayer.lower():
+        prayer = (
+            "Dear Krishna, thank You for hearing Mother Earth's prayer. "
+            "Please help our family pray with hope and care for others. "
+            "We chant: Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare "
+            "Hare Rāma Hare Rāma Rāma Rāma Hare Hare. Good night."
+        )
+    return replace(
+        content,
+        five_lessons=lessons,
+        bedtime_prayer=prayer,
+        bedtime_reflection=prayer,
+        story_number=content.story_number or "001",
+    )
+
+
+def repair_story_004_lessons(content: StoryContent) -> StoryContent:
+    content = sanitize_content_fields(content)
+    lessons = _replace_placeholder_lessons(
+        list(content.five_lessons or []),
+        [
+            "Fear can push harsh choices, but faith keeps hearts steady.",
+            "Remembering Krishna gives courage when surroundings feel dark.",
+            "Devotees stay composed by keeping the Lord in their hearts.",
+        ],
+    )
+    prayer = (content.bedtime_prayer or content.bedtime_reflection or "").strip()
+    if "hare k" not in prayer.lower():
+        prayer = (
+            "Dear Krishna, thank You for Nārada's warning and for the faith of Devakī and Vasudeva. "
+            "Please keep our family calm and close to You when fear feels strong. "
+            "We chant: Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare "
+            "Hare Rāma Hare Rāma Rāma Rāma Hare Hare. Good night."
+        )
+    return replace(
+        content,
+        five_lessons=lessons,
+        bedtime_prayer=prayer,
+        bedtime_reflection=prayer,
+        story_number=content.story_number or "004",
+    )
+
+
 def repair_story_003_dedup(content: StoryContent) -> StoryContent:
     """Remove duplicated closing fact blocks while keeping required Story 003 events."""
     content = sanitize_content_fields(content)
@@ -607,12 +682,21 @@ def repair_story_003_dedup(content: StoryContent) -> StoryContent:
             "We chant: Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare "
             "Hare Rāma Hare Rāma Rāma Rāma Hare Hare. Good night."
         )
+    lessons = _replace_placeholder_lessons(
+        list(content.five_lessons or []),
+        [
+            "Truthfulness is practiced most clearly when a promise is hard.",
+            "Stay careful and wise even after a moment of relief.",
+            "Trust Krishna while keeping your word with courage.",
+        ],
+    )
     return replace(
         content,
         main_story=main,
         audio_script=audio,
         bedtime_prayer=prayer,
         bedtime_reflection=prayer,
+        five_lessons=lessons,
         story_number=content.story_number or "003",
     )
 
@@ -620,10 +704,14 @@ def repair_story_003_dedup(content: StoryContent) -> StoryContent:
 def apply_known_story_repairs(chapter_no: str, content: StoryContent) -> StoryContent:
     chapter = (chapter_no or "").strip().zfill(3)
     content = sanitize_content_fields(content)
+    if chapter == "001":
+        return repair_story_001_lessons(content)
     if chapter == "002":
         return repair_story_002_dialogue(content)
     if chapter == "003":
         return repair_story_003_dedup(content)
+    if chapter == "004":
+        return repair_story_004_lessons(content)
     if chapter == "005":
         return repair_story_005_philosophy(content)
     if chapter == "006":
@@ -643,8 +731,10 @@ __all__ = [
     "dedupe_story_003_fact_sentences",
     "has_invented_direct_dialogue",
     "normalize_story_text",
+    "repair_story_001_lessons",
     "repair_story_002_dialogue",
     "repair_story_003_dedup",
+    "repair_story_004_lessons",
     "repair_story_005_philosophy",
     "repair_story_006_content",
     "sanitize_content_fields",
