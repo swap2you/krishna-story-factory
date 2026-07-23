@@ -1,0 +1,17 @@
+{
+  "status": "pass",
+  "total": 260,
+  "passed": 260,
+  "failed": 0,
+  "projects": [
+    "chromium-desktop",
+    "firefox-desktop",
+    "webkit-desktop",
+    "chromium-mobile",
+    "webkit-mobile"
+  ],
+  "web_url": "http://127.0.0.1:3001",
+  "api_url": "http://127.0.0.1:8000",
+  "instance": "cursor-v11",
+  "notes": "Full matrix re-run after locator fixes for Open to print, strict-mode contact/mailto, and story h1 selectors."
+}
