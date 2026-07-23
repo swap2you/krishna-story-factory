@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BhavaReflection",
+  "description": "A devotional reflection or essay for the Bhakti Blog.",
+  "type": "object",
+  "required": ["id", "title", "status"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "URL-safe slug identifier for the reflection."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display title of the reflection."
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Short summary for listing pages and meta tags."
+    },
+    "author": {
+      "type": ["string", "null"],
+      "description": "Name of the author or steward."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Taxonomy tags such as 'family-practice', 'teaching-notes', 'festival-reflections'."
+    },
+    "audience": {
+      "type": ["string", "null"],
+      "description": "Target audience descriptor, e.g. 'Parents and teachers'."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "draft", "review", "published"],
+      "description": "Editorial status of the reflection."
+    },
+    "published_at": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "ISO date of publication. Null until published."
+    },
+    "source_references": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/source_ref" },
+      "description": "Scripture or text references cited in the reflection."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "source_ref": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string", "description": "Human-readable citation text." },
+        "uri": { "type": ["string", "null"], "description": "Optional URI to the source." }
+      },
+      "additionalProperties": false
+    }
+  }
+}

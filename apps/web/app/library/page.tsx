@@ -37,22 +37,73 @@ export default async function LibraryPage({
             <button className="bhava-button bhava-button--primary" type="submit">Search</button>
           </form>
 
-          <div className="collection-grid" style={{ marginTop: "2rem" }}>
+          <div className="collection-grid-full" style={{ marginTop: "2rem" }}>
             <Link href="/library/krishna-book" className="collection-card krishna">
               <h3>{collections[0]?.title ?? "Krishna Book Bedtime Stories"}</h3>
               <p>{collections[0]?.description ?? `${stories.length || 7} stories indexed and ready.`}</p>
+              <span className="editorial-status active">Active</span>
               <span className="orb" aria-hidden="true" />
             </Link>
-            <div className="collection-card lotus">
+            <Link href="/library/srimad-bhagavatam" className="collection-card lotus">
               <h3>Śrīmad-Bhāgavatam</h3>
               <p>Cantos 1–12 — coming soon with editorial care.</p>
+              <span className="editorial-status planned">Planned</span>
               <span className="orb" aria-hidden="true" />
-            </div>
-            <div className="collection-card forest">
-              <h3>Rāmāyaṇa & Caitanya</h3>
-              <p>Shelves reserved without invented titles.</p>
+            </Link>
+            <Link href="/library/bhagavad-gita" className="collection-card gita">
+              <h3>Bhagavad-gītā</h3>
+              <p>Verse-by-verse stories for young listeners.</p>
+              <span className="editorial-status planned">Planned</span>
               <span className="orb" aria-hidden="true" />
-            </div>
+            </Link>
+            <Link href="/library/ramayana" className="collection-card forest">
+              <h3>Rāmāyaṇa</h3>
+              <p>The journey of Lord Rāma retold for families.</p>
+              <span className="editorial-status planned">Planned</span>
+              <span className="orb" aria-hidden="true" />
+            </Link>
+            <Link href="/library/rama-katha" className="collection-card rama">
+              <h3>Rāma-kathā</h3>
+              <p>Supplementary Rāma narrations from Purāṇic sources.</p>
+              <span className="editorial-status planned">Planned</span>
+              <span className="orb" aria-hidden="true" />
+            </Link>
+            <Link href="/library/ramacaritamanasa" className="collection-card manasa">
+              <h3>Rāmacaritamānasa</h3>
+              <p>Tulasīdāsa's retelling, adapted for children.</p>
+              <span className="editorial-status planned">Planned</span>
+              <span className="orb" aria-hidden="true" />
+            </Link>
+            <Link href="/library/dasavatara" className="collection-card avatar">
+              <h3>Daśāvatāra</h3>
+              <p>Ten avatāras of Lord Viṣṇu in story form.</p>
+              <span className="editorial-status planned">Planned</span>
+              <span className="orb" aria-hidden="true" />
+            </Link>
+            <Link href="/library/caitanya-caritamrta" className="collection-card amber">
+              <h3>Caitanya-caritāmṛta</h3>
+              <p>The life and teachings of Śrī Caitanya Mahāprabhu.</p>
+              <span className="editorial-status planned">Planned</span>
+              <span className="orb" aria-hidden="true" />
+            </Link>
+            <Link href="/library/caitanya-bhagavata" className="collection-card rose">
+              <h3>Caitanya-bhāgavata</h3>
+              <p>Vṛndāvana Dāsa Ṭhākura's account for young readers.</p>
+              <span className="editorial-status planned">Planned</span>
+              <span className="orb" aria-hidden="true" />
+            </Link>
+            <Link href="/library/prayers-mantras" className="collection-card indigo">
+              <h3>Prayers &amp; Mantras</h3>
+              <p>Morning prayers, key ślokas, and daily mantras.</p>
+              <span className="editorial-status planned">Planned</span>
+              <span className="orb" aria-hidden="true" />
+            </Link>
+            <Link href="/library/teacher-resources" className="collection-card earth">
+              <h3>Teacher Resources</h3>
+              <p>Curriculum guides and classroom materials.</p>
+              <span className="editorial-status planned">Planned</span>
+              <span className="orb" aria-hidden="true" />
+            </Link>
           </div>
 
           <h2 className="section-heading" style={{ marginTop: "3rem" }}>

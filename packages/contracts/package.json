@@ -1,10 +1,16 @@
 {
   "name": "@bhava/contracts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "main": "./story.schema.json",
   "types": "./story.schema.json",
   "exports": {
-    "./story.schema.json": "./story.schema.json"
+    "./story.schema.json": "./story.schema.json",
+    "./schemas/provenance.schema.json": "./schemas/provenance.schema.json",
+    "./schemas/reflection.schema.json": "./schemas/reflection.schema.json",
+    "./schemas/shloka.schema.json": "./schemas/shloka.schema.json",
+    "./schemas/source_reference.schema.json": "./schemas/source_reference.schema.json",
+    "./schemas/vani_item.schema.json": "./schemas/vani_item.schema.json",
+    "./schemas/blog_article.schema.json": "./schemas/blog_article.schema.json"
   }
 }

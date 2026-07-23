@@ -56,6 +56,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <div className="container footer-inner">
               <span>Bhāva — stewarded with care by Svarna Gauranga Das.</span>
               <div className="footer-links">
+                <Link href="/sunday-school">Sunday School</Link>
+                <Link href="/preachers">For Preachers</Link>
                 <Link href="/privacy">Privacy</Link>
                 <Link href="/accessibility">Accessibility</Link>
                 <Link href="/source-permissions">Source & permissions</Link>
