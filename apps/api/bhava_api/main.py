@@ -11,7 +11,7 @@ from .catalog.freshness import catalog_freshness, refresh_if_stale
 from .config import get_settings
 from .csrf import issue_token
 from .db import Base, SessionLocal, engine
-from .routes import local_factory, media, public
+from .routes import local_factory, media, public, reader
 
 
 @asynccontextmanager
@@ -57,6 +57,7 @@ def create_app() -> FastAPI:
     )
     app.include_router(public.router)
     app.include_router(media.router)
+    app.include_router(reader.router)
     app.include_router(local_factory.router)
     return app
 

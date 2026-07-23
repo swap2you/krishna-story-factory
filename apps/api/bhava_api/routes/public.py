@@ -24,6 +24,10 @@ def _asset_map(story: Story) -> dict[str, str]:
     }
 
 
+def _reader_url(story_no: str) -> str:
+    return f"/api/v1/stories/{story_no}/reader"
+
+
 def _story_summary(story: Story) -> StorySummary:
     assets = _asset_map(story)
     return StorySummary(
@@ -37,6 +41,7 @@ def _story_summary(story: Story) -> StorySummary:
         poster_url=assets.get("story_poster.png"),
         narration_url=assets.get("narration.mp3"),
         story_md_url=assets.get("story.md"),
+        reader_url=_reader_url(story.story_no),
     )
 
 
@@ -53,6 +58,7 @@ def _story_response(story: Story) -> StoryResponse:
         poster_url=assets.get("story_poster.png"),
         narration_url=assets.get("narration.mp3"),
         story_md_url=assets.get("story.md"),
+        reader_url=_reader_url(story.story_no),
         assets=[
             {
                 "filename": asset.filename,
