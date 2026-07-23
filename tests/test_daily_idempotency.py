@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import csv
-import shutil
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -10,6 +9,7 @@ import pytest
 from krishna_story_factory.config import load_settings
 from krishna_story_factory.csv_store import already_completed_production_today, ensure_csv_files
 from krishna_story_factory.pipeline import run_daily_story
+from tests.project_fixture import copy_project_fixture
 
 pytestmark = pytest.mark.slow
 
@@ -52,10 +52,7 @@ def test_test_preview_does_not_count_as_production_completion(tmp_path: Path) ->
 def test_normal_prod_skips_second_same_day_run(tmp_path: Path) -> None:
     source = Path(__file__).resolve().parents[1]
     project = tmp_path / "project"
-    ignore = shutil.ignore_patterns(
-        ".git", ".pytest_cache", ".codex_validation_tmp", ".cursor", ".venv", "output", "__pycache__", ".env"
-    )
-    shutil.copytree(source, project, ignore=ignore)
+    copy_project_fixture(source, project)
     ensure_csv_files(project)
     settings = load_settings(project)
     today = datetime.now(ZoneInfo(settings.app_timezone)).date().isoformat()
@@ -84,10 +81,7 @@ def test_noon_backup_noop_after_morning_success(tmp_path: Path) -> None:
     """Simulate successful 10:00 AM prod, then noon wrapper path (prod, no force, no upload)."""
     source = Path(__file__).resolve().parents[1]
     project = tmp_path / "project"
-    ignore = shutil.ignore_patterns(
-        ".git", ".pytest_cache", ".codex_validation_tmp", ".cursor", ".venv", "output", "__pycache__", ".env"
-    )
-    shutil.copytree(source, project, ignore=ignore)
+    copy_project_fixture(source, project)
     ensure_csv_files(project)
     settings = load_settings(project)
     today = datetime.now(ZoneInfo(settings.app_timezone)).date().isoformat()
@@ -146,10 +140,7 @@ def test_noon_eligible_when_morning_did_not_run(tmp_path: Path) -> None:
 def test_force_overrides_same_day_guard(tmp_path: Path) -> None:
     source = Path(__file__).resolve().parents[1]
     project = tmp_path / "project"
-    ignore = shutil.ignore_patterns(
-        ".git", ".pytest_cache", ".codex_validation_tmp", ".cursor", ".venv", "output", "__pycache__", ".env"
-    )
-    shutil.copytree(source, project, ignore=ignore)
+    copy_project_fixture(source, project)
     ensure_csv_files(project)
     settings = load_settings(project)
     today = datetime.now(ZoneInfo(settings.app_timezone)).date().isoformat()

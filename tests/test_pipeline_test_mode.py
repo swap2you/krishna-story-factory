@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import csv
 import json
-import shutil
 from pathlib import Path
 
 from krishna_story_factory.config import load_settings
 from krishna_story_factory.csv_store import ensure_csv_files, reset_series_status
 from krishna_story_factory.outputs import FINAL_OUTPUT_FILES
 from krishna_story_factory.pipeline import run_daily_story
+from tests.project_fixture import copy_project_fixture
 
 
 def _mark_first_story_pending(project: Path) -> None:
@@ -18,10 +18,7 @@ def _mark_first_story_pending(project: Path) -> None:
 def test_pipeline_generates_required_files_in_test_mode(tmp_path: Path) -> None:
     source = Path(__file__).resolve().parents[1]
     project = tmp_path / "project"
-    ignore = shutil.ignore_patterns(
-        ".git", ".pytest_cache", ".codex_validation_tmp", ".cursor", ".venv", "output", "__pycache__", ".env"
-    )
-    shutil.copytree(source, project, ignore=ignore)
+    copy_project_fixture(source, project)
     ensure_csv_files(project)
     _mark_first_story_pending(project)
     settings = load_settings(project)
@@ -50,10 +47,7 @@ def test_pipeline_generates_required_files_in_test_mode(tmp_path: Path) -> None:
 def test_test_mode_does_not_mutate_runtime_queue(tmp_path: Path) -> None:
     source = Path(__file__).resolve().parents[1]
     project = tmp_path / "project"
-    ignore = shutil.ignore_patterns(
-        ".git", ".pytest_cache", ".codex_validation_tmp", ".cursor", ".venv", "output", "__pycache__", ".env"
-    )
-    shutil.copytree(source, project, ignore=ignore)
+    copy_project_fixture(source, project)
     ensure_csv_files(project)
     queue = project / "tracking" / "queue_state.csv"
     before = queue.read_text(encoding="utf-8")
