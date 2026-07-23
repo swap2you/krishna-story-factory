@@ -6,4 +6,14 @@ const compat = new FlatCompat({
   baseDirectory: dirname(fileURLToPath(import.meta.url)),
 });
 
-export default [...compat.extends("next/core-web-vitals")];
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals"),
+  {
+    rules: {
+      // Devotional copy uses apostrophes heavily; escaping harms readability.
+      "react/no-unescaped-entities": "off",
+    },
+  },
+];
+
+export default eslintConfig;
