@@ -6,7 +6,7 @@ Use this prompt unchanged for the final CoWork live UAT pass.
 
 Repository: `C:\Development\Workspace\DevotionalRepo\krishna-story-factory`  
 Branch: `feature/bhava-portal-v1`  
-Release SHA (verify with `git rev-parse HEAD`): `67313285411101aaf20bfed3a0159b77ab1a53ff`  
+Release SHA (verify with `git rev-parse HEAD`): `eec11b79868aa646593be5bce4d855eb4b6d4f5e`  
 Contract: `MyPilotDropbox/bhava-v1.2-release/BHAVA_V1_2_CURSOR_MASTER_RELEASE_PROMPT.md`  
 Cursor evidence root: `docs/product/uat/v1.2/`
 
