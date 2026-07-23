@@ -40,7 +40,7 @@ Documented in `docs/releases/BHAVA_V1_2_ASSET_IMPORT_BLOCKERS.md`:
 
 ## CoWork handoff
 
-- Final SHA: `eec11b79868aa646593be5bce4d855eb4b6d4f5e`
+- Final SHA: use `git rev-parse HEAD` on `feature/bhava-portal-v1` (docs freeze base `a9adc03c52fe1da9a79b273a22a498ae23d7f85e`)
 - Final prompt: `docs/reviews/BHAVA_V1_2_FINAL_COWORK_UAT_PROMPT.md`
 - UAT evidence root: `docs/product/uat/v1.2/`
 - Live instance during Cursor UAT: `cursor-v12` → http://127.0.0.1:3004 / http://127.0.0.1:8002
