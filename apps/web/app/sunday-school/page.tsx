@@ -13,7 +13,7 @@ const AGE_GROUPS: { id: AgeGroup; label: string; ages: string; desc: string }[] 
 
 const WEEKLY_PLAN = [
   { step: "Opening", time: "5 min", detail: "Maṅgalācaraṇa prayers and attendance. Light a lamp if possible." },
-  { step: "Story time", time: "10–15 min", detail: "Read or play audio narration from the week's story package." },
+  { step: "Story time", time: "10–15 min", detail: "Read aloud or play the week's story audio from the package." },
   { step: "Discussion", time: "5–10 min", detail: "Age-appropriate questions. Bal Gopal: recall. Dāmodara: reflection and meaning." },
   { step: "Activity", time: "10–15 min", detail: "Coloring pages, activity sheets, or śloka practice cards." },
   { step: "Closing", time: "5 min", detail: "Recap, homework assignment, and closing prayers." },
@@ -40,7 +40,7 @@ const PARENT_MESSAGE = `Dear Parent / Guardian,
 Thank you for supporting your child's participation in Sunday School. This week we explored a new story from our devotional collection.
 
 Please encourage your child to:
-• Listen to the audio narration at home
+• Listen to the story audio at home
 • Complete the coloring and activity pages
 • Practice the śloka or prayer of the week
 

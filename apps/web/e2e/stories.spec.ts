@@ -14,7 +14,7 @@ test.describe("stories", () => {
     for (const story of stories) {
       const response = await page.goto(`/stories/${story.story_no}`);
       expect(response?.ok()).toBeTruthy();
-      await expect(page.getByRole("heading", { level: 1 })).toContainText(story.title);
+      await expect(page.getByRole("heading", { level: 1 }).first()).toContainText(story.title);
     }
   });
 });

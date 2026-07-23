@@ -1,0 +1,21 @@
+{
+  "instance_name": "cursor-v11",
+  "web_url": "http://127.0.0.1:3001",
+  "api_url": "http://127.0.0.1:8000",
+  "web_port": 3001,
+  "api_port": 8000,
+  "mode": "production",
+  "playwright_exit_code": 0,
+  "playwright_passed": 260,
+  "playwright_failed": 0,
+  "browsers": [
+    "chromium-desktop",
+    "firefox-desktop",
+    "webkit-desktop",
+    "chromium-mobile",
+    "webkit-mobile"
+  ],
+  "keep_running": true,
+  "notes": "Factory generation, scheduler, and Drive were not invoked. Preferred web port 3000 was occupied; runtime used 3001.",
+  "completed_at": "2026-07-23T16:28:04.7290489Z"
+}

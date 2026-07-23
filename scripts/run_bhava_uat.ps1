@@ -3,13 +3,21 @@ param(
   [string]$InstanceName = "cursor-uat",
   [int]$PreferredWebPort = 3000,
   [int]$PreferredApiPort = 8000,
+  [string]$EvidenceRoot = "",
   [switch]$KeepRunning
 )
 
 $ErrorActionPreference = "Stop"
 Set-Location $ProjectRoot
 
-$Evidence = Join-Path $ProjectRoot "docs\product\uat\live"
+if (-not $EvidenceRoot) {
+  if ($InstanceName -like "*v11*") {
+    $EvidenceRoot = Join-Path $ProjectRoot "docs\product\uat\v1.1"
+  } else {
+    $EvidenceRoot = Join-Path $ProjectRoot "docs\product\uat\live"
+  }
+}
+$Evidence = $EvidenceRoot
 New-Item -ItemType Directory -Force -Path (Join-Path $Evidence "screenshots") | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $Evidence "traces") | Out-Null
 

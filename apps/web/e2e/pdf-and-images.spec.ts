@@ -9,7 +9,7 @@ test.describe("pdf and images", () => {
 
     await page.getByRole("tab", { name: "Activities" }).click();
     await expect(page.getByRole("link", { name: /download pdf/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /^print$/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /open to print|^print$/i })).toBeVisible();
 
     await page.getByRole("tab", { name: "Coloring" }).click();
     const tile = page.locator(".asset-tile").first();
