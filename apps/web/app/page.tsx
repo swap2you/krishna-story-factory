@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getStories } from "@/lib/catalog";
 import { StoryGrid } from "@/components/story-grid";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const stories = await getStories();
   const latest = stories.slice(-3).reverse();
@@ -32,12 +34,15 @@ export default async function Home() {
               <div><strong>Local notes</strong><span>Private on this device</span></div>
             </div>
           </div>
-          <div className="hero-art" aria-hidden={!featured?.poster_url}>
+          <div className="hero-art">
             {featured?.poster_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={featured.poster_url} alt="" />
+              <img
+                src={featured.poster_url}
+                alt={`${featured.title} story poster`}
+              />
             ) : (
-              <div style={{ height: "100%", minHeight: 320, background: "linear-gradient(145deg,#12325a,#6a3a4a)" }} />
+              <div style={{ height: "100%", minHeight: 320, background: "linear-gradient(145deg,#12325a,#6a3a4a)" }} aria-hidden="true" />
             )}
           </div>
         </div>

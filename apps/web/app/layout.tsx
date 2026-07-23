@@ -24,7 +24,7 @@ const nav = [
   ["Home", "/"],
   ["Library", "/library"],
   ["For Teachers", "/teachers"],
-  ["Prabhupāda Vāṇī", "/vanani"],
+  ["Prabhupāda Vāṇī", "/prabhupada-vani"],
   ["Bhakti Blog", "/blog"],
   ["About", "/about"],
   ["Contact", "/contact"],

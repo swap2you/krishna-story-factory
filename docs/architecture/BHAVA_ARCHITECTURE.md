@@ -11,7 +11,7 @@ packages/ui       Bhāva design system (CSS variables + primitives)
 packages/contracts Shared Pydantic / TS types
 packages/content  Markdown sanitize + content helpers
 data/catalog      Rebuildable SQLite index
-portal-bootstrap/ Planning package (reference; not production runtime)
+Canonical product/architecture docs live under `docs/`. Bootstrap scaffolding is not part of the runtime tree.
 ```
 
 ## Boundaries

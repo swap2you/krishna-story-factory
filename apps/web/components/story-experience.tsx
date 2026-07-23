@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Button, Tabs, Toast, useToast } from "@bhava/ui";
 import type { Story } from "@/lib/catalog";
 import { AudioPlayer } from "@/components/audio-player";
@@ -40,10 +40,13 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
   const [notes, setNotes] = useState("");
   const [markdown, setMarkdown] = useState("");
   const [loadingMd, setLoadingMd] = useState(false);
-  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<{ url: string; label: string } | null>(null);
   const { message, showToast } = useToast();
   const key = `bhava:notes:${storyNo}`;
   const title = story?.title ?? `Krishna Book story ${storyNo}`;
+  const dialogTitleId = useId();
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setNotes(localStorage.getItem(key) ?? "");
@@ -73,6 +76,44 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
     return () => controller.abort();
   }, [story?.story_md_url]);
 
+  useEffect(() => {
+    if (!lightbox) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setLightbox(null);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const dialog = document.getElementById("bhava-coloring-dialog");
+      if (!dialog) return;
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>("a[href],button:not([disabled]),textarea,input,select,[tabindex]:not([tabindex='-1'])"),
+      ).filter((el) => !el.hasAttribute("disabled"));
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previousFocusRef.current?.focus();
+    };
+  }, [lightbox]);
+
   const readingHtml = useMemo(() => {
     if (markdown.trim()) return renderMarkdown(markdown);
     if (story?.summary) return renderMarkdown(story.summary);
@@ -84,6 +125,25 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
     { label: "Detailed coloring", url: story?.coloring_url },
     { label: "Simple coloring", url: story?.simple_coloring_url },
   ].filter((item) => item.url);
+
+  const printActivityPdf = () => {
+    if (!story?.activity_pdf_url) return;
+    const printWindow = window.open(story.activity_pdf_url, "_blank", "noopener,noreferrer");
+    if (!printWindow) {
+      showToast("Allow pop-ups to print the activity PDF.");
+      return;
+    }
+    const trigger = () => {
+      try {
+        printWindow.focus();
+        printWindow.print();
+      } catch {
+        showToast("Open the PDF tab, then use your browser Print command.");
+      }
+    };
+    printWindow.addEventListener("load", trigger);
+    window.setTimeout(trigger, 1200);
+  };
 
   return (
     <>
@@ -141,12 +201,12 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                       <a className="bhava-button bhava-button--quiet" href={story.activity_pdf_url} download>
                         Download PDF
                       </a>
-                      <Button variant="quiet" onClick={() => window.open(story.activity_pdf_url!, "_blank")}>Print</Button>
+                      <Button variant="quiet" onClick={printActivityPdf}>Print</Button>
                     </div>
                     <div className="pdf-shell">
                       <iframe title={`${title} activity sheet`} src={story.activity_pdf_url} />
                     </div>
-                    <p className="hint">Need more room? Use Open full tab — your browser can print the PDF directly.</p>
+                    <p className="hint">Print opens the PDF and requests your browser print dialog.</p>
                   </>
                 ) : (
                   <p className="hint">Activity sheet appears when activity_sheet.pdf is in the package.</p>
@@ -159,22 +219,43 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                 <h2 style={{ marginTop: 0 }}>Coloring & poster</h2>
                 <div className="gallery">
                   {coloring.length ? coloring.map((item) => (
-                    <button key={item.label} type="button" className="asset-tile" onClick={() => setLightbox(item.url!)}>
+                    <button
+                      key={item.label}
+                      type="button"
+                      className="asset-tile"
+                      onClick={() => setLightbox({ url: item.url!, label: item.label })}
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={item.url!} alt={item.label} />
+                      <img src={item.url!} alt={`${title} — ${item.label}`} />
                       <span>{item.label}</span>
                     </button>
                   )) : <p className="hint">Coloring pages appear when package images are indexed.</p>}
                 </div>
                 {lightbox ? (
-                  <div className="bhava-dialog-backdrop" role="presentation" onMouseDown={() => setLightbox(null)}>
-                    <div className="bhava-dialog" onMouseDown={(event) => event.stopPropagation()}>
+                  <div
+                    className="bhava-dialog-backdrop"
+                    role="presentation"
+                    onMouseDown={() => setLightbox(null)}
+                  >
+                    <div
+                      id="bhava-coloring-dialog"
+                      className="bhava-dialog"
+                      role="dialog"
+                      aria-modal="true"
+                      aria-labelledby={dialogTitleId}
+                      onMouseDown={(event) => event.stopPropagation()}
+                    >
+                      <h2 id={dialogTitleId} style={{ marginTop: 0 }}>{lightbox.label}</h2>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={lightbox} alt="Full-screen artwork" style={{ width: "100%", borderRadius: "0.9rem" }} />
+                      <img
+                        src={lightbox.url}
+                        alt={`${title} — ${lightbox.label}`}
+                        style={{ width: "100%", borderRadius: "0.9rem" }}
+                      />
                       <div className="actions" style={{ marginTop: "1rem" }}>
-                        <a className="bhava-button bhava-button--quiet" href={lightbox} download>Download</a>
+                        <a className="bhava-button bhava-button--quiet" href={lightbox.url} download>Download</a>
                         <Button variant="quiet" onClick={() => window.print()}>Print</Button>
-                        <Button variant="quiet" onClick={() => setLightbox(null)}>Close</Button>
+                        <Button ref={closeButtonRef} variant="quiet" onClick={() => setLightbox(null)}>Close</Button>
                       </div>
                     </div>
                   </div>

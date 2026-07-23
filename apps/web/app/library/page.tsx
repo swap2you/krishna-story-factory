@@ -3,6 +3,8 @@ import { PageIntro } from "@/components/page-intro";
 import { getCollections, getStories, searchStories } from "@/lib/catalog";
 import { StoryGrid } from "@/components/story-grid";
 
+export const dynamic = "force-dynamic";
+
 export default async function LibraryPage({
   searchParams,
 }: {

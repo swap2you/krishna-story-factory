@@ -42,13 +42,31 @@ export default function StudioPage() {
       );
       return;
     }
-    const response = await fetch(`/api/v1/local/${path}`, {
-      method: "POST",
-      headers: {
-        "X-Bhava-CSRF-Token": status.csrf_token,
-      },
-    });
-    setMessage(await response.text());
+    try {
+      const response = await fetch(`/api/v1/local/${path}`, {
+        method: "POST",
+        headers: {
+          "X-Bhava-CSRF-Token": status.csrf_token,
+        },
+      });
+      const payload = (await response.json().catch(() => null)) as {
+        operation?: string;
+        status?: string;
+        detail?: string;
+      } | null;
+      if (payload && (payload.detail || payload.status || payload.operation)) {
+        const parts = [
+          payload.operation ? `Operation: ${payload.operation}` : null,
+          payload.status ? `Status: ${payload.status}` : null,
+          payload.detail ?? null,
+        ].filter(Boolean);
+        setMessage(parts.join(" · "));
+        return;
+      }
+      setMessage(response.ok ? "Action completed." : `Action failed (${response.status}).`);
+    } catch {
+      setMessage("Could not reach the local factory gateway.");
+    }
   }
 
   return (
@@ -76,7 +94,7 @@ export default function StudioPage() {
           </section>
           <section className="studio-panel">
             <h2>Queue</h2>
-            <pre>{JSON.stringify(queue, null, 2)}</pre>
+            <pre tabIndex={0} aria-label="Factory queue JSON">{JSON.stringify(queue, null, 2)}</pre>
           </section>
           <section className="studio-panel">
             <h2>Allowlisted operations</h2>

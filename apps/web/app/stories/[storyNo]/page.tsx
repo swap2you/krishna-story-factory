@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getStory } from "@/lib/catalog";
 import { StoryExperience } from "@/components/story-experience";
 
+export const dynamic = "force-dynamic";
+
 export default async function StoryPage({ params }: { params: Promise<{ storyNo: string }> }) {
   const { storyNo } = await params;
   if (!/^[a-z0-9-]+$/i.test(storyNo)) notFound();
@@ -21,7 +23,10 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
         </Link>
         {story?.poster_url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={story.poster_url} alt="" />
+          <img
+            src={story.poster_url}
+            alt={`${story.title ?? `Story ${storyNo}`} story poster`}
+          />
         ) : (
           <div style={{ aspectRatio: "1", margin: "1rem 0", borderRadius: "1.15rem", background: "linear-gradient(145deg,#1a3354,#6a3a4a)" }} />
         )}

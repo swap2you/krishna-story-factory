@@ -1,6 +1,6 @@
 import { PageIntro } from "@/components/page-intro";
 
-export default function VananiPage() {
+export default function PrabhupadaVaniPage() {
   return (
     <>
       <PageIntro

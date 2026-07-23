@@ -430,3 +430,27 @@ No production/application code was changed. Commit the 5 real uncommitted fixes 
 revert them, then schedule one native Windows UAT pass to close the visual/dynamic verification
 gap this session left open, alongside the P2/P3 items above. Nothing found blocks continued local
 use of the app in its current state.
+
+---
+
+## Closure map (post native remediation)
+
+The table below is the Phase-1 checklist produced when closing CoWork UAT conditions on the same
+branch. The historical review above remains the methodology record.
+
+| ID | Topic | Status | Notes |
+|----|--------|--------|-------|
+| DEF-01 | Win32-pinned npm deps | **fixed** | Root deps removed; optional platform packages via Next/Rollup; `.gitattributes` added. |
+| DEF-02 | Frontend CI missing | **fixed** | Web jobs on ubuntu + windows; Playwright Chromium with fixtures. |
+| DEF-03 | Playwright / Firefox / WebKit / axe | **fixed** | `apps/web/e2e/*` + multi-browser projects + `@axe-core/playwright`. |
+| DEF-04 | Uncommitted bugfixes | **fixed** | Prior catalog/media fixes committed; studio JSON messaging included. |
+| DEF-05 | Contact identity bridge | **fixed** | Approved steward wording on `/contact`. |
+| DEF-06 | `/vanani` slug | **fixed** | `/prabhupada-vani` + redirects from `/vanani` and `/vani`. |
+| DEF-07 | Poster alt text | **fixed** | Descriptive alts on hero and story posters. |
+| DEF-08 | Coloring lightbox a11y | **fixed** | Dialog semantics, focus trap, Escape, restore focus. |
+| DEF-09 | Activities Print | **fixed** | Opens print flow for the activity PDF. |
+| DEF-10 | Classroom playlist UX | **fixed** | Confirmation + My Classroom Playlist management. |
+| DEF-11 | Class-pack preview | **fixed** | Printable HTML + text export (not labeled PDF). |
+| DEF-12 | Tracked `portal-bootstrap/` | **fixed** | Removed from tracking; docs under `docs/` remain canonical. |
+| DEF-13 | Slow tests | **fixed** | Marked `slow`; CI excludes with `-m "not slow"`. |
+

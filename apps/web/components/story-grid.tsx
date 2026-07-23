@@ -25,7 +25,7 @@ export function StoryGrid({
             <div className="story-card-media">
               {story.poster_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={story.poster_url} alt="" />
+                <img src={story.poster_url} alt={`${story.title} story poster`} />
               ) : null}
               <span className="story-chip">{story.story_no}</span>
             </div>

@@ -2,6 +2,8 @@ import { PageIntro } from "@/components/page-intro";
 import { StoryGrid } from "@/components/story-grid";
 import { getStories } from "@/lib/catalog";
 
+export const dynamic = "force-dynamic";
+
 export default async function KrishnaBookPage() {
   const stories = await getStories();
   return (
@@ -13,9 +15,7 @@ export default async function KrishnaBookPage() {
       />
       <section className="section">
         <div className="container">
-          <ol className="story-grid" style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <StoryGrid stories={stories} empty="Run the Bhāva API so the catalog can discover locked packages." />
-          </ol>
+          <StoryGrid stories={stories} empty="Run the Bhāva API so the catalog can discover locked packages." />
         </div>
       </section>
     </>

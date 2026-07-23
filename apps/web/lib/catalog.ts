@@ -66,14 +66,18 @@ function enrich(story: Story): Story {
   };
 }
 
-const API = process.env.BHAVA_API_URL ?? "http://127.0.0.1:8000/api/v1";
+const API =
+  process.env.BHAVA_API_URL ??
+  (process.env.BHAVA_API_ORIGIN
+    ? `${process.env.BHAVA_API_ORIGIN.replace(/\/$/, "")}/api/v1`
+    : "http://127.0.0.1:8000/api/v1");
 
 async function apiGet<T>(path: string): Promise<T | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 4000);
   try {
     const response = await fetch(`${API}${path}`, {
-      next: { revalidate: 30 },
+      cache: "no-store",
       signal: controller.signal,
     });
     if (!response.ok) return null;

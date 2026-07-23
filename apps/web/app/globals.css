@@ -226,3 +226,17 @@ main { flex: 1; }
   .hero-art img, .story-card, .hero-grid { animation: none !important; }
   .story-card:hover, .collection-card:hover, .asset-tile:hover, .mode-card.is-active { transform: none; }
 }
+.playlist-list { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .75rem; }
+.playlist-list li {
+  display: flex; justify-content: space-between; gap: 1rem; align-items: center;
+  padding: .85rem 1rem; border: 1px solid rgba(212,168,75,.28); border-radius: 14px; background: rgba(255,250,242,.7);
+}
+.class-pack-dl { display: grid; gap: .85rem; }
+.class-pack-dl div { display: grid; gap: .2rem; }
+.class-pack-dl dt { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--bhava-saffron); font-weight: 800; }
+.class-pack-dl dd { margin: 0; }
+@media print {
+  .site-header, .site-footer, .no-print { display: none !important; }
+  .class-pack-preview { display: block !important; }
+  body { background: #fff !important; }
+}

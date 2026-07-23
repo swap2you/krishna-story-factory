@@ -1,10 +1,13 @@
 "use client";
 
-import { type ButtonHTMLAttributes, type ReactNode, useEffect, useId, useState } from "react";
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode, useEffect, useId, useState } from "react";
 
-export function Button({ variant = "primary", className = "", ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "accent" | "quiet" }) {
-  return <button className={`bhava-button bhava-button--${variant} ${className}`} {...props} />;
-}
+export const Button = forwardRef<
+  HTMLButtonElement,
+  ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "accent" | "quiet" }
+>(function Button({ variant = "primary", className = "", ...props }, ref) {
+  return <button ref={ref} className={`bhava-button bhava-button--${variant} ${className}`} {...props} />;
+});
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <section className={`bhava-card ${className}`}>{children}</section>;

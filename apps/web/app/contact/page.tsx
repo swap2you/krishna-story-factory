@@ -16,6 +16,10 @@ export default function ContactPage() {
             <p className="eyebrow">Steward</p>
             <h2>{contact.steward_name}</h2>
             <p className="hint">
+              Svarna Gauranga Das is the devotional name of Swapnil Patil, who builds and stewards Bhāva.
+              Public contact links below use his civil-name profiles so families can reach the same steward with confidence.
+            </p>
+            <p className="hint">
               For families, teachers, and partners who want a calm home for Krishna Book learning.
             </p>
             <div className="actions" style={{ marginTop: "1.25rem" }}>
