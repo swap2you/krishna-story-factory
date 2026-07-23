@@ -1,6 +1,8 @@
 {
   "project_name": "Bhāva",
-  "domain": "bhava.me",
   "steward_name": "Svarna Gauranga Das",
-  "public_email": "swarnagaurangadas@gmail.com"
+  "public_email": "svarnagaurangdas@gmail.com",
+  "location_city": "Harrisburg",
+  "location_state": "Pennsylvania",
+  "location_country": "USA"
 }

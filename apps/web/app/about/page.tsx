@@ -1,3 +1,4 @@
+import contact from "@/config/contact.json";
 import { PageIntro } from "@/components/page-intro";
 
 export default function AboutPage() {
@@ -5,34 +6,24 @@ export default function AboutPage() {
     <>
       <PageIntro
         eyebrow="About Bhāva"
-        title="A gentle, premium home for devotional learning."
-        body="Stories, listening, coloring, and quiet practice — designed so families can make a little space for Krishna in ordinary days."
+        title="An independent home for gentle Krishna Book learning."
+        body="Bhāva is an independent devotional-learning initiative stewarded by Svarna Gauranga Das in the Harrisburg, Pennsylvania area."
       />
       <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <div className="feature-grid">
-            <article className="feature-card">
-              <span className="icon" aria-hidden="true">❀</span>
-              <h2>Radha-Krishna mood</h2>
-              <p className="hint">Warm lotus, gold, and midnight tones for a calm, luxurious reading atmosphere.</p>
-            </article>
-            <article className="feature-card">
-              <span className="icon" aria-hidden="true">ॐ</span>
-              <h2>Faithful sources</h2>
-              <p className="hint">Package references stay visible. We never invent ślokas or republish unlicensed books.</p>
-            </article>
-            <article className="feature-card">
-              <span className="icon" aria-hidden="true">✦</span>
-              <h2>Family & classroom</h2>
-              <p className="hint">Listen, read Markdown stories, print PDFs, and keep private notes on this device only.</p>
-            </article>
-          </div>
-          <article className="contact-card" style={{ marginTop: "1.25rem", maxWidth: 760 }}>
-            <p className="eyebrow">Stewardship</p>
-            <h2>Guided with care</h2>
+        <div className="container" style={{ maxWidth: 760 }}>
+          <article className="contact-card">
+            <p className="eyebrow">Purpose</p>
+            <h2>Who Bhāva serves</h2>
             <p>
-              Bhāva is stewarded by <strong>Svarna Gauranga Das</strong>. We value thoughtful review, accessible design,
-              and an unhurried pace.
+              We begin with child-friendly Krishna Book learning for children, parents, teachers,
+              Sunday Schools, and preachers — stories to listen to, read, color, and discuss without hurry.
+            </p>
+            <p className="hint" style={{ marginTop: "1rem" }}>
+              AI may assist with drafting and tooling, while source fidelity and human devotional review remain required.
+              Bhāva is not an official BBT publication and does not claim ownership of BBT source works.
+            </p>
+            <p style={{ marginTop: "1rem" }}>
+              Steward: <strong>{contact.steward_name}</strong> · {contact.location_city}, {contact.location_state}
             </p>
           </article>
         </div>

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BhavaPrayerItem",
+  "type": "object",
+  "required": ["title", "status", "audience", "source_requirement", "review_status"],
+  "properties": {
+    "title": { "type": "string" },
+    "transliteration": { "type": ["string", "null"] },
+    "translation": { "type": ["string", "null"] },
+    "sanskrit": { "type": ["string", "null"] },
+    "audience": { "type": "string" },
+    "source_requirement": { "type": "string" },
+    "review_status": { "type": "string", "enum": ["planned", "needs_review", "reviewed"] },
+    "status": { "type": "string", "enum": ["planned", "draft", "published"] },
+    "reviewer": { "type": ["string", "null"] },
+    "reviewed_date": { "type": ["string", "null"], "format": "date" },
+    "audio_url": { "type": ["string", "null"] }
+  },
+  "additionalProperties": false
+}
