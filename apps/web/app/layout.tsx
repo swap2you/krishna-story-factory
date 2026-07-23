@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/brand/icon-32.svg", sizes: "32x32", type: "image/svg+xml" },
-      { url: "/brand/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/logo-icon-only.webp", type: "image/webp" },
       { url: "/brand/icon-512.svg", sizes: "512x512", type: "image/svg+xml" },
     ],
     apple: [{ url: "/brand/icon-192.svg", sizes: "192x192", type: "image/svg+xml" }],
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <div className="container header-inner">
               <Link href="/" className="brand-lockup" aria-label="Bhāva home">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="brand-mark" src="/brand/mark.svg" alt="" width={44} height={44} aria-hidden="true" />
+                <img className="brand-mark" src="/brand/logo-icon-only.webp" alt="" width={44} height={44} aria-hidden="true" />
                 <span>
                   <span className="wordmark">bh<span>ā</span>va</span>
                   <span className="brand-sub">Devotional learning</span>
@@ -68,6 +68,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <div className="footer-links">
                 <Link href="/sunday-school">Sunday School</Link>
                 <Link href="/preachers">For Preachers</Link>
+                <Link href="/faq">FAQ</Link>
+                <Link href="/printables">Printables</Link>
                 <Link href="/privacy">Privacy</Link>
                 <Link href="/accessibility">Accessibility</Link>
                 <Link href="/source-permissions">Source & permissions</Link>

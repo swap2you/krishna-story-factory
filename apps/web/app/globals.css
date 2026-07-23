@@ -60,6 +60,32 @@ a { color: inherit; }
 main { flex: 1; }
 
 .hero { position: relative; isolation: isolate; overflow: hidden; min-height: min(78vh, 720px); color: #fff; background: var(--bhava-midnight-deep); }
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+  z-index: 0;
+  pointer-events: none;
+}
+.hero--branded .hero-grid { position: relative; z-index: 1; }
+.contact-form { display: grid; gap: 0.85rem; margin-top: 1rem; }
+.contact-form label { display: grid; gap: 0.35rem; font-weight: 600; }
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  font: inherit;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(20,40,70,.16);
+  background: #fff;
+}
+.scope-card.is-active {
+  outline: 2px solid var(--bhava-gold);
+  box-shadow: 0 0 0 4px rgba(231, 181, 80, 0.2);
+}
 .hero-grid {
   display: grid; grid-template-columns: 1.05fr 0.95fr; width: min(1180px, calc(100% - 2rem));
   margin: 2.5rem auto 3.5rem; border-radius: 2rem; overflow: hidden;

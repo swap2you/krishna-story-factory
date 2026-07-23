@@ -11,7 +11,16 @@ export default async function Home() {
 
   return (
     <>
-      <section className="hero">
+      <section className="hero hero--branded">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="hero-bg"
+          src="/heroes/hero-desktop-wide.webp"
+          alt=""
+          width={1920}
+          height={1080}
+          aria-hidden="true"
+        />
         <div className="hero-grid">
           <div className="hero-copy">
             <p className="hero-badge">❀ Radha-Krishna · Family library</p>
@@ -24,8 +33,11 @@ export default async function Home() {
               <Link className="bhava-button bhava-button--accent" href="/library/krishna-book">
                 Open Krishna Book
               </Link>
-              <Link className="bhava-button bhava-button--quiet" href="/teachers">
-                For teachers
+              <Link className="bhava-button bhava-button--quiet" href="/printables">
+                Printables
+              </Link>
+              <Link className="bhava-button bhava-button--quiet" href="/faq">
+                FAQ
               </Link>
             </div>
             <div className="hero-meta">
@@ -40,9 +52,12 @@ export default async function Home() {
               <img
                 src={featured.poster_url}
                 alt={`${featured.title} story poster`}
+                width={800}
+                height={1000}
               />
             ) : (
-              <div style={{ height: "100%", minHeight: 320, background: "linear-gradient(145deg,#12325a,#6a3a4a)" }} aria-hidden="true" />
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src="/heroes/hero-krishna-book-collection.webp" alt="" width={800} height={1000} aria-hidden="true" />
             )}
           </div>
         </div>
