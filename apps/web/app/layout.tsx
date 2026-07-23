@@ -11,6 +11,15 @@ export const metadata: Metadata = {
   title: { default: "Bhāva — Stories for the heart", template: "%s | Bhāva" },
   description: "A premium devotional learning home for Krishna Book stories, families, and teachers.",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/brand/icon-32.svg", sizes: "32x32", type: "image/svg+xml" },
+      { url: "/brand/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
+      { url: "/brand/icon-512.svg", sizes: "512x512", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/brand/icon-192.svg", sizes: "192x192", type: "image/svg+xml" }],
+  },
   openGraph: {
     title: "Bhāva",
     description: "Devotional learning for children, parents, and teachers — stewarded by Svarna Gauranga Das.",
