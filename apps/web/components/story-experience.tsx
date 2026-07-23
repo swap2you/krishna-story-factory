@@ -5,7 +5,7 @@ import { Button, Tabs, Toast, useToast } from "@bhava/ui";
 import type { Story } from "@/lib/catalog";
 import { AudioPlayer } from "@/components/audio-player";
 
-type Mode = "default" | "sepia" | "dark" | "dyslexia";
+type Mode = "default" | "sepia" | "dark";
 
 function renderMarkdown(source: string): string {
   const escaped = source
@@ -52,8 +52,10 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
     setNotes(localStorage.getItem(key) ?? "");
   }, [key]);
 
+  const readerSrc = story?.reader_url ?? (story ? `/api/v1/stories/${storyNo}/reader` : null);
+
   useEffect(() => {
-    if (!story?.story_md_url) {
+    if (!readerSrc) {
       setMarkdown("");
       return;
     }
@@ -61,7 +63,7 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
     const controller = new AbortController();
     void (async () => {
       try {
-        const response = await fetch(story.story_md_url!, { signal: controller.signal });
+        const response = await fetch(readerSrc, { signal: controller.signal });
         if (!response.ok) {
           setMarkdown("");
           return;
@@ -74,7 +76,7 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
       }
     })();
     return () => controller.abort();
-  }, [story?.story_md_url]);
+  }, [readerSrc]);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -172,15 +174,15 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                   <Button variant="quiet" onClick={() => setLarge((value) => !value)}>
                     {large ? "Standard text" : "Larger text"}
                   </Button>
-                  {(["default", "sepia", "dark", "dyslexia"] as Mode[]).map((value) => (
+                  {(["default", "sepia", "dark"] as Mode[]).map((value) => (
                     <Button key={value} variant={mode === value ? "accent" : "quiet"} onClick={() => setMode(value)}>
                       {value}
                     </Button>
                   ))}
                   <Button variant="quiet" onClick={() => window.print()}>Print</Button>
-                  {story?.story_md_url ? (
-                    <a className="bhava-button bhava-button--quiet" href={story.story_md_url} download>
-                      Download Markdown
+                  {readerSrc ? (
+                    <a className="bhava-button bhava-button--quiet" href={`/api/v1/stories/${storyNo}/reader.txt`} download>
+                      Download story text
                     </a>
                   ) : null}
                 </div>

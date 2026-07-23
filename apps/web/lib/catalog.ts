@@ -20,6 +20,7 @@ export type Story = {
   coloring_url?: string | null;
   simple_coloring_url?: string | null;
   story_md_url?: string | null;
+  reader_url?: string | null;
   images?: string[];
 };
 
@@ -58,6 +59,7 @@ function enrich(story: Story): Story {
     coloring_url: byName["coloring_page.png"] ?? mediaUrl(story.coloring_url) ?? null,
     simple_coloring_url: byName["simple_coloring_page.png"] ?? mediaUrl(story.simple_coloring_url) ?? null,
     story_md_url: byName["story.md"] ?? mediaUrl(story.story_md_url) ?? null,
+    reader_url: mediaUrl(story.reader_url) ?? `/api/v1/stories/${story.story_no}/reader`,
     images: [
       (byName["story_poster.png"] ?? story.poster_url) ? "Poster" : "",
       (byName["coloring_page.png"] ?? story.coloring_url) ? "Detailed coloring" : "",

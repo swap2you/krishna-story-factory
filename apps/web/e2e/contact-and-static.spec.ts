@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("contact and static", () => {
-  test("contact explains steward identity", async ({ page }) => {
+  test("contact shows steward name and mailto CTA", async ({ page }) => {
     await page.goto("/contact");
-    await expect(page.getByText(/devotional name of Swapnil Patil/i)).toBeVisible();
+    await expect(page.getByText(/Svarna Gauranga Das/i)).toBeVisible();
+    await expect(page.locator('a[href^="mailto:swarnagaurangadas"]')).toBeVisible();
   });
 
   test("vanani redirects to prabhupada-vani", async ({ page }) => {

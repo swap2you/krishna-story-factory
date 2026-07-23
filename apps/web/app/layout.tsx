@@ -59,7 +59,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 <Link href="/privacy">Privacy</Link>
                 <Link href="/accessibility">Accessibility</Link>
                 <Link href="/source-permissions">Source & permissions</Link>
-                <Link href="/studio">Factory Studio</Link>
               </div>
             </div>
           </footer>

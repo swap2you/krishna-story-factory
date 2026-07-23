@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BhavaProvenance",
+  "description": "Content provenance metadata for a Bhāva story package.",
+  "type": "object",
+  "required": ["story_no", "permissions_status"],
+  "properties": {
+    "story_no": {
+      "type": "string",
+      "pattern": "^\\d{3}$",
+      "description": "Zero-padded story number."
+    },
+    "permissions_status": {
+      "type": "string",
+      "enum": [
+        "bhava_original",
+        "bbt_source_reference",
+        "third_party",
+        "pending_review"
+      ],
+      "description": "Provenance category for the story content."
+    },
+    "source_description": {
+      "type": ["string", "null"],
+      "description": "Human-readable description of the content source."
+    },
+    "bbt_reference": {
+      "type": ["string", "null"],
+      "description": "Specific BBT publication referenced, if applicable."
+    },
+    "permission_document": {
+      "type": ["string", "null"],
+      "description": "Path or URI to documented permission. Required when permissions_status is third_party."
+    },
+    "reviewed_by": {
+      "type": ["string", "null"],
+      "description": "Name of the steward or reviewer who verified provenance."
+    },
+    "reviewed_at": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "ISO date when provenance was last reviewed."
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "Additional provenance notes."
+    }
+  },
+  "if": {
+    "properties": { "permissions_status": { "const": "third_party" } }
+  },
+  "then": {
+    "required": ["permission_document"]
+  },
+  "additionalProperties": false
+}
