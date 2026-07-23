@@ -47,3 +47,12 @@ bhava_portal_cursor_bootstrap_v1.zip
 
 portal-bootstrap/
 *.tsbuildinfo
+
+# Private source books and derived web assets (never commit)
+/KrishnaBook.pdf
+/bhava_v1_1_consolidated_release_prompts.zip
+/bhava_v1_1_consolidated_release_prompts/
+/data/web-assets/**
+!/data/web-assets/.gitkeep
+/.bhava/models/
+/.bhava/alignment-cache/
