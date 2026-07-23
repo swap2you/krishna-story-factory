@@ -79,6 +79,12 @@ jobs:
               for name in required:
                   if name == "manifest.json":
                       continue
+                  if name == "story.md":
+                      (folder / name).write_text(
+                          "# Fixture story\n\nClean reader body only.\n\n<!--\nAudio Narration\nPoster Visual Brief\n-->\n",
+                          encoding="utf-8",
+                      )
+                      continue
                   (folder / name).write_bytes(b"fixture")
               (folder / "manifest.json").write_text(json.dumps({
                   "chapter_no": chapter,
@@ -106,3 +112,85 @@ jobs:
           BHAVA_API_URL: http://127.0.0.1:8000/api/v1
         working-directory: apps/web
         run: npx playwright test --project=chromium-desktop
+
+  playwright-browsers:
+    runs-on: ubuntu-latest
+    needs: [test-web]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: firefox-desktop
+            browser_pkg: firefox
+          - project: webkit-desktop
+            browser_pkg: webkit
+          - project: chromium-mobile
+            browser_pkg: chromium
+          - project: webkit-mobile
+            browser_pkg: webkit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.browser_pkg }}
+      - run: python -m pip install fastapi uvicorn pydantic sqlalchemy httpx python-multipart bleach
+      - name: Start API with fixture catalog
+        env:
+          BHAVA_OUTPUT_ROOT: ${{ github.workspace }}/apps/web/e2e/fixtures/output
+          BHAVA_CATALOG_DB: ${{ github.workspace }}/apps/web/e2e/fixtures/bhava.sqlite
+          BHAVA_ENFORCE_LOOPBACK: "0"
+          BHAVA_FACTORY_ACTIONS_ENABLED: "0"
+          BHAVA_WEB_ORIGINS: http://127.0.0.1:3000,http://localhost:3000
+          PYTHONPATH: apps/api
+        run: |
+          mkdir -p apps/web/e2e/fixtures/output
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path("apps/web/e2e/fixtures/output")
+          required = ["story.md","narration.mp3","story_poster.png","coloring_page.png","simple_coloring_page.png","activity_sheet.pdf","whatsapp_caption.txt","manifest.json"]
+          for i in range(1, 3):
+              chapter = f"{i:03d}"
+              folder = root / f"{chapter}_fixture"
+              folder.mkdir(parents=True, exist_ok=True)
+              for name in required:
+                  if name == "manifest.json":
+                      continue
+                  if name == "story.md":
+                      (folder / name).write_text(
+                          "# Fixture story\n\nClean reader body only.\n\n<!--\nAudio Narration\nPoster Visual Brief\n-->\n",
+                          encoding="utf-8",
+                      )
+                      continue
+                  (folder / name).write_bytes(b"fixture")
+              (folder / "manifest.json").write_text(json.dumps({
+                  "chapter_no": chapter,
+                  "slug": f"fixture-{chapter}",
+                  "title": f"Fixture {chapter}",
+                  "publishable": True,
+                  "quality": {"status": "PASS"},
+                  "audio": {"generation_verified": True, "audio_stale": False},
+              }))
+          PY
+          python -m uvicorn bhava_api.main:app --host 127.0.0.1 --port 8000 --app-dir apps/api &
+          sleep 3
+      - name: Build and start web
+        env:
+          BHAVA_API_ORIGIN: http://127.0.0.1:8000
+          BHAVA_API_URL: http://127.0.0.1:8000/api/v1
+          BHAVA_WEB_URL: http://127.0.0.1:3000
+        run: |
+          npm run build:web
+          npm run start -w @bhava/web -- -p 3000 -H 127.0.0.1 &
+          sleep 5
+      - name: Playwright ${{ matrix.project }}
+        env:
+          BHAVA_WEB_URL: http://127.0.0.1:3000
+          BHAVA_API_URL: http://127.0.0.1:8000/api/v1
+        working-directory: apps/web
+        run: npx playwright test --project=${{ matrix.project }}
