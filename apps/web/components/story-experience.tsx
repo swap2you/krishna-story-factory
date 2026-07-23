@@ -26,12 +26,28 @@ type SourceLink = {
   label?: string;
   reference?: string;
   permissions_status?: string;
+  provenance?: string;
+  content_type?: string;
+  review_status?: string;
+  reviewer?: string;
+  reviewed_date?: string;
+  vedabase_url?: string | null;
+  chapter_title?: string;
+  chapter_number?: number;
+  passage_start?: string;
+  passage_end?: string;
+  permissions_note?: string;
+  work?: string;
+  author?: string;
 };
 
 type Reflection = {
   text: string;
   source?: string;
   provenance?: string;
+  source_type?: string;
+  reviewer?: string;
+  reviewed_date?: string;
 };
 
 type ShlokaPayload = {
@@ -536,17 +552,36 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
             {active === "Source" && (
               <div className="source-grid">
                 <div className="source-card">
-                  <h3>Package reference</h3>
+                  <h3>Reviewed source boundaries</h3>
                   {sourceLinks && sourceLinks.length > 0 ? (
-                    <ul className="source-link-list" style={{ paddingLeft: "1.1rem", margin: "0 0 1rem" }}>
+                    <ul className="source-link-list" style={{ listStyle: "none", padding: 0, margin: "0 0 1rem" }}>
                       {sourceLinks.map((link, idx) => (
-                        <li key={`${link.label ?? "ref"}-${idx}`} style={{ marginBottom: "0.65rem" }}>
-                          <strong>{link.label ?? "Reference"}:</strong> {link.reference ?? "—"}
-                          {link.permissions_status ? (
-                            <span className="hint" style={{ display: "block" }}>
-                              Permissions: {link.permissions_status}
-                            </span>
+                        <li key={`${link.label ?? "ref"}-${idx}`} className="panel-card" style={{ marginBottom: "0.85rem", padding: "0.85rem 1rem" }}>
+                          <p style={{ margin: "0 0 0.35rem" }}>
+                            <strong>{link.label ?? "Reference"}:</strong> {link.reference ?? "—"}
+                          </p>
+                          {link.author ? <p className="hint" style={{ margin: "0 0 0.25rem" }}>Author: {link.author}</p> : null}
+                          {(link.passage_start || link.passage_end) ? (
+                            <p className="hint" style={{ margin: "0 0 0.25rem" }}>
+                              Passage: {link.passage_start ?? "—"} → {link.passage_end ?? "—"}
+                            </p>
                           ) : null}
+                          <p className="hint" style={{ margin: "0 0 0.25rem" }}>
+                            Provenance: {link.provenance ?? "pending"} · Permissions: {link.permissions_status ?? "needs-review"} · Review: {link.review_status ?? "needs_review"}
+                          </p>
+                          {(link.reviewer || link.reviewed_date) ? (
+                            <p className="hint" style={{ margin: "0 0 0.25rem" }}>
+                              Reviewed by {link.reviewer ?? "—"}{link.reviewed_date ? ` · ${link.reviewed_date}` : ""}
+                            </p>
+                          ) : null}
+                          {link.permissions_note ? <p className="hint" style={{ margin: "0 0 0.5rem" }}>{link.permissions_note}</p> : null}
+                          {link.vedabase_url ? (
+                            <a className="bhava-button bhava-button--quiet" href={link.vedabase_url} target="_blank" rel="noopener noreferrer">
+                              Open in Vedabase
+                            </a>
+                          ) : (
+                            <p className="hint" style={{ margin: 0 }}>Vedabase link pending human verification.</p>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -557,7 +592,7 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                     </>
                   )}
                   <div className="source-boundary">
-                    Bhāva shows reviewed package facts and boundaries. It does not republish unlicensed full BBT books.
+                    Bhāva shows reviewed package facts and boundaries. It does not republish unlicensed full BBT books, and never claims “used with permission” without a documented grant.
                   </div>
                 </div>
                 <div className="source-card">
@@ -614,6 +649,18 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                     Export
                   </Button>
                   <Button variant="quiet" onClick={() => window.print()}>Print notes</Button>
+                  <Button
+                    variant="quiet"
+                    onClick={() => {
+                      setNotes("");
+                      setNotesDirty(false);
+                      localStorage.removeItem(key);
+                      setNotesSaveState("idle");
+                      showToast("Notes cleared on this device.");
+                    }}
+                  >
+                    Clear notes
+                  </Button>
                 </div>
 
                 <section style={{ marginTop: "2rem" }} aria-labelledby="teaching-reflections-heading">
@@ -622,6 +669,7 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                   </h3>
                   <p className="hint">
                     Curated seeds from the package (may still need review). Separate from your private family notes.
+                    These are never presented as Prabhupāda quotations.
                   </p>
                   {reflections.length > 0 ? (
                     <ul style={{ paddingLeft: "1.1rem", margin: "0.75rem 0 0" }}>
@@ -629,7 +677,9 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                         <li key={`${item.source ?? "reflection"}-${idx}`} style={{ marginBottom: "0.85rem" }}>
                           <p style={{ margin: 0 }}>{item.text}</p>
                           <span className="hint">
-                            {[item.source, item.provenance].filter(Boolean).join(" · ") || "seeded"}
+                            {[item.source, item.provenance, item.source_type, item.reviewer, item.reviewed_date]
+                              .filter(Boolean)
+                              .join(" · ") || "seeded"}
                           </span>
                         </li>
                       ))}
@@ -711,6 +761,9 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
             }}
           >
             <h2 id={dialogTitleId} style={{ marginTop: 0 }}>{coloring[carouselIndex]?.label}</h2>
+            <p className="visually-hidden" aria-live="polite">
+              Showing {coloring[carouselIndex]?.label}, image {carouselIndex + 1} of {coloring.length}
+            </p>
             <div className="carousel-viewport">
               <button
                 className="carousel-arrow carousel-prev"
@@ -735,6 +788,28 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                 &rarr;
               </button>
             </div>
+            <div className="carousel-thumbs" role="list" aria-label="Coloring pages">
+              {coloring.map((item, i) => (
+                <button
+                  key={item.url}
+                  type="button"
+                  role="listitem"
+                  className={`carousel-thumb${i === carouselIndex ? " active" : ""}`}
+                  onClick={() => setCarouselIndex(i)}
+                  aria-label={`Show ${item.label}`}
+                  aria-current={i === carouselIndex ? "true" : undefined}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={item.url} alt="" />
+                </button>
+              ))}
+            </div>
+            {coloring.map((item, i) => (
+              Math.abs(i - carouselIndex) === 1 ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={`preload-${item.url}`} src={item.url} alt="" hidden aria-hidden="true" />
+              ) : null
+            ))}
             <div className="carousel-position" aria-label={`Image ${carouselIndex + 1} of ${coloring.length}`}>
               {coloring.map((item, i) => (
                 <button
