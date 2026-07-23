@@ -13,6 +13,14 @@
       "type": "string",
       "description": "Human-readable reference, e.g. 'Chapter 12: The Stealing of the Boys and Calves'."
     },
+    "work": {
+      "type": ["string", "null"],
+      "description": "Full work title when distinct from scripture shorthand."
+    },
+    "author": {
+      "type": ["string", "null"],
+      "description": "Author or compiler of the cited work."
+    },
     "canto": {
       "type": ["integer", "null"],
       "minimum": 1,
@@ -24,6 +32,17 @@
       "minimum": 1,
       "description": "Chapter number within the canto or scripture."
     },
+    "chapter_title": {
+      "type": ["string", "null"]
+    },
+    "passage_start": {
+      "type": ["string", "null"],
+      "description": "Human-readable passage start boundary."
+    },
+    "passage_end": {
+      "type": ["string", "null"],
+      "description": "Human-readable passage end boundary."
+    },
     "verse_start": {
       "type": ["integer", "null"],
       "minimum": 1,
@@ -34,9 +53,36 @@
       "minimum": 1,
       "description": "Ending verse number."
     },
+    "vedabase_url": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "description": "Verified Vedabase URL for the chapter/canto page. Never invent."
+    },
+    "local_pdf_page_start": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "description": "Private local PDF page start; never served publicly."
+    },
+    "local_pdf_page_end": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "description": "Private local PDF page end; never served publicly."
+    },
     "edition": {
       "type": ["string", "null"],
       "description": "Specific edition or publication referenced."
+    },
+    "permissions_status": {
+      "type": "string",
+      "enum": ["licensed", "public-domain", "excerpt-needs-review", "needs-review"]
+    },
+    "provenance": {
+      "type": "string",
+      "enum": ["bhava-original", "bbt-source-derived", "third-party"]
+    },
+    "review_status": {
+      "type": "string",
+      "enum": ["reviewed", "needs_review", "pending"]
     },
     "verified": {
       "type": "boolean",
@@ -50,6 +96,13 @@
       "type": ["string", "null"],
       "format": "date",
       "description": "ISO date of verification."
+    },
+    "reviewer": {
+      "type": ["string", "null"]
+    },
+    "reviewed_date": {
+      "type": ["string", "null"],
+      "format": "date"
     }
   },
   "additionalProperties": false

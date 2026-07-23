@@ -11,6 +11,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .reviewed_sources import source_links_for_story
 from .story_parser import parse_story_markdown
 
 
@@ -51,6 +52,7 @@ def _extract_lessons(reader_md: str) -> list[dict]:
                     "text": m.group(1).strip(),
                     "source": "five_lessons",
                     "provenance": "needs_review",
+                    "source_type": "package_seed",
                 })
         elif in_meaning:
             if stripped:
@@ -61,22 +63,10 @@ def _extract_lessons(reader_md: str) -> list[dict]:
             "text": " ".join(meaning_text),
             "source": "devotional_meaning",
             "provenance": "needs_review",
+            "source_type": "package_seed",
         })
 
     return reflections
-
-
-def _extract_source_links(manifest: dict) -> list[dict]:
-    links: list[dict] = []
-    for key in ("source_reference", "scripture_reference"):
-        val = manifest.get(key)
-        if val:
-            links.append({
-                "label": key.replace("_", " ").title(),
-                "reference": val,
-                "permissions_status": "needs-review",
-            })
-    return links
 
 
 def build_web_assets_for_package(
@@ -100,7 +90,7 @@ def build_web_assets_for_package(
     (dest / "reader.txt").write_text(parsed.reader_txt, encoding="utf-8")
     (dest / "narration.txt").write_text(parsed.narration_txt, encoding="utf-8")
 
-    source_links = _extract_source_links(manifest)
+    source_links = source_links_for_story(story_no, manifest)
     (dest / "source_links.json").write_text(
         json.dumps(source_links, indent=2, ensure_ascii=False), encoding="utf-8"
     )
