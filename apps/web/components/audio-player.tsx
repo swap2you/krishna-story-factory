@@ -9,6 +9,7 @@ type Props = {
   storyNo: string;
   posterUrl?: string | null;
   onAudioMount?: (el: HTMLAudioElement) => void;
+  peaksUrl?: string | null;
 };
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 2] as const;
@@ -20,7 +21,18 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Props) {
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  const tag = target.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (target.closest("input, textarea, select, [contenteditable='true'], [role='dialog'], [aria-modal='true']")) {
+    return true;
+  }
+  return false;
+}
+
+export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peaksUrl }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -28,8 +40,11 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Pr
   const [duration, setDuration] = useState(0);
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
   const [volume, setVolume] = useState(1);
-  const [peaks, setPeaks] = useState<number[]>([]);
+  const [peaks, setPeaks] = useState<number[]>(() =>
+    Array.from({ length: 64 }, (_, i) => 0.25 + ((i * 17) % 40) / 100),
+  );
   const [sleepMinutes, setSleepMinutes] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const resumeKey = `bhava:resume:${storyNo}`;
   const bookmarkKey = `bhava:bookmark:${storyNo}`;
 
@@ -37,45 +52,27 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Pr
     if (audioRef.current && onAudioMount) onAudioMount(audioRef.current);
   }, [onAudioMount]);
 
+  // Server/cached peaks only — never full-fetch the MP3 on the client for waveform.
   useEffect(() => {
     let cancelled = false;
-    async function loadWaveform() {
-      let ctx: AudioContext | null = null;
+    async function loadPeaks() {
+      const url = peaksUrl ?? `/api/v1/stories/${storyNo}/waveform`;
       try {
-        const response = await fetch(src);
-        if (!response.ok) throw new Error(`audio ${response.status}`);
-        const buffer = await response.arrayBuffer();
-        ctx = new AudioContext();
-        const decoded = await ctx.decodeAudioData(buffer.slice(0));
-        const channel = decoded.getChannelData(0);
-        const bars = 96;
-        const block = Math.floor(channel.length / bars);
-        const next: number[] = [];
-        for (let i = 0; i < bars; i += 1) {
-          let sum = 0;
-          const start = i * block;
-          for (let j = 0; j < block; j += 1) sum += Math.abs(channel[start + j] || 0);
-          next.push(sum / block);
+        const response = await fetch(url);
+        if (!response.ok) return;
+        const data = (await response.json()) as { peaks?: number[] };
+        if (!cancelled && Array.isArray(data.peaks) && data.peaks.length > 0) {
+          setPeaks(data.peaks);
         }
-        const max = Math.max(...next, 0.0001);
-        if (!cancelled) setPeaks(next.map((value) => value / max));
       } catch {
-        if (!cancelled) setPeaks(Array.from({ length: 64 }, (_, i) => 0.25 + ((i * 17) % 40) / 100));
-      } finally {
-        if (ctx) {
-          try {
-            await ctx.close();
-          } catch {
-            /* already closed or unsupported */
-          }
-        }
+        /* keep decorative peaks */
       }
     }
-    void loadWaveform();
+    void loadPeaks();
     return () => {
       cancelled = true;
     };
-  }, [src]);
+  }, [peaksUrl, storyNo]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -99,7 +96,13 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Pr
     const audio = audioRef.current;
     if (!audio) return;
     const saved = Number(localStorage.getItem(resumeKey) || "0");
-    if (saved > 0) audio.currentTime = saved;
+    if (saved > 0 && Number.isFinite(saved)) {
+      const apply = () => {
+        if (audio.duration && saved < audio.duration) audio.currentTime = saved;
+      };
+      if (audio.readyState >= 1) apply();
+      else audio.addEventListener("loadedmetadata", apply, { once: true });
+    }
   }, [resumeKey, src]);
 
   useEffect(() => {
@@ -115,6 +118,35 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Pr
     return () => window.clearTimeout(timer);
   }, [sleepMinutes]);
 
+  const remaining = useMemo(() => Math.max(0, duration - current), [duration, current]);
+
+  const skip = useCallback((delta: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = Math.min(duration || audio.duration || 0, Math.max(0, audio.currentTime + delta));
+  }, [duration]);
+
+  const toggle = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    setError(null);
+    if (audio.paused) {
+      // Preserve user-activation: call play() synchronously from the click path.
+      const playPromise = audio.play();
+      setPlaying(true);
+      if (playPromise !== undefined) {
+        void playPromise.catch((err: unknown) => {
+          setPlaying(false);
+          const message = err instanceof Error ? err.message : "Playback failed";
+          setError(`Could not start audio: ${message}`);
+        });
+      }
+    } else {
+      audio.pause();
+      setPlaying(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!("mediaSession" in navigator) || !audioRef.current) return;
     navigator.mediaSession.metadata = new MediaMetadata({
@@ -123,38 +155,19 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Pr
       album: "Krishna Book Stories",
       artwork: posterUrl ? [{ src: posterUrl, sizes: "512x512", type: "image/png" }] : [],
     });
-    navigator.mediaSession.setActionHandler("play", () => void toggle());
-    navigator.mediaSession.setActionHandler("pause", () => void toggle());
+    navigator.mediaSession.setActionHandler("play", () => toggle());
+    navigator.mediaSession.setActionHandler("pause", () => toggle());
     navigator.mediaSession.setActionHandler("seekbackward", () => skip(-15));
     navigator.mediaSession.setActionHandler("seekforward", () => skip(15));
-  });
-
-  const remaining = useMemo(() => Math.max(0, duration - current), [duration, current]);
-
-  const toggle = useCallback(async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (audio.paused) {
-      await audio.play();
-      setPlaying(true);
-    } else {
-      audio.pause();
-      setPlaying(false);
-    }
-  }, []);
-
-  const skip = useCallback((delta: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = Math.min(duration || audio.duration || 0, Math.max(0, audio.currentTime + delta));
-  }, [duration]);
+  }, [title, posterUrl, toggle, skip]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
+      if (isEditableTarget(event.target)) return;
+      if (document.querySelector("[aria-modal='true'], [role='dialog']")) return;
       if (event.code === "Space") {
         event.preventDefault();
-        void toggle();
+        toggle();
       } else if (event.key === "ArrowLeft") skip(-15);
       else if (event.key === "ArrowRight") skip(15);
     };
@@ -177,6 +190,10 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Pr
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
+        onError={() => {
+          setPlaying(false);
+          setError("Audio could not be loaded for this story.");
+        }}
       />
       <canvas
         ref={canvasRef}
@@ -184,7 +201,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Pr
         width={640}
         height={72}
         role="img"
-        aria-label="Narration waveform"
+        aria-label="Narration waveform preview"
         onClick={(event) => {
           const audio = audioRef.current;
           if (!audio || !duration) return;
@@ -194,7 +211,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Pr
         }}
       />
       <div className="audio-controls">
-        <Button variant="accent" aria-label={playing ? "Pause" : "Play"} onClick={() => void toggle()}>
+        <Button variant="accent" aria-label={playing ? "Pause" : "Play"} onClick={toggle}>
           {playing ? "Pause" : "Play"}
         </Button>
         <Button variant="quiet" aria-label="Back 15 seconds" onClick={() => skip(-15)}>−15s</Button>
@@ -231,44 +248,41 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Pr
             }}
           />
         </label>
-        <span aria-live="polite">{formatTime(current)} / −{formatTime(remaining)}</span>
-      </div>
-      <div className="audio-controls">
+        <label>
+          Sleep
+          <select
+            aria-label="Sleep timer"
+            value={sleepMinutes ?? ""}
+            onChange={(event) => {
+              const raw = event.target.value;
+              setSleepMinutes(raw ? Number(raw) : null);
+            }}
+          >
+            <option value="">Off</option>
+            <option value="15">15 min</option>
+            <option value="30">30 min</option>
+            <option value="45">45 min</option>
+          </select>
+        </label>
         <Button
           variant="quiet"
           onClick={() => {
             localStorage.setItem(bookmarkKey, String(current));
           }}
         >
-          Bookmark position
+          Bookmark
         </Button>
-        <Button
-          variant="quiet"
-          onClick={() => {
-            const saved = Number(localStorage.getItem(bookmarkKey) || "0");
-            if (audioRef.current) audioRef.current.currentTime = saved;
-          }}
-        >
-          Jump to bookmark
-        </Button>
-        <label>
-          Sleep timer
-          <select
-            aria-label="Sleep timer"
-            value={sleepMinutes ?? ""}
-            onChange={(event) => setSleepMinutes(event.target.value ? Number(event.target.value) : null)}
-          >
-            <option value="">Off</option>
-            <option value="5">5 min</option>
-            <option value="15">15 min</option>
-            <option value="30">30 min</option>
-          </select>
-        </label>
         <a className="bhava-button bhava-button--quiet" href={src} download>
-          Download audio
+          Download
         </a>
       </div>
-      <p className="hint">Keyboard: Space play/pause · ← −15s · → +15s. Progress resumes on this device.</p>
+      <p className="hint" aria-live="polite">
+        {formatTime(current)} / {formatTime(duration)} · remaining {formatTime(remaining)}
+      </p>
+      {error ? (
+        <p role="alert" className="hint" style={{ color: "var(--bhava-saffron)" }}>{error}</p>
+      ) : null}
+      <p className="hint">Keyboard: Space play/pause · ← −15s · → +15s (disabled while a dialog is open). Progress resumes on this device.</p>
     </div>
   );
 }

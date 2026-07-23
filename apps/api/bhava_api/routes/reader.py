@@ -16,6 +16,7 @@ from ..db import get_session
 from ..models import Story
 from ..web_assets.builder import build_web_assets_for_package
 from ..web_assets.story_parser import parse_story_markdown
+from ..web_assets.waveform import peaks_for_mp3_placeholder, write_peaks_json
 
 router = APIRouter(prefix="/api/v1/stories", tags=["reader"])
 
@@ -143,3 +144,18 @@ def story_web_manifest(story_no: str, session: Session = Depends(get_session)) -
     story = _get_story_record(session, story_no)
     data = _read_web_json(story, "web_manifest.json")
     return JSONResponse(data)
+
+
+@router.get("/{story_no}/waveform")
+def story_waveform(story_no: str, session: Session = Depends(get_session)) -> JSONResponse:
+    """Cached preview peaks so the browser never full-fetches MP3 for waveform drawing."""
+    story = _get_story_record(session, story_no)
+    padded = story.story_no.zfill(3)
+    cache = _web_assets_root() / padded / "waveform.json"
+    if cache.is_file():
+        return JSONResponse(json.loads(cache.read_text(encoding="utf-8")))
+    mp3 = package_file(story.package_path, "narration.mp3")
+    if mp3 is None:
+        raise HTTPException(status_code=404, detail="Narration audio not found")
+    payload = write_peaks_json(mp3, cache)
+    return JSONResponse(payload)
