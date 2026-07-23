@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Card } from "@bhava/ui";
+import { Button } from "@bhava/ui";
 import { PageIntro } from "@/components/page-intro";
 
 type Status = {
@@ -18,8 +18,8 @@ export default function StudioPage() {
   async function refresh() {
     try {
       const [statusRes, queueRes] = await Promise.all([
-        fetch("http://127.0.0.1:8000/api/v1/local/status"),
-        fetch("http://127.0.0.1:8000/api/v1/local/queue"),
+        fetch("/api/v1/local/status"),
+        fetch("/api/v1/local/queue"),
       ]);
       setStatus(statusRes.ok ? await statusRes.json() : null);
       setQueue(queueRes.ok ? await queueRes.json() : null);
@@ -37,12 +37,16 @@ export default function StudioPage() {
 
   async function post(path: string) {
     if (!enabled || !status?.csrf_token) {
-      setMessage("Production actions are disabled (demo mode). Set BHAVA_FACTORY_ACTIONS_ENABLED=true only for intentional local ops.");
+      setMessage(
+        "Production actions are disabled (demo mode). Set BHAVA_FACTORY_ACTIONS_ENABLED=true only for intentional local ops.",
+      );
       return;
     }
-    const response = await fetch(`http://127.0.0.1:8000/api/v1/local/${path}`, {
+    const response = await fetch(`/api/v1/local/${path}`, {
       method: "POST",
-      headers: { "X-CSRF-Token": status.csrf_token, Origin: "http://127.0.0.1:3000" },
+      headers: {
+        "X-Bhava-CSRF-Token": status.csrf_token,
+      },
     });
     setMessage(await response.text());
   }
@@ -55,28 +59,42 @@ export default function StudioPage() {
         title="Safe operator console around the locked story factory."
         body="Read queue and health here. Generation buttons stay disabled unless you explicitly enable the local actions flag. This branch must not trigger Story 008."
       />
-      <section className="section">
-        <div className="container" style={{ display: "grid", gap: "1rem" }}>
-          <Card className="story-content">
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container studio-stack">
+          <section className="studio-panel">
             <h2>Overview</h2>
             <p>{message}</p>
-            <p>Actions enabled: {enabled ? "YES" : "NO (demo)"}</p>
-            <p>Loopback enforced: {String(status?.loopback_only ?? "unknown")}</p>
-            <Button onClick={() => void refresh()}>Refresh</Button>
-          </Card>
-          <Card className="story-content">
+            <p>
+              <strong>Actions enabled:</strong> {enabled ? "YES" : "NO (demo)"}
+            </p>
+            <p>
+              <strong>Loopback enforced:</strong> {String(status?.loopback_only ?? "unknown")}
+            </p>
+            <div className="actions" style={{ marginTop: "1rem" }}>
+              <Button onClick={() => void refresh()}>Refresh</Button>
+            </div>
+          </section>
+          <section className="studio-panel">
             <h2>Queue</h2>
-            <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(queue, null, 2)}</pre>
-          </Card>
-          <Card className="story-content">
+            <pre>{JSON.stringify(queue, null, 2)}</pre>
+          </section>
+          <section className="studio-panel">
             <h2>Allowlisted operations</h2>
             <div className="actions">
-              <Button variant="quiet" disabled={!enabled} onClick={() => void post("preflight")}>Preflight</Button>
-              <Button variant="quiet" disabled={!enabled} onClick={() => void post("generate-next")}>Generate next</Button>
-              <Button variant="quiet" disabled={!enabled} onClick={() => void post("drive/readback")}>Drive readback</Button>
+              <Button variant="quiet" disabled={!enabled} onClick={() => void post("preflight")}>
+                Preflight
+              </Button>
+              <Button variant="quiet" disabled={!enabled} onClick={() => void post("generate-next")}>
+                Generate next
+              </Button>
+              <Button variant="quiet" disabled={!enabled} onClick={() => void post("drive/readback")}>
+                Drive readback
+              </Button>
             </div>
-            <p className="hint">Disabled controls are intentional. Tests and default local runs never call paid providers.</p>
-          </Card>
+            <p className="hint" style={{ marginTop: "1rem" }}>
+              Disabled controls are intentional. Tests and default local runs never call paid providers.
+            </p>
+          </section>
         </div>
       </section>
     </>

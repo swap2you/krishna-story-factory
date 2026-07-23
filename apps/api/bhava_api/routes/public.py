@@ -12,14 +12,52 @@ from ..schemas import CollectionResponse, ShlokaResponse, SourceResponse, StoryR
 router = APIRouter(prefix="/api/v1", tags=["public"])
 
 
+def _asset_url(story_no: str, filename: str) -> str:
+    return f"/api/v1/stories/{story_no}/assets/{filename}"
+
+
+def _asset_map(story: Story) -> dict[str, str]:
+    return {
+        asset.filename: _asset_url(story.story_no, asset.filename)
+        for asset in story.assets
+    }
+
+
+def _story_summary(story: Story) -> StorySummary:
+    assets = _asset_map(story)
+    return StorySummary(
+        story_no=story.story_no,
+        slug=story.slug,
+        title=story.title,
+        source_reference=story.source_reference,
+        scripture_reference=story.scripture_reference,
+        age_range=story.age_range,
+        quality_status=story.quality_status,
+        poster_url=assets.get("story_poster.png"),
+        narration_url=assets.get("narration.mp3"),
+        story_md_url=assets.get("story.md"),
+    )
+
+
 def _story_response(story: Story) -> StoryResponse:
+    assets = _asset_map(story)
     return StoryResponse(
-        story_no=story.story_no, slug=story.slug, title=story.title,
-        source_reference=story.source_reference, scripture_reference=story.scripture_reference,
-        age_range=story.age_range, quality_status=story.quality_status,
+        story_no=story.story_no,
+        slug=story.slug,
+        title=story.title,
+        source_reference=story.source_reference,
+        scripture_reference=story.scripture_reference,
+        age_range=story.age_range,
+        quality_status=story.quality_status,
+        poster_url=assets.get("story_poster.png"),
+        narration_url=assets.get("narration.mp3"),
+        story_md_url=assets.get("story.md"),
         assets=[
-            {"filename": asset.filename, "media_type": asset.media_type,
-             "url": f"/api/v1/stories/{story.story_no}/assets/{asset.filename}"}
+            {
+                "filename": asset.filename,
+                "media_type": asset.media_type,
+                "url": assets[asset.filename],
+            }
             for asset in sorted(story.assets, key=lambda item: item.filename)
         ],
     )
@@ -57,8 +95,10 @@ def collection(slug: str, session: Session = Depends(get_session)) -> Collection
 
 @router.get("/stories", response_model=list[StorySummary])
 def stories(session: Session = Depends(get_session)) -> list[StorySummary]:
-    records = session.scalars(select(Story).order_by(Story.story_no)).all()
-    return [StorySummary.model_validate(record, from_attributes=True) for record in records]
+    records = session.scalars(
+        select(Story).options(selectinload(Story.assets)).order_by(Story.story_no)
+    ).all()
+    return [_story_summary(record) for record in records]
 
 
 @router.get("/stories/{story_no}", response_model=StoryResponse)
@@ -86,8 +126,18 @@ def shlokas(story_no: str, session: Session = Depends(get_session)) -> ShlokaRes
 @router.get("/search", response_model=list[StorySummary])
 def search(q: str = Query(min_length=1), session: Session = Depends(get_session)) -> list[StorySummary]:
     term = f"%{q.strip()}%"
-    records = session.scalars(select(Story).where(or_(
-        Story.title.ilike(term), Story.slug.ilike(term), Story.story_no.ilike(term),
-        Story.source_reference.ilike(term), Story.scripture_reference.ilike(term),
-    )).order_by(Story.story_no)).all()
-    return [StorySummary.model_validate(record, from_attributes=True) for record in records]
+    records = session.scalars(
+        select(Story)
+        .options(selectinload(Story.assets))
+        .where(
+            or_(
+                Story.title.ilike(term),
+                Story.slug.ilike(term),
+                Story.story_no.ilike(term),
+                Story.source_reference.ilike(term),
+                Story.scripture_reference.ilike(term),
+            )
+        )
+        .order_by(Story.story_no)
+    ).all()
+    return [_story_summary(record) for record in records]

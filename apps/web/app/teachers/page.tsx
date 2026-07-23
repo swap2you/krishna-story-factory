@@ -1,17 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Button, Card } from "@bhava/ui";
+import { Button } from "@bhava/ui";
 import { PageIntro } from "@/components/page-intro";
 
 type AgeMode = "bal-gopal" | "damodara" | "mixed";
 
 const PACK_OPTIONS = [
-  { id: "story", label: "Story reading" },
-  { id: "audio", label: "Audio listening" },
-  { id: "coloring", label: "Coloring pages" },
-  { id: "activity", label: "Activity sheet" },
-  { id: "shloka", label: "Śloka card (when curated)" },
+  { id: "story", label: "Story reading", tip: "Shared reading time" },
+  { id: "audio", label: "Audio listening", tip: "Narration circle" },
+  { id: "coloring", label: "Coloring pages", tip: "Quiet hands" },
+  { id: "activity", label: "Activity sheet", tip: "Guided worksheet" },
+  { id: "shloka", label: "Śloka card", tip: "When curated" },
 ];
 
 export default function TeachersPage() {
@@ -34,26 +34,32 @@ export default function TeachersPage() {
     <>
       <PageIntro
         eyebrow="For teachers"
-        title="Age-aware class packs without cloud child accounts."
+        title="Age-aware class packs with calm clarity."
         body="Compose a printable plan for Bal Gopal, Dāmodara, or mixed-age groups. Answer keys stay separated from the child view."
       />
       <section className="section">
-        <div className="container" style={{ display: "grid", gap: "1.25rem" }}>
-          <Card className="story-content">
-            <h2>Age mode</h2>
-            <div className="actions">
+        <div className="container teacher-stack">
+          <section className="teacher-panel">
+            <h2>1 · Choose an age mode</h2>
+            <div className="mode-grid">
               {([
-                ["bal-gopal", "Bal Gopal"],
-                ["damodara", "Dāmodara"],
-                ["mixed", "Mixed age"],
-              ] as const).map(([value, label]) => (
-                <Button key={value} variant={mode === value ? "accent" : "quiet"} onClick={() => setMode(value)}>
-                  {label}
-                </Button>
+                ["bal-gopal", "Bal Gopal", "Younger children"],
+                ["damodara", "Dāmodara", "Older children"],
+                ["mixed", "Mixed age", "Whole class"],
+              ] as const).map(([value, label, tip]) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={`mode-card${mode === value ? " is-active" : ""}`}
+                  onClick={() => setMode(value)}
+                >
+                  <strong>{label}</strong>
+                  <span>{tip}</span>
+                </button>
               ))}
             </div>
-            <p>{guidance}</p>
-            <label>
+            <p className="hint">{guidance}</p>
+            <label style={{ display: "inline-flex", gap: ".75rem", alignItems: "center", marginTop: "1rem" }}>
               Lesson timing (minutes)
               <input
                 type="number"
@@ -61,20 +67,22 @@ export default function TeachersPage() {
                 max={90}
                 value={minutes}
                 onChange={(event) => setMinutes(Number(event.target.value))}
-                style={{ marginLeft: "0.75rem", minHeight: 44 }}
+                style={{ minHeight: 44, width: 88, borderRadius: 12, border: "1px solid var(--bhava-border)", padding: "0 .6rem" }}
               />
             </label>
-          </Card>
+          </section>
 
-          <Card className="story-content">
-            <h2>Class-pack composer</h2>
-            <div className="actions">
+          <section className="teacher-panel">
+            <h2>2 · Compose the class pack</h2>
+            <p className="hint">Tap cards to include them. Selected items become your printable plan.</p>
+            <div className="pack-grid">
               {PACK_OPTIONS.map((option) => {
                 const on = selected.includes(option.id);
                 return (
-                  <Button
+                  <button
                     key={option.id}
-                    variant={on ? "primary" : "quiet"}
+                    type="button"
+                    className={`pack-option${on ? " is-on" : ""}`}
                     onClick={() =>
                       setSelected((current) =>
                         on ? current.filter((id) => id !== option.id) : [...current, option.id],
@@ -82,15 +90,18 @@ export default function TeachersPage() {
                     }
                   >
                     {option.label}
-                  </Button>
+                    <span style={{ display: "block", marginTop: ".35rem", fontWeight: 500, color: "var(--bhava-muted)", fontSize: ".85rem" }}>
+                      {option.tip}
+                    </span>
+                  </button>
                 );
               })}
             </div>
-            <p>Selected: {selected.join(", ") || "none"}</p>
-            <div className="actions">
+            <p><strong>Selected:</strong> {selected.join(", ") || "none yet"}</p>
+            <div className="actions" style={{ marginTop: "1rem" }}>
               <Button
                 onClick={() => {
-                  const plan = `Bhāva class pack\nMode: ${mode}\nMinutes: ${minutes}\nItems: ${selected.join(", ")}\n`;
+                  const plan = `Bhāva class pack\nSteward: Svarna Gauranga Das\nMode: ${mode}\nMinutes: ${minutes}\nItems: ${selected.join(", ")}\n`;
                   localStorage.setItem("bhava:class-pack", plan);
                   window.print();
                 }}
@@ -108,21 +119,20 @@ export default function TeachersPage() {
                 Save to classroom playlist
               </Button>
             </div>
-          </Card>
+          </section>
 
-          <Card className="story-content">
-            <h2>Answer key (adults / teachers)</h2>
-            <p>Child-facing activity pages never show this block by default.</p>
+          <section className="teacher-panel">
+            <h2>3 · Answer key (adults only)</h2>
+            <p className="hint">Child-facing activity pages never show this block by default.</p>
             <Button variant="quiet" onClick={() => setShowAnswers((value) => !value)}>
               {showAnswers ? "Hide answer key" : "Reveal answer key"}
             </Button>
             {showAnswers ? (
-              <p>
-                Use the package <code>manifest.json</code> activity parent answer key when present. Do not invent answers
-                for missing keys.
-              </p>
+              <div className="source-boundary" style={{ marginTop: "1rem" }}>
+                Use the package <code>manifest.json</code> parent answer key when present. Do not invent answers for missing keys.
+              </div>
             ) : null}
-          </Card>
+          </section>
         </div>
       </section>
     </>

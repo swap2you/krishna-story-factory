@@ -37,6 +37,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl }: Props) {
     async function loadWaveform() {
       try {
         const response = await fetch(src);
+        if (!response.ok) throw new Error(`audio ${response.status}`);
         const buffer = await response.arrayBuffer();
         const ctx = new AudioContext();
         const decoded = await ctx.decodeAudioData(buffer.slice(0));

@@ -19,6 +19,9 @@ class StorySummary(BaseModel):
     scripture_reference: str | None = None
     age_range: str | None = None
     quality_status: str | None = None
+    poster_url: str | None = None
+    narration_url: str | None = None
+    story_md_url: str | None = None
 
 
 class StoryResponse(StorySummary):

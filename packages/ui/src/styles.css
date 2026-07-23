@@ -1,15 +1,24 @@
 :root {
-  --bhava-midnight: #071b34;
-  --bhava-gold: #e7b550;
-  --bhava-cream: #fffaf0;
-  --bhava-saffron: #d98734;
-  --bhava-lotus: #d9899f;
-  --bhava-tulasi: #497b5a;
-  --bhava-ink: #132942;
-  --bhava-muted: #536172;
-  --bhava-surface: #fffdf8;
-  --bhava-border: #ded5c4;
-  --bhava-radius: 1rem;
+  --bhava-midnight: #061628;
+  --bhava-midnight-deep: #030d18;
+  --bhava-indigo: #12325a;
+  --bhava-gold: #d4a84b;
+  --bhava-gold-soft: #f0d48a;
+  --bhava-cream: #f7f0e4;
+  --bhava-paper: #fffaf2;
+  --bhava-saffron: #c9782e;
+  --bhava-lotus: #c97b90;
+  --bhava-lotus-deep: #8e4058;
+  --bhava-tulasi: #3f6d4f;
+  --bhava-ink: #15233a;
+  --bhava-muted: #5d6b7c;
+  --bhava-surface: rgba(255, 252, 246, 0.92);
+  --bhava-border: rgba(20, 40, 70, 0.12);
+  --bhava-radius: 1.35rem;
+  --bhava-radius-lg: 1.85rem;
+  --bhava-shadow: 0 18px 50px rgba(6, 22, 40, 0.12);
+  --bhava-shadow-soft: 0 10px 28px rgba(6, 22, 40, 0.08);
+  --bhava-glow: 0 0 0 1px rgba(212, 168, 75, 0.28);
   color: var(--bhava-ink);
   background: var(--bhava-cream);
 }
@@ -23,31 +32,133 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
 }
 
 .bhava-button {
-  min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
-  gap: .5rem; border-radius: 999px; padding: .7rem 1.15rem; border: 1px solid transparent;
-  cursor: pointer; font-weight: 700; text-decoration: none; transition: transform .18s ease, background .18s ease;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  border-radius: 999px;
+  padding: .75rem 1.25rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: transform .22s ease, box-shadow .22s ease, background .22s ease, border-color .22s ease;
 }
-.bhava-button:hover { transform: translateY(-1px); }
-.bhava-button--primary { background: var(--bhava-midnight); color: #fff; }
-.bhava-button--accent { background: var(--bhava-gold); color: var(--bhava-midnight); }
-.bhava-button--quiet { background: transparent; color: var(--bhava-midnight); border-color: var(--bhava-midnight); }
-.bhava-card { background: var(--bhava-surface); border: 1px solid var(--bhava-border); border-radius: var(--bhava-radius); }
-.bhava-tabs { display: flex; flex-wrap: wrap; gap: .35rem; border-bottom: 1px solid var(--bhava-border); }
-.bhava-tab { min-height: 44px; background: none; border: 0; border-bottom: 3px solid transparent; padding: .55rem .75rem; color: var(--bhava-muted); cursor: pointer; font-weight: 700; }
-.bhava-tab[aria-selected="true"] { border-color: var(--bhava-saffron); color: var(--bhava-midnight); }
-.bhava-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.bhava-button:hover { transform: translateY(-2px); }
+.bhava-button--primary {
+  background: linear-gradient(145deg, var(--bhava-midnight), var(--bhava-indigo));
+  color: #fff;
+  box-shadow: var(--bhava-shadow-soft);
+}
+.bhava-button--accent {
+  background: linear-gradient(145deg, var(--bhava-gold-soft), var(--bhava-gold));
+  color: var(--bhava-midnight);
+  box-shadow: 0 12px 28px rgba(212, 168, 75, 0.28);
+}
+.bhava-button--quiet {
+  background: rgba(255, 250, 242, 0.72);
+  color: var(--bhava-midnight);
+  border-color: rgba(212, 168, 75, 0.45);
+}
+.bhava-button--quiet:hover { border-color: var(--bhava-gold); background: #fff; }
+
+.bhava-card {
+  background: var(--bhava-surface);
+  border: 1px solid var(--bhava-border);
+  border-radius: var(--bhava-radius);
+  box-shadow: var(--bhava-shadow-soft);
+  backdrop-filter: blur(10px);
+}
+
+.bhava-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: .25rem;
+  overflow-x: auto;
+  padding: .35rem;
+  border: 1px solid var(--bhava-border);
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.78);
+  margin-bottom: 1.25rem;
+}
+.bhava-tab {
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  padding: .55rem 1rem;
+  color: var(--bhava-muted);
+  cursor: pointer;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background .2s ease, color .2s ease;
+}
+.bhava-tab[aria-selected="true"] {
+  background: linear-gradient(145deg, var(--bhava-midnight), var(--bhava-indigo));
+  color: var(--bhava-gold-soft);
+}
+.bhava-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
 .bhava-state { text-align: center; padding: 2.5rem 1rem; color: var(--bhava-muted); }
-.bhava-dialog-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 1rem; background: rgb(7 27 52 / .62); }
-.bhava-dialog { width: min(34rem, 100%); max-height: 85vh; overflow: auto; padding: 1.5rem; background: var(--bhava-cream); border-radius: var(--bhava-radius); }
-.bhava-dialog > div:first-child { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.bhava-dialog-backdrop {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  padding: 1rem; background: rgb(3 13 24 / .72); backdrop-filter: blur(6px);
+  animation: bhava-fade-in .2s ease;
+}
+.bhava-dialog {
+  width: min(56rem, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 1.5rem;
+  background: var(--bhava-paper);
+  border-radius: var(--bhava-radius-lg);
+  box-shadow: var(--bhava-shadow);
+  border: 1px solid rgba(212, 168, 75, 0.25);
+}
+.bhava-dialog > div:first-child {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem;
+}
 .bhava-tooltip { position: relative; display: inline-flex; }
-.bhava-tooltip [role="tooltip"] { position: absolute; bottom: calc(100% + .4rem); left: 50%; transform: translateX(-50%); width: max-content; max-width: 14rem; padding: .35rem .55rem; border-radius: .3rem; background: var(--bhava-midnight); color: #fff; font-size: .8rem; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.bhava-tooltip [role="tooltip"] {
+  position: absolute; bottom: calc(100% + .4rem); left: 50%; transform: translateX(-50%);
+  width: max-content; max-width: 14rem; padding: .35rem .55rem; border-radius: .3rem;
+  background: var(--bhava-midnight); color: #fff; font-size: .8rem; opacity: 0;
+  pointer-events: none; transition: opacity .15s;
+}
 .bhava-tooltip:hover [role="tooltip"], .bhava-tooltip:focus-within [role="tooltip"] { opacity: 1; }
-.bhava-toast { position: fixed; right: 1rem; bottom: 1rem; z-index: 60; max-width: 22rem; padding: .8rem 1rem; border-radius: .5rem; background: var(--bhava-midnight); color: #fff; box-shadow: 0 8px 25px rgb(7 27 52 / .25); }
-.bhava-skeleton { min-height: 1rem; border-radius: .4rem; background: linear-gradient(90deg, #eee5d5 25%, #fffaf0 50%, #eee5d5 75%); background-size: 200% 100%; animation: bhava-shimmer 1.2s infinite; }
+.bhava-toast {
+  position: fixed; right: 1rem; bottom: 1rem; z-index: 60; max-width: 22rem;
+  padding: .9rem 1.1rem; border-radius: .85rem;
+  background: linear-gradient(145deg, var(--bhava-midnight), var(--bhava-indigo));
+  color: #fff; box-shadow: var(--bhava-shadow);
+}
+.bhava-skeleton {
+  min-height: 1rem; border-radius: .4rem;
+  background: linear-gradient(90deg, #eee5d5 25%, #fffaf0 50%, #eee5d5 75%);
+  background-size: 200% 100%; animation: bhava-shimmer 1.2s infinite;
+}
 .bhava-loading-dot { width: 3rem; height: 3rem; margin: auto; border-radius: 999px; }
+
 @keyframes bhava-shimmer { to { background-position: -200% 0; } }
+@keyframes bhava-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bhava-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes bhava-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
 }

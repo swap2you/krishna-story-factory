@@ -10,7 +10,8 @@ New-Item -ItemType Directory -Force -Path $PidDir | Out-Null
 
 $Python = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
 if (-not (Test-Path $Python)) { throw "Missing .venv. Run scripts/bootstrap.ps1 first." }
-if (-not (Test-Path (Join-Path $ProjectRoot "node_modules\next"))) { throw "Missing npm install. Run: npm install" }
+$nextOk = (Test-Path (Join-Path $ProjectRoot "node_modules\next")) -or (Test-Path (Join-Path $ProjectRoot "apps\web\node_modules\next"))
+if (-not $nextOk) { throw "Missing npm install. Run: npm install" }
 
 function Start-LoggedProcess([string]$Name, [string]$File, [string[]]$ArgumentList) {
   $existing = Get-Content (Join-Path $PidDir "$Name.pid") -ErrorAction SilentlyContinue

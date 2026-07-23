@@ -24,39 +24,39 @@ export default async function LibraryPage({
       />
       <section className="section">
         <div className="container">
-          <form className="actions" action="/library" method="get">
+          <form className="search-bar" action="/library" method="get">
             <label className="sr-only" htmlFor="library-search">Search stories</label>
             <input
               id="library-search"
               name="q"
               defaultValue={query}
               placeholder="Search by title, chapter, or source"
-              style={{ minHeight: 44, minWidth: 260, padding: "0.6rem 0.9rem", borderRadius: 12, border: "1px solid var(--bhava-border)" }}
             />
             <button className="bhava-button bhava-button--primary" type="submit">Search</button>
           </form>
-          <div className="story-grid" style={{ marginTop: "2rem" }}>
-            {(collections.length ? collections : [{ slug: "krishna-book-bedtime", title: "Krishna Book Bedtime Stories", description: "Stories 001–007", story_count: stories.length }]).map((collection) => (
-              <Link key={collection.slug} href="/library/krishna-book" className="story-card bhava-card">
-                <p className="story-no">Collection</p>
-                <h3>{collection.title}</h3>
-                <p>{collection.description}</p>
-                <p>{collection.story_count ?? stories.length} stories indexed</p>
-              </Link>
-            ))}
-            <div className="story-card bhava-card">
-              <p className="story-no">Coming soon</p>
-              <h3>Śrīmad-Bhāgavatam Cantos 1–12</h3>
-              <p>Structure ready. Content not yet curated.</p>
+
+          <div className="collection-grid" style={{ marginTop: "2rem" }}>
+            <Link href="/library/krishna-book" className="collection-card krishna">
+              <h3>{collections[0]?.title ?? "Krishna Book Bedtime Stories"}</h3>
+              <p>{collections[0]?.description ?? `${stories.length || 7} stories indexed and ready.`}</p>
+              <span className="orb" aria-hidden="true" />
+            </Link>
+            <div className="collection-card lotus">
+              <h3>Śrīmad-Bhāgavatam</h3>
+              <p>Cantos 1–12 — coming soon with editorial care.</p>
+              <span className="orb" aria-hidden="true" />
             </div>
-            <div className="story-card bhava-card">
-              <p className="story-no">Coming soon</p>
-              <h3>Rāmāyaṇa & Caitanya literature</h3>
+            <div className="collection-card forest">
+              <h3>Rāmāyaṇa & Caitanya</h3>
               <p>Shelves reserved without invented titles.</p>
+              <span className="orb" aria-hidden="true" />
             </div>
           </div>
-          <h2 className="section-heading" style={{ marginTop: "3rem" }}>Latest Krishna Book stories</h2>
-          <StoryGrid stories={stories} empty="Start the local API to index Stories 001–007 from your packages." />
+
+          <h2 className="section-heading" style={{ marginTop: "3rem" }}>
+            {query ? `Results for “${query}”` : "Latest Krishna Book stories"}
+          </h2>
+          <StoryGrid stories={stories} empty="Start the local API so the catalog can discover Stories 001–007." />
         </div>
       </section>
     </>
