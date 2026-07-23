@@ -25,3 +25,15 @@ def test_media_route_rejects_path_traversal() -> None:
     with TestClient(create_app()) as client:
         response = client.get("/api/v1/stories/007/assets/%2e%2e%2f.env")
         assert response.status_code == 404
+
+
+def test_media_route_sets_content_type_even_without_indexed_asset() -> None:
+    """manifest.json is contract-served but not always present in Asset rows."""
+    with TestClient(create_app()) as client:
+        response = client.get("/api/v1/stories/007/assets/manifest.json")
+        assert response.status_code == 200
+        assert response.headers.get("content-type")
+        assert "json" in response.headers["content-type"]
+        md = client.get("/api/v1/stories/007/assets/story.md")
+        assert md.status_code == 200
+        assert md.headers.get("content-type")

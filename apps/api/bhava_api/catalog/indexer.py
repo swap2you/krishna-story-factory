@@ -2,13 +2,24 @@
 from __future__ import annotations
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from ..models import Asset, Collection, Story
 from .filesystem import asset_media_type, discover_packages
 
 COLLECTION_SLUG = "krishna-book-bedtime"
 COLLECTION_TITLE = "Krishna Book Bedtime Stories"
+
+
+def _normalize_story_no(chapter_no: object) -> str | None:
+    """Return a 3-digit story number, or None when chapter_no is missing/invalid."""
+    digits = "".join(ch for ch in str(chapter_no or "").strip() if ch.isdigit())
+    if not digits:
+        return None
+    story_no = digits.zfill(3)
+    if story_no == "000":
+        return None
+    return story_no
 
 
 def index_packages(session: Session) -> int:
@@ -25,10 +36,14 @@ def index_packages(session: Session) -> int:
     indexed = 0
     for package in discover_packages():
         manifest = package.manifest
-        story_no = str(manifest.get("chapter_no", "")).zfill(3)
+        story_no = _normalize_story_no(manifest.get("chapter_no"))
         if not story_no or not manifest.get("slug") or not manifest.get("title"):
             continue
-        story = session.scalar(select(Story).where(Story.story_no == story_no))
+        story = session.scalar(
+            select(Story)
+            .options(selectinload(Story.assets))
+            .where(Story.story_no == story_no)
+        )
         values = {
             "slug": str(manifest["slug"]),
             "title": str(manifest["title"]),

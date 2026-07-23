@@ -43,7 +43,15 @@ def discover_packages(output_root: Path | None = None) -> list[Package]:
         files = frozenset(child.name for child in package_path.iterdir() if child.is_file())
         if REQUIRED_PACKAGE_FILES.issubset(files):
             packages.append(Package(package_path, manifest, files))
-    return sorted(packages, key=lambda package: str(package.manifest.get("chapter_no", "")))
+    return sorted(packages, key=_chapter_sort_key)
+
+
+def _chapter_sort_key(package: Package) -> tuple[int, str]:
+    """Numeric chapter order (1, 2, …, 10), not lexical string order."""
+    raw = str(package.manifest.get("chapter_no", "") or "").strip()
+    digits = "".join(ch for ch in raw if ch.isdigit())
+    number = int(digits) if digits else 0
+    return (number, raw.zfill(3))
 
 
 def asset_media_type(filename: str) -> str:

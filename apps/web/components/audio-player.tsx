@@ -35,11 +35,12 @@ export function AudioPlayer({ src, title, storyNo, posterUrl }: Props) {
   useEffect(() => {
     let cancelled = false;
     async function loadWaveform() {
+      let ctx: AudioContext | null = null;
       try {
         const response = await fetch(src);
         if (!response.ok) throw new Error(`audio ${response.status}`);
         const buffer = await response.arrayBuffer();
-        const ctx = new AudioContext();
+        ctx = new AudioContext();
         const decoded = await ctx.decodeAudioData(buffer.slice(0));
         const channel = decoded.getChannelData(0);
         const bars = 96;
@@ -53,9 +54,16 @@ export function AudioPlayer({ src, title, storyNo, posterUrl }: Props) {
         }
         const max = Math.max(...next, 0.0001);
         if (!cancelled) setPeaks(next.map((value) => value / max));
-        await ctx.close();
       } catch {
         if (!cancelled) setPeaks(Array.from({ length: 64 }, (_, i) => 0.25 + ((i * 17) % 40) / 100));
+      } finally {
+        if (ctx) {
+          try {
+            await ctx.close();
+          } catch {
+            /* already closed or unsupported */
+          }
+        }
       }
     }
     void loadWaveform();
