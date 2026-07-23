@@ -60,23 +60,16 @@ export function PreachersWorkspace({ stories }: Props) {
                 <div><p>No catalog stories are available. Start the local API with released packages.</p></div>
               </div>
             ) : (
-              <div className="scope-grid" style={{ marginTop: "1rem" }} role="listbox" aria-label="Reviewed stories">
+              <div className="scope-grid" style={{ marginTop: "1rem" }} role="list" aria-label="Reviewed stories">
                 {stories.map((story) => {
                   const active = story.story_no === selectedNo;
                   return (
                     <button
                       key={story.story_no}
                       type="button"
-                      role="option"
-                      aria-selected={active}
+                      aria-pressed={active}
                       className={`scope-card${active ? " is-active" : ""}`}
                       onClick={() => setSelectedNo(story.story_no)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          setSelectedNo(story.story_no);
-                        }
-                      }}
                       style={{ textAlign: "left", cursor: "pointer" }}
                     >
                       <h3 style={{ fontSize: "1.05rem", marginTop: 0 }}>
