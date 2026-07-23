@@ -37,3 +37,5 @@ Recorded during `feature/bhava-portal-v1` bootstrap.
 
 - Prefer npm scripts from repo root (`npm run …`).
 - Factory actions remain disabled unless `BHAVA_FACTORY_ACTIONS_ENABLED=true`.
+- `BHAVA_AUTO_WEB_ASSETS` defaults to `false`. When `1`/`true`, catalog freshness builds `data/web-assets/` only for **newly indexed** stories after `index_packages`. Prefer `scripts/build_bhava_web_assets.py` for intentional rebuilds.
+- Storage path: [ADR-005-PUBLIC-SCALE-STORAGE.md](ADR-005-PUBLIC-SCALE-STORAGE.md).

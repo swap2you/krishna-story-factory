@@ -11,6 +11,6 @@ from bhava_api.db import SessionLocal, Base, engine
 from bhava_api.catalog.indexer import index_packages
 Base.metadata.create_all(bind=engine)
 with SessionLocal() as session:
-    count = index_packages(session)
-print(f'Reindexed {count} packages into data/catalog/bhava.sqlite')
+    result = index_packages(session)
+print(f'Reindexed {result.indexed} packages into data/catalog/bhava.sqlite')
 "@

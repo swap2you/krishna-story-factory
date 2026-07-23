@@ -40,6 +40,9 @@ class Settings:
     enforce_loopback: bool
     cors_origins: tuple[str, ...]
     catalog_refresh_sec: float
+    # When true, catalog index also builds data/web-assets for newly indexed stories.
+    # Default false — operators should run scripts/build_bhava_web_assets.py explicitly.
+    auto_web_assets: bool
 
 
 def get_settings() -> Settings:
@@ -56,4 +59,5 @@ def get_settings() -> Settings:
         enforce_loopback=_as_bool("BHAVA_ENFORCE_LOOPBACK", True),
         cors_origins=_cors_origins(),
         catalog_refresh_sec=max(15.0, min(refresh, 30.0)),
+        auto_web_assets=_as_bool("BHAVA_AUTO_WEB_ASSETS", False),
     )

@@ -10,10 +10,74 @@ type Status = {
   csrf_token?: string;
 };
 
+type StorySummary = {
+  story_no: string;
+  title: string;
+};
+
+type EnrichmentStatuses = {
+  reader?: string;
+  narration?: string;
+  reflections?: string;
+  shlokas?: string;
+  sync?: string;
+  source_links?: string;
+};
+
+type EnrichmentRow = {
+  story_no: string;
+  title: string;
+  statuses: EnrichmentStatuses | null;
+  error?: string;
+};
+
 export default function StudioPage() {
   const [status, setStatus] = useState<Status | null>(null);
   const [queue, setQueue] = useState<unknown>(null);
+  const [enrichment, setEnrichment] = useState<EnrichmentRow[]>([]);
   const [message, setMessage] = useState("Studio loads only against 127.0.0.1.");
+
+  async function loadEnrichment() {
+    try {
+      const storiesRes = await fetch("/api/v1/stories");
+      if (!storiesRes.ok) {
+        setEnrichment([]);
+        return;
+      }
+      const stories = (await storiesRes.json()) as StorySummary[];
+      const rows = await Promise.all(
+        stories.map(async (story) => {
+          try {
+            const res = await fetch(`/api/v1/stories/${story.story_no}/web-manifest`);
+            if (!res.ok) {
+              return {
+                story_no: story.story_no,
+                title: story.title,
+                statuses: null,
+                error: `HTTP ${res.status}`,
+              } satisfies EnrichmentRow;
+            }
+            const payload = (await res.json()) as { statuses?: EnrichmentStatuses };
+            return {
+              story_no: story.story_no,
+              title: story.title,
+              statuses: payload.statuses ?? null,
+            } satisfies EnrichmentRow;
+          } catch {
+            return {
+              story_no: story.story_no,
+              title: story.title,
+              statuses: null,
+              error: "unreachable",
+            } satisfies EnrichmentRow;
+          }
+        }),
+      );
+      setEnrichment(rows);
+    } catch {
+      setEnrichment([]);
+    }
+  }
 
   async function refresh() {
     try {
@@ -24,6 +88,7 @@ export default function StudioPage() {
       setStatus(statusRes.ok ? await statusRes.json() : null);
       setQueue(queueRes.ok ? await queueRes.json() : null);
       setMessage(statusRes.ok ? "Connected to local factory gateway." : "API not reachable on loopback.");
+      await loadEnrichment();
     } catch {
       setMessage("API not reachable on loopback.");
     }
@@ -61,6 +126,9 @@ export default function StudioPage() {
           payload.detail ?? null,
         ].filter(Boolean);
         setMessage(parts.join(" · "));
+        if (path.startsWith("rebuild-web-assets/")) {
+          await loadEnrichment();
+        }
         return;
       }
       setMessage(response.ok ? "Action completed." : `Action failed (${response.status}).`);
@@ -95,6 +163,54 @@ export default function StudioPage() {
           <section className="studio-panel">
             <h2>Queue</h2>
             <pre tabIndex={0} aria-label="Factory queue JSON">{JSON.stringify(queue, null, 2)}</pre>
+          </section>
+          <section className="studio-panel">
+            <h2>Web-asset enrichment</h2>
+            <p className="hint">
+              Read-only status from <code>/api/v1/stories/&lt;n&gt;/web-manifest</code>. Rebuild stays
+              disabled unless <code>BHAVA_FACTORY_ACTIONS_ENABLED=true</code>.
+            </p>
+            {enrichment.length === 0 ? (
+              <p className="hint">No catalog stories loaded yet.</p>
+            ) : (
+              <div className="studio-enrichment-list" style={{ marginTop: "1rem" }}>
+                {enrichment.map((row) => (
+                  <div
+                    key={row.story_no}
+                    style={{
+                      display: "grid",
+                      gap: "0.35rem",
+                      padding: "0.85rem 0",
+                      borderBottom: "1px solid rgba(6, 22, 40, 0.08)",
+                    }}
+                  >
+                    <strong>
+                      {row.story_no} — {row.title}
+                    </strong>
+                    {row.statuses ? (
+                      <p className="hint" style={{ margin: 0 }}>
+                        reader: {row.statuses.reader ?? "—"} · sync: {row.statuses.sync ?? "—"} ·
+                        shlokas: {row.statuses.shlokas ?? "—"} · reflections:{" "}
+                        {row.statuses.reflections ?? "—"}
+                      </p>
+                    ) : (
+                      <p className="hint" style={{ margin: 0 }}>
+                        Enrichment unavailable{row.error ? ` (${row.error})` : ""}.
+                      </p>
+                    )}
+                    <div className="actions">
+                      <Button
+                        variant="quiet"
+                        disabled={!enabled}
+                        onClick={() => void post(`rebuild-web-assets/${row.story_no}`)}
+                      >
+                        Rebuild web assets
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
           <section className="studio-panel">
             <h2>Allowlisted operations</h2>

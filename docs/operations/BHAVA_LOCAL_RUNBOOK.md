@@ -35,8 +35,17 @@ cd C:\Development\Workspace\DevotionalRepo\krishna-story-factory
 .\scripts\test_bhava.ps1
 ```
 
+## Web assets
+
+```powershell
+.\.venv\Scripts\python.exe scripts\build_bhava_web_assets.py
+```
+
+Writes derived reader files under `data/web-assets/<nnn>/` (gitignored). Studio can rebuild one story via `POST /api/v1/local/rebuild-web-assets/{story_no}` only when factory actions are enabled.
+
 ## Safety
 
-- `BHAVA_FACTORY_ACTIONS_ENABLED` defaults to false — Studio cannot generate Story 008.
+- `BHAVA_FACTORY_ACTIONS_ENABLED` defaults to false — Studio cannot generate Story 008 or rebuild web assets.
+- `BHAVA_AUTO_WEB_ASSETS` defaults to false — catalog refresh does not auto-build web assets unless explicitly set.
 - Do not expose `/api/v1/local/*` publicly.
 - Notes/bookmarks stay in browser localStorage.

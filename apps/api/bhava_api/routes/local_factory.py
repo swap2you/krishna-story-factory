@@ -5,10 +5,15 @@ import csv
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from ..config import get_settings
 from ..csrf import require_csrf
+from ..db import get_session
 from ..factory_adapter import perform
+from ..models import Story
+from ..web_assets.builder import build_web_assets_for_package
 
 router = APIRouter(prefix="/api/v1/local", tags=["local-factory"])
 _LOCAL_HOSTS = {"localhost", "127.0.0.1", "[::1]"}
@@ -70,6 +75,41 @@ def generate_next() -> dict:
 @router.post("/drive/readback", dependencies=[Depends(require_loopback), Depends(require_csrf)])
 def drive_readback() -> dict:
     return perform("drive-readback")
+
+
+@router.post(
+    "/rebuild-web-assets/{story_no}",
+    dependencies=[Depends(require_loopback), Depends(require_csrf)],
+)
+def rebuild_web_assets(story_no: str, session: Session = Depends(get_session)) -> dict:
+    """Rebuild data/web-assets for one story. Requires factory_actions_enabled (default off)."""
+    settings = get_settings()
+    if not settings.factory_actions_enabled:
+        return {
+            "operation": "rebuild-web-assets",
+            "status": "disabled",
+            "detail": (
+                "Factory actions are disabled. Set BHAVA_FACTORY_ACTIONS_ENABLED=true "
+                "only for intentional local ops."
+            ),
+            "story_no": story_no.zfill(3),
+        }
+    padded = story_no.zfill(3)
+    story = session.scalar(select(Story).where(Story.story_no == padded))
+    if story is None:
+        raise HTTPException(status_code=404, detail="Story not found")
+    package = Path(story.package_path)
+    if not package.is_dir():
+        raise HTTPException(status_code=404, detail="Story package not available")
+    web_root = settings.repository_root / "data" / "web-assets"
+    dest = build_web_assets_for_package(package, padded, web_root)
+    return {
+        "operation": "rebuild-web-assets",
+        "status": "ok",
+        "story_no": padded,
+        "path": str(dest),
+        "detail": f"Rebuilt web assets for story {padded}.",
+    }
 
 
 @router.post("/scheduler/enable", dependencies=[Depends(require_loopback), Depends(require_csrf)])

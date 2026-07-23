@@ -1,6 +1,8 @@
 """Index manifest facts into SQLite without mutating story packages."""
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -23,6 +25,15 @@ PUBLIC_ASSET_FILES = frozenset(
 )
 
 
+@dataclass
+class IndexResult:
+    indexed: int = 0
+    newly_indexed: list[str] = field(default_factory=list)
+
+    def __int__(self) -> int:
+        return self.indexed
+
+
 def _normalize_story_no(chapter_no: object) -> str | None:
     """Return a 3-digit story number, or None when chapter_no is missing/invalid."""
     digits = "".join(ch for ch in str(chapter_no or "").strip() if ch.isdigit())
@@ -34,7 +45,7 @@ def _normalize_story_no(chapter_no: object) -> str | None:
     return story_no
 
 
-def index_packages(session: Session) -> int:
+def index_packages(session: Session) -> IndexResult:
     collection = session.scalar(select(Collection).where(Collection.slug == COLLECTION_SLUG))
     if collection is None:
         collection = Collection(
@@ -46,7 +57,7 @@ def index_packages(session: Session) -> int:
         session.flush()
 
     seen: set[str] = set()
-    indexed = 0
+    result = IndexResult()
     for package in discover_packages():
         if not is_publicly_publishable(package):
             continue
@@ -74,6 +85,7 @@ def index_packages(session: Session) -> int:
             story = Story(story_no=story_no, **values)
             session.add(story)
             session.flush()
+            result.newly_indexed.append(story_no)
         else:
             for key, value in values.items():
                 setattr(story, key, value)
@@ -89,7 +101,7 @@ def index_packages(session: Session) -> int:
                         relative_path=relative_path,
                     )
                 )
-        indexed += 1
+        result.indexed += 1
 
     stale = session.scalars(select(Story).where(Story.collection_id == collection.id)).all()
     for story in stale:
@@ -97,4 +109,4 @@ def index_packages(session: Session) -> int:
             session.delete(story)
 
     session.commit()
-    return indexed
+    return result

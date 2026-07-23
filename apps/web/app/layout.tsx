@@ -38,7 +38,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <header className="site-header">
             <div className="container header-inner">
               <Link href="/" className="brand-lockup" aria-label="Bhāva home">
-                <span className="brand-mark" aria-hidden="true">❀</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="brand-mark" src="/brand/mark.svg" alt="" width={44} height={44} aria-hidden="true" />
                 <span>
                   <span className="wordmark">bh<span>ā</span>va</span>
                   <span className="brand-sub">Devotional learning</span>

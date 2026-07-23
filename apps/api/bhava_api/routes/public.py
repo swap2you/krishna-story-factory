@@ -1,11 +1,14 @@
 """Read-only public catalog endpoints."""
 from __future__ import annotations
 
+import json
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from ..catalog.freshness import refresh_if_stale
+from ..config import get_settings
 from ..db import get_session
 from ..models import Collection, Story
 from ..schemas import CollectionResponse, ShlokaResponse, SourceResponse, StoryResponse, StorySummary
@@ -130,7 +133,28 @@ def source(story_no: str, session: Session = Depends(get_session)) -> SourceResp
 
 @router.get("/stories/{story_no}/shlokas", response_model=ShlokaResponse)
 def shlokas(story_no: str, session: Session = Depends(get_session)) -> ShlokaResponse:
-    _get_story(session, story_no)
+    """Prefer data/web-assets shlokas.json when present; never invent verses."""
+    item = _get_story(session, story_no)
+    path = (
+        get_settings().repository_root
+        / "data"
+        / "web-assets"
+        / item.story_no
+        / "shlokas.json"
+    )
+    if path.is_file():
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return ShlokaResponse()
+        verses = data.get("shlokas") if isinstance(data, dict) else None
+        if not isinstance(verses, list):
+            verses = []
+        status = str(data.get("status") or "pending") if isinstance(data, dict) else "pending"
+        note = "not yet curated" if not verses else "curated"
+        if status == "pending" and not verses:
+            note = "not yet curated"
+        return ShlokaResponse(shlokas=verses, status=status, note=note)
     return ShlokaResponse()
 
 

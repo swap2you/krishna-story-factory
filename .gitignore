@@ -56,3 +56,5 @@ portal-bootstrap/
 !/data/web-assets/.gitkeep
 /.bhava/models/
 /.bhava/alignment-cache/
+
+/MyPilotDropbox/

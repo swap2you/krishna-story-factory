@@ -43,4 +43,5 @@ class SourceResponse(BaseModel):
 
 class ShlokaResponse(BaseModel):
     shlokas: list[dict] = Field(default_factory=list)
+    status: str = "pending"
     note: str = "not yet curated"

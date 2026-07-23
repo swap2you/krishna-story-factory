@@ -43,9 +43,8 @@ a { color: inherit; }
 .header-inner { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .brand-lockup { display: flex; align-items: center; gap: .8rem; text-decoration: none; }
 .brand-mark {
-  width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
-  background: linear-gradient(145deg, #061628, #1a406c); color: var(--bhava-gold-soft);
-  box-shadow: 0 10px 24px rgba(6, 22, 40, 0.22); font-size: 1.15rem;
+  width: 44px; height: 44px; border-radius: 14px; display: block; object-fit: cover;
+  box-shadow: 0 10px 24px rgba(6, 22, 40, 0.22); flex-shrink: 0;
 }
 .wordmark { font-family: var(--font-display), serif; font-size: 1.65rem; font-weight: 700; color: var(--bhava-midnight); line-height: 1; }
 .wordmark span { color: var(--bhava-saffron); }

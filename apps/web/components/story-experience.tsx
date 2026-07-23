@@ -22,6 +22,26 @@ type SyncData = {
   cues: SyncCue[];
 };
 
+type SourceLink = {
+  label?: string;
+  reference?: string;
+  permissions_status?: string;
+};
+
+type Reflection = {
+  text: string;
+  source?: string;
+  provenance?: string;
+};
+
+type ShlokaPayload = {
+  shlokas: Array<Record<string, unknown>>;
+  status?: string;
+  note?: string;
+};
+
+type NotesSaveState = "idle" | "typing" | "saving" | "saved";
+
 function renderMarkdown(source: string): string {
   const escaped = source
     .replace(/&/g, "&amp;")
@@ -172,6 +192,12 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
   const [audioTime, setAudioTime] = useState(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [carouselOpen, setCarouselOpen] = useState(false);
+  const [sourceLinks, setSourceLinks] = useState<SourceLink[] | null>(null);
+  const [reflections, setReflections] = useState<Reflection[]>([]);
+  const [shlokaPayload, setShlokaPayload] = useState<ShlokaPayload | null>(null);
+  const [revealShlokaMeta, setRevealShlokaMeta] = useState(false);
+  const [notesSaveState, setNotesSaveState] = useState<NotesSaveState>("idle");
+  const [notesDirty, setNotesDirty] = useState(false);
 
   const { message, showToast } = useToast();
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -218,7 +244,21 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
 
   useEffect(() => {
     setNotes(localStorage.getItem(key) ?? "");
+    setNotesDirty(false);
+    setNotesSaveState("idle");
   }, [key]);
+
+  useEffect(() => {
+    if (!notesDirty) return;
+    setNotesSaveState("typing");
+    const timer = window.setTimeout(() => {
+      setNotesSaveState("saving");
+      localStorage.setItem(key, notes);
+      setNotesSaveState("saved");
+      setNotesDirty(false);
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [notes, key, notesDirty]);
 
   useEffect(() => {
     if (!readerSrc) {
@@ -251,6 +291,36 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
       .catch(() => {
         if (!controller.signal.aborted) setSyncData({ status: "needs_alignment", cues: [] });
       });
+    return () => controller.abort();
+  }, [storyNo]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setRevealShlokaMeta(false);
+    void (async () => {
+      try {
+        const [linksRes, reflectionsRes, shlokasRes] = await Promise.all([
+          fetch(`/api/v1/stories/${storyNo}/source-links`, { signal: controller.signal }),
+          fetch(`/api/v1/stories/${storyNo}/reflections`, { signal: controller.signal }),
+          fetch(`/api/v1/stories/${storyNo}/shlokas`, { signal: controller.signal }),
+        ]);
+        if (controller.signal.aborted) return;
+        setSourceLinks(linksRes.ok ? ((await linksRes.json()) as SourceLink[]) : []);
+        const reflectionData = reflectionsRes.ok ? await reflectionsRes.json() : [];
+        setReflections(Array.isArray(reflectionData) ? (reflectionData as Reflection[]) : []);
+        setShlokaPayload(
+          shlokasRes.ok
+            ? ((await shlokasRes.json()) as ShlokaPayload)
+            : { shlokas: [], status: "pending", note: "not yet curated" },
+        );
+      } catch {
+        if (!controller.signal.aborted) {
+          setSourceLinks([]);
+          setReflections([]);
+          setShlokaPayload({ shlokas: [], status: "pending", note: "not yet curated" });
+        }
+      }
+    })();
     return () => controller.abort();
   }, [storyNo]);
 
@@ -467,10 +537,27 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
               <div className="source-grid">
                 <div className="source-card">
                   <h3>Package reference</h3>
-                  <p><strong>Source:</strong> {story?.source_reference ?? "Pending catalog source reference."}</p>
-                  <p><strong>Scripture:</strong> {story?.scripture_reference ?? "Krishna Book sequence"}</p>
+                  {sourceLinks && sourceLinks.length > 0 ? (
+                    <ul className="source-link-list" style={{ paddingLeft: "1.1rem", margin: "0 0 1rem" }}>
+                      {sourceLinks.map((link, idx) => (
+                        <li key={`${link.label ?? "ref"}-${idx}`} style={{ marginBottom: "0.65rem" }}>
+                          <strong>{link.label ?? "Reference"}:</strong> {link.reference ?? "—"}
+                          {link.permissions_status ? (
+                            <span className="hint" style={{ display: "block" }}>
+                              Permissions: {link.permissions_status}
+                            </span>
+                          ) : null}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <>
+                      <p><strong>Source:</strong> {story?.source_reference ?? "Pending catalog source reference."}</p>
+                      <p><strong>Scripture:</strong> {story?.scripture_reference ?? "Krishna Book sequence"}</p>
+                    </>
+                  )}
                   <div className="source-boundary">
-                    Bh\u0101va shows reviewed package facts and boundaries. It does not republish unlicensed full BBT books.
+                    Bhāva shows reviewed package facts and boundaries. It does not republish unlicensed full BBT books.
                   </div>
                 </div>
                 <div className="source-card">
@@ -485,15 +572,31 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
             {active === "Notes" && (
               <div className="panel-card">
                 <h2 style={{ marginTop: 0 }}>Our family notes</h2>
-                <p className="hint">Notes stay in this browser only (localStorage). Bh\u0101va does not upload child notes.</p>
+                <p className="hint">Notes stay in this browser only (localStorage). Bhāva does not upload child notes.</p>
+                <p className="hint" aria-live="polite">
+                  {notesSaveState === "typing" && "Editing…"}
+                  {notesSaveState === "saving" && "Saving…"}
+                  {notesSaveState === "saved" && "Saved on this device"}
+                  {notesSaveState === "idle" && "Autosave ready"}
+                </p>
                 <textarea
                   className="notes"
                   value={notes}
                   placeholder="What did you notice, feel, or want to remember?"
-                  onChange={(e) => setNotes(e.target.value)}
+                  onChange={(e) => {
+                    setNotesDirty(true);
+                    setNotes(e.target.value);
+                  }}
                 />
                 <div className="actions" style={{ marginTop: "1rem" }}>
-                  <Button onClick={() => { localStorage.setItem(key, notes); showToast("Notes saved on this device."); }}>
+                  <Button
+                    onClick={() => {
+                      localStorage.setItem(key, notes);
+                      setNotesDirty(false);
+                      setNotesSaveState("saved");
+                      showToast("Notes saved on this device.");
+                    }}
+                  >
                     Save notes
                   </Button>
                   <Button
@@ -512,18 +615,78 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                   </Button>
                   <Button variant="quiet" onClick={() => window.print()}>Print notes</Button>
                 </div>
+
+                <section style={{ marginTop: "2rem" }} aria-labelledby="teaching-reflections-heading">
+                  <h3 id="teaching-reflections-heading" style={{ marginBottom: "0.5rem" }}>
+                    Teaching reflections
+                  </h3>
+                  <p className="hint">
+                    Curated seeds from the package (may still need review). Separate from your private family notes.
+                  </p>
+                  {reflections.length > 0 ? (
+                    <ul style={{ paddingLeft: "1.1rem", margin: "0.75rem 0 0" }}>
+                      {reflections.map((item, idx) => (
+                        <li key={`${item.source ?? "reflection"}-${idx}`} style={{ marginBottom: "0.85rem" }}>
+                          <p style={{ margin: 0 }}>{item.text}</p>
+                          <span className="hint">
+                            {[item.source, item.provenance].filter(Boolean).join(" · ") || "seeded"}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="hint">Teaching reflections appear when web assets are built for this story.</p>
+                  )}
+                </section>
               </div>
             )}
 
             {/* ── Ślokas tab ─────────────────────────────── */}
             {active === "\u015Alok\u0101s" && (
               <div className="shloka-card">
-                <p className="eyebrow" style={{ color: "var(--bhava-saffron)" }}>Not yet curated</p>
-                <p className="sanskrit">&mdash;</p>
-                <p><strong>Transliteration:</strong> &mdash;</p>
-                <p><strong>Word-for-word:</strong> &mdash;</p>
-                <p><strong>Translation:</strong> &mdash;</p>
-                <p className="hint">Placeholders only until reviewed \u015Blokas are supplied. We will not invent verses.</p>
+                <p className="eyebrow" style={{ color: "var(--bhava-saffron)" }}>
+                  {shlokaPayload?.status === "pending" || !shlokaPayload?.shlokas?.length
+                    ? "Not yet curated"
+                    : "Reviewed"}
+                </p>
+                {shlokaPayload?.shlokas?.length ? (
+                  shlokaPayload.shlokas.map((verse, idx) => (
+                    <article key={idx} style={{ marginBottom: "1.25rem" }}>
+                      <p className="sanskrit">{String(verse.sanskrit ?? verse.devanagari ?? "—")}</p>
+                      {revealShlokaMeta ? (
+                        <>
+                          <p><strong>Transliteration:</strong> {String(verse.transliteration ?? "—")}</p>
+                          <p><strong>Word-for-word:</strong> {String(verse.word_for_word ?? verse.word_by_word ?? "—")}</p>
+                          <p><strong>Translation:</strong> {String(verse.translation ?? "—")}</p>
+                        </>
+                      ) : (
+                        <p className="hint">Meta fields hidden until you reveal them.</p>
+                      )}
+                    </article>
+                  ))
+                ) : (
+                  <>
+                    <p className="sanskrit" aria-hidden="true">—</p>
+                    <p className="hint">Sanskrit placeholder — no verse text invented.</p>
+                    {revealShlokaMeta ? (
+                      <>
+                        <p><strong>Transliteration:</strong> —</p>
+                        <p><strong>Word-for-word:</strong> —</p>
+                        <p><strong>Translation:</strong> —</p>
+                      </>
+                    ) : (
+                      <p className="hint">Reveal stubs to preview the future layout without fabricated content.</p>
+                    )}
+                  </>
+                )}
+                <div className="actions" style={{ marginTop: "1rem" }}>
+                  <Button variant="quiet" onClick={() => setRevealShlokaMeta((v) => !v)}>
+                    {revealShlokaMeta ? "Hide stubs" : "Reveal stubs"}
+                  </Button>
+                </div>
+                <p className="hint">
+                  {shlokaPayload?.note ?? "Placeholders only until reviewed ślokas are supplied. We will not invent verses."}
+                </p>
               </div>
             )}
           </div>
