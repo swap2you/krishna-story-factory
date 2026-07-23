@@ -1,0 +1,13 @@
+{
+  "instance_name": "cursor-v12",
+  "web_url": "http://127.0.0.1:3004",
+  "api_url": "http://127.0.0.1:8002",
+  "web_port": 3004,
+  "api_port": 8002,
+  "mode": "production",
+  "playwright_exit_code": 0,
+  "started_at": "2026-07-23T22:36:58.1450793Z",
+  "completed_at": "2026-07-23T22:42:30.7736018Z",
+  "keep_running": true,
+  "notes": "Factory generation, scheduler, and Drive were not invoked."
+}
