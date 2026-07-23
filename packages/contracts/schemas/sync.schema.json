@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BhavaSyncCues",
+  "description": "Narration-to-text alignment cues for follow-along reading in Bhāva.",
+  "type": "object",
+  "required": ["status", "cues"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["aligned", "needs_alignment", "in_review"],
+      "description": "Current alignment state. Only 'aligned' cues are used in the UI."
+    },
+    "method": {
+      "type": "string",
+      "enum": ["none", "forced", "manual", "auto"],
+      "description": "How alignment was produced."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Overall confidence score (0–1). Manually reviewed = 1."
+    },
+    "duration_sec": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total narration duration in seconds."
+    },
+    "cues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sentence_index", "start_sec", "end_sec", "text"],
+        "properties": {
+          "sentence_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "start_sec": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Cue start time in seconds."
+          },
+          "end_sec": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Cue end time in seconds."
+          },
+          "text": {
+            "type": "string",
+            "description": "Sentence text for this cue."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

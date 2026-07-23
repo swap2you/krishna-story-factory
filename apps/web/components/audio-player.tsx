@@ -8,6 +8,7 @@ type Props = {
   title: string;
   storyNo: string;
   posterUrl?: string | null;
+  onAudioMount?: (el: HTMLAudioElement) => void;
 };
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 2] as const;
@@ -19,7 +20,7 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export function AudioPlayer({ src, title, storyNo, posterUrl }: Props) {
+export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -31,6 +32,10 @@ export function AudioPlayer({ src, title, storyNo, posterUrl }: Props) {
   const [sleepMinutes, setSleepMinutes] = useState<number | null>(null);
   const resumeKey = `bhava:resume:${storyNo}`;
   const bookmarkKey = `bhava:bookmark:${storyNo}`;
+
+  useEffect(() => {
+    if (audioRef.current && onAudioMount) onAudioMount(audioRef.current);
+  }, [onAudioMount]);
 
   useEffect(() => {
     let cancelled = false;

@@ -114,6 +114,14 @@ main { flex: 1; }
 .collection-card.krishna { background: linear-gradient(145deg, #0d2748, #1f5a86); }
 .collection-card.lotus { background: linear-gradient(145deg, #5d2a3c, #a24d66); }
 .collection-card.forest { background: linear-gradient(145deg, #2f5238, #6d8f62); }
+.collection-card.gita { background: linear-gradient(145deg, #6b3e10, #c2883a); }
+.collection-card.rama { background: linear-gradient(145deg, #3d5c28, #6f9a48); }
+.collection-card.manasa { background: linear-gradient(145deg, #1a4a4a, #2e7a6e); }
+.collection-card.avatar { background: linear-gradient(145deg, #2a1f5e, #5944a8); }
+.collection-card.amber { background: linear-gradient(145deg, #6e4a0e, #c49230); }
+.collection-card.rose { background: linear-gradient(145deg, #6b1d3a, #b84870); }
+.collection-card.indigo { background: linear-gradient(145deg, #1e2a5e, #4860a8); }
+.collection-card.earth { background: linear-gradient(145deg, #4a3620, #8a6a3e); }
 .page-hero { padding: 4.5rem 0 2.75rem; background: radial-gradient(circle at 85% 20%, rgba(212, 168, 75, 0.22), transparent 30%), linear-gradient(135deg, #f8ead0, #fffaf2 50%, #e8f0e4); border-bottom: 1px solid rgba(212, 168, 75, 0.18); }
 .page-hero h1 { max-width: 16ch; margin: 0; font-size: clamp(2.4rem, 5.5vw, 4.2rem); color: var(--bhava-midnight); }
 .page-hero p { max-width: 58ch; margin: 1rem 0 0; color: var(--bhava-muted); line-height: 1.65; font-size: 1.08rem; }
@@ -235,8 +243,165 @@ main { flex: 1; }
 .class-pack-dl div { display: grid; gap: .2rem; }
 .class-pack-dl dt { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--bhava-saffron); font-weight: 800; }
 .class-pack-dl dd { margin: 0; }
+.collection-grid-full { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.1rem; }
+.canto-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .85rem; }
+.canto-list a { display: flex; align-items: center; gap: .85rem; padding: 1rem 1.15rem; border-radius: 1.1rem; background: rgba(255,252,246,.95); border: 1px solid rgba(20,40,70,.08); box-shadow: var(--bhava-shadow-soft); text-decoration: none; color: var(--bhava-midnight); font-weight: 700; transition: transform .2s ease, box-shadow .2s ease; }
+.canto-list a:hover { transform: translateY(-3px); box-shadow: var(--bhava-shadow); }
+.canto-num { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(145deg, #5d2a3c, #a24d66); color: #fff; font-family: var(--font-display), serif; font-size: 1.15rem; font-weight: 700; flex-shrink: 0; }
+.editorial-status { display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .75rem; border-radius: 999px; font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.editorial-status.planned { background: rgba(212,168,75,.16); color: #8a6a20; border: 1px solid rgba(212,168,75,.3); }
+.editorial-status.active { background: rgba(63,109,79,.14); color: #2f6844; border: 1px solid rgba(63,109,79,.3); }
+.scope-card { padding: 1.35rem 1.45rem; border-radius: 1.35rem; background: rgba(255,252,246,.95); border: 1px solid rgba(20,40,70,.08); box-shadow: var(--bhava-shadow-soft); }
+.scope-card h3 { margin: 0 0 .6rem; font-size: 1.2rem; color: var(--bhava-midnight); }
+.scope-card p { margin: 0; color: var(--bhava-muted); line-height: 1.6; }
+.scope-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+.category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+.category-card { padding: 1.45rem 1.5rem; border-radius: 1.35rem; background: rgba(255,252,246,.95); border: 1px solid rgba(20,40,70,.08); box-shadow: var(--bhava-shadow-soft); transition: transform .22s ease; }
+.category-card:hover { transform: translateY(-3px); }
+.category-card h3 { margin: 0 0 .45rem; font-size: 1.2rem; color: var(--bhava-midnight); }
+.category-card p { margin: 0; color: var(--bhava-muted); line-height: 1.55; font-size: .94rem; }
+.blog-card { padding: 1.45rem 1.5rem; border-radius: 1.35rem; background: rgba(255,252,246,.95); border: 1px solid rgba(20,40,70,.08); box-shadow: var(--bhava-shadow-soft); }
+.blog-card h3 { margin: 0 0 .35rem; font-size: 1.15rem; color: var(--bhava-midnight); }
+.blog-card .blog-meta { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .65rem; }
+.blog-card .blog-meta span { padding: .3rem .6rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+.blog-card .blog-tag { background: rgba(18,50,90,.08); color: var(--bhava-midnight); }
+.blog-card .blog-audience { background: rgba(63,109,79,.1); color: #2f6844; }
+.sunday-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+.sunday-card { padding: 1.35rem 1.45rem; border-radius: 1.35rem; background: rgba(255,252,246,.95); border: 1px solid rgba(20,40,70,.08); box-shadow: var(--bhava-shadow-soft); }
+.sunday-card h3 { margin: 0 0 .55rem; font-size: 1.15rem; color: var(--bhava-midnight); }
+.sunday-card ul { margin: .5rem 0 0; padding-left: 1.15rem; color: var(--bhava-muted); line-height: 1.65; }
+.checklist { list-style: none; padding: 0; margin: .75rem 0 0; }
+.checklist li { padding: .5rem 0; border-bottom: 1px solid rgba(20,40,70,.06); color: var(--bhava-muted); line-height: 1.5; }
+.checklist li::before { content: "☐ "; color: var(--bhava-saffron); font-weight: 800; }
+/* ── Phase 5: Persistent player & mini-player ───────────────── */
+.persistent-player { margin-bottom: 1rem; }
+.mini-player {
+  position: sticky; top: 74px; z-index: 35;
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.55rem 1rem; border-radius: 1rem;
+  background: linear-gradient(145deg, #061628, #12375e 55%, #1a4a3a);
+  color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.3);
+  margin-bottom: 0.75rem;
+}
+.mini-player-btn {
+  width: 36px; height: 36px; border: 0; border-radius: 50%; cursor: pointer;
+  background: var(--bhava-gold); color: #061628; font-size: 1rem;
+  display: grid; place-items: center; flex-shrink: 0;
+  transition: transform .15s ease;
+}
+.mini-player-btn:hover { transform: scale(1.08); }
+.mini-player-title {
+  flex: 0 1 auto; font-weight: 700; font-size: .82rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 18ch;
+}
+.mini-player-skip {
+  border: 0; background: rgba(255,255,255,.12); color: #d5e0ec;
+  border-radius: 6px; padding: 0.2rem 0.45rem; font-size: .72rem;
+  font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+.mini-player-skip:hover { background: rgba(255,255,255,.22); }
+.mini-player-progress {
+  flex: 1; height: 6px; border-radius: 3px; cursor: pointer;
+  background: rgba(255,250,240,.15); min-width: 60px; position: relative;
+}
+.mini-player-bar {
+  height: 100%; border-radius: 3px; background: var(--bhava-gold);
+  transition: width .1s linear;
+}
+.mini-player-time {
+  font-size: .75rem; font-variant-numeric: tabular-nums;
+  white-space: nowrap; color: #d5e0ec; flex-shrink: 0;
+}
+
+/* ── Phase 5: Story navigation ──────────────────────────────── */
+.story-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem; margin-bottom: 1rem;
+}
+
+/* ── Phase 6: Follow-along highlighting ─────────────────────── */
+.follow-along { line-height: 2; }
+.follow-cue {
+  cursor: pointer; padding: 0.15rem 0.05rem; border-radius: 4px;
+  transition: background .2s ease, color .2s ease;
+}
+.follow-cue:hover { background: rgba(212,168,75,.15); }
+.follow-cue:focus-visible { outline: 2px solid var(--bhava-gold); outline-offset: 2px; }
+.follow-cue-active {
+  background: rgba(231,181,80,.25); color: var(--bhava-midnight);
+  box-shadow: inset 0 -2px 0 var(--bhava-gold);
+}
+.follow-pending {
+  padding: 0.65rem 1rem; border-left: 4px solid var(--bhava-gold);
+  background: #fff8e7; border-radius: 0.65rem; margin-bottom: 1rem;
+}
+
+/* ── Phase 7: Section navigation ────────────────────────────── */
+.section-nav {
+  display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.25rem;
+  padding: 0.65rem 0.85rem; border-radius: 0.9rem;
+  background: rgba(6,22,40,.04); border: 1px solid rgba(20,40,70,.06);
+}
+.section-nav a {
+  padding: 0.3rem 0.65rem; border-radius: 999px; font-size: .82rem; font-weight: 650;
+  color: var(--bhava-midnight); text-decoration: none;
+  transition: background .2s ease, color .2s ease;
+}
+.section-nav a:hover { background: rgba(212,168,75,.18); color: var(--bhava-saffron); }
+.section-nav-sub { padding-left: 1rem; font-weight: 600; color: var(--bhava-muted); }
+
+/* ── Phase 8: Carousel ──────────────────────────────────────── */
+.carousel-dialog { max-width: 780px; width: 92vw; }
+.carousel-viewport {
+  display: flex; align-items: center; gap: 0.5rem;
+  position: relative; min-height: 300px;
+}
+.carousel-image {
+  width: 100%; max-height: 70vh; object-fit: contain;
+  border-radius: 0.9rem; flex: 1; min-width: 0;
+}
+.carousel-arrow {
+  width: 44px; height: 44px; border: 0; border-radius: 50%;
+  background: rgba(6,22,40,.7); color: #fff; font-size: 1.1rem;
+  cursor: pointer; flex-shrink: 0; display: grid; place-items: center;
+  transition: background .2s ease, opacity .2s ease;
+}
+.carousel-arrow:hover:not(:disabled) { background: rgba(6,22,40,.9); }
+.carousel-arrow:disabled { opacity: 0.3; cursor: default; }
+.carousel-position {
+  display: flex; justify-content: center; gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+.carousel-dot {
+  width: 10px; height: 10px; border: 2px solid rgba(6,22,40,.25);
+  border-radius: 50%; background: transparent; cursor: pointer; padding: 0;
+  transition: background .2s ease, border-color .2s ease;
+}
+.carousel-dot.active { background: var(--bhava-gold); border-color: var(--bhava-gold); }
+.carousel-dot:hover:not(.active) { border-color: var(--bhava-saffron); }
+
+/* ── Phase 7: Print styles ──────────────────────────────────── */
 @media print {
-  .site-header, .site-footer, .no-print { display: none !important; }
+  .site-header, .site-footer, .no-print,
+  .persistent-player, .mini-player, .story-nav,
+  .bhava-tabs, .section-nav, .actions,
+  .audio-player, .carousel-dialog, .bhava-dialog-backdrop { display: none !important; }
   .class-pack-preview { display: block !important; }
   body { background: #fff !important; }
+  .reader-card, .panel-card {
+    border: none !important; box-shadow: none !important;
+    padding: 0 !important; background: #fff !important;
+  }
+  .reading {
+    font-size: 12pt; line-height: 1.7; color: #000; max-width: 100%;
+    font-family: Georgia, "Times New Roman", serif;
+  }
+  .reading h1, .reading h2, .reading h3 {
+    color: #000; page-break-after: avoid;
+  }
+  .reading p { orphans: 3; widows: 3; }
+  .story-shell { display: block !important; }
+  .story-sidebar { display: none !important; }
+  .story-main { padding: 0 !important; }
 }

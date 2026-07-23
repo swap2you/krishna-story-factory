@@ -1,11 +1,26 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Button, Tabs, Toast, useToast } from "@bhava/ui";
+import Link from "next/link";
 import type { Story } from "@/lib/catalog";
 import { AudioPlayer } from "@/components/audio-player";
 
 type Mode = "default" | "sepia" | "dark";
+
+type SyncCue = {
+  sentence_index: number;
+  start_sec: number;
+  end_sec: number;
+  text: string;
+};
+
+type SyncData = {
+  status: string;
+  method?: string;
+  confidence?: number;
+  cues: SyncCue[];
+};
 
 function renderMarkdown(source: string): string {
   const escaped = source
@@ -34,25 +49,176 @@ function renderMarkdown(source: string): string {
     .join("\n");
 }
 
+function formatTime(seconds: number) {
+  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+function addHeadingIds(html: string): { html: string; headings: Array<{ id: string; level: number; text: string }> } {
+  const headings: Array<{ id: string; level: number; text: string }> = [];
+  let idx = 0;
+  const processed = html.replace(/<h([23])>(.*?)<\/h[23]>/gi, (_match, level: string, content: string) => {
+    const id = `section-${idx++}`;
+    headings.push({ id, level: parseInt(level), text: content.replace(/<[^>]*>/g, "") });
+    return `<h${level} id="${id}">${content}</h${level}>`;
+  });
+  return { html: processed, headings };
+}
+
+/* ── Phase 5: Sticky mini-player ──────────────────────────────── */
+
+function MiniPlayer({ audioEl, title }: { audioEl: HTMLAudioElement; title: string }) {
+  const [playing, setPlaying] = useState(!audioEl.paused);
+  const [current, setCurrent] = useState(audioEl.currentTime);
+  const [duration, setDuration] = useState(audioEl.duration || 0);
+
+  useEffect(() => {
+    const onPlay = () => setPlaying(true);
+    const onPause = () => setPlaying(false);
+    const onEnded = () => setPlaying(false);
+    const onTime = () => setCurrent(audioEl.currentTime);
+    const onMeta = () => setDuration(audioEl.duration || 0);
+
+    setPlaying(!audioEl.paused);
+    setCurrent(audioEl.currentTime);
+    setDuration(audioEl.duration || 0);
+
+    audioEl.addEventListener("play", onPlay);
+    audioEl.addEventListener("pause", onPause);
+    audioEl.addEventListener("ended", onEnded);
+    audioEl.addEventListener("timeupdate", onTime);
+    audioEl.addEventListener("loadedmetadata", onMeta);
+    return () => {
+      audioEl.removeEventListener("play", onPlay);
+      audioEl.removeEventListener("pause", onPause);
+      audioEl.removeEventListener("ended", onEnded);
+      audioEl.removeEventListener("timeupdate", onTime);
+      audioEl.removeEventListener("loadedmetadata", onMeta);
+    };
+  }, [audioEl]);
+
+  const toggle = useCallback(() => {
+    if (audioEl.paused) void audioEl.play();
+    else audioEl.pause();
+  }, [audioEl]);
+
+  const skip = useCallback(
+    (delta: number) => {
+      audioEl.currentTime = Math.min(audioEl.duration || 0, Math.max(0, audioEl.currentTime + delta));
+    },
+    [audioEl],
+  );
+
+  const progress = duration ? current / duration : 0;
+
+  return (
+    <div className="mini-player" role="region" aria-label="Mini audio player">
+      <button className="mini-player-btn" onClick={toggle} aria-label={playing ? "Pause" : "Play"}>
+        {playing ? "\u23F8" : "\u25B6"}
+      </button>
+      <span className="mini-player-title">{title}</span>
+      <button className="mini-player-skip" onClick={() => skip(-15)} aria-label="Back 15 seconds">&minus;15</button>
+      <div
+        className="mini-player-progress"
+        role="progressbar"
+        aria-valuenow={Math.round(current)}
+        aria-valuemax={Math.round(duration)}
+        onClick={(e) => {
+          if (!duration) return;
+          const rect = e.currentTarget.getBoundingClientRect();
+          audioEl.currentTime = ((e.clientX - rect.left) / rect.width) * duration;
+        }}
+      >
+        <div className="mini-player-bar" style={{ width: `${progress * 100}%` }} />
+      </div>
+      <button className="mini-player-skip" onClick={() => skip(15)} aria-label="Forward 15 seconds">+15</button>
+      <span className="mini-player-time">{formatTime(current)} / {formatTime(duration)}</span>
+    </div>
+  );
+}
+
+/* ── Phase 5: Previous / Next story nav ───────────────────────── */
+
+function StoryNav({ storyNo }: { storyNo: string }) {
+  const num = parseInt(storyNo, 10);
+  if (isNaN(num) || num <= 0) return null;
+  const prev = num > 1 ? String(num - 1).padStart(3, "0") : null;
+  const next = String(num + 1).padStart(3, "0");
+  return (
+    <nav className="story-nav" aria-label="Story navigation">
+      {prev ? (
+        <Link href={`/stories/${prev}`} className="bhava-button bhava-button--quiet">&larr; Story {prev}</Link>
+      ) : (
+        <span />
+      )}
+      <Link href={`/stories/${next}`} className="bhava-button bhava-button--quiet">Story {next} &rarr;</Link>
+    </nav>
+  );
+}
+
+/* ── Main component ───────────────────────────────────────────── */
+
 export function StoryExperience({ story, storyNo }: { story: Story | null; storyNo: string }) {
   const [large, setLarge] = useState(false);
   const [mode, setMode] = useState<Mode>("default");
   const [notes, setNotes] = useState("");
   const [markdown, setMarkdown] = useState("");
   const [loadingMd, setLoadingMd] = useState(false);
-  const [lightbox, setLightbox] = useState<{ url: string; label: string } | null>(null);
+  const [audioEl, setAudioEl] = useState<HTMLAudioElement | null>(null);
+  const [showMini, setShowMini] = useState(false);
+  const [syncData, setSyncData] = useState<SyncData | null>(null);
+  const [audioTime, setAudioTime] = useState(0);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [carouselOpen, setCarouselOpen] = useState(false);
+
   const { message, showToast } = useToast();
+  const playerContainerRef = useRef<HTMLDivElement>(null);
+  const carouselDialogRef = useRef<HTMLDivElement>(null);
+  const carouselCloseRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const touchStartRef = useRef(0);
+
   const key = `bhava:notes:${storyNo}`;
   const title = story?.title ?? `Krishna Book story ${storyNo}`;
   const dialogTitleId = useId();
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const readerSrc = story?.reader_url ?? (story ? `/api/v1/stories/${storyNo}/reader` : null);
+
+  /* ── Derived ──────────────────────────────────────────────── */
+
+  const coloring = useMemo(
+    () =>
+      [
+        { label: "Story poster", url: story?.poster_url },
+        { label: "Simple coloring", url: story?.simple_coloring_url },
+        { label: "Detailed coloring", url: story?.coloring_url },
+      ].filter((item): item is { label: string; url: string } => !!item.url),
+    [story?.poster_url, story?.simple_coloring_url, story?.coloring_url],
+  );
+
+  const { html: readingHtmlWithIds, headings: sectionHeadings } = useMemo(() => {
+    let base: string;
+    if (markdown.trim()) {
+      base = renderMarkdown(markdown);
+    } else if (story?.summary) {
+      base = renderMarkdown(story.summary);
+    } else {
+      base = "<p>Story text will appear here when <code>story.md</code> is available from the local catalog.</p>";
+    }
+    return addHeadingIds(base);
+  }, [markdown, story?.summary]);
+
+  const currentCueIndex = useMemo(() => {
+    if (!syncData || syncData.status !== "aligned" || !syncData.cues.length) return -1;
+    return syncData.cues.findIndex((c) => audioTime >= c.start_sec && audioTime < c.end_sec);
+  }, [syncData, audioTime]);
+
+  /* ── Effects ──────────────────────────────────────────────── */
 
   useEffect(() => {
     setNotes(localStorage.getItem(key) ?? "");
   }, [key]);
-
-  const readerSrc = story?.reader_url ?? (story ? `/api/v1/stories/${storyNo}/reader` : null);
 
   useEffect(() => {
     if (!readerSrc) {
@@ -64,10 +230,7 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
     void (async () => {
       try {
         const response = await fetch(readerSrc, { signal: controller.signal });
-        if (!response.ok) {
-          setMarkdown("");
-          return;
-        }
+        if (!response.ok) { setMarkdown(""); return; }
         setMarkdown(await response.text());
       } catch {
         if (!controller.signal.aborted) setMarkdown("");
@@ -79,20 +242,47 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
   }, [readerSrc]);
 
   useEffect(() => {
-    if (!lightbox) return;
-    previousFocusRef.current = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    closeButtonRef.current?.focus();
+    const controller = new AbortController();
+    fetch(`/api/v1/stories/${storyNo}/sync`, { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!controller.signal.aborted) setSyncData(data ?? { status: "needs_alignment", cues: [] });
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setSyncData({ status: "needs_alignment", cues: [] });
+      });
+    return () => controller.abort();
+  }, [storyNo]);
 
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setLightbox(null);
-        return;
-      }
-      if (event.key !== "Tab") return;
-      const dialog = document.getElementById("bhava-coloring-dialog");
+  useEffect(() => {
+    if (!audioEl) return;
+    const onTime = () => setAudioTime(audioEl.currentTime);
+    audioEl.addEventListener("timeupdate", onTime);
+    return () => audioEl.removeEventListener("timeupdate", onTime);
+  }, [audioEl]);
+
+  useEffect(() => {
+    const el = playerContainerRef.current;
+    if (!el || !audioEl) return;
+    const observer = new IntersectionObserver(([entry]) => setShowMini(!entry.isIntersecting), { threshold: 0 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [audioEl]);
+
+  useEffect(() => {
+    if (!carouselOpen) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    carouselCloseRef.current?.focus();
+
+    const coloringLen = coloring.length;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { e.preventDefault(); setCarouselOpen(false); return; }
+      if (e.key === "ArrowLeft") { e.preventDefault(); setCarouselIndex((i) => Math.max(0, i - 1)); return; }
+      if (e.key === "ArrowRight") { e.preventDefault(); setCarouselIndex((i) => Math.min(coloringLen - 1, i + 1)); return; }
+      if (e.key !== "Tab") return;
+      const dialog = carouselDialogRef.current;
       if (!dialog) return;
       const focusable = Array.from(
         dialog.querySelectorAll<HTMLElement>("a[href],button:not([disabled]),textarea,input,select,[tabindex]:not([tabindex='-1'])"),
@@ -100,83 +290,113 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
       if (!focusable.length) return;
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = prevOverflow;
       previousFocusRef.current?.focus();
     };
-  }, [lightbox]);
+  }, [carouselOpen, coloring.length]);
 
-  const readingHtml = useMemo(() => {
-    if (markdown.trim()) return renderMarkdown(markdown);
-    if (story?.summary) return renderMarkdown(story.summary);
-    return "<p>Story text will appear here when <code>story.md</code> is available from the local catalog.</p>";
-  }, [markdown, story?.summary]);
+  /* ── Handlers ─────────────────────────────────────────────── */
 
-  const coloring = [
-    { label: "Story poster", url: story?.poster_url },
-    { label: "Detailed coloring", url: story?.coloring_url },
-    { label: "Simple coloring", url: story?.simple_coloring_url },
-  ].filter((item) => item.url);
-
-  const printActivityPdf = () => {
+  const openActivityPdf = () => {
     if (!story?.activity_pdf_url) return;
-    const printWindow = window.open(story.activity_pdf_url, "_blank", "noopener,noreferrer");
-    if (!printWindow) {
-      showToast("Allow pop-ups to print the activity PDF.");
-      return;
-    }
-    const trigger = () => {
-      try {
-        printWindow.focus();
-        printWindow.print();
-      } catch {
-        showToast("Open the PDF tab, then use your browser Print command.");
-      }
-    };
-    printWindow.addEventListener("load", trigger);
-    window.setTimeout(trigger, 1200);
+    const w = window.open(story.activity_pdf_url, "_blank", "noopener,noreferrer");
+    if (!w) showToast("Allow pop-ups to open the activity PDF.");
   };
+
+  /* ── Render ───────────────────────────────────────────────── */
 
   return (
     <>
-      <Tabs tabs={["Listen", "Read", "Activities", "Coloring", "Source", "Notes", "Ślokas"]}>
+      {/* Phase 5: Persistent player above tabs — playback survives tab switches */}
+      {story?.narration_url ? (
+        <div ref={playerContainerRef} className="persistent-player">
+          <AudioPlayer
+            src={story.narration_url}
+            title={title}
+            storyNo={storyNo}
+            posterUrl={story.poster_url}
+            onAudioMount={setAudioEl}
+          />
+        </div>
+      ) : null}
+
+      {/* Phase 5: Sticky mini-player when the primary player scrolls away */}
+      {showMini && audioEl ? <MiniPlayer audioEl={audioEl} title={title} /> : null}
+
+      {/* Phase 5: Previous / Next story links */}
+      <StoryNav storyNo={storyNo} />
+
+      <Tabs tabs={["Listen", "Read", "Activities", "Coloring", "Source", "Notes", "\u015Alok\u0101s"]}>
         {(active) => (
           <div className={`reading-mode-${mode}`}>
+
+            {/* ── Listen tab: combined listen + read-along ─── */}
             {active === "Listen" && (
               <div className="panel-card">
-                <h2 style={{ marginTop: 0 }}>Listen together</h2>
-                {story?.narration_url ? (
-                  <AudioPlayer
-                    src={story.narration_url}
-                    title={title}
-                    storyNo={storyNo}
-                    posterUrl={story.poster_url}
-                  />
-                ) : (
+                <h2 style={{ marginTop: 0 }}>Listen &amp; read along</h2>
+                {!story?.narration_url && (
                   <p className="hint">Narration appears when the catalog provides narration.mp3.</p>
+                )}
+
+                {/* Phase 6: follow-along cues or fallback reader text */}
+                {syncData?.status === "aligned" && syncData.cues.length > 0 ? (
+                  <article className="reading follow-along">
+                    {syncData.cues.map((cue, i) => (
+                      <span
+                        key={cue.sentence_index}
+                        className={`follow-cue${i === currentCueIndex ? " follow-cue-active" : ""}`}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => { if (audioEl) audioEl.currentTime = cue.start_sec; }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            if (audioEl) audioEl.currentTime = cue.start_sec;
+                          }
+                        }}
+                      >
+                        {cue.text}{" "}
+                      </span>
+                    ))}
+                  </article>
+                ) : (
+                  <>
+                    {syncData && syncData.status !== "aligned" && (
+                      <p className="hint follow-pending">Follow-along cues pending review</p>
+                    )}
+                    {loadingMd ? <p className="hint">Opening the story manuscript&hellip;</p> : null}
+                    <article className="reading" dangerouslySetInnerHTML={{ __html: readingHtmlWithIds }} />
+                  </>
                 )}
               </div>
             )}
 
+            {/* ── Read tab: full reader with controls ─────── */}
             {active === "Read" && (
               <div className="reader-card">
+                {/* Phase 7: section nav jump links */}
+                {sectionHeadings.length > 1 && (
+                  <nav className="section-nav" aria-label="Story sections">
+                    {sectionHeadings.map((h) => (
+                      <a key={h.id} href={`#${h.id}`} className={h.level === 3 ? "section-nav-sub" : ""}>
+                        {h.text}
+                      </a>
+                    ))}
+                  </nav>
+                )}
                 <div className="actions" style={{ marginBottom: "1rem" }}>
-                  <Button variant="quiet" onClick={() => setLarge((value) => !value)}>
+                  <Button variant="quiet" onClick={() => setLarge((v) => !v)}>
                     {large ? "Standard text" : "Larger text"}
                   </Button>
-                  {(["default", "sepia", "dark"] as Mode[]).map((value) => (
-                    <Button key={value} variant={mode === value ? "accent" : "quiet"} onClick={() => setMode(value)}>
-                      {value}
+                  {(["default", "sepia", "dark"] as Mode[]).map((v) => (
+                    <Button key={v} variant={mode === v ? "accent" : "quiet"} onClick={() => setMode(v)}>
+                      {v}
                     </Button>
                   ))}
                   <Button variant="quiet" onClick={() => window.print()}>Print</Button>
@@ -186,11 +406,12 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                     </a>
                   ) : null}
                 </div>
-                {loadingMd ? <p className="hint">Opening the story manuscript…</p> : null}
-                <article className={`reading ${large ? "large" : ""}`} dangerouslySetInnerHTML={{ __html: readingHtml }} />
+                {loadingMd ? <p className="hint">Opening the story manuscript&hellip;</p> : null}
+                <article className={`reading ${large ? "large" : ""}`} dangerouslySetInnerHTML={{ __html: readingHtmlWithIds }} />
               </div>
             )}
 
+            {/* ── Activities tab ──────────────────────────── */}
             {active === "Activities" && (
               <div className="panel-card">
                 <h2 style={{ marginTop: 0 }}>Activity sheet</h2>
@@ -203,12 +424,12 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                       <a className="bhava-button bhava-button--quiet" href={story.activity_pdf_url} download>
                         Download PDF
                       </a>
-                      <Button variant="quiet" onClick={printActivityPdf}>Print</Button>
+                      <Button variant="quiet" onClick={openActivityPdf}>Open to print</Button>
                     </div>
                     <div className="pdf-shell">
                       <iframe title={`${title} activity sheet`} src={story.activity_pdf_url} />
                     </div>
-                    <p className="hint">Print opens the PDF and requests your browser print dialog.</p>
+                    <p className="hint">Opens the PDF in a new tab — use your browser&rsquo;s print command from there.</p>
                   </>
                 ) : (
                   <p className="hint">Activity sheet appears when activity_sheet.pdf is in the package.</p>
@@ -216,55 +437,32 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
               </div>
             )}
 
+            {/* ── Coloring tab: Phase 8 carousel ─────────── */}
             {active === "Coloring" && (
               <div className="panel-card">
-                <h2 style={{ marginTop: 0 }}>Coloring & poster</h2>
+                <h2 style={{ marginTop: 0 }}>Coloring &amp; poster</h2>
                 <div className="gallery">
-                  {coloring.length ? coloring.map((item) => (
-                    <button
-                      key={item.label}
-                      type="button"
-                      className="asset-tile"
-                      onClick={() => setLightbox({ url: item.url!, label: item.label })}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={item.url!} alt={`${title} — ${item.label}`} />
-                      <span>{item.label}</span>
-                    </button>
-                  )) : <p className="hint">Coloring pages appear when package images are indexed.</p>}
+                  {coloring.length ? (
+                    coloring.map((item, idx) => (
+                      <button
+                        key={item.label}
+                        type="button"
+                        className="asset-tile"
+                        onClick={() => { setCarouselIndex(idx); setCarouselOpen(true); }}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={item.url} alt={`${title} — ${item.label}`} />
+                        <span>{item.label}</span>
+                      </button>
+                    ))
+                  ) : (
+                    <p className="hint">Coloring pages appear when package images are indexed.</p>
+                  )}
                 </div>
-                {lightbox ? (
-                  <div
-                    className="bhava-dialog-backdrop"
-                    role="presentation"
-                    onMouseDown={() => setLightbox(null)}
-                  >
-                    <div
-                      id="bhava-coloring-dialog"
-                      className="bhava-dialog"
-                      role="dialog"
-                      aria-modal="true"
-                      aria-labelledby={dialogTitleId}
-                      onMouseDown={(event) => event.stopPropagation()}
-                    >
-                      <h2 id={dialogTitleId} style={{ marginTop: 0 }}>{lightbox.label}</h2>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={lightbox.url}
-                        alt={`${title} — ${lightbox.label}`}
-                        style={{ width: "100%", borderRadius: "0.9rem" }}
-                      />
-                      <div className="actions" style={{ marginTop: "1rem" }}>
-                        <a className="bhava-button bhava-button--quiet" href={lightbox.url} download>Download</a>
-                        <Button variant="quiet" onClick={() => window.print()}>Print</Button>
-                        <Button ref={closeButtonRef} variant="quiet" onClick={() => setLightbox(null)}>Close</Button>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
               </div>
             )}
 
+            {/* ── Source tab ──────────────────────────────── */}
             {active === "Source" && (
               <div className="source-grid">
                 <div className="source-card">
@@ -272,7 +470,7 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
                   <p><strong>Source:</strong> {story?.source_reference ?? "Pending catalog source reference."}</p>
                   <p><strong>Scripture:</strong> {story?.scripture_reference ?? "Krishna Book sequence"}</p>
                   <div className="source-boundary">
-                    Bhāva shows reviewed package facts and boundaries. It does not republish unlicensed full BBT books.
+                    Bh\u0101va shows reviewed package facts and boundaries. It does not republish unlicensed full BBT books.
                   </div>
                 </div>
                 <div className="source-card">
@@ -283,15 +481,16 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
               </div>
             )}
 
+            {/* ── Notes tab ──────────────────────────────── */}
             {active === "Notes" && (
               <div className="panel-card">
                 <h2 style={{ marginTop: 0 }}>Our family notes</h2>
-                <p className="hint">Notes stay in this browser only (localStorage). Bhāva does not upload child notes.</p>
+                <p className="hint">Notes stay in this browser only (localStorage). Bh\u0101va does not upload child notes.</p>
                 <textarea
                   className="notes"
                   value={notes}
                   placeholder="What did you notice, feel, or want to remember?"
-                  onChange={(event) => setNotes(event.target.value)}
+                  onChange={(e) => setNotes(e.target.value)}
                 />
                 <div className="actions" style={{ marginTop: "1rem" }}>
                   <Button onClick={() => { localStorage.setItem(key, notes); showToast("Notes saved on this device."); }}>
@@ -316,19 +515,83 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
               </div>
             )}
 
-            {active === "Ślokas" && (
+            {/* ── Ślokas tab ─────────────────────────────── */}
+            {active === "\u015Alok\u0101s" && (
               <div className="shloka-card">
                 <p className="eyebrow" style={{ color: "var(--bhava-saffron)" }}>Not yet curated</p>
-                <p className="sanskrit">—</p>
-                <p><strong>Transliteration:</strong> —</p>
-                <p><strong>Word-for-word:</strong> —</p>
-                <p><strong>Translation:</strong> —</p>
-                <p className="hint">Placeholders only until reviewed ślokas are supplied. We will not invent verses.</p>
+                <p className="sanskrit">&mdash;</p>
+                <p><strong>Transliteration:</strong> &mdash;</p>
+                <p><strong>Word-for-word:</strong> &mdash;</p>
+                <p><strong>Translation:</strong> &mdash;</p>
+                <p className="hint">Placeholders only until reviewed \u015Blokas are supplied. We will not invent verses.</p>
               </div>
             )}
           </div>
         )}
       </Tabs>
+
+      {/* ── Phase 8: Carousel overlay ─────────────────────── */}
+      {carouselOpen && coloring.length > 0 ? (
+        <div className="bhava-dialog-backdrop" role="presentation" onMouseDown={() => setCarouselOpen(false)}>
+          <div
+            ref={carouselDialogRef}
+            className="bhava-dialog carousel-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={dialogTitleId}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => { touchStartRef.current = e.touches[0].clientX; }}
+            onTouchEnd={(e) => {
+              const diff = e.changedTouches[0].clientX - touchStartRef.current;
+              if (diff > 50) setCarouselIndex((i) => Math.max(0, i - 1));
+              else if (diff < -50) setCarouselIndex((i) => Math.min(coloring.length - 1, i + 1));
+            }}
+          >
+            <h2 id={dialogTitleId} style={{ marginTop: 0 }}>{coloring[carouselIndex]?.label}</h2>
+            <div className="carousel-viewport">
+              <button
+                className="carousel-arrow carousel-prev"
+                disabled={carouselIndex === 0}
+                onClick={() => setCarouselIndex((i) => i - 1)}
+                aria-label="Previous image"
+              >
+                &larr;
+              </button>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coloring[carouselIndex]?.url}
+                alt={`${title} — ${coloring[carouselIndex]?.label}`}
+                className="carousel-image"
+              />
+              <button
+                className="carousel-arrow carousel-next"
+                disabled={carouselIndex === coloring.length - 1}
+                onClick={() => setCarouselIndex((i) => i + 1)}
+                aria-label="Next image"
+              >
+                &rarr;
+              </button>
+            </div>
+            <div className="carousel-position" aria-label={`Image ${carouselIndex + 1} of ${coloring.length}`}>
+              {coloring.map((item, i) => (
+                <button
+                  key={item.label}
+                  className={`carousel-dot${i === carouselIndex ? " active" : ""}`}
+                  onClick={() => setCarouselIndex(i)}
+                  aria-label={`Go to ${item.label}`}
+                  aria-current={i === carouselIndex ? "true" : undefined}
+                />
+              ))}
+            </div>
+            <div className="actions" style={{ marginTop: "1rem" }}>
+              <a className="bhava-button bhava-button--quiet" href={coloring[carouselIndex]?.url} download>Download</a>
+              <Button variant="quiet" onClick={() => window.print()}>Print</Button>
+              <Button ref={carouselCloseRef} variant="quiet" onClick={() => setCarouselOpen(false)}>Close</Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <Toast message={message} />
     </>
   );
