@@ -1,0 +1,108 @@
+{
+  "recorded_at": "2026-07-23T15:22:30Z",
+  "branch": "feature/bhava-portal-v1",
+  "head_sha": "543317f3149b00ced7008102d7a4dedd31af32b1",
+  "main_sha": "3bae97850ef8b934bbec3a48f42f92fbe6de169f",
+  "tags": [
+    "v1.0.0-pilot-stories-001-006",
+    "v1.1.0-stories-001-007-operational"
+  ],
+  "queue_008_status": "pending",
+  "factory_actions_enabled_default": false,
+  "stories": {
+    "001": {
+      "package_folder": "001_the-earth-prays-for-krishna",
+      "files": {
+        "story.md": "6dc5ecc96cad0d7b913b89031517b4ca99fea4bc302e09366b1de61ca09412e1",
+        "narration.mp3": "974f2194e935fd8c8e4ada70633fc59990121986705d2e841a109963eb82edf0",
+        "story_poster.png": "a0229fa3bfc4f1d33f8f30a58d6b81bfccce28b290623310dc05896c15d145aa",
+        "coloring_page.png": "2e17c64db0ee15085c8fa6303379d05107c2c7dbb73b38e949032b56d5a1c2bc",
+        "simple_coloring_page.png": "cfbc89f19516a3a17f70fee8f36edee00ecad9ba7ce015f20ed4a285a20c9f1d",
+        "activity_sheet.pdf": "9e480c4592b4c06d1612e3a87e8f050ba0bd375f6b01dbf87cc9da756a79a34a",
+        "whatsapp_caption.txt": "a3878fea33d664a1b087f4785b66184a0ad25070c12f4730909ce1df5641dbc5",
+        "manifest.json": "2087d0b0998a13bb359b157682520ccdedfba018a9da8d596232e05c4d775af0"
+      }
+    },
+    "002": {
+      "package_folder": "002_devaki-and-vasudeva-wedding",
+      "files": {
+        "story.md": "de01a0849a8a6a8cf1727454492faf726fb4ae8417b1ee559ceabd1907156a0b",
+        "narration.mp3": "ece054da9726df7ba1f361822b76073694474e4b85f93c9b00b152f89594e52a",
+        "story_poster.png": "1559cccf3294a3da1fa904fc029268793b738073f88a946d90c88621bbd5bd1a",
+        "coloring_page.png": "d80f6845d6f7502933b8c497e543cdf84e7f55435868ef24116a133758986c6a",
+        "simple_coloring_page.png": "23b37aacea41cdcbc57680092336d9d77f2062ed5ae4083364d0d157403572d6",
+        "activity_sheet.pdf": "3b4fd8c5f5907e910ce83ede4c585fa35afea3bd9e437e9c075fb796fddbb2fa",
+        "whatsapp_caption.txt": "02a8bbf1b640dcfe19c7850a823536ee35cd0ee1c49159fb76bc719dee92700a",
+        "manifest.json": "ae98dc23df7fbb32135ed422a58c6d464131e9291fea8f5c1ff08863536941ec"
+      }
+    },
+    "003": {
+      "package_folder": "003_vasudeva-keeps-his-word",
+      "files": {
+        "story.md": "e3c8fea3e401f3377e0636a21c761e55a41b1a353c7ac3d2cc1e1cfd955cd948",
+        "narration.mp3": "3a78f5553c71de4650186f69d3816c204401c3a7ca4025707509e5bd7a3e967d",
+        "story_poster.png": "af4935471af5594269aa66997387e877eec3cb86ff3c38fcdc5ef52d54fe6fe8",
+        "coloring_page.png": "f45a7998c142e6a868c1befa6856b47d435b06085c3f97c642fb0cff749e0434",
+        "simple_coloring_page.png": "538b7f96d85e2dac435bb33e54c31e37dc774868cba8b936dd40cef450497577",
+        "activity_sheet.pdf": "8061383860b2047b20fbe775dce68c5b345c61501524edf23535589cac189195",
+        "whatsapp_caption.txt": "38ead2ba553e540542f69395672d098bc5affa911a85c192bc6b6381210ff943",
+        "manifest.json": "7cbf182eb5f69b19129f9e8cd6b50c5fa93583f4ffc0001d4b9a4992e683ad3a"
+      }
+    },
+    "004": {
+      "package_folder": "004_narada-warns-kamsa",
+      "files": {
+        "story.md": "d7edf6310310b514e41518e7c914d11bf61d2911cf4a31a8c64f376cc28aa06d",
+        "narration.mp3": "127afeee04f0332912a4cdd2f669fbd9b1b1efc12be2343bd72ce427d3951822",
+        "story_poster.png": "6a089a9041daebe544af0c23375ebb61eef5960d456f5526247e9cf0a306c70a",
+        "coloring_page.png": "be6f6823b1c72acd56f75a57911944e9652eb7fff76833fe9341b868b5d75b17",
+        "simple_coloring_page.png": "6dc8ff47d861864aebf3ec03fea8bd2632f8c8252479ebfccda50517ba1e85c8",
+        "activity_sheet.pdf": "e8cc68212d66fcea4207ed1fd48b2b090d27c4a8ff112df69aa6f6b1637f24b2",
+        "whatsapp_caption.txt": "f0a10526b46e7f336b78bbde1fd763f5e342585228b4092756031394ac36e98c",
+        "manifest.json": "56bf9c007f98d118bca33ea64242822105cf545a14f9fd408a8792b48442096f"
+      }
+    },
+    "005": {
+      "package_folder": "005_prayers-by-the-demigods-for-lord-krishna-in-the-womb",
+      "files": {
+        "story.md": "a35f1761c8b809d095f00f8d94983d2a55cd206b3b04cf22a058d7058de44d26",
+        "narration.mp3": "9528f808602bdb7a775c0560cd65f0e24f3b7374895649ff29e0439e00f8eba3",
+        "story_poster.png": "19e8eacc4431a1102ec41c94a76ca8cc1682b63ce00dfe499a153b835e9e1498",
+        "coloring_page.png": "707a9cc3d4fd16866e1ed7359b410e0361fd1f584ad7edd1be1e011276ea6b88",
+        "simple_coloring_page.png": "424d6341603633e7c807e0170088b2e6f481e2dde5d5760feb30d4f669c9dbc3",
+        "activity_sheet.pdf": "9ab2cd5b48f4420a34e080a6360220f986dff1c83cb92a67ee8fac6d37a6f3b6",
+        "whatsapp_caption.txt": "02dcddcf4b8d7f45d4c842866f6afbe7eff47d7e59433557dfe64b252d38a6d1",
+        "manifest.json": "d35b927381849b0e91e145a9ae291fbb0bdd8ea2fd77aefff1068b3371b9ed3a"
+      }
+    },
+    "006": {
+      "package_folder": "006_the-birth-of-lord-krishna",
+      "files": {
+        "story.md": "bacf589e8854a677aebe86325ece0b04803c79f4ce96eb1050f708436520244d",
+        "narration.mp3": "76f020f332eadeb45ac24c584a98971be0e57898ea2ea92ae66fe7142ff43248",
+        "story_poster.png": "da303d34aa02846ead1e04e9f28c0cabd74e6b3c692dab1279bde045797fd4d0",
+        "coloring_page.png": "b6b7a6f0e0503d728083e25c04815cd61710db88a2e56bdfd65832ffae98dc49",
+        "simple_coloring_page.png": "9ed59041099dc0b9101a92a1efd089a0bcac9934696e0376ec4d4b62a8c77eb4",
+        "activity_sheet.pdf": "1be80501cd2a828d17dbd7dc2b67fd41d1001491139fefb6815f0a30ad78f80c",
+        "whatsapp_caption.txt": "33ba07bc7996658721d8cdb2c74be7f5e47961a31a75de9b8cd3f63c50e10f20",
+        "manifest.json": "0770f101860e5dbf9f8bcf1d9da45207df9c1637f38b282c2b8b5b173f1fdce9"
+      }
+    },
+    "007": {
+      "package_folder": "007_kamsa-begins-his-persecutions",
+      "files": {
+        "story.md": "5f6350da7c09b67341e03d06bea4e648d26f0fc1af58b105226f7c57c3c897e7",
+        "narration.mp3": "f1812190db9c6f057209d866aef8e80389216a3698e160cd5124ad03f07897f5",
+        "story_poster.png": "510060bf3a62493336023b79c5f6ca996e4eea084f89f512c1f8cb8c12e4382d",
+        "coloring_page.png": "75f85d86999c1109f64ec206bac52ab65eea7f3f86f5e11a4c132a31e701b1a0",
+        "simple_coloring_page.png": "6108168bfc642e0d5ce20ecf4a652b7b513a86708dfac910eb039bd8dd09ac53",
+        "activity_sheet.pdf": "ac1cd03f012676221b98680e8071fc887f9f8004786743f37a6d7e29721ab70c",
+        "whatsapp_caption.txt": "34df151ca18d0cb6c5726b0324c1cb4f4e314cc0e105c4f1a8340d7f5992d970",
+        "manifest.json": "039ba500c98e4f9e47b5203f6e5be7ef08042e605b2c220852cf9c237385f681"
+      }
+    }
+  },
+  "scheduler_note": "not triggered / not modified",
+  "drive_note": "not modified",
+  "paid_apis_note": "none called"
+}
