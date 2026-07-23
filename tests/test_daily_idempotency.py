@@ -6,9 +6,12 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import pytest
 from krishna_story_factory.config import load_settings
 from krishna_story_factory.csv_store import already_completed_production_today, ensure_csv_files
 from krishna_story_factory.pipeline import run_daily_story
+
+pytestmark = pytest.mark.slow
 
 
 def _write_story_log(path: Path, rows: list[dict[str, str]]) -> None:

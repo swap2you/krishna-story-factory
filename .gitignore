@@ -44,3 +44,6 @@ data/catalog/bhava.sqlite
 data/catalog/*.sqlite-*
 .bhava/
 bhava_portal_cursor_bootstrap_v1.zip
+
+portal-bootstrap/
+*.tsbuildinfo

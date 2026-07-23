@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session, selectinload
 
+from ..catalog.freshness import refresh_if_stale
 from ..db import get_session
 from ..models import Collection, Story
 from ..schemas import CollectionResponse, ShlokaResponse, SourceResponse, StoryResponse, StorySummary
@@ -64,6 +65,7 @@ def _story_response(story: Story) -> StoryResponse:
 
 
 def _get_story(session: Session, story_no: str) -> Story:
+    refresh_if_stale(session=session)
     story = session.scalar(
         select(Story).options(selectinload(Story.assets)).where(Story.story_no == story_no.zfill(3))
     )
@@ -79,6 +81,7 @@ def health() -> dict[str, str]:
 
 @router.get("/collections", response_model=list[CollectionResponse])
 def collections(session: Session = Depends(get_session)) -> list[CollectionResponse]:
+    refresh_if_stale(session=session)
     records = session.scalars(select(Collection).options(selectinload(Collection.stories))).all()
     return [CollectionResponse(
         slug=item.slug, title=item.title, description=item.description, story_count=len(item.stories)
@@ -87,6 +90,7 @@ def collections(session: Session = Depends(get_session)) -> list[CollectionRespo
 
 @router.get("/collections/{slug}", response_model=CollectionResponse)
 def collection(slug: str, session: Session = Depends(get_session)) -> CollectionResponse:
+    refresh_if_stale(session=session)
     item = session.scalar(select(Collection).options(selectinload(Collection.stories)).where(Collection.slug == slug))
     if item is None:
         raise HTTPException(status_code=404, detail="Collection not found")
@@ -95,6 +99,7 @@ def collection(slug: str, session: Session = Depends(get_session)) -> Collection
 
 @router.get("/stories", response_model=list[StorySummary])
 def stories(session: Session = Depends(get_session)) -> list[StorySummary]:
+    refresh_if_stale(session=session)
     records = session.scalars(
         select(Story).options(selectinload(Story.assets)).order_by(Story.story_no)
     ).all()
@@ -125,6 +130,7 @@ def shlokas(story_no: str, session: Session = Depends(get_session)) -> ShlokaRes
 
 @router.get("/search", response_model=list[StorySummary])
 def search(q: str = Query(min_length=1), session: Session = Depends(get_session)) -> list[StorySummary]:
+    refresh_if_stale(session=session)
     term = f"%{q.strip()}%"
     records = session.scalars(
         select(Story)

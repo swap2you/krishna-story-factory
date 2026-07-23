@@ -6,9 +6,21 @@ from sqlalchemy.orm import Session, selectinload
 
 from ..models import Asset, Collection, Story
 from .filesystem import asset_media_type, discover_packages
+from .publish_gates import is_publicly_publishable
 
 COLLECTION_SLUG = "krishna-book-bedtime"
 COLLECTION_TITLE = "Krishna Book Bedtime Stories"
+PUBLIC_ASSET_FILES = frozenset(
+    {
+        "story.md",
+        "narration.mp3",
+        "story_poster.png",
+        "coloring_page.png",
+        "simple_coloring_page.png",
+        "activity_sheet.pdf",
+        "whatsapp_caption.txt",
+    }
+)
 
 
 def _normalize_story_no(chapter_no: object) -> str | None:
@@ -33,12 +45,16 @@ def index_packages(session: Session) -> int:
         session.add(collection)
         session.flush()
 
+    seen: set[str] = set()
     indexed = 0
     for package in discover_packages():
+        if not is_publicly_publishable(package):
+            continue
         manifest = package.manifest
         story_no = _normalize_story_no(manifest.get("chapter_no"))
         if not story_no or not manifest.get("slug") or not manifest.get("title"):
             continue
+        seen.add(story_no)
         story = session.scalar(
             select(Story)
             .options(selectinload(Story.assets))
@@ -62,16 +78,23 @@ def index_packages(session: Session) -> int:
             for key, value in values.items():
                 setattr(story, key, value)
         existing = {asset.filename: asset for asset in story.assets}
-        for filename in package.files & {
-            "story.md", "narration.mp3", "story_poster.png", "coloring_page.png",
-            "simple_coloring_page.png", "activity_sheet.pdf", "whatsapp_caption.txt",
-        }:
+        for filename in package.files & PUBLIC_ASSET_FILES:
             relative_path = f"{story_no}/{filename}"
             if filename not in existing:
-                session.add(Asset(
-                    story_id=story.id, filename=filename,
-                    media_type=asset_media_type(filename), relative_path=relative_path,
-                ))
+                session.add(
+                    Asset(
+                        story_id=story.id,
+                        filename=filename,
+                        media_type=asset_media_type(filename),
+                        relative_path=relative_path,
+                    )
+                )
         indexed += 1
+
+    stale = session.scalars(select(Story).where(Story.collection_id == collection.id)).all()
+    for story in stale:
+        if story.story_no not in seen:
+            session.delete(story)
+
     session.commit()
     return indexed

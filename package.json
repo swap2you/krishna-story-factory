@@ -14,16 +14,14 @@
     "lint:web": "npm run lint -w @bhava/web",
     "typecheck:web": "npm run typecheck -w @bhava/web",
     "test:web": "npm run test -w @bhava/web",
-    "test:e2e": "npm run test:e2e -w @bhava/web"
+    "test:e2e": "npm run test:e2e -w @bhava/web",
+    "postinstall": "node scripts/ensure_native_optionals.cjs"
   },
   "engines": {
     "node": ">=20"
   },
-  "dependencies": {
-    "@next/swc-win32-x64-msvc": "^15.3.5",
-    "@rollup/rollup-win32-x64-msvc": "^4.62.2"
-  },
-  "devDependencies": {
-    "playwright": "^1.61.1"
+  "optionalDependencies": {
+    "@next/swc-win32-x64-msvc": "15.3.5",
+    "@rollup/rollup-win32-x64-msvc": "4.62.2"
   }
 }
