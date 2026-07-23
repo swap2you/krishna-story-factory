@@ -4,6 +4,11 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
-  test: { environment: "jsdom", setupFiles: ["./test/setup.ts"] },
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./test/setup.ts"],
+    include: ["**/*.{test,spec}.{ts,tsx}"],
+    exclude: ["**/node_modules/**", "**/e2e/**", "**/.next/**"],
+  },
   resolve: { alias: { "@": path.resolve(__dirname, ".") } },
 });
