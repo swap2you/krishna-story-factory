@@ -44,7 +44,10 @@ class TestContactConfig:
 
     def test_only_allowed_keys(self) -> None:
         data = json.loads(CONTACT_JSON.read_text(encoding="utf-8"))
-        allowed = {"project_name", "domain", "steward_name", "public_email"}
+        allowed = {
+            "project_name", "domain", "steward_name", "public_email",
+            "location_city", "location_state", "location_country",
+        }
         extra = set(data.keys()) - allowed
         assert not extra, f"Unexpected keys in contact.json: {extra}"
 
@@ -59,7 +62,7 @@ class TestContactConfig:
 
     def test_public_email(self) -> None:
         data = json.loads(CONTACT_JSON.read_text(encoding="utf-8"))
-        assert data.get("public_email") == "swarnagaurangadas@gmail.com"
+        assert data.get("public_email") == "svarnagaurangdas@gmail.com"
 
     def test_no_forbidden_strings(self) -> None:
         text = CONTACT_JSON.read_text(encoding="utf-8")

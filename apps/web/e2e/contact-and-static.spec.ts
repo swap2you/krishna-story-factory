@@ -4,7 +4,7 @@ test.describe("contact and static", () => {
   test("contact shows steward name and mailto CTA", async ({ page }) => {
     await page.goto("/contact");
     await expect(page.getByText(/Svarna Gauranga Das/i).first()).toBeVisible();
-    await expect(page.locator('a[href^="mailto:swarnagaurangadas"]').first()).toBeVisible();
+    await expect(page.locator('a[href^="mailto:svarnagaurangdas"]').first()).toBeVisible();
   });
 
   test("vanani redirects to prabhupada-vani", async ({ page }) => {

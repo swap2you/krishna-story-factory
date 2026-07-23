@@ -21,6 +21,8 @@ const PUBLIC_ROUTES = [
   "/blog",
   "/about",
   "/contact",
+  "/faq",
+  "/printables",
   "/privacy",
   "/source-permissions",
 ];
@@ -40,7 +42,7 @@ test.describe("v1.1 identity and route smoke", () => {
   test("contact uses only steward mailto", async ({ page }) => {
     await page.goto("/contact");
     await expect(page.getByText(/Svarna Gauranga Das/i).first()).toBeVisible();
-    await expect(page.locator('a[href="mailto:swarnagaurangadas@gmail.com"]').first()).toBeVisible();
+    await expect(page.locator('a[href="mailto:svarnagaurangdas@gmail.com"]').first()).toBeVisible();
   });
 });
 
