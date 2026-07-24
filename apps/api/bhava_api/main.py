@@ -12,6 +12,7 @@ from .config import get_settings
 from .csrf import issue_token
 from .db import Base, SessionLocal, engine
 from .routes import local_factory, media, public, reader
+from .knowledge.routes import router as knowledge_router
 
 
 @asynccontextmanager
@@ -59,6 +60,7 @@ def create_app() -> FastAPI:
     app.include_router(media.router)
     app.include_router(reader.router)
     app.include_router(local_factory.router)
+    app.include_router(knowledge_router)
     return app
 
 
