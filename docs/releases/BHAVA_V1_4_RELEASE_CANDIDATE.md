@@ -19,4 +19,4 @@
 - Ceremonial gold logo reserved for non-chrome surfaces
 
 ## Verdict
-READY FOR FINAL COWORK UAT (pending final SHA pin in CoWork prompt after docs commit)
+READY FOR FINAL COWORK UAT
