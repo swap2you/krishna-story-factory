@@ -2,7 +2,7 @@
   "tested_sha": "fe57b4661712845b12bf313ea46321d71723c1bb",
   "short_sha": "fe57b46",
   "captured_at_utc": "2026-07-24T18:17:01.6238968Z",
-  "dirty_tree_at_capture": true,
+  "dirty_tree_at_capture": false,
   "os": "Microsoft Windows NT 10.0.26200.0",
   "node": "v20.11.1",
   "python": "3.13.5",
@@ -36,5 +36,6 @@
     "collision": true,
     "catalog_db": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\.bhava\\instances\\cursor-v15\\bhava.sqlite"
   },
-  "notes": "Full Playwright matrix green against production build of this SHA. Audio uses blob-first with native MP3 fallback when blob:audio/mpeg unsupported (WebKit)."
+  "notes": "Full Playwright matrix green against production build of tested_sha. Audio: blob-first + native MP3 fallback (WebKit). Evidence commit documents results; product code unchanged after tested_sha.",
+  "evidence_commit_sha": "ef63e4715adbb67a4902a96d5fdfe165d98302ae"
 }

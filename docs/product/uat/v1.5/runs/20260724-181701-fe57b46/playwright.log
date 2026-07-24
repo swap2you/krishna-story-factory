@@ -1,0 +1,365 @@
+
+Running 360 tests using 6 workers
+
+[1/360] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[2/360] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[3/360] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[4/360] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[5/360] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[6/360] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[7/360] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[8/360] [chromium-desktop] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[9/360] [chromium-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[10/360] [chromium-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[11/360] [chromium-desktop] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[12/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[13/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[14/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[15/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[16/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[17/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[18/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[19/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[20/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[21/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[22/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[23/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[24/360] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[25/360] [chromium-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[26/360] [chromium-desktop] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[27/360] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[28/360] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[29/360] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[30/360] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[31/360] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[32/360] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[33/360] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[34/360] [chromium-desktop] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[35/360] [chromium-desktop] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[36/360] [chromium-desktop] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[37/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[38/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[39/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[40/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[41/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[42/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[43/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[44/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[45/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[46/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[47/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+[48/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+[49/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[50/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[51/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[52/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[53/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[54/360] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[55/360] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[56/360] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[57/360] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[58/360] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+[59/360] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[60/360] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[61/360] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[62/360] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[63/360] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[64/360] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[65/360] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[66/360] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[67/360] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[68/360] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+[69/360] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[70/360] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[71/360] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[72/360] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:82:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+[73/360] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[74/360] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[75/360] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[76/360] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[77/360] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[78/360] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[79/360] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[80/360] [firefox-desktop] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[81/360] [firefox-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[82/360] [firefox-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[83/360] [firefox-desktop] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[84/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[85/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[86/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[87/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[88/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[89/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[90/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[91/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[92/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[93/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[94/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[95/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[96/360] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[97/360] [firefox-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[98/360] [firefox-desktop] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[99/360] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[100/360] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[101/360] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[102/360] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[103/360] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[104/360] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[105/360] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[106/360] [firefox-desktop] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[107/360] [firefox-desktop] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[108/360] [firefox-desktop] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[109/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[110/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[111/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[112/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[113/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[114/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[115/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[116/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[117/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[118/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[119/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+[120/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+[121/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[122/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[123/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[124/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[125/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[126/360] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[127/360] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[128/360] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[129/360] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[130/360] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+[131/360] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[132/360] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[133/360] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[134/360] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[135/360] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[136/360] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[137/360] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[138/360] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[139/360] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+[140/360] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[141/360] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[142/360] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[143/360] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[144/360] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:82:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+[145/360] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[146/360] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[147/360] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[148/360] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[149/360] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[150/360] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[151/360] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[152/360] [webkit-desktop] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[153/360] [webkit-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[154/360] [webkit-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[155/360] [webkit-desktop] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[156/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[157/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[158/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[159/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[160/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[161/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[162/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[163/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[164/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[165/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[166/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[167/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[168/360] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[169/360] [webkit-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[170/360] [webkit-desktop] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[171/360] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[172/360] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[173/360] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[174/360] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[175/360] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[176/360] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[177/360] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[178/360] [webkit-desktop] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[179/360] [webkit-desktop] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[180/360] [webkit-desktop] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[181/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[182/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[183/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[184/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[185/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[186/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[187/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[188/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[189/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[190/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[191/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+[192/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+[193/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[194/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[195/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[196/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[197/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[198/360] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[199/360] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[200/360] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[201/360] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[202/360] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+[203/360] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[204/360] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[205/360] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[206/360] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[207/360] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[208/360] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[209/360] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[210/360] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[211/360] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+[212/360] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[213/360] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[214/360] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[215/360] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[216/360] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:82:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+[217/360] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[218/360] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[219/360] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[220/360] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[221/360] [chromium-mobile] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[222/360] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[223/360] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[224/360] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[225/360] [chromium-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[226/360] [chromium-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[227/360] [chromium-mobile] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[228/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[229/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[230/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[231/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[232/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[233/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[234/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[235/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[236/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[237/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[238/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[239/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[240/360] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[241/360] [chromium-mobile] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[242/360] [chromium-mobile] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[243/360] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[244/360] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[245/360] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[246/360] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[247/360] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[248/360] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[249/360] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[250/360] [chromium-mobile] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[251/360] [chromium-mobile] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[252/360] [chromium-mobile] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[253/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[254/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[255/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[256/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[257/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[258/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[259/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[260/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[261/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[262/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[263/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+[264/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+[265/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[266/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[267/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[268/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[269/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[270/360] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[271/360] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[272/360] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[273/360] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[274/360] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+[275/360] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[276/360] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[277/360] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[278/360] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[279/360] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[280/360] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[281/360] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[282/360] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[283/360] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+[284/360] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[285/360] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[286/360] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[287/360] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[288/360] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:82:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+[289/360] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[290/360] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[291/360] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[292/360] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[293/360] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[294/360] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[295/360] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[296/360] [webkit-mobile] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[297/360] [webkit-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[298/360] [webkit-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[299/360] [webkit-mobile] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[300/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[301/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[302/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[303/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[304/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[305/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[306/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[307/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[308/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[309/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[310/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[311/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[312/360] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[313/360] [webkit-mobile] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[314/360] [webkit-mobile] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[315/360] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[316/360] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[317/360] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[318/360] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[319/360] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[320/360] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[321/360] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[322/360] [webkit-mobile] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[323/360] [webkit-mobile] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[324/360] [webkit-mobile] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[325/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[326/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[327/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[328/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[329/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[330/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[331/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[332/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[333/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[334/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[335/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+[336/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+[337/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[338/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[339/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[340/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[341/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[342/360] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[343/360] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[344/360] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[345/360] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[346/360] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+[347/360] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[348/360] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[349/360] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[350/360] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[351/360] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[352/360] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[353/360] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[354/360] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[355/360] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+[356/360] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[357/360] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[358/360] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[359/360] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[360/360] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:82:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+  10 skipped
+  350 passed (6.6m)
