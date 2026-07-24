@@ -500,6 +500,21 @@ main { flex: 1; }
   border: 0;
 }
 
+.knowledge-prose {
+  max-width: 46rem;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+.knowledge-prose h2 {
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  margin-top: 2rem;
+}
+.knowledge-home .section-heading { font-size: clamp(1.6rem, 2.5vw, 2.2rem); }
+.knowledge-mega-col p, .knowledge-mega-col li, .knowledge-home li {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
 /* ── V1.5 navigation, platform hero, footer ───────────────────── */
 .skip-link {
   position: absolute; left: -999px; top: 0; z-index: 100;
