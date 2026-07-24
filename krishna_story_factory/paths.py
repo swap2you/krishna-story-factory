@@ -22,10 +22,11 @@ def assert_path_under_root(path: Path, root: Path, *, label: str = "path") -> Pa
     return resolved
 
 
-def make_package_paths(output_root: Path, plan: PlanRow) -> PackagePaths:
+def make_package_paths(output_root: Path, plan: PlanRow, *, create: bool = True) -> PackagePaths:
     folder = output_root / f"{plan.chapter_no}_{safe_slug(plan.slug or plan.title)}"
     folder = assert_path_under_root(folder, output_root, label="package folder")
-    folder.mkdir(parents=True, exist_ok=True)
+    if create:
+        folder.mkdir(parents=True, exist_ok=True)
     return PackagePaths(
         root=folder,
         story_md=folder / "story.md",

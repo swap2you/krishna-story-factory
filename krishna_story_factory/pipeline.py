@@ -360,7 +360,8 @@ def _run_once(
 
     production_paths = None
     if mode != "test":
-        production_paths = make_package_paths(settings.output_root, plan)
+        # Do not mkdir the public production folder until atomic publish.
+        production_paths = make_package_paths(settings.output_root, plan, create=False)
     stage: StageState | None = None
     run_root: Path | None = None
     reuse_story_audio = False
