@@ -47,9 +47,26 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <header className="site-header">
             <div className="container header-inner">
               <Link href="/" className="brand-lockup" aria-label="Bhāva home">
+                {/* Desktop/tablet: approved small-header wordmark at true aspect (not icon crop). */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="brand-mark" src="/brand/logo-small-header.webp" alt="" width={44} height={44} aria-hidden="true" />
-                <span>
+                <img
+                  className="brand-logo-header"
+                  src="/brand/logo-small-header.webp"
+                  alt="bhāva"
+                  width={220}
+                  height={32}
+                />
+                {/* Mobile: approved icon mark + live typography (macron preserved). */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className="brand-mark-mobile"
+                  src="/brand/logo-icon-only.webp"
+                  alt=""
+                  width={40}
+                  height={40}
+                  aria-hidden="true"
+                />
+                <span className="brand-text-mobile">
                   <span className="wordmark">bh<span>ā</span>va</span>
                   <span className="brand-sub">Devotional learning</span>
                 </span>
@@ -64,7 +81,17 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main>{children}</main>
           <footer className="site-footer">
             <div className="container footer-inner">
-              <span>Bhāva — stewarded with care by Svarna Gauranga Das.</span>
+              <div className="footer-brand">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className="brand-logo-footer"
+                  src="/brand/logo-dark-bg.webp"
+                  alt="bhāva"
+                  width={160}
+                  height={61}
+                />
+                <span>Stewarded with care by Svarna Gauranga Das · Harrisburg, Pennsylvania</span>
+              </div>
               <div className="footer-links">
                 <Link href="/sunday-school">Sunday School</Link>
                 <Link href="/preachers">For Preachers</Link>

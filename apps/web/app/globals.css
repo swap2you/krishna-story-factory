@@ -42,13 +42,53 @@ a { color: inherit; }
 }
 .header-inner { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .brand-lockup { display: flex; align-items: center; gap: .8rem; text-decoration: none; }
-.brand-mark {
-  width: 44px; height: 44px; border-radius: 14px; display: block; object-fit: cover;
+.brand-logo-header {
+  display: block; height: 32px; width: auto; max-width: min(240px, 42vw);
+  object-fit: contain; flex-shrink: 0;
+}
+.brand-mark-mobile, .brand-text-mobile { display: none; }
+.brand-mark-mobile {
+  width: 40px; height: 40px; border-radius: 12px; object-fit: contain;
   box-shadow: 0 10px 24px rgba(6, 22, 40, 0.22); flex-shrink: 0;
 }
 .wordmark { font-family: var(--font-display), serif; font-size: 1.65rem; font-weight: 700; color: var(--bhava-midnight); line-height: 1; }
 .wordmark span { color: var(--bhava-saffron); }
 .brand-sub { display: block; margin-top: .15rem; color: var(--bhava-muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; }
+.knowledge-mega {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+}
+.knowledge-mega-col {
+  background: rgba(255, 250, 240, 0.55);
+  border: 1px solid rgba(6, 22, 40, 0.08);
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+}
+.knowledge-mega-col h2 {
+  margin: 0 0 .75rem;
+  font-size: 1.05rem;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .92rem;
+}
+.data-table th, .data-table td {
+  border-bottom: 1px solid rgba(6, 22, 40, 0.12);
+  text-align: left;
+  padding: .55rem .4rem;
+  vertical-align: top;
+}
+@media (max-width: 900px) {
+  .knowledge-mega { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .knowledge-mega { grid-template-columns: 1fr; }
+}
+.footer-brand { display: flex; flex-direction: column; gap: .55rem; max-width: 28rem; }
+.brand-logo-footer { display: block; height: 48px; width: auto; object-fit: contain; border-radius: 8px; }
 .nav { display: flex; align-items: center; gap: .2rem; overflow-x: auto; scrollbar-width: none; }
 .nav::-webkit-scrollbar { display: none; }
 .nav a {
@@ -267,6 +307,9 @@ main { flex: 1; }
   .contact-grid { grid-template-columns: 1fr; }
   .header-inner { align-items: flex-start; padding: .7rem 0; flex-direction: column; }
   .nav { width: 100%; }
+  .brand-logo-header { display: none; }
+  .brand-mark-mobile, .brand-text-mobile { display: block; }
+  .brand-text-mobile { display: flex; flex-direction: column; }
   .brand-sub { display: none; }
   .story-sidebar { grid-template-columns: 110px 1fr; padding: 1rem; }
 }
