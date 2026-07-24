@@ -21,11 +21,10 @@ test.describe("responsive", () => {
       });
       expect(overflow).toBeFalsy();
       await expect(page.getByRole("link", { name: "Bhāva home" })).toBeVisible();
-      const desktopLogo = page.locator("header .brand-logo-header");
-      const mobileMark = page.locator("header .brand-mark-mobile");
-      const logoVisible = await desktopLogo.isVisible().catch(() => false);
-      const mobileVisible = await mobileMark.isVisible().catch(() => false);
-      expect(logoVisible || mobileVisible).toBeTruthy();
+      const brandMark = page.locator("header .brand-mark");
+      const wordmark = page.locator("header .brand-display, header .wordmark");
+      await expect(brandMark).toBeVisible();
+      await expect(wordmark.first()).toBeVisible();
     });
   }
 });
