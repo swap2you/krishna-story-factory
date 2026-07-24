@@ -4,7 +4,7 @@
 
 - Repository: `krishna-story-factory`
 - Branch only: `feature/bhava-portal-v1`
-- Final SHA to test: `06b2634dc0eb983ee9e6098bb12cfc3a64d6e4f0`
+- Final SHA to test: run `git fetch` then `git rev-parse origin/feature/bhava-portal-v1` (must equal local HEAD). Authoritative tip at READY: 3f67db7f9d5eeb3b0ae04300f616acfc3ba318d5
 - Do **not** create a PR or merge. Evidence-only commits allowed after this prompt.
 
 ## Runtime
@@ -33,7 +33,7 @@ Expected (if already running):
 6. **Story 007:** No link to Story 008; truthful end-of-release message.
 7. **Identity:** Only Svarna Gauranga Das · svarnagaurangdas@gmail.com · Harrisburg, Pennsylvania.
 8. **Factory:** Stories 001–007 unchanged; 008 pending; queue untouched; no paid APIs.
-9. **Matrix:** Confirm post-fix Playwright was 346 passed / 9 skipped / 0 failed at this SHA (re-run if code changes).
+9. **Matrix:** Confirm post-fix Playwright was 346 passed / 9 skipped / 0 failed (re-run if code changes).
 
 ## Evidence location
 
