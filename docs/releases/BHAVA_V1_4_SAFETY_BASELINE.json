@@ -1,0 +1,37 @@
+{
+  "release": "v1.4",
+  "branch": "feature/bhava-portal-v1",
+  "head_sha": "018740bbe46dea6360169197dbd77fd3c3fb8d1a",
+  "origin_sha": "018740bbe46dea6360169197dbd77fd3c3fb8d1a",
+  "main_sha": "3bae97850ef8b934bbec3a48f42f92fbe6de169f",
+  "master_sha": null,
+  "tags": [
+    "backup/pr8-pre-squash-7a26e80",
+    "v1.0.0-pilot-stories-001-006",
+    "v1.1.0-stories-001-007-operational"
+  ],
+  "stories_001_007_sha256": {
+    "001_the-earth-prays-for-krishna": "0b88fd31b4035c16a51cc45ae0cde7615471dbd25d9997449e4633eb3ca604ea",
+    "002_devaki-and-vasudeva-wedding": "cf6339cd5c7201994f2a3cff457069aac6260a4cc5ab4ed6d0395dea0ef584a1",
+    "003_vasudeva-keeps-his-word": "9484eed480cabf3e64182aa94450a01f9a61562fb99121c959422e00f5432a1b",
+    "004_narada-warns-kamsa": "be2ec5bbe53655e41d89159202f5dcb1088a565b61ba4678c98fcbad5e963ea4",
+    "005_prayers-by-the-demigods-for-lord-krishna-in-the-womb": "75427ae6be470804ac959c98b114ee199a8616cc69993031535d3523816262c8",
+    "006_the-birth-of-lord-krishna": "369f4e0ba2ef31f5a185486f254b681a6000bbca90ff615c1410cf62d3836a30",
+    "007_kamsa-begins-his-persecutions": "0e41050bc688a8072a554782711355e35899f7a905ac91ae7d6be0c15c077a2e"
+  },
+  "story_008_packages": [],
+  "queue_sha256": "69bc92fd462331e96e87c7aa522a0209a785a66cab7a7682cda14829b385a13d",
+  "next_pending": {
+    "chapter_no": "008",
+    "slug": "the-meeting-of-nanda-and-vasudeva",
+    "status": "pending",
+    "attempts": "0",
+    "last_error": "",
+    "completed_at": "",
+    "drive_folder_id": "",
+    "updated_at": "2026-07-22T14:57:23"
+  },
+  "scheduler": "untouched",
+  "drive": "untouched",
+  "paid_apis": "not_called"
+}
