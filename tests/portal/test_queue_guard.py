@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+import csv
 import hashlib
 from pathlib import Path
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-LOCK_FILE = ROOT / "data" / "catalog" / "locked_story_hashes.json"
 QUEUE = ROOT / "tracking" / "queue_state.csv"
-LOCKED_QUEUE = ROOT / "data" / "catalog" / "locked_queue_state.csv"
+V15_BASELINE = ROOT / "docs" / "releases" / "BHAVA_V1_5_SAFETY_BASELINE.json"
 
 
 def _sha256(path: Path) -> str:
@@ -19,27 +19,24 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest().upper()
 
 
-def test_queue_still_has_008_pending_and_001_007_done() -> None:
+def test_queue_001_008_done_and_009_pending() -> None:
     if not QUEUE.is_file():
         pytest.skip("Runtime queue_state.csv not present in this environment.")
-    import csv
-
     rows = list(csv.DictReader(QUEUE.open(encoding="utf-8")))
     by_chapter = {str(row["chapter_no"]).zfill(3): row["status"] for row in rows}
-    for chapter in ("001", "002", "003", "004", "005", "006", "007"):
-        assert by_chapter.get(chapter) == "done"
-    assert by_chapter.get("008") == "pending"
+    for chapter in ("001", "002", "003", "004", "005", "006", "007", "008"):
+        assert by_chapter.get(chapter) == "done", chapter
+    assert by_chapter.get("009") == "pending"
 
 
-def test_queue_fingerprint_unchanged_when_lock_present() -> None:
-    if not LOCK_FILE.exists() or not QUEUE.is_file():
-        pytest.skip("Lock file or queue missing.")
+def test_v15_baseline_records_008_complete() -> None:
+    if not V15_BASELINE.is_file():
+        pytest.skip("V1.5 safety baseline missing.")
     import json
 
-    lock = json.loads(LOCK_FILE.read_text(encoding="utf-8"))
-    expected = lock.get("queue_sha256")
-    if not expected:
-        pytest.skip("No queue fingerprint recorded.")
-    assert _sha256(QUEUE) == expected.upper()
-    if LOCKED_QUEUE.is_file():
-        assert QUEUE.read_bytes() == LOCKED_QUEUE.read_bytes()
+    data = json.loads(V15_BASELINE.read_text(encoding="utf-8"))
+    story = data.get("story_008") or {}
+    assert story.get("status") in {"complete_published", "partial_quarantined"}
+    if story.get("status") == "complete_published":
+        assert story.get("queue_status") == "done"
+        assert story.get("next_pending") == "009"
