@@ -1,0 +1,9 @@
+{
+  "started_at": "2026-07-24T16:47:00.022804+00:00",
+  "story_sha256": "e24e0542312d1db25142d06a53563aab77ac5d8903dda0874932bef17bc77fc2",
+  "narration_sha256": "2a23cc3d41a1b4cab74ba0e6ab4b7535a2218c8765fbb29367d5063c9d655f7c",
+  "narration_bytes": 5612995,
+  "recovery_flag": true,
+  "no_upload_first": true,
+  "resume_from": "work\\stories\\008\\20260724-100002"
+}

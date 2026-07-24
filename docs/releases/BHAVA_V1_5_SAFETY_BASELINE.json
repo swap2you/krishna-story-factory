@@ -93,25 +93,22 @@
   "drive": "untouched",
   "paid_apis": "not_called_in_phase0",
   "story_008": {
-    "status": "partial_quarantined",
-    "public_output_present": false,
-    "recovery_workspace": "work/stories/008/20260724-100002",
-    "reusable": [
-      "story.md",
-      "narration.mp3"
-    ],
-    "missing": [
-      "story_poster.png",
-      "coloring_page.png",
-      "simple_coloring_page.png",
-      "activity_sheet.pdf",
-      "whatsapp_caption.txt",
-      "manifest.json"
-    ],
-    "queue_status_at_intake": "processing",
-    "pipeline_lock_at_intake": true,
-    "scheduler_last_task_result_at_intake": 1,
-    "forensics": "docs/operations/STORY_008_PARTIAL_RUN_FORENSICS.md"
+    "status": "complete_published",
+    "public_output_present": true,
+    "package": "output/008_the-meeting-of-nanda-and-vasudeva",
+    "file_sha256": {
+      "activity_sheet.pdf": "ae3b832c7c0ac2a47a4eeaec7b751ab26d11e4dc84b28743c1ed89b8ba0ce8cc",
+      "coloring_page.png": "adbf5c10a9426f7c543956579a0178257f83406af1dd377d6264c8c7a77fd376",
+      "manifest.json": "d04606e2bc368ee2661540719c7ad5f22a20328d0dc126b63f0a5380dd7ee760",
+      "narration.mp3": "2a23cc3d41a1b4cab74ba0e6ab4b7535a2218c8765fbb29367d5063c9d655f7c",
+      "simple_coloring_page.png": "3aa3d312139584c5df3c4679349a24ad03c3c88bcd74c460b26d6948dd17d749",
+      "story.md": "e24e0542312d1db25142d06a53563aab77ac5d8903dda0874932bef17bc77fc2",
+      "story_poster.png": "1c50f4b38591d5b7583da0a812bfaa8835646ce18c89b79fc7a1a39d6e9f887e",
+      "whatsapp_caption.txt": "312353121e951f0f8e996de5b4150f18003814b2c161e3cc77c130f62cb56721"
+    },
+    "publishable": true,
+    "queue_status": "done",
+    "next_pending": "009"
   },
   "notes": [
     "Stories 001-007 hashes frozen before any V1.5 mutation",

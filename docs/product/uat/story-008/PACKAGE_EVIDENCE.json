@@ -1,0 +1,59 @@
+{
+  "captured_at": "2026-07-24T16:59:11.597839+00:00",
+  "package": "output\\008_the-meeting-of-nanda-and-vasudeva",
+  "exact_eight_errors": [],
+  "files": {
+    "activity_sheet.pdf": {
+      "sha256": "ae3b832c7c0ac2a47a4eeaec7b751ab26d11e4dc84b28743c1ed89b8ba0ce8cc",
+      "bytes": 75906
+    },
+    "coloring_page.png": {
+      "sha256": "adbf5c10a9426f7c543956579a0178257f83406af1dd377d6264c8c7a77fd376",
+      "bytes": 332868
+    },
+    "manifest.json": {
+      "sha256": "d04606e2bc368ee2661540719c7ad5f22a20328d0dc126b63f0a5380dd7ee760",
+      "bytes": 4952
+    },
+    "narration.mp3": {
+      "sha256": "2a23cc3d41a1b4cab74ba0e6ab4b7535a2218c8765fbb29367d5063c9d655f7c",
+      "bytes": 5612995
+    },
+    "simple_coloring_page.png": {
+      "sha256": "3aa3d312139584c5df3c4679349a24ad03c3c88bcd74c460b26d6948dd17d749",
+      "bytes": 224077
+    },
+    "story.md": {
+      "sha256": "e24e0542312d1db25142d06a53563aab77ac5d8903dda0874932bef17bc77fc2",
+      "bytes": 16114
+    },
+    "story_poster.png": {
+      "sha256": "1c50f4b38591d5b7583da0a812bfaa8835646ce18c89b79fc7a1a39d6e9f887e",
+      "bytes": 1757109
+    },
+    "whatsapp_caption.txt": {
+      "sha256": "312353121e951f0f8e996de5b4150f18003814b2c161e3cc77c130f62cb56721",
+      "bytes": 324
+    }
+  },
+  "publishable": true,
+  "quality_status": "PASS",
+  "audio": {
+    "provider": "reused",
+    "generation_verified": true,
+    "audio_stale": false,
+    "reused": true,
+    "sha256": "2A23CC3D41A1B4CAB74BA0E6AB4B7535A2218C8765FBB29367D5063C9D655F7C",
+    "bytes": 5612995,
+    "duration_seconds": 350.8,
+    "waveform_validation_status": "PASS",
+    "narration_source_sha": "1CA63905F2CCEA735D90EF95D98F564781FB29ED81907CDEE54B190B6AE8B573"
+  },
+  "drive": {
+    "drive_folder_id": "13Eou8ulavxq811tpgugpCyDo1YTfiQnQ",
+    "package_link": "https://drive.google.com/drive/folders/13Eou8ulavxq811tpgugpCyDo1YTfiQnQ?usp=sharing",
+    "verify_ok": false,
+    "verify_detail": "Remote whatsapp_caption.txt does not contain the story package link.",
+    "reupload": "UPLOADED"
+  }
+}
