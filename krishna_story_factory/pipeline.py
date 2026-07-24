@@ -21,6 +21,7 @@ from .csv_store import (
     append_story_log,
     read_next_pending,
     read_plan_by_chapter,
+    reclaim_stale_processing,
     release_pipeline_lock,
     reset_processing_to_pending,
     update_plan_status,
@@ -48,6 +49,18 @@ from .images.vision_qa import review_image, save_review
 from .audio.waveform import WaveformMetrics, validate_mp3_waveform
 from .activities.qa import semantic_activity_errors
 from .work import cleanup_work, new_work_paths, prune_output_folder
+from .stage_state import (
+    ensure_package_layout,
+    find_latest_recovery_run,
+    mark_file_stage,
+    new_run_id,
+    production_recovery_enabled,
+    quarantine_incomplete_output_packages,
+    recovery_root,
+    save_state,
+    seed_state_from_recovery_artifacts,
+    StageState,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -100,9 +113,17 @@ def run_daily_story(
     debug: bool = False,
     clean_reset: bool = False,
     rebuild_components: set[str] | None = None,
+    resume_from: str | None = None,
+    enable_production_recovery: bool = False,
 ) -> dict[str, str | int | bool]:
     if clean_reset:
         clean_reset_local(settings.project_root)
+
+    reclaim_stale_processing(settings.project_root)
+    quarantine_incomplete_output_packages(
+        settings.output_root,
+        settings.project_root / "work" / "stories" / "_quarantine_incomplete",
+    )
 
     lock = acquire_pipeline_lock(settings.project_root)
     now = datetime.now(ZoneInfo(settings.app_timezone))
@@ -185,7 +206,16 @@ def run_daily_story(
 
         if mode != "test":
             update_plan_status(settings.project_root, plan, "processing")
-        result = _run_with_repairs(settings, plan, mode=mode, no_upload=no_upload, debug=debug, now=now)
+        result = _run_with_repairs(
+            settings,
+            plan,
+            mode=mode,
+            no_upload=no_upload,
+            debug=debug,
+            now=now,
+            resume_from=resume_from,
+            enable_production_recovery=enable_production_recovery,
+        )
         if mode != "test":
             if result.status == "SUCCESS":
                 update_plan_status(settings.project_root, plan, "done", drive_folder_id=_folder_id(result.package_link))
@@ -288,14 +318,29 @@ def _run_with_repairs(
     no_upload: bool,
     debug: bool,
     now: datetime,
+    resume_from: str | None = None,
+    enable_production_recovery: bool = False,
 ) -> PipelineResult:
     last_error = ""
     for attempt in range(settings.pipeline_max_repair_attempts):
         try:
-            return _run_once(settings, plan, mode=mode, no_upload=no_upload, debug=debug, now=now, attempt=attempt)
+            return _run_once(
+                settings,
+                plan,
+                mode=mode,
+                no_upload=no_upload,
+                debug=debug,
+                now=now,
+                attempt=attempt,
+                resume_from=resume_from,
+                enable_production_recovery=enable_production_recovery,
+            )
         except Exception as exc:
             last_error = str(exc)
             logger.warning("Pipeline attempt %s failed: %s", attempt + 1, last_error)
+            # Non-retryable operator gates (do not burn repair attempts / paid calls).
+            if "production recovery is not enabled" in last_error.lower():
+                break
     return PipelineResult(status="FAILED", errors=last_error)
 
 
@@ -308,46 +353,127 @@ def _run_once(
     debug: bool,
     now: datetime,
     attempt: int,
+    resume_from: str | None = None,
+    enable_production_recovery: bool = False,
 ) -> PipelineResult:
-    output_root = settings.project_root / ".work" / "test_preview" if mode == "test" else settings.output_root
-    paths = make_package_paths(output_root, plan)
-    if paths.root.exists():
-        shutil.rmtree(paths.root, ignore_errors=True)
-    paths.root.mkdir(parents=True, exist_ok=True)
+    from .package_swap import atomic_replace_package_dir, validate_exact_eight_files
+
+    production_paths = None
+    if mode != "test":
+        production_paths = make_package_paths(settings.output_root, plan)
+    stage: StageState | None = None
+    run_root: Path | None = None
+    reuse_story_audio = False
+
+    if mode == "test":
+        output_root = settings.project_root / ".work" / "test_preview"
+        paths = make_package_paths(output_root, plan)
+        if paths.root.exists():
+            shutil.rmtree(paths.root, ignore_errors=True)
+        paths.root.mkdir(parents=True, exist_ok=True)
+    else:
+        from .models import PackagePaths
+
+        resume_path = Path(resume_from) if resume_from else find_latest_recovery_run(
+            settings.project_root, plan.chapter_no
+        )
+        if resume_path and resume_path.is_dir() and not (resume_path / "COMPLETED").exists():
+            run_root = resume_path
+            stage = seed_state_from_recovery_artifacts(run_root, plan.chapter_no)
+            ensure_package_layout(run_root)
+            reuse_story_audio = stage.is_complete("story") and stage.is_complete("narration")
+            if reuse_story_audio and not production_recovery_enabled(cli_flag=enable_production_recovery):
+                raise PipelineError(
+                    "Resumable Story artifacts found, but production recovery is not enabled. "
+                    "Pass --enable-production-recovery or set BHAVA_ENABLE_PRODUCTION_RECOVERY=1 "
+                    "to generate only missing artifacts without regenerating story/narration."
+                )
+        else:
+            run_root = recovery_root(settings.project_root, plan.chapter_no, new_run_id())
+            stage = StageState(story_id=plan.chapter_no.zfill(3), run_id=run_root.name)
+            stage.recovery_enabled = production_recovery_enabled(cli_flag=enable_production_recovery)
+            save_state(run_root, stage)
+            reuse_story_audio = False
+        pkg = ensure_package_layout(run_root)
+        if not reuse_story_audio:
+            for name in (
+                "story_poster.png",
+                "coloring_page.png",
+                "simple_coloring_page.png",
+                "activity_sheet.pdf",
+                "whatsapp_caption.txt",
+                "manifest.json",
+            ):
+                (pkg / name).unlink(missing_ok=True)
+        paths = PackagePaths(
+            root=pkg,
+            story_md=pkg / "story.md",
+            narration_mp3=pkg / "narration.mp3",
+            story_poster=pkg / "story_poster.png",
+            coloring_page=pkg / "coloring_page.png",
+            simple_coloring_page=pkg / "simple_coloring_page.png",
+            activity_sheet=pkg / "activity_sheet.pdf",
+            whatsapp_caption=pkg / "whatsapp_caption.txt",
+            manifest=pkg / "manifest.json",
+        )
+        pkg.mkdir(parents=True, exist_ok=True)
 
     work = new_work_paths(settings.project_root, debug=debug or settings.debug_artifacts)
-    content = StoryGenerator(settings, mode).generate(plan)
-    content.source_reference = plan.source_reference
-    content.scripture_reference = plan.scripture_reference
-    content.age_range = plan.age_range
-    from .content.repairs import apply_known_story_repairs
 
-    content = apply_known_story_repairs(plan.chapter_no, content)
-    source_errors = run_source_guard(plan, content)
-    if source_errors:
-        raise PipelineError("Source-fact validation failed: " + " | ".join(source_errors))
-    story_md = content.to_markdown()
-    paths.story_md.write_text(story_md, encoding="utf-8")
+    if reuse_story_audio:
+        story_md = paths.story_md.read_text(encoding="utf-8")
+        content = _content_from_story_md(story_md, plan)
+        content.source_reference = plan.source_reference
+        content.scripture_reference = plan.scripture_reference
+        content.age_range = plan.age_range
+        audio_source = "reused_locked_narration"
+        audio_metadata = {
+            "provider": "reused",
+            "generation_verified": True,
+            "audio_stale": False,
+            "reused": True,
+        }
+        waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=False)
+        if stage and run_root:
+            mark_file_stage(run_root, stage, "story", paths.story_md)
+            mark_file_stage(run_root, stage, "narration", paths.narration_mp3)
+    else:
+        content = StoryGenerator(settings, mode).generate(plan)
+        content.source_reference = plan.source_reference
+        content.scripture_reference = plan.scripture_reference
+        content.age_range = plan.age_range
+        from .content.repairs import apply_known_story_repairs
 
-    from .audio.provider import get_cached_provider_decision, select_audio_provider
+        content = apply_known_story_repairs(plan.chapter_no, content)
+        source_errors = run_source_guard(plan, content)
+        if source_errors:
+            raise PipelineError("Source-fact validation failed: " + " | ".join(source_errors))
+        story_md = content.to_markdown()
+        paths.story_md.write_text(story_md, encoding="utf-8")
+        if stage and run_root:
+            mark_file_stage(run_root, stage, "story", paths.story_md)
 
-    audio_gen = AudioGenerator(settings, mode)
-    provider_decision = get_cached_provider_decision()
-    if provider_decision is None and mode != "test":
-        provider_decision = select_audio_provider(
-            settings, estimated_chars=len(content.audio_script or "")
-        )
-        if provider_decision.status == "SKIPPED_AUDIO_PROVIDER_UNAVAILABLE":
-            raise PipelineError(
-                f"SKIPPED_AUDIO_PROVIDER_UNAVAILABLE: {provider_decision.reason}"
+        from .audio.provider import get_cached_provider_decision, select_audio_provider
+
+        audio_gen = AudioGenerator(settings, mode)
+        provider_decision = get_cached_provider_decision()
+        if provider_decision is None and mode != "test":
+            provider_decision = select_audio_provider(
+                settings, estimated_chars=len(content.audio_script or "")
             )
-    audio_source = audio_gen.generate_mp3(
-        content.audio_script,
-        paths.narration_mp3,
-        provider_decision=provider_decision,
-    )
-    audio_metadata = _audio_provider_manifest(audio_source, audio_gen)
-    waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
+            if provider_decision.status == "SKIPPED_AUDIO_PROVIDER_UNAVAILABLE":
+                raise PipelineError(
+                    f"SKIPPED_AUDIO_PROVIDER_UNAVAILABLE: {provider_decision.reason}"
+                )
+        audio_source = audio_gen.generate_mp3(
+            content.audio_script,
+            paths.narration_mp3,
+            provider_decision=provider_decision,
+        )
+        audio_metadata = _audio_provider_manifest(audio_source, audio_gen)
+        waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
+        if stage and run_root:
+            mark_file_stage(run_root, stage, "narration", paths.narration_mp3)
 
     poster_score, poster_ref = generate_poster(
         settings,
@@ -616,6 +742,43 @@ def _run_once(
         raise PipelineError(
             f"Final folder must contain exactly {len(FINAL_OUTPUT_FILES)} files, found: {[p.name for p in final_files]}"
         )
+    exact_errors = validate_exact_eight_files(paths.root)
+    if exact_errors:
+        raise PipelineError("Exact-eight validation failed: " + " | ".join(exact_errors))
+    if stage and run_root:
+        stage.mark("quality_gate", "complete")
+        save_state(run_root, stage)
+
+    published_dir = paths.root
+    if mode != "test" and production_paths is not None:
+        # Atomic promote into public output only after exact-eight passes.
+        if production_paths.root.exists():
+            # Never leave a prior incomplete public folder.
+            prior_names = {p.name for p in production_paths.root.iterdir() if p.is_file()}
+            if prior_names and prior_names != set(FINAL_OUTPUT_FILES):
+                quarantine_incomplete_output_packages(
+                    settings.output_root,
+                    settings.project_root / "work" / "stories" / "_quarantine_incomplete",
+                )
+        swap = atomic_replace_package_dir(
+            staging_dir=paths.root,
+            production_dir=production_paths.root,
+            archive_root=settings.output_root / "_archive",
+            output_root=settings.output_root,
+            project_root=settings.project_root,
+        )
+        if swap.get("status") not in {"COMMITTED", "REPLACED"}:
+            raise PipelineError(f"Atomic publish failed: {swap}")
+        published_dir = production_paths.root
+        if stage and run_root:
+            stage.mark("atomic_publish", "complete")
+            if drive_status in {"UPLOADED", "LOCAL_SYNC", "SKIPPED"}:
+                stage.mark("drive_sync", "complete" if drive_status != "PENDING" else "pending")
+            save_state(run_root, stage)
+            (run_root / "COMPLETED").write_text(
+                json.dumps({"published_to": str(published_dir), "swap": swap}, indent=2),
+                encoding="utf-8",
+            )
 
     if mode != "test":
         activity_planner.record(plan, activity)
@@ -626,7 +789,7 @@ def _run_once(
 
     return PipelineResult(
         status="SUCCESS",
-        output_dir=str(paths.root),
+        output_dir=str(published_dir),
         quality_status="TEST_PASS" if mode == "test" else "PASS",
         whatsapp_status=whatsapp_status,
         package_link=package_link,

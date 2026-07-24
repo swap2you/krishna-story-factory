@@ -59,3 +59,8 @@ portal-bootstrap/
 /.bhava/alignment-cache/
 
 /MyPilotDropbox/
+
+# Governed factory recovery workspaces (artifacts, not docs)
+work/stories/
+.pipeline.lock
+

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import csv
+import json
+import os
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -197,14 +199,90 @@ def reset_tracking_logs(project_root: Path) -> None:
         with path.open("w", newline="", encoding="utf-8") as handle: csv.DictWriter(handle, fieldnames=fields).writeheader()
 
 
-def acquire_pipeline_lock(project_root: Path) -> Path:
+def _lock_meta(lock: Path) -> dict:
+    raw = lock.read_text(encoding="utf-8").strip()
+    if not raw:
+        return {}
+    if raw.startswith("{"):
+        try:
+            data = json.loads(raw)
+            return data if isinstance(data, dict) else {"started_at": raw}
+        except json.JSONDecodeError:
+            return {"started_at": raw}
+    return {"started_at": raw}
+
+
+def _pid_alive(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    except SystemError:
+        return False
+    else:
+        return True
+
+
+def _lock_is_stale(meta: dict, *, stale_after_sec: float) -> bool:
+    pid = int(meta.get("pid") or 0)
+    if pid and not _pid_alive(pid):
+        return True
+    started = str(meta.get("started_at") or "")
+    if not started:
+        return True
+    try:
+        started_dt = datetime.fromisoformat(started)
+    except ValueError:
+        return True
+    age = (datetime.now() - started_dt.replace(tzinfo=None)).total_seconds()
+    return age >= stale_after_sec
+
+
+def acquire_pipeline_lock(project_root: Path, *, stale_after_sec: float = 7200.0) -> Path:
+    """Acquire exclusive pipeline lock; reclaim stale/dead-PID locks safely."""
     lock = project_root / ".pipeline.lock"
-    if lock.exists(): raise RuntimeError("Another pipeline run appears to be in progress (.pipeline.lock exists).")
-    lock.write_text(datetime.now().isoformat(), encoding="utf-8"); return lock
+    if lock.exists():
+        meta = _lock_meta(lock)
+        if _lock_is_stale(meta, stale_after_sec=stale_after_sec):
+            lock.unlink(missing_ok=True)
+            try:
+                reset_processing_to_pending(project_root)
+            except Exception:
+                # Lock reclaim must succeed even when queue CSVs are absent (unit tests / fresh trees).
+                pass
+        else:
+            detail = meta.get("pid") or meta.get("started_at") or "unknown"
+            raise RuntimeError(
+                f"Another pipeline run appears to be in progress (.pipeline.lock exists; holder={detail})."
+            )
+    payload = {
+        "pid": os.getpid(),
+        "started_at": datetime.now().isoformat(timespec="seconds"),
+    }
+    tmp = lock.with_suffix(".lock.tmp")
+    tmp.write_text(json.dumps(payload), encoding="utf-8")
+    tmp.replace(lock)
+    return lock
 
 
 def release_pipeline_lock(lock_path: Path) -> None:
     lock_path.unlink(missing_ok=True)
+
+
+def reclaim_stale_processing(project_root: Path) -> int:
+    """Reset processing rows to pending when no live lock is held."""
+    lock = project_root / ".pipeline.lock"
+    if lock.exists():
+        meta = _lock_meta(lock)
+        if not _lock_is_stale(meta, stale_after_sec=7200.0):
+            return 0
+        lock.unlink(missing_ok=True)
+    before = [r for r in read_queue_state(project_root) if (r.get("status") or "").lower() == "processing"]
+    if before:
+        reset_processing_to_pending(project_root)
+    return len(before)
 
 
 def _append(project_root: Path, name: str, fields: list[str], row: dict[str, str]) -> None:

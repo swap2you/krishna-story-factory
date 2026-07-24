@@ -5,8 +5,12 @@ $ProjectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Pa
 $Runner = Get-Content -LiteralPath (Join-Path $ProjectRoot "scripts\run_daily_story_scheduled.ps1") -Raw
 $Installer = Get-Content -LiteralPath (Join-Path $ProjectRoot "scripts\install_mwf_story_task.ps1") -Raw
 $Failures = @()
+if ($Runner -notmatch 'Start-Process') { $Failures += "runner must use Start-Process so stderr warnings are not terminating" }
+if ($Runner -match 'Tee-Object') { $Failures += "runner must not Tee-Object native stderr (Story 008 abort class)" }
+if ($Runner -notmatch 'RedirectStandardError') { $Failures += "runner must redirect stderr to a file separately from PowerShell error stream" }
 if ($Runner -notmatch '\.venv\\Scripts\\python\.exe') { $Failures += "runner does not use venv Python" }
-if ($Runner -notmatch '--mode prod' -or $Runner -match '--force') { $Failures += "runner command is not safe production command" }
+if ($Runner -notmatch '"--mode", "prod"' -and $Runner -notmatch '--mode prod') { $Failures += "runner command is not safe production command" }
+if ($Runner -match '--force') { $Failures += "runner command is not safe production command" }
 if ($Runner -notmatch 'WHATSAPP_SEND_ENABLED\s*=\s*"false"') { $Failures += "WhatsApp is not disabled" }
 if ($Runner -notmatch 'TELEGRAM_SEND_ENABLED\s*=\s*"false"') { $Failures += "Telegram is not disabled" }
 if ($Runner -notmatch 'GOOGLE_DRIVE_UPLOAD_ENABLED\s*=\s*"true"') { $Failures += "Drive upload is not enabled" }

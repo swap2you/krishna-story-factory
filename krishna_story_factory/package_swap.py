@@ -323,7 +323,15 @@ def atomic_replace_package_dir(
             f"{JOURNAL_QUARANTINE} before starting a new package swap."
         )
 
-    staging_dir = assert_path_under_root(staging_dir, output_root, label="staging package")
+    # Staging may live under public output/_staging or governed work/stories recovery paths.
+    staging_resolved = Path(staging_dir).resolve()
+    try:
+        staging_dir = assert_path_under_root(staging_resolved, output_root, label="staging package")
+    except ValueError:
+        if project_root is None:
+            raise
+        work_stories = (Path(project_root) / "work" / "stories").resolve()
+        staging_dir = assert_path_under_root(staging_resolved, work_stories, label="staging package")
     production_dir = assert_path_under_root(production_dir, output_root, label="production package")
     archive_root = assert_path_under_root(archive_root, output_root, label="archive root")
     archive_root.mkdir(parents=True, exist_ok=True)
