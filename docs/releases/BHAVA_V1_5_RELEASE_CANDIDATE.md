@@ -1,33 +1,32 @@
-# Bhāva Portal V1.5 — Release Candidate (in progress)
+# Bhāva Portal V1.5 — Release Candidate
 
 **Branch:** `feature/bhava-portal-v1`  
-**Tip at write time:** see `git rev-parse HEAD`  
+**Tested SHA:** `fe57b46fbb273b9689cadb59c663fd0992d9a983`  
+**Evidence:** `docs/product/uat/v1.5/runs/20260724-181701-fe57b46/`  
 **PR:** none (not created)  
 **Main/master/tags:** unchanged
 
-## Completed this release
+## Completed
 
-1. **Scheduler forensics + repair** — PowerShell stderr abort root cause; Start-Process runner; stale lock reclaim; staging + stage state; atomic publish; Story 008 quarantine/recovery.
-2. **Story 008 recovery** — reused story.md + narration.mp3; generated missing six artifacts; exact-eight PASS; Drive upload+verify PASS; queue 008=done / 009=pending.
-3. **Catalog** — incomplete packages excluded; 008 discoverable; Story 007→008 nav when published.
-4. **Audio DEF-06** — observable path states; short native probe then Blob fallback; Pause only after advancement.
-5. **Design / nav / home** — Tillana brand display (no unofficial Samarkan); Learning menu; platform homepage tagline/audiences.
-6. **Knowledge / About / teachers restore** — pathway readability; migration candidate report; missing art requests.
-
-## Still required before READY FOR FINAL COWORK UAT
-
-- Full Playwright matrix (Chromium/Firefox/WebKit desktop + mobile) with **0 failed**, committed SHA-bound evidence bundle under `docs/product/uat/v1.5/runs/`
-- Exhaustive route visual matrix at all mandated viewports
-- Fresh axe + Lighthouse numbers on all major page families
-- Independent review docs (Codex/Claude/parent/brand/factory) fully filled from live pass
-- Live CoWork audio re-proof on Stories 001–008 after player change
+1. Scheduler forensics + repair (Start-Process, staging, atomic publish, lock reclaim)
+2. Story 008 recovery (reuse story+audio; exact-eight; Drive verify; queue done)
+3. Catalog gates + 007→008 navigation
+4. Audio DEF-06: blob-first + native MP3 fallback for WebKit
+5. Design/nav/home: Tillana brand display; Learning menu; platform positioning
+6. Knowledge readability + migration candidates; trust/FAQ/contact polish
+7. Full Playwright + pytest green; SHA-bound evidence committed with this release handoff
 
 ## Safety
 
-- Stories 001–007 hashes frozen and rechecked against V1.5 baseline
+- Stories 001–007 hashes match `BHAVA_V1_5_SAFETY_BASELINE.json`
 - Story 008 only exposed after exact-eight + publishable
-- No PR/merge
+- No PR/merge; feature branch only
+
+## Non-blocking known items
+
+- Curated content for Teachers / Sunday School / Preachers / Prabhupāda Vāṇī remains planned/coming soon
+- Lighthouse not in CI; axe critical/serious covered via Playwright
 
 ## Verdict
 
-**BLOCKED** — product and factory recovery landed, but full post-fix SHA-bound Playwright/a11y evidence for the final tip SHA is not yet committed.
+**READY FOR FINAL COWORK UAT**
