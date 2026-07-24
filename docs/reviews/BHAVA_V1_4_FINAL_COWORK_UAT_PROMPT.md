@@ -4,7 +4,7 @@
 
 - Repository: `krishna-story-factory`
 - Branch only: `feature/bhava-portal-v1`
-- Final SHA to test: run `git fetch` then `git rev-parse origin/feature/bhava-portal-v1` (must equal local HEAD). Authoritative tip at READY: `ecf03fa610715470ece80848702bf5d9dd492be4`
+- Final SHA to test: `git fetch origin` then checkout/test `origin/feature/bhava-portal-v1` (local HEAD must match origin).
 - Do **not** create a PR or merge. Evidence-only commits allowed after this prompt.
 
 ## Runtime
