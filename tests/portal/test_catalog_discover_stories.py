@@ -6,12 +6,13 @@ from bhava_api.catalog.filesystem import REQUIRED_PACKAGE_FILES, Package, _chapt
 from bhava_api.catalog.indexer import _normalize_story_no
 
 
-def test_catalog_discovers_released_stories_001_through_007() -> None:
+def test_catalog_discovers_released_stories_including_008() -> None:
     packages = discover_packages()
     chapters = {str(package.manifest["chapter_no"]).zfill(3) for package in packages}
-    assert {"001", "002", "003", "004", "005", "006", "007"} <= chapters
+    assert {"001", "002", "003", "004", "005", "006", "007", "008"} <= chapters
     for package in packages:
-        if str(package.manifest.get("chapter_no", "")).zfill(3) in chapters:
+        chapter = str(package.manifest.get("chapter_no", "")).zfill(3)
+        if chapter in {"001", "002", "003", "004", "005", "006", "007", "008"}:
             assert REQUIRED_PACKAGE_FILES <= package.files
 
 

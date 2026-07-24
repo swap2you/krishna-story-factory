@@ -194,7 +194,7 @@ function StoryNav({ storyNo, maxReleased }: { storyNo: string; maxReleased: numb
         <Link href={`/stories/${next}`} className="bhava-button bhava-button--quiet">Story {next} &rarr;</Link>
       ) : (
         <span className="hint" role="status">
-          End of the current Bhāva release · Story 008 remains pending in the factory queue
+          End of the currently published stories
         </span>
       )}
     </nav>
@@ -206,7 +206,7 @@ function StoryNav({ storyNo, maxReleased }: { storyNo: string; maxReleased: numb
 export function StoryExperience({
   story,
   storyNo,
-  maxReleased = 7,
+  maxReleased = 0,
 }: {
   story: Story | null;
   storyNo: string;

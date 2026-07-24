@@ -126,3 +126,14 @@ def test_dynamic_catalog_adds_and_removes_without_restart(temp_catalog) -> None:
     numbers = [s["story_no"] for s in client.get("/api/v1/stories").json()]
     assert "008" not in numbers
     assert numbers == [f"{i:03d}" for i in range(1, 8)]
+
+
+def test_catalog_rejects_stale_audio_and_unverified_generation(temp_catalog) -> None:
+    client, output = temp_catalog
+    _write_package(output, "008", audio_stale=True)
+    _write_package(output, "009", generation_verified=False)
+    catalog_freshness._last_refresh = 0.0
+    numbers = [s["story_no"] for s in client.get("/api/v1/stories").json()]
+    assert "008" not in numbers
+    assert "009" not in numbers
+    assert numbers == [f"{i:03d}" for i in range(1, 8)]

@@ -11,7 +11,7 @@ export default async function KrishnaBookPage() {
       <PageIntro
         eyebrow="Krishna Book"
         title="Chapter timeline for Stories 001–007."
-        body="Each card opens listening, reading, activities, coloring, source references, and device-local notes. Story 008 stays pending in the factory queue and is not listed until released."
+        body="Each card opens listening, reading, activities, coloring, source references, and device-local notes. Incomplete factory packages stay out of this list until they pass the exact-eight publish gate."
       />
       <section className="section">
         <div className="container">

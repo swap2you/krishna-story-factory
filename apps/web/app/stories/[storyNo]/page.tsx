@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getStory } from "@/lib/catalog";
+import { getStory, getStories } from "@/lib/catalog";
 import { StoryExperience } from "@/components/story-experience";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +9,13 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
   const { storyNo } = await params;
   if (!/^[a-z0-9-]+$/i.test(storyNo)) notFound();
   let story = null;
+  let maxReleased = 0;
   try {
+    const stories = await getStories();
+    maxReleased = stories.reduce((max, item) => {
+      const n = Number.parseInt(String(item.story_no || ""), 10);
+      return Number.isFinite(n) ? Math.max(max, n) : max;
+    }, 0);
     story = await getStory(storyNo);
   } catch {
     /* shell remains available without API */
@@ -43,7 +49,11 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
           </div>
           <span className="status-chip">{story?.quality_status ?? "Catalog"}</span>
         </div>
-        <StoryExperience story={story} storyNo={story?.story_no ?? storyNo} />
+        <StoryExperience
+          story={story}
+          storyNo={story?.story_no ?? storyNo}
+          maxReleased={maxReleased || undefined}
+        />
       </section>
     </div>
   );
