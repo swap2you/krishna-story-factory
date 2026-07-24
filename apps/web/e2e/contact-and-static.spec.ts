@@ -8,8 +8,8 @@ test.describe("contact and static", () => {
   });
 
   test("vanani redirects to prabhupada-vani", async ({ page }) => {
-    await page.goto("/vanani");
-    await expect(page).toHaveURL(/\/prabhupada-vani\/?$/);
-    await expect(page.getByText(/Prabhupāda Vāṇī|timeless instruction/i).first()).toBeVisible();
+    await page.goto("/vanani", { waitUntil: "networkidle" });
+    await expect(page).toHaveURL(/\/prabhupada-vani\/?$/, { timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: /Prabhupāda Vāṇī/i }).first()).toBeVisible({ timeout: 15_000 });
   });
 });

@@ -26,9 +26,12 @@ test.describe("navigation", () => {
 
   test("primary nav includes Prabhupāda Vāṇī destination", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Prabhupāda Vāṇī" })).toHaveAttribute(
-      "href",
-      "/prabhupada-vani",
-    );
+    const menu = page.getByRole("button", { name: /^Menu$/i });
+    if (await menu.isVisible().catch(() => false)) {
+      await menu.click();
+    }
+    await expect(
+      page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Prabhupāda Vāṇī" }),
+    ).toHaveAttribute("href", "/prabhupada-vani");
   });
 });

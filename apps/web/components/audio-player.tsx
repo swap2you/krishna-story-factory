@@ -291,34 +291,10 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     const mediaSrc = absoluteUrl(activeSrcRef.current || src);
     void (async () => {
       try {
-        // Blob-first when a session cache exists (known-good path after DEF-06).
-        if (BLOB_CACHE.has(mediaSrc) || objectUrlRef.current) {
-          await playViaBlob(audio, mediaSrc);
-          return;
-        }
-
-        // Short native probe, then guaranteed Blob path if media never requests/advances.
-        setPath("native_starting");
+        // Blob-first policy: CoWork V1.4 proved native <audio> often never issues a request
+        // while fetch() succeeds. Prefer the known-good path immediately.
+        setPath("blob_fetching");
         setStatus("Loading narration…");
-        audio.src = mediaSrc;
-        try {
-          const playPromise = audio.play();
-          if (playPromise) await playPromise;
-        } catch {
-          setPath("native_failed");
-          await playViaBlob(audio, mediaSrc);
-          return;
-        }
-        const ok = await waitForAdvancement(audio, 0.05, NATIVE_PROBE_MS);
-        if (ok) {
-          setPath("native_playing");
-          setStatus(null);
-          setPlaying(true);
-          return;
-        }
-        audio.pause();
-        setPath("native_failed");
-        setStatus("Retrying with compatible playback…");
         await playViaBlob(audio, mediaSrc);
       } catch (err: unknown) {
         setPlaying(false);

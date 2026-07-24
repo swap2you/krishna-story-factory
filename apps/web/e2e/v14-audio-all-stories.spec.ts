@@ -19,13 +19,14 @@ test.describe("v1.5 audio — all released stories", () => {
       const play = page.locator(".audio-player").getByRole("button", { name: /^(Play|Loading…)$/i });
       await expect(play).toBeVisible({ timeout: 20_000 });
       await play.click();
-      await expect(page.locator(".audio-player").getByRole("button", { name: /^Pause$/i })).toBeVisible({
-        timeout: 30_000,
-      });
+      // Wait for advancement first; Pause label only appears after currentTime moves.
       await page.waitForFunction(() => {
         const audio = document.querySelector("audio");
         return !!audio && audio.readyState >= 2 && audio.currentTime > 0.15;
       }, undefined, { timeout: 45_000 });
+      await expect(page.locator(".audio-player").getByRole("button", { name: /^Pause$/i })).toBeVisible({
+        timeout: 10_000,
+      });
       const state = await page.evaluate(() => {
         const root = document.querySelector(".audio-player");
         const audio = document.querySelector("audio");
@@ -39,7 +40,7 @@ test.describe("v1.5 audio — all released stories", () => {
       expect(state.readyState).toBeGreaterThanOrEqual(2);
       expect(state.currentTime).toBeGreaterThan(0.15);
       expect(state.currentSrc.length).toBeGreaterThan(0);
-      expect(["native_playing", "blob_playing"]).toContain(state.path);
+      expect(state.path).toBe("blob_playing");
     });
   }
 
