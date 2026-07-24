@@ -11,7 +11,9 @@ $ErrorActionPreference = "Stop"
 Set-Location $ProjectRoot
 
 if (-not $EvidenceRoot) {
-  if ($InstanceName -like "*v12*") {
+  if ($InstanceName -like "*v13*") {
+    $EvidenceRoot = Join-Path $ProjectRoot "docs\product\uat\v1.3"
+  } elseif ($InstanceName -like "*v12*") {
     $EvidenceRoot = Join-Path $ProjectRoot "docs\product\uat\v1.2"
   } elseif ($InstanceName -like "*v11*") {
     $EvidenceRoot = Join-Path $ProjectRoot "docs\product\uat\v1.1"

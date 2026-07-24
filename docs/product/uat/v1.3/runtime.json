@@ -1,0 +1,15 @@
+{
+  "instance_name": "cursor-v13",
+  "web_port": 3006,
+  "api_port": 8003,
+  "web_url": "http://127.0.0.1:3006",
+  "api_url": "http://127.0.0.1:8003",
+  "web_pid": 82584,
+  "api_pid": 2652,
+  "mode": "production",
+  "started_at": "2026-07-24T01:52:01.3052514Z",
+  "preferred_web_port": 3005,
+  "preferred_api_port": 8003,
+  "collision": true,
+  "catalog_db": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\.bhava\\instances\\cursor-v13\\bhava.sqlite"
+}

@@ -98,22 +98,17 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     });
   }, [peaks, current, duration]);
 
-  // Deterministic source assignment — do not clear src during hydration.
+  // Keep attribute src stable; reload only when the story media URL changes.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !src) return;
     setPlaying(false);
     setCurrent(0);
-    setDuration(0);
     setError(null);
-    if (audio.src !== new URL(src, window.location.href).href) {
-      audio.src = src;
-    }
-    audio.preload = "metadata";
     try {
       audio.load();
     } catch {
-      /* browsers may throw if aborted */
+      /* ignore */
     }
   }, [src]);
 
@@ -211,13 +206,17 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     <div className="audio-player" aria-label={`Audio player for ${title}`}>
       <audio
         ref={audioRef}
-        preload="metadata"
+        src={src}
+        preload="auto"
         onTimeUpdate={(event) => {
           const value = event.currentTarget.currentTime;
           setCurrent(value);
           localStorage.setItem(resumeKey, String(value));
         }}
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
+        onCanPlay={() => {
+          /* media pipeline ready */
+        }}
         onPlaying={() => setPlaying(true)}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}

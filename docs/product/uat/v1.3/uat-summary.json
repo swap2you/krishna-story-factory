@@ -1,0 +1,10 @@
+{
+  "api_url": "http://127.0.0.1:8003",
+  "completed_at": "2026-07-24T01:55:21.8898044Z",
+  "keep_running": true,
+  "audio_recheck": "webkit+chromium play advances; chromium observes narration.mp3 request; webkit uses currentSrc proof",
+  "web_url": "http://127.0.0.1:3006",
+  "notes": "Factory generation, scheduler, and Drive were not invoked.",
+  "playwright_full_matrix": "309 passed / 4 failed (pre-fix); audio suite re-verified 36/36 after media lifecycle fix",
+  "instance_name": "cursor-v13"
+}
