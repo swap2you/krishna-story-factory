@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/vanani", destination: "/prabhupada-vani", permanent: true },
       { source: "/vani", destination: "/prabhupada-vani", permanent: true },
+      { source: "/blog", destination: "/knowledge", permanent: true },
+      { source: "/blog/:path*", destination: "/knowledge/:path*", permanent: true },
     ];
   },
   async rewrites() {

@@ -1,0 +1,21 @@
+{
+  "id": "kl-about-bhava",
+  "slug": "what-is-bhava",
+  "title": "What is Bh\u0101va?",
+  "summary": "Bh\u0101va is an independent curated devotional-learning portal beginning with Krishna Book bedtime stories.",
+  "content_type": "article",
+  "pathway": "new-to-bhakti",
+  "visibility": "public",
+  "review_state": "published",
+  "audience": [
+    "parents",
+    "teachers",
+    "children"
+  ],
+  "sources": [
+    {
+      "label": "Bh\u0101va About page",
+      "tier": "editorial"
+    }
+  ]
+}

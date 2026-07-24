@@ -6,7 +6,7 @@ const routes = [
   "/library/krishna-book",
   "/teachers",
   "/prabhupada-vani",
-  "/blog",
+  "/knowledge",
   "/about",
   "/contact",
   "/privacy",

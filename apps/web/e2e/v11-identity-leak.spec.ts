@@ -18,7 +18,7 @@ const PUBLIC_ROUTES = [
   "/preachers",
   "/teachers",
   "/prabhupada-vani",
-  "/blog",
+  "/knowledge",
   "/about",
   "/contact",
   "/faq",

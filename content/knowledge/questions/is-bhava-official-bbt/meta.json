@@ -1,0 +1,17 @@
+{
+  "id": "kl-q-official-bbt",
+  "slug": "is-bhava-official-bbt",
+  "title": "Is Bh\u0101va an official BBT publication?",
+  "summary": "No \u2014 Bh\u0101va is independent and stewarded locally.",
+  "content_type": "question",
+  "pathway": "questions-answers",
+  "visibility": "public",
+  "review_state": "published",
+  "answer_md": "No. Bh\u0101va is an independent initiative. It cites sources carefully and does not claim to be an official BBT publication.",
+  "sources": [
+    {
+      "label": "FAQ",
+      "tier": "editorial"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "kl-printables",
+  "slug": "printing-and-classroom-use",
+  "title": "Printing and classroom use",
+  "summary": "How families and teachers can print posters, coloring pages, and activity sheets from released packages.",
+  "content_type": "guide",
+  "pathway": "teachers",
+  "visibility": "public",
+  "review_state": "published",
+  "audience": [
+    "teachers",
+    "parents"
+  ],
+  "sources": [
+    {
+      "label": "Bh\u0101va Printables hub",
+      "tier": "editorial"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "kl-source-permissions",
+  "slug": "source-and-permissions",
+  "title": "Sources and permissions",
+  "summary": "How Bh\u0101va cites Krishna Book and related scripture without claiming blanket BBT ownership.",
+  "content_type": "policy",
+  "pathway": "questions-answers",
+  "visibility": "public",
+  "review_state": "published",
+  "audience": [
+    "parents",
+    "teachers",
+    "preachers"
+  ],
+  "sources": [
+    {
+      "label": "Bh\u0101va Source & permissions",
+      "tier": "editorial"
+    }
+  ]
+}
