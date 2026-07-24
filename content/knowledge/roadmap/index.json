@@ -1,126 +1,13 @@
 {
-  "schema_version": "1.0",
-  "note": "348-resource backlog is metadata only; not published content.",
-  "records": [
-    {
-      "id": "roadmap-001",
-      "title": "Backlog topic 1",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-002",
-      "title": "Backlog topic 2",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-003",
-      "title": "Backlog topic 3",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-004",
-      "title": "Backlog topic 4",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-005",
-      "title": "Backlog topic 5",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-006",
-      "title": "Backlog topic 6",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-007",
-      "title": "Backlog topic 7",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-008",
-      "title": "Backlog topic 8",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-009",
-      "title": "Backlog topic 9",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-010",
-      "title": "Backlog topic 10",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-011",
-      "title": "Backlog topic 11",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-012",
-      "title": "Backlog topic 12",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-013",
-      "title": "Backlog topic 13",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-014",
-      "title": "Backlog topic 14",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-015",
-      "title": "Backlog topic 15",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-016",
-      "title": "Backlog topic 16",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-017",
-      "title": "Backlog topic 17",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-018",
-      "title": "Backlog topic 18",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-019",
-      "title": "Backlog topic 19",
-      "status": "proposed",
-      "content_type": "article"
-    },
-    {
-      "id": "roadmap-020",
-      "title": "Backlog topic 20",
-      "status": "proposed",
-      "content_type": "article"
-    }
-  ]
+  "version": "1.4.0",
+  "total": 348,
+  "lifecycle_counts": {
+    "source_research": 348
+  },
+  "source": {
+    "path": "MyPilotDropbox\\bhava-knowledge-library-v1.0\\Bhava_Knowledge_Library_Research_and_Cursor_Prompt_Library_v1.0\\data\\topic_backlog.csv",
+    "sha256": "1f28347ba4017cf1546fce53cf027483d77702c82da69839524d4b3b4c16cab3",
+    "package": "bhava-knowledge-library-v1.0"
+  },
+  "notes": "Governed editorial roadmap metadata only. No fabricated bodies. Public surfaces must exclude non-approved/published."
 }
