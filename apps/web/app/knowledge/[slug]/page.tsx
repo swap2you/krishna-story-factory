@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/page-intro";
+import { HelpfulVote } from "@/components/helpful-vote";
 import { getBySlug, listArticles } from "@/lib/knowledge/loader";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -34,10 +35,15 @@ export default async function KnowledgeArticlePage({ params }: Props) {
             Review: {doc.review_state}
           </p>
           <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{doc.body_md}</pre>
+          <div style={{ marginTop: "1.5rem" }}>
+            <HelpfulVote resourceId={doc.id || doc.slug} />
+          </div>
           <p className="hint" style={{ marginTop: "2rem" }}>
             <Link href="/knowledge">← Knowledge home</Link>
             {" · "}
             <Link href="/knowledge/corrections">Suggest a correction</Link>
+            {" · "}
+            <Link href="/knowledge/report-link">Report broken link</Link>
           </p>
         </div>
       </section>
