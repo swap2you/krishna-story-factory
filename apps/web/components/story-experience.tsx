@@ -177,26 +177,41 @@ function MiniPlayer({ audioEl, title }: { audioEl: HTMLAudioElement; title: stri
 
 /* ── Phase 5: Previous / Next story nav ───────────────────────── */
 
-function StoryNav({ storyNo }: { storyNo: string }) {
+function StoryNav({ storyNo, maxReleased }: { storyNo: string; maxReleased: number }) {
   const num = parseInt(storyNo, 10);
   if (isNaN(num) || num <= 0) return null;
   const prev = num > 1 ? String(num - 1).padStart(3, "0") : null;
-  const next = String(num + 1).padStart(3, "0");
+  const hasNext = num < maxReleased;
+  const next = hasNext ? String(num + 1).padStart(3, "0") : null;
   return (
-    <nav className="story-nav" aria-label="Story navigation">
+    <nav className="story-nav" aria-label="Released story navigation">
       {prev ? (
         <Link href={`/stories/${prev}`} className="bhava-button bhava-button--quiet">&larr; Story {prev}</Link>
       ) : (
         <span />
       )}
-      <Link href={`/stories/${next}`} className="bhava-button bhava-button--quiet">Story {next} &rarr;</Link>
+      {next ? (
+        <Link href={`/stories/${next}`} className="bhava-button bhava-button--quiet">Story {next} &rarr;</Link>
+      ) : (
+        <span className="hint" role="status">
+          End of the current Bhāva release · Story 008 remains pending in the factory queue
+        </span>
+      )}
     </nav>
   );
 }
 
 /* ── Main component ───────────────────────────────────────────── */
 
-export function StoryExperience({ story, storyNo }: { story: Story | null; storyNo: string }) {
+export function StoryExperience({
+  story,
+  storyNo,
+  maxReleased = 7,
+}: {
+  story: Story | null;
+  storyNo: string;
+  maxReleased?: number;
+}) {
   const [large, setLarge] = useState(false);
   const [mode, setMode] = useState<Mode>("default");
   const [notes, setNotes] = useState("");
@@ -436,7 +451,7 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
       {showMini && audioEl ? <MiniPlayer audioEl={audioEl} title={title} /> : null}
 
       {/* Phase 5: Previous / Next story links */}
-      <StoryNav storyNo={storyNo} />
+      <StoryNav storyNo={storyNo} maxReleased={maxReleased} />
 
       <Tabs tabs={["Listen", "Read", "Activities", "Coloring", "Source", "Notes", "\u015Alok\u0101s"]}>
         {(active) => (
