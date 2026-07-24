@@ -10,6 +10,9 @@ test.describe("contact and static", () => {
   test("vanani redirects to prabhupada-vani", async ({ page }) => {
     await page.goto("/vanani", { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/\/prabhupada-vani\/?$/, { timeout: 15_000 });
-    await expect(page.getByText(/Prabhupāda Vāṇī|timeless instruction/i).first()).toBeVisible({ timeout: 15_000 });
+    // Prefer main heading — mobile nav may keep a hidden "Prabhupāda Vāṇī" link.
+    await expect(page.getByRole("heading", { name: /timeless instruction/i })).toBeVisible({
+      timeout: 15_000,
+    });
   });
 });

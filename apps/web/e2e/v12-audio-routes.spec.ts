@@ -8,16 +8,46 @@ test.describe("v1.2 audio and keyboard", () => {
       if (req.url().includes("narration.mp3")) seen.push(req.url());
     });
     await page.goto("/stories/001");
-    const play = page.getByRole("button", { name: /^Play$/i });
+    await page
+      .waitForFunction(() => {
+        const root = document.querySelector(".audio-player");
+        const audio = document.querySelector("audio");
+        const path = root?.getAttribute("data-playback-path") || "";
+        const src = audio?.currentSrc || audio?.src || "";
+        const readyHint = /Narration ready|press Play/i.test(root?.textContent || "");
+        return (
+          path === "blob_ready" ||
+          path === "blob_playing" ||
+          path === "native_playing" ||
+          (path === "idle" && (/narration\.mp3/i.test(src) || readyHint))
+        );
+      }, undefined, { timeout: 30_000 })
+      .catch(() => undefined);
+    const play = page.locator(".audio-player").getByRole("button", { name: /^(Play|Loading…)$/i });
     await expect(play).toBeVisible({ timeout: 20_000 });
     await play.click();
-    await expect(page.getByRole("button", { name: /^Pause$/i })).toBeVisible({ timeout: 15_000 });
+    await page.waitForTimeout(500);
+    const needsSecond = await page.locator(".audio-player").getByText(/press Play/i).isVisible().catch(() => false);
+    if (needsSecond) {
+      await page.locator(".audio-player").getByRole("button", { name: /^Play$/i }).click();
+    }
+    await expect(page.locator(".audio-player").getByRole("button", { name: /^Pause$/i })).toBeVisible({ timeout: 15_000 });
     await page.waitForFunction(() => {
       const audio = document.querySelector("audio");
       return !!audio && audio.readyState >= 2 && audio.currentTime > 0.2;
     }, undefined, { timeout: 20_000 });
-    const currentSrc = await page.evaluate(() => document.querySelector("audio")?.currentSrc || "");
-    expect(currentSrc).toContain("narration.mp3");
+    const state = await page.evaluate(() => {
+      const root = document.querySelector(".audio-player");
+      const audio = document.querySelector("audio");
+      return {
+        path: root?.getAttribute("data-playback-path") || "",
+        currentSrc: audio?.currentSrc || "",
+      };
+    });
+    // Prefetch uses blob: URLs so play() stays in the user-gesture window.
+    expect(state.currentSrc.length).toBeGreaterThan(0);
+    expect(state.currentSrc.includes("narration.mp3") || state.currentSrc.startsWith("blob:")).toBeTruthy();
+    expect(["blob_playing", "native_playing"]).toContain(state.path);
     if (!testInfo.project.name.includes("webkit")) {
       expect(seen.some((u) => u.includes("narration.mp3"))).toBeTruthy();
     }

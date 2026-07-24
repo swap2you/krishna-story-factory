@@ -25,7 +25,8 @@ export type PlaybackPath =
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 2] as const;
 const BLOB_CACHE = new Map<string, string>();
-const NATIVE_PROBE_MS = 900;
+/** Engines that reject blob: audio/mpeg (notably Playwright WebKit on Windows). */
+const BLOB_UNSUPPORTED = new Set<string>();
 
 function formatTime(seconds: number) {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -83,6 +84,19 @@ async function waitForAdvancement(audio: HTMLAudioElement, minTime = 0.05, timeo
   return !audio.paused && audio.readyState >= 2 && audio.currentTime > Math.max(minTime, baseline + 0.02);
 }
 
+function markBlobUnsupported(mediaSrc: string) {
+  BLOB_UNSUPPORTED.add(mediaSrc);
+  const cached = BLOB_CACHE.get(mediaSrc);
+  if (cached) {
+    BLOB_CACHE.delete(mediaSrc);
+    try {
+      URL.revokeObjectURL(cached);
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peaksUrl }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -106,7 +120,6 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
 
   const revokeObjectUrl = useCallback(() => {
     if (objectUrlRef.current) {
-      // Keep shared story cache; only clear the element-local ref pointer.
       objectUrlRef.current = null;
     }
   }, []);
@@ -169,8 +182,12 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     if (!audio || !src) return;
     audio.pause();
     audio.removeAttribute("src");
-    // Prefer cached blob if present; otherwise leave src unset until Play (blob-first).
-    const cached = BLOB_CACHE.get(absoluteUrl(src));
+    const mediaSrc = absoluteUrl(src);
+    if (BLOB_UNSUPPORTED.has(mediaSrc)) {
+      audio.src = mediaSrc;
+      return;
+    }
+    const cached = BLOB_CACHE.get(mediaSrc);
     if (cached) {
       audio.src = cached;
       objectUrlRef.current = cached;
@@ -208,6 +225,9 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     if (!isAllowlistedAudioUrl(mediaSrc)) {
       throw new Error("Audio URL is not an allowlisted story narration endpoint");
     }
+    if (BLOB_UNSUPPORTED.has(mediaSrc)) {
+      throw new Error("Blob audio unsupported on this engine");
+    }
     const cached = BLOB_CACHE.get(mediaSrc);
     if (cached) return cached;
     if (fetchInFlight.current) return fetchInFlight.current;
@@ -235,19 +255,75 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     }
   }, []);
 
-  // Prefetch allowlisted narration so Play can start synchronously (preserve user gesture).
+  const playViaNative = useCallback(async (audio: HTMLAudioElement, mediaSrc: string) => {
+    setPath("native_starting");
+    setStatus("Loading narration…");
+    if (audio.src.startsWith("blob:") || !/narration\.mp3/i.test(audio.src)) {
+      audio.src = mediaSrc;
+    }
+    const saved = Number(localStorage.getItem(resumeKey) || "0");
+    try {
+      await audio.play();
+    } catch (err: unknown) {
+      const name = err instanceof DOMException ? err.name : "";
+      if (name === "NotAllowedError") {
+        setPath("idle");
+        setStatus("Narration ready — press Play again");
+        setPlaying(false);
+        return;
+      }
+      throw err;
+    }
+    if (saved > 0 && Number.isFinite(saved) && audio.duration && saved < audio.duration) {
+      try {
+        audio.currentTime = saved;
+      } catch {
+        /* ignore */
+      }
+    }
+    const ok = await waitForAdvancement(audio, 0.05, 6000);
+    if (!ok) throw new Error("Native playback did not advance");
+    setPath("native_playing");
+    setStatus(null);
+    setPlaying(true);
+  }, [resumeKey]);
+
+  // Prefetch blob when supported; otherwise warm native src.
   useEffect(() => {
     if (!src) return;
     const mediaSrc = absoluteUrl(src);
     let cancelled = false;
+    const audio = audioRef.current;
+
+    if (BLOB_UNSUPPORTED.has(mediaSrc)) {
+      if (audio && !/narration\.mp3/i.test(audio.src || "")) {
+        audio.src = mediaSrc;
+      }
+      setPath("idle");
+      setStatus(null);
+      return;
+    }
+
     void ensureBlobUrl(mediaSrc)
       .then((objectUrl) => {
         if (cancelled) return;
+        if (BLOB_UNSUPPORTED.has(mediaSrc)) {
+          if (audio) audio.src = mediaSrc;
+          setPath("idle");
+          setStatus(null);
+          return;
+        }
         objectUrlRef.current = objectUrl;
-        setPath((prev) => (prev === "idle" ? "blob_ready" : prev));
+        if (audio && audio.src !== objectUrl) {
+          audio.src = objectUrl;
+        }
+        setPath((prev) =>
+          prev === "idle" || prev === "blob_fetching" ? "blob_ready" : prev,
+        );
+        setStatus(null);
       })
       .catch(() => {
-        /* Play will surface the error */
+        /* Play / native fallback will surface errors */
       });
     return () => {
       cancelled = true;
@@ -255,38 +331,59 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
   }, [src, ensureBlobUrl]);
 
   const playViaBlob = useCallback(async (audio: HTMLAudioElement, mediaSrc: string) => {
+    if (BLOB_UNSUPPORTED.has(mediaSrc)) {
+      await playViaNative(audio, mediaSrc);
+      return;
+    }
     setStatus("Loading narration…");
-    const objectUrl = await ensureBlobUrl(mediaSrc);
+    let objectUrl: string;
+    try {
+      objectUrl = await ensureBlobUrl(mediaSrc);
+    } catch {
+      markBlobUnsupported(mediaSrc);
+      await playViaNative(audio, mediaSrc);
+      return;
+    }
     objectUrlRef.current = objectUrl;
     setPath("blob_ready");
     const saved = Number(localStorage.getItem(resumeKey) || "0");
     audio.pause();
     if (!audio.src.startsWith("blob:") || audio.src !== objectUrl) {
       audio.src = objectUrl;
-      audio.load();
     }
-    await new Promise<void>((resolve, reject) => {
-      const onReady = () => {
-        cleanup();
-        resolve();
-      };
-      const onErr = () => {
-        cleanup();
-        reject(new Error("Blob audio failed to load"));
-      };
-      const cleanup = () => {
-        audio.removeEventListener("loadedmetadata", onReady);
-        audio.removeEventListener("canplay", onReady);
-        audio.removeEventListener("error", onErr);
-      };
-      if (audio.readyState >= 2) {
-        resolve();
-        return;
-      }
-      audio.addEventListener("loadedmetadata", onReady, { once: true });
-      audio.addEventListener("canplay", onReady, { once: true });
-      audio.addEventListener("error", onErr, { once: true });
-    });
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const onReady = () => {
+          cleanup();
+          resolve();
+        };
+        const onErr = () => {
+          cleanup();
+          reject(new Error("Blob audio failed to load"));
+        };
+        const cleanup = () => {
+          audio.removeEventListener("loadedmetadata", onReady);
+          audio.removeEventListener("canplay", onReady);
+          audio.removeEventListener("error", onErr);
+          window.clearTimeout(timer);
+        };
+        if (audio.readyState >= 2) {
+          resolve();
+          return;
+        }
+        const timer = window.setTimeout(() => {
+          cleanup();
+          reject(new Error("Blob audio load timeout"));
+        }, 3500);
+        audio.addEventListener("loadedmetadata", onReady, { once: true });
+        audio.addEventListener("canplay", onReady, { once: true });
+        audio.addEventListener("error", onErr, { once: true });
+      });
+    } catch {
+      markBlobUnsupported(mediaSrc);
+      await playViaNative(audio, mediaSrc);
+      return;
+    }
     if (saved > 0 && Number.isFinite(saved) && audio.duration && saved < audio.duration) {
       audio.currentTime = saved;
     }
@@ -296,18 +393,24 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
       const name = err instanceof DOMException ? err.name : "";
       if (name === "NotAllowedError") {
         setPath("blob_ready");
-        setStatus("Narration ready — press Play");
+        setStatus("Narration ready — press Play again");
         setPlaying(false);
         return;
       }
-      throw err;
+      markBlobUnsupported(mediaSrc);
+      await playViaNative(audio, mediaSrc);
+      return;
     }
     const ok = await waitForAdvancement(audio, 0.05, 4000);
-    if (!ok) throw new Error("Compatible playback did not advance");
+    if (!ok) {
+      markBlobUnsupported(mediaSrc);
+      await playViaNative(audio, mediaSrc);
+      return;
+    }
     setPath("blob_playing");
     setStatus(null);
     setPlaying(true);
-  }, [ensureBlobUrl, resumeKey]);
+  }, [ensureBlobUrl, playViaNative, resumeKey]);
 
   const toggle = useCallback(() => {
     const audio = audioRef.current;
@@ -321,31 +424,27 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     }
 
     const mediaSrc = absoluteUrl(activeSrcRef.current || src);
-    const cached = BLOB_CACHE.get(mediaSrc) || objectUrlRef.current;
 
-    // Synchronous gesture path when blob is already cached from prefetch.
-    if (cached) {
-      objectUrlRef.current = cached;
-      if (audio.src !== cached) {
-        audio.src = cached;
+    const startNativeInGesture = () => {
+      if (audio.src.startsWith("blob:") || !/narration\.mp3/i.test(audio.src || "")) {
+        audio.src = mediaSrc;
       }
-      setPath("blob_fetching");
-      setStatus("Loading narration…");
+      setStatus(null);
       const playPromise = audio.play();
       void (async () => {
         try {
           if (playPromise) await playPromise;
-          const ok = await waitForAdvancement(audio, 0.05, 4000);
+          const ok = await waitForAdvancement(audio, 0.05, 6000);
           if (!ok) {
-            await playViaBlob(audio, mediaSrc);
+            await playViaNative(audio, mediaSrc);
             return;
           }
-          setPath("blob_playing");
+          setPath("native_playing");
           setStatus(null);
           setPlaying(true);
-        } catch (err: unknown) {
+        } catch {
           try {
-            await playViaBlob(audio, mediaSrc);
+            await playViaNative(audio, mediaSrc);
           } catch (fallbackErr: unknown) {
             setPlaying(false);
             setPath("failed");
@@ -353,6 +452,55 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
             setError(`Narration unavailable. Download audio or retry. (${message})`);
             setStatus(null);
           }
+        }
+      })();
+    };
+
+    if (BLOB_UNSUPPORTED.has(mediaSrc)) {
+      startNativeInGesture();
+      return;
+    }
+
+    const cached = BLOB_CACHE.get(mediaSrc) || objectUrlRef.current;
+
+    if (cached) {
+      objectUrlRef.current = cached;
+      if (audio.src !== cached) {
+        audio.src = cached;
+      }
+      try {
+        const saved = Number(localStorage.getItem(resumeKey) || "0");
+        if (saved > 0 && Number.isFinite(saved) && audio.readyState >= 1) {
+          const dur = audio.duration;
+          if (!dur || saved < dur) audio.currentTime = saved;
+        }
+      } catch {
+        /* ignore resume errors */
+      }
+      setStatus(null);
+      const playPromise = audio.play();
+      void (async () => {
+        try {
+          if (playPromise) await playPromise;
+          const ok = await waitForAdvancement(audio, 0.05, 4000);
+          if (!ok) {
+            markBlobUnsupported(mediaSrc);
+            startNativeInGesture();
+            return;
+          }
+          setPath("blob_playing");
+          setStatus(null);
+          setPlaying(true);
+        } catch (err: unknown) {
+          const name = err instanceof DOMException ? err.name : "";
+          if (name === "NotAllowedError") {
+            setPath("blob_ready");
+            setStatus("Narration ready — press Play again");
+            setPlaying(false);
+            return;
+          }
+          markBlobUnsupported(mediaSrc);
+          startNativeInGesture();
         }
       })();
       return;
@@ -364,14 +512,19 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
         setStatus("Loading narration…");
         await playViaBlob(audio, mediaSrc);
       } catch (err: unknown) {
-        setPlaying(false);
-        setPath("failed");
-        const message = err instanceof Error ? err.message : "Playback failed";
-        setError(`Narration unavailable. Download audio or retry. (${message})`);
-        setStatus(null);
+        try {
+          markBlobUnsupported(mediaSrc);
+          await playViaNative(audio, mediaSrc);
+        } catch (fallbackErr: unknown) {
+          setPlaying(false);
+          setPath("failed");
+          const message = fallbackErr instanceof Error ? fallbackErr.message : "Playback failed";
+          setError(`Narration unavailable. Download audio or retry. (${message})`);
+          setStatus(null);
+        }
       }
     })();
-  }, [playViaBlob, src]);
+  }, [playViaBlob, playViaNative, resumeKey, src]);
 
   useEffect(() => {
     if (!("mediaSession" in navigator) || !audioRef.current) return;
@@ -427,6 +580,18 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
         onError={() => {
+          const audio = audioRef.current;
+          const mediaSrc = absoluteUrl(activeSrcRef.current || src);
+          if (audio?.src?.startsWith("blob:")) {
+            markBlobUnsupported(mediaSrc);
+            audio.removeAttribute("src");
+            audio.src = mediaSrc;
+            setPlaying(false);
+            setPath("idle");
+            setStatus("Narration ready — press Play");
+            setError(null);
+            return;
+          }
           setPlaying(false);
           setPath("failed");
           setError("Narration unavailable. Download audio or retry.");
