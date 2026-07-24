@@ -16,10 +16,13 @@ test.describe("v1.4 audio — all released stories", () => {
         }
       });
       await page.goto(`/stories/${storyNo}`);
-      const play = page.getByRole("button", { name: /^Play$/i });
+      await page.getByRole("tab", { name: /Listen/i }).click().catch(() => undefined);
+      const play = page.locator(".audio-player").getByRole("button", { name: /^Play$/i });
       await expect(play).toBeVisible({ timeout: 20_000 });
       await play.click();
-      await expect(page.getByRole("button", { name: /^Pause$/i })).toBeVisible({ timeout: 20_000 });
+      await expect(page.locator(".audio-player").getByRole("button", { name: /^Pause$/i })).toBeVisible({
+        timeout: 20_000,
+      });
       await page.waitForFunction(() => {
         const audio = document.querySelector("audio");
         return !!audio && audio.readyState >= 2 && audio.currentTime > 0.15;

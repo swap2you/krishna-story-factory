@@ -20,7 +20,7 @@ test.describe("navigation", () => {
     test(`loads ${route}`, async ({ page }) => {
       const response = await page.goto(route);
       expect(response?.ok()).toBeTruthy();
-      await expect(page.locator("header .wordmark")).toBeVisible();
+      await expect(page.getByRole("link", { name: "Bhāva home" })).toBeVisible();
     });
   }
 

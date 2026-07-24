@@ -20,7 +20,12 @@ test.describe("responsive", () => {
         return doc.scrollWidth > doc.clientWidth + 1;
       });
       expect(overflow).toBeFalsy();
-      await expect(page.locator("header .wordmark")).toBeVisible();
+      await expect(page.getByRole("link", { name: "Bhāva home" })).toBeVisible();
+      const desktopLogo = page.locator("header .brand-logo-header");
+      const mobileMark = page.locator("header .brand-mark-mobile");
+      const logoVisible = await desktopLogo.isVisible().catch(() => false);
+      const mobileVisible = await mobileMark.isVisible().catch(() => false);
+      expect(logoVisible || mobileVisible).toBeTruthy();
     });
   }
 });
