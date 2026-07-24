@@ -1,6 +1,7 @@
 import Link from "next/link";
 import contact from "@/config/contact.json";
 import { PageIntro } from "@/components/page-intro";
+import { brandSrc } from "@/lib/brand-assets";
 
 const FAQS: { q: string; a: string }[] = [
   {
@@ -72,6 +73,7 @@ export default function FaqPage() {
         eyebrow="FAQ"
         title="Clear answers for families and teachers."
         body="Honest guidance about sources, privacy, printing, and how Bhāva is stewarded."
+        heroSrc={brandSrc("hero-faq-page")}
       />
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container" style={{ maxWidth: 760 }}>

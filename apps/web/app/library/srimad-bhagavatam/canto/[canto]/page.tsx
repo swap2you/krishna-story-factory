@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { notFound } from "next/navigation";
+import { cantoCoverPath } from "@/lib/brand-assets";
 
 const CANTO_INFO: Record<number, { title: string; summary: string }> = {
   1: { title: "Creation", summary: "The questions of the sages at Naimiṣāraṇya and the foundation of Śrīmad-Bhāgavatam." },
@@ -50,6 +51,7 @@ export default async function CantoPage({ params }: Props) {
         eyebrow={`Śrīmad-Bhāgavatam · Canto ${num}`}
         title={info.title}
         body={info.summary}
+        heroSrc={cantoCoverPath(num)}
       />
       <section className="section">
         <div className="container" style={{ maxWidth: 760 }}>

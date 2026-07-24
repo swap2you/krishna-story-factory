@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "generated": "2026-07-23T21:56:59.766578+00:00",
-  "assetCount": 114,
+  "generated": "2026-07-24T01:25:46.145565+00:00",
+  "assetCount": 122,
   "assets": [
     {
       "logicalId": "logo-primary-horizontal",
@@ -398,18 +398,7 @@
         "height": 1080
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 360,
-          "path": "/heroes/hero-desktop-wide-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 720,
-          "path": "/heroes/hero-desktop-wide-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Bhāva homepage hero image — hero desktop wide",
       "checksum": "c359d03a6cb43aef308d62d57f8b3615eebf4f4cc992d6cb83a66a7937603621",
       "approvalState": "approved",
@@ -425,18 +414,7 @@
         "height": 800
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 266,
-          "path": "/heroes/hero-website-banner-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 533,
-          "path": "/heroes/hero-website-banner-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Bhāva homepage hero image — hero website banner",
       "checksum": "c1b65fcee8eed83d963622268f13cbe31eed60810bb1339df3b0ca4312ff7bb2",
       "approvalState": "approved",
@@ -452,13 +430,7 @@
         "height": 900
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 480,
-          "path": "/heroes/hero-tablet-crop-640w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Bhāva homepage hero image — hero tablet crop",
       "checksum": "2835043333a593d085f407c58dfe4ff0fcebeec7f45c63849ba41ece5f8ca26c",
       "approvalState": "approved",
@@ -490,23 +462,7 @@
         "height": 2160
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 360,
-          "path": "/heroes/hero-text-free-master-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 720,
-          "path": "/heroes/hero-text-free-master-1280w.webp"
-        },
-        {
-          "width": 1920,
-          "height": 1080,
-          "path": "/heroes/hero-text-free-master-1920w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Bhāva homepage hero image — hero text free master",
       "checksum": "d69f28dafd1456c4a9531ece6afd627168b8a227a0015042ead288b43eedd65f",
       "approvalState": "approved",
@@ -522,18 +478,7 @@
         "height": 1080
       },
       "lightDarkContext": "dark",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 360,
-          "path": "/heroes/hero-dark-overlay-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 720,
-          "path": "/heroes/hero-dark-overlay-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Bhāva homepage hero image — hero dark overlay",
       "checksum": "6bd2b9368c46f4dee58cb1dee17da05476cbb004a4f9538756b001766f6e12c2",
       "approvalState": "approved",
@@ -549,18 +494,7 @@
         "height": 1080
       },
       "lightDarkContext": "light",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 360,
-          "path": "/heroes/hero-light-overlay-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 720,
-          "path": "/heroes/hero-light-overlay-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Bhāva homepage hero image — hero light overlay",
       "checksum": "080d8209741908061060c448a6585bd472f37409463ffcb3f4383a2fd1ac322b",
       "approvalState": "approved",
@@ -576,18 +510,7 @@
         "height": 1080
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 360,
-          "path": "/heroes/hero-krishna-book-collection-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 720,
-          "path": "/heroes/hero-krishna-book-collection-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Bhāva homepage hero image — hero krishna book collection",
       "checksum": "8f5bce253564de1b476db175ad660f479c4bd118ac17ad16f130e6700c3c54a3",
       "approvalState": "approved",
@@ -603,18 +526,7 @@
         "height": 1080
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 360,
-          "path": "/heroes/hero-parent-child-learning-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 720,
-          "path": "/heroes/hero-parent-child-learning-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Bhāva homepage hero image — hero parent child learning",
       "checksum": "900fcd94ebc2b148429eb4d8c02fc9ba004c01ac29c7e20c8ece25b105768b83",
       "approvalState": "approved",
@@ -630,18 +542,7 @@
         "height": 1080
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 360,
-          "path": "/heroes/hero-teacher-sunday-school-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 720,
-          "path": "/heroes/hero-teacher-sunday-school-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Bhāva homepage hero image — hero teacher sunday school",
       "checksum": "403a4bb36df60c46b2543a71c858e8fc2414d657c7d5e98e8734e8364da1aa36",
       "approvalState": "approved",
@@ -657,18 +558,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-krishna-book-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-krishna-book-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection krishna book",
       "checksum": "7afe7f2e6113c2d1adb2bd82140d11a7943108ccaa04c337d15915a3c777f5ba",
       "approvalState": "approved",
@@ -684,18 +574,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-srimad-bhagavatam-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-srimad-bhagavatam-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection srimad bhagavatam",
       "checksum": "bdbfd03a25631f604284bc3e14faf6add35262b175f579bdd89715f0baf0b11a",
       "approvalState": "approved",
@@ -711,18 +590,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-bhagavad-gita-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-bhagavad-gita-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection bhagavad gita",
       "checksum": "3c57dd377fabc74f137b073a0b62aba1c4a22c6c51a125ec0980cd3e8b7b5cc7",
       "approvalState": "approved",
@@ -738,18 +606,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-rama-katha-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-rama-katha-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection rama katha",
       "checksum": "5d589c806a7e8c71b08bba5d6de97f71ad711d92ebee15afcc2c5f2218f924cc",
       "approvalState": "approved",
@@ -765,18 +622,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-ramayana-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-ramayana-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection ramayana",
       "checksum": "dc18b1df011fea4c746a7307ff87e4e5d978ea3c60b1f057b9d075f290ee71cf",
       "approvalState": "approved",
@@ -792,18 +638,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-ramacaritamanasa-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-ramacaritamanasa-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection ramacaritamanasa",
       "checksum": "4219ba8087fb4830eb1aa88f1a1c29d7b116fdf56fe2b454acfab48319ac157b",
       "approvalState": "approved",
@@ -819,18 +654,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-dasavatara-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-dasavatara-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection dasavatara",
       "checksum": "7fda5aea2d2f576493df21581521054ac272f985aba3e4395b260acafe1c0547",
       "approvalState": "approved",
@@ -846,18 +670,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-caitanya-caritamrta-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-caitanya-caritamrta-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection caitanya caritamrta",
       "checksum": "3c8deb2af75b01353197849849769a214b00eb9e3f6ab685c90763110e6e88ca",
       "approvalState": "approved",
@@ -873,18 +686,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-caitanya-bhagavata-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-caitanya-bhagavata-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection caitanya bhagavata",
       "checksum": "35ae00c30bcd26ffe03031d7f78659f525ada2439f0064e4554aff7bd0483e27",
       "approvalState": "approved",
@@ -900,18 +702,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-prabhupada-vani-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-prabhupada-vani-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection prabhupada vani",
       "checksum": "15e9cb57602f784e23473385b9d38be42b7a495945a23ea690fe47064d0b2528",
       "approvalState": "approved",
@@ -927,18 +718,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-prayers-mantras-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-prayers-mantras-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection prayers mantras",
       "checksum": "bb02cd8873d2a0d83c4fcdf20a5acf0d64cf25760c0ac97888b91b6fe72c11f5",
       "approvalState": "approved",
@@ -954,18 +734,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-bhakti-blog-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-bhakti-blog-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection bhakti blog",
       "checksum": "e8379732a3de0b16f46c027ab3ced5a5dd25b4c022cf011341a9a67f2eb9b4c9",
       "approvalState": "approved",
@@ -981,18 +750,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-teacher-resources-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-teacher-resources-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection teacher resources",
       "checksum": "d36b61ac616a91dece16c4bd8f61660689a73e9f2b0a429b9ef92615f77b3dd0",
       "approvalState": "approved",
@@ -1008,18 +766,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-sunday-school-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-sunday-school-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection sunday school",
       "checksum": "e5c609b1429631680f0e81711a1d9c2bf1d0d7567cae99fc22e2455cc90d42b7",
       "approvalState": "approved",
@@ -1035,23 +782,140 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-printables-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-printables-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Collection cover art — collection printables",
       "checksum": "b2202c862b5bd00f2c1fdadc0afb7a8592a8e600567b58e5d73f1d65aadf6807",
       "approvalState": "approved",
       "category": "collection_covers",
       "phase": "4"
+    },
+    {
+      "logicalId": "collection-canto-01",
+      "sourceMaster": "BHAVA_P5B1_01_CANTO_1_RECREATED_1600x2000.png",
+      "productionPath": "/collections/collection-canto-01.webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 2000
+      },
+      "lightDarkContext": "neutral",
+      "responsiveVariants": [],
+      "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 01",
+      "checksum": "a5a5864c7cbc31da5eb6e234062b3afce83b41ad9c255d5cc2c5c25c2fd194e8",
+      "approvalState": "approved",
+      "category": "canto_covers",
+      "phase": "5"
+    },
+    {
+      "logicalId": "collection-canto-04",
+      "sourceMaster": "BHAVA_P5B1_02_CANTO_4_RECREATED_1600x2000.png",
+      "productionPath": "/collections/collection-canto-04.webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 2000
+      },
+      "lightDarkContext": "neutral",
+      "responsiveVariants": [],
+      "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 04",
+      "checksum": "92dba8d6a6cb7a0998630641640a443553c5dfbc73c6b2d19a88bc5913e4f9d7",
+      "approvalState": "approved",
+      "category": "canto_covers",
+      "phase": "5"
+    },
+    {
+      "logicalId": "collection-canto-10",
+      "sourceMaster": "BHAVA_P5B1_03_CANTO_10_RECREATED_1600x2000.png",
+      "productionPath": "/collections/collection-canto-10.webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 2000
+      },
+      "lightDarkContext": "neutral",
+      "responsiveVariants": [],
+      "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 10",
+      "checksum": "6a4ca2740595d1d8e909af47f7585fe953d6783ccae2005c9604861e1392481c",
+      "approvalState": "approved",
+      "category": "canto_covers",
+      "phase": "5"
+    },
+    {
+      "logicalId": "collection-canto-02",
+      "sourceMaster": "BHAVA_P5B2_04_CANTO_2_RECREATED_1600x2000.png",
+      "productionPath": "/collections/collection-canto-02.webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 2000
+      },
+      "lightDarkContext": "neutral",
+      "responsiveVariants": [],
+      "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 02",
+      "checksum": "46977465b012d5279e32cb4a8871e952a74ec44d5218c3367fc53b2a21b2c196",
+      "approvalState": "approved",
+      "category": "canto_covers",
+      "phase": "5"
+    },
+    {
+      "logicalId": "collection-canto-03",
+      "sourceMaster": "BHAVA_P5B2_05_CANTO_3_RECREATED_1600x2000.png",
+      "productionPath": "/collections/collection-canto-03.webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 2000
+      },
+      "lightDarkContext": "neutral",
+      "responsiveVariants": [],
+      "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 03",
+      "checksum": "bdbd17b444aa5d84eb1b41511fdfb6dcb060a99c43dbf6d2b5b72c87d8962061",
+      "approvalState": "approved",
+      "category": "canto_covers",
+      "phase": "5"
+    },
+    {
+      "logicalId": "collection-canto-05",
+      "sourceMaster": "BHAVA_P5B2_06_CANTO_5_RECREATED_1600x2000.png",
+      "productionPath": "/collections/collection-canto-05.webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 2000
+      },
+      "lightDarkContext": "neutral",
+      "responsiveVariants": [],
+      "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 05",
+      "checksum": "e52dff7599960efe7a57798e071fdd7afb988e14856bf22973839121dfa1ff42",
+      "approvalState": "approved",
+      "category": "canto_covers",
+      "phase": "5"
+    },
+    {
+      "logicalId": "collection-canto-06",
+      "sourceMaster": "BHAVA_P5B2_07_CANTO_6_RECREATED_1600x2000.png",
+      "productionPath": "/collections/collection-canto-06.webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 2000
+      },
+      "lightDarkContext": "neutral",
+      "responsiveVariants": [],
+      "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 06",
+      "checksum": "27e26c6a590e8f9483ba1af6a4b91ace35fe6b9513b4ba4fdafa9b01c532b42e",
+      "approvalState": "approved",
+      "category": "canto_covers",
+      "phase": "5"
+    },
+    {
+      "logicalId": "collection-canto-07",
+      "sourceMaster": "BHAVA_P5B2_08_CANTO_7_RECREATED_1600x2000.png",
+      "productionPath": "/collections/collection-canto-07.webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 2000
+      },
+      "lightDarkContext": "neutral",
+      "responsiveVariants": [],
+      "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 07",
+      "checksum": "466b07dd6dd2cf4cb8812dab838ffffee00704aec00d309e0677bd2c7d4be88d",
+      "approvalState": "approved",
+      "category": "canto_covers",
+      "phase": "5"
     },
     {
       "logicalId": "collection-canto-08",
@@ -1062,18 +926,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-canto-08-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-canto-08-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 08",
       "checksum": "03d564a937cec437cc3ddd9ac099962dc38d433995fb827703f658232d703c04",
       "approvalState": "approved",
@@ -1089,18 +942,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-canto-09-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-canto-09-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 09",
       "checksum": "3fd2f8271eeb621a195f6d68378c3869bced7f1bc276d18e7156f6a8d21bf3c7",
       "approvalState": "approved",
@@ -1116,18 +958,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-canto-11-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-canto-11-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 11",
       "checksum": "906100c3cc472a0c39dae1374a1dea7f958e1801dec9766b76244e5f2554291d",
       "approvalState": "approved",
@@ -1143,18 +974,7 @@
         "height": 2000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 800,
-          "path": "/collections/collection-canto-12-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1600,
-          "path": "/collections/collection-canto-12-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Śrīmad-Bhāgavatam canto cover — collection canto 12",
       "checksum": "7c0eb328a9c470efff967bbf7f585f8a6c6e94acddccf1754c17f32331d90ec6",
       "approvalState": "approved",
@@ -1170,23 +990,7 @@
         "height": 768
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 240,
-          "path": "/sections/section-krishna-book-stories-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 480,
-          "path": "/sections/section-krishna-book-stories-1280w.webp"
-        },
-        {
-          "width": 1920,
-          "height": 720,
-          "path": "/sections/section-krishna-book-stories-1920w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section krishna book stories",
       "checksum": "445b50befc5092d74bab1371185c1858592ffe1345198e8831ed2a8953197c58",
       "approvalState": "approved",
@@ -1202,23 +1006,7 @@
         "height": 768
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 240,
-          "path": "/sections/section-featured-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 480,
-          "path": "/sections/section-featured-1280w.webp"
-        },
-        {
-          "width": 1920,
-          "height": 720,
-          "path": "/sections/section-featured-1920w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section featured",
       "checksum": "7ccfe43e7c81ecbc8e444e5ab54fc555a6e8c8a4b6a43d74795550941083e2ce",
       "approvalState": "approved",
@@ -1234,23 +1022,7 @@
         "height": 768
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 240,
-          "path": "/sections/section-sunday-school-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 480,
-          "path": "/sections/section-sunday-school-1280w.webp"
-        },
-        {
-          "width": 1920,
-          "height": 720,
-          "path": "/sections/section-sunday-school-1920w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section sunday school",
       "checksum": "d49a38afcc5e4921f2cc1638809abd4bb6166b3812e3a32d9137d90f1fb4e368",
       "approvalState": "approved",
@@ -1266,23 +1038,7 @@
         "height": 768
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 240,
-          "path": "/sections/section-family-practice-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 480,
-          "path": "/sections/section-family-practice-1280w.webp"
-        },
-        {
-          "width": 1920,
-          "height": 720,
-          "path": "/sections/section-family-practice-1920w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section family practice",
       "checksum": "9dc2c5867e95f5d32cdf2b7145a126a90414277a2b1afc54986c9f1696f521d9",
       "approvalState": "approved",
@@ -1298,23 +1054,7 @@
         "height": 768
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 240,
-          "path": "/sections/section-prabhupada-vani-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 480,
-          "path": "/sections/section-prabhupada-vani-1280w.webp"
-        },
-        {
-          "width": 1920,
-          "height": 720,
-          "path": "/sections/section-prabhupada-vani-1920w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section prabhupada vani",
       "checksum": "8474ac9266ba5b5f1b22275bbb51bc11bb3c441ed637930c10244bb671d1fd5a",
       "approvalState": "approved",
@@ -1330,18 +1070,7 @@
         "height": 887
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 320,
-          "path": "/sections/section-bhakti-blog-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 640,
-          "path": "/sections/section-bhakti-blog-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section bhakti blog",
       "checksum": "b8300a7571fb9cbffa50f88bac8ee779eb33a683d9c2bac150a5dea18321d449",
       "approvalState": "approved",
@@ -1357,18 +1086,7 @@
         "height": 887
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 320,
-          "path": "/sections/section-prayers-mantras-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 640,
-          "path": "/sections/section-prayers-mantras-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section prayers mantras",
       "checksum": "7178bad28e4939d76d83b6a2ca545fa86ea0af1a1288e1f6aabf19aff4e106a9",
       "approvalState": "approved",
@@ -1384,18 +1102,7 @@
         "height": 887
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 320,
-          "path": "/sections/section-printables-resources-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 640,
-          "path": "/sections/section-printables-resources-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section printables resources",
       "checksum": "684b7d658875a50cc2442ca233fd838362387527936448676caebaefd14d0eaa",
       "approvalState": "approved",
@@ -1411,18 +1118,7 @@
         "height": 887
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 320,
-          "path": "/sections/section-caitanya-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 640,
-          "path": "/sections/section-caitanya-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section caitanya",
       "checksum": "6b65e1a0b7c7900c72900c1d73d2eea649f4e548e40e51db7b6fcbbc81c10e88",
       "approvalState": "approved",
@@ -1438,18 +1134,7 @@
         "height": 887
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 320,
-          "path": "/sections/section-sloka-learning-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 640,
-          "path": "/sections/section-sloka-learning-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section sloka learning",
       "checksum": "d1c7c996fc26602e1ba250086525b5a4c3167e1b7ab00e11c9565cc8c8979631",
       "approvalState": "approved",
@@ -1465,18 +1150,7 @@
         "height": 887
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 320,
-          "path": "/sections/section-contact-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 640,
-          "path": "/sections/section-contact-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section contact",
       "checksum": "9fd04bdc7b830fededc2168a79fc9e5727583a421348c9df2efa6e68349bdf8a",
       "approvalState": "approved",
@@ -1492,18 +1166,7 @@
         "height": 887
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 320,
-          "path": "/sections/section-about-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 640,
-          "path": "/sections/section-about-1280w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Section banner — section about",
       "checksum": "10a21de8a94ec9df35a0a150ad50b51341361a7819c1517464ff92958494d2cf",
       "approvalState": "approved",
@@ -1519,13 +1182,7 @@
         "height": 630
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 336,
-          "path": "/social/social-og-default-640w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Social media sharing image — social og default",
       "checksum": "9e1d5e45d146d01bad27be5ac21b5c5992d67ddc04446d1c93ecb739d3cb448d",
       "approvalState": "approved",
@@ -1541,13 +1198,7 @@
         "height": 675
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 360,
-          "path": "/social/social-x-card-640w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Social media sharing image — social x card",
       "checksum": "9d4579b5d8ed591855f77ca40d25a42335b68f6d553e27869f6b7942dd4e1114",
       "approvalState": "approved",
@@ -1563,13 +1214,7 @@
         "height": 1200
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 640,
-          "path": "/social/social-whatsapp-share-640w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Social media sharing image — social whatsapp share",
       "checksum": "fbb1fef2339885b37e2b3712ea2214411a41fa7b8d42590ac7bca4ff56e65b69",
       "approvalState": "approved",
@@ -1585,13 +1230,7 @@
         "height": 720
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 360,
-          "path": "/social/social-youtube-thumb-640w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Social media sharing image — social youtube thumb",
       "checksum": "50143ba419d8676a211b020f03b88950af21b0d763de7d3d7acd4ae91dbc52ec",
       "approvalState": "approved",
@@ -1607,23 +1246,7 @@
         "height": 3000
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 640,
-          "path": "/social/social-podcast-cover-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 1280,
-          "path": "/social/social-podcast-cover-1280w.webp"
-        },
-        {
-          "width": 1920,
-          "height": 1920,
-          "path": "/social/social-podcast-cover-1920w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Social media sharing image — social podcast cover",
       "checksum": "b39b0f029a03875a5d9eafa3d1b3f30098573000e145f0c0fa1a4ac573af4bea",
       "approvalState": "approved",
@@ -2280,23 +1903,7 @@
         "height": 1600
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 320,
-          "path": "/brand/hero-contact-page-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 640,
-          "path": "/brand/hero-contact-page-1280w.webp"
-        },
-        {
-          "width": 1920,
-          "height": 960,
-          "path": "/brand/hero-contact-page-1920w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Contact/FAQ asset — hero contact page",
       "checksum": "0a9ef87121428000c19749aefaad111ff7a7821d054dc587791daf0c1ebbd160",
       "approvalState": "approved",
@@ -2312,23 +1919,7 @@
         "height": 1600
       },
       "lightDarkContext": "neutral",
-      "responsiveVariants": [
-        {
-          "width": 640,
-          "height": 320,
-          "path": "/brand/hero-faq-page-640w.webp"
-        },
-        {
-          "width": 1280,
-          "height": 640,
-          "path": "/brand/hero-faq-page-1280w.webp"
-        },
-        {
-          "width": 1920,
-          "height": 960,
-          "path": "/brand/hero-faq-page-1920w.webp"
-        }
-      ],
+      "responsiveVariants": [],
       "altTextPurpose": "Contact/FAQ asset — hero faq page",
       "checksum": "c6320a219d22e70c43cba6b59d97e0b2dbf0197471421f77ccf83af6a0462200",
       "approvalState": "approved",
@@ -2420,6 +2011,5 @@
       "phase": "10",
       "pngFallback": "/icons/icon-feedback.png"
     }
-  ],
-  "optimized": "2026-07-23T22:00:25.490123+00:00"
+  ]
 }

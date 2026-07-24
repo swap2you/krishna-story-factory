@@ -1,5 +1,5 @@
 {
-  "project": "Bhāva Devotional Learning — Complete Brand and Digital Asset System V1",
+  "project": "Bh\u0101va Devotional Learning \u2014 Complete Brand and Digital Asset System V1",
   "version": "1.0-final",
   "generated_at_utc": "2026-07-23T21:16:45.475540+00:00",
   "visual_asset_total": 122,
@@ -734,12 +734,13 @@
       "category": "canto_covers",
       "extension": ".png",
       "bytes": 4225777,
-      "sha256": "9c338f284f3f1946b445c1f7841d1d9496115823a37d10f4d879127cd169dacd",
+      "sha256": "a5a5864c7cbc31da5eb6e234062b3afce83b41ad9c255d5cc2c5c25c2fd194e8",
       "width": 1600,
       "height": 2000,
       "mode": "RGB",
       "image_valid": true,
-      "validation_error": null
+      "validation_error": null,
+      "approval_note": "V1.3 normalized from Phase5 batch draft PNGs to 1600x2000; phase5-recreated-complete.zip was not present in local Dropbox."
     },
     {
       "phase": "5",
@@ -749,12 +750,13 @@
       "category": "canto_covers",
       "extension": ".png",
       "bytes": 4660187,
-      "sha256": "2d015ec69bd94322685a597f82e463651fd6b635c40b981e4905f4f5d3c5fcac",
+      "sha256": "92dba8d6a6cb7a0998630641640a443553c5dfbc73c6b2d19a88bc5913e4f9d7",
       "width": 1600,
       "height": 2000,
       "mode": "RGB",
       "image_valid": true,
-      "validation_error": null
+      "validation_error": null,
+      "approval_note": "V1.3 normalized from Phase5 batch draft PNGs to 1600x2000; phase5-recreated-complete.zip was not present in local Dropbox."
     },
     {
       "phase": "5",
@@ -764,12 +766,13 @@
       "category": "canto_covers",
       "extension": ".png",
       "bytes": 4097143,
-      "sha256": "8a702ea85b229af6ec672ea1055e3600c0c310911b9799454e459c1caf1d76d7",
+      "sha256": "6a4ca2740595d1d8e909af47f7585fe953d6783ccae2005c9604861e1392481c",
       "width": 1600,
       "height": 2000,
       "mode": "RGB",
       "image_valid": true,
-      "validation_error": null
+      "validation_error": null,
+      "approval_note": "V1.3 normalized from Phase5 batch draft PNGs to 1600x2000; phase5-recreated-complete.zip was not present in local Dropbox."
     },
     {
       "phase": "5",
@@ -779,12 +782,13 @@
       "category": "canto_covers",
       "extension": ".png",
       "bytes": 4406179,
-      "sha256": "5b35cfc6494a0efb72db783bc9cf9c85c85a6cdd6cf87e9f28b556a418fda6e9",
+      "sha256": "46977465b012d5279e32cb4a8871e952a74ec44d5218c3367fc53b2a21b2c196",
       "width": 1600,
       "height": 2000,
       "mode": "RGB",
       "image_valid": true,
-      "validation_error": null
+      "validation_error": null,
+      "approval_note": "V1.3 normalized from Phase5 batch draft PNGs to 1600x2000; phase5-recreated-complete.zip was not present in local Dropbox."
     },
     {
       "phase": "5",
@@ -794,12 +798,13 @@
       "category": "canto_covers",
       "extension": ".png",
       "bytes": 4224072,
-      "sha256": "194bb2faf2241a0feb73032a3073cf5636e965629051cb75cd03d5aa7a1351dd",
+      "sha256": "bdbd17b444aa5d84eb1b41511fdfb6dcb060a99c43dbf6d2b5b72c87d8962061",
       "width": 1600,
       "height": 2000,
       "mode": "RGB",
       "image_valid": true,
-      "validation_error": null
+      "validation_error": null,
+      "approval_note": "V1.3 normalized from Phase5 batch draft PNGs to 1600x2000; phase5-recreated-complete.zip was not present in local Dropbox."
     },
     {
       "phase": "5",
@@ -809,12 +814,13 @@
       "category": "canto_covers",
       "extension": ".png",
       "bytes": 4542160,
-      "sha256": "b8811d1f7878d145323d5b8dc1f0671bf019a2a396b4b7498f6826d38e934183",
+      "sha256": "e52dff7599960efe7a57798e071fdd7afb988e14856bf22973839121dfa1ff42",
       "width": 1600,
       "height": 2000,
       "mode": "RGB",
       "image_valid": true,
-      "validation_error": null
+      "validation_error": null,
+      "approval_note": "V1.3 normalized from Phase5 batch draft PNGs to 1600x2000; phase5-recreated-complete.zip was not present in local Dropbox."
     },
     {
       "phase": "5",
@@ -824,12 +830,13 @@
       "category": "canto_covers",
       "extension": ".png",
       "bytes": 4121587,
-      "sha256": "3085dbc0c2ebfb9d5b2c49c35a38fad618afdfe222dcbf0b96d58d987d7fb7b9",
+      "sha256": "27e26c6a590e8f9483ba1af6a4b91ace35fe6b9513b4ba4fdafa9b01c532b42e",
       "width": 1600,
       "height": 2000,
       "mode": "RGB",
       "image_valid": true,
-      "validation_error": null
+      "validation_error": null,
+      "approval_note": "V1.3 normalized from Phase5 batch draft PNGs to 1600x2000; phase5-recreated-complete.zip was not present in local Dropbox."
     },
     {
       "phase": "5",
@@ -839,12 +846,13 @@
       "category": "canto_covers",
       "extension": ".png",
       "bytes": 4449988,
-      "sha256": "be5a59e83c0c7a93661d496d68f56d0de6752be41b39feaeb952f57dce27dc81",
+      "sha256": "466b07dd6dd2cf4cb8812dab838ffffee00704aec00d309e0677bd2c7d4be88d",
       "width": 1600,
       "height": 2000,
       "mode": "RGB",
       "image_valid": true,
-      "validation_error": null
+      "validation_error": null,
+      "approval_note": "V1.3 normalized from Phase5 batch draft PNGs to 1600x2000; phase5-recreated-complete.zip was not present in local Dropbox."
     },
     {
       "phase": "5",

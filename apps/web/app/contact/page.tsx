@@ -5,6 +5,7 @@ import Link from "next/link";
 import contact from "@/config/contact.json";
 import { PageIntro } from "@/components/page-intro";
 import { buildContactMailto } from "@/lib/email-adapter";
+import { brandSrc } from "@/lib/brand-assets";
 
 const TOPICS = [
   "Content correction",
@@ -77,6 +78,7 @@ export default function ContactPage() {
         eyebrow="Contact"
         title="Write to the steward of Bhāva."
         body={`${contact.steward_name} · ${contact.location_city}, ${contact.location_state}. Messages open in your email app — Bhāva does not store form submissions.`}
+        heroSrc={brandSrc("hero-contact-page")}
       />
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container contact-grid">

@@ -147,9 +147,24 @@ main { flex: 1; }
 .collection-card.rose { background: linear-gradient(145deg, #6b1d3a, #b84870); }
 .collection-card.indigo { background: linear-gradient(145deg, #1e2a5e, #4860a8); }
 .collection-card.earth { background: linear-gradient(145deg, #4a3620, #8a6a3e); }
-.page-hero { padding: 4.5rem 0 2.75rem; background: radial-gradient(circle at 85% 20%, rgba(212, 168, 75, 0.22), transparent 30%), linear-gradient(135deg, #f8ead0, #fffaf2 50%, #e8f0e4); border-bottom: 1px solid rgba(212, 168, 75, 0.18); }
+.page-hero { padding: 4.5rem 0 2.75rem; background: radial-gradient(circle at 85% 20%, rgba(212, 168, 75, 0.22), transparent 30%), linear-gradient(135deg, #f8ead0, #fffaf2 50%, #e8f0e4); border-bottom: 1px solid rgba(212, 168, 75, 0.18); position: relative; overflow: hidden; }
+.page-hero--media { min-height: 280px; display: grid; align-items: end; }
+.page-hero__media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+.page-hero__copy { position: relative; z-index: 1; }
 .page-hero h1 { max-width: 16ch; margin: 0; font-size: clamp(2.4rem, 5.5vw, 4.2rem); color: var(--bhava-midnight); }
 .page-hero p { max-width: 58ch; margin: 1rem 0 0; color: var(--bhava-muted); line-height: 1.65; font-size: 1.08rem; }
+.collection-card--art { color: #fff; background: #0d2748; padding: 0; display: grid; grid-template-rows: 1fr auto; }
+.collection-card__media { width: 100%; height: 160px; object-fit: cover; display: block; }
+.collection-card__body { padding: 1.15rem 1.25rem 1.35rem; background: linear-gradient(180deg, rgba(6,22,40,.55), rgba(6,22,40,.92)); }
+.collection-card--art h3 { margin: 0 0 .45rem; font-size: 1.25rem; }
+.collection-card--art p { margin: 0 0 .75rem; max-width: none; color: rgba(255,255,255,.86); }
+.canto-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.canto-card { display: grid; gap: .75rem; text-decoration: none; color: inherit; border-radius: 1.1rem; overflow: hidden; background: #fffaf2; border: 1px solid rgba(20,40,70,.08); box-shadow: var(--bhava-shadow-soft); }
+.canto-card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.canto-card__copy { display: grid; gap: .35rem; padding: 0 1rem 1rem; }
+.canto-card__copy .hint { color: var(--bhava-muted); }
+.plain-list { margin: 0; padding-left: 1.2rem; line-height: 1.7; }
+.plain-list li { margin: 0.35rem 0; }
 .prose { max-width: 760px; line-height: 1.7; }
 .site-footer { margin-top: auto; padding: 2.4rem 0; background: linear-gradient(180deg, #0a1f36, #061628); color: #f4e9d4; }
 .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }

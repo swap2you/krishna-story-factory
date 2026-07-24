@@ -34,7 +34,7 @@ const nav = [
   ["Library", "/library"],
   ["For Teachers", "/teachers"],
   ["Prabhupāda Vāṇī", "/prabhupada-vani"],
-  ["Bhakti Blog", "/blog"],
+  ["Knowledge", "/knowledge"],
   ["About", "/about"],
   ["Contact", "/contact"],
 ];
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <div className="container header-inner">
               <Link href="/" className="brand-lockup" aria-label="Bhāva home">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="brand-mark" src="/brand/logo-icon-only.webp" alt="" width={44} height={44} aria-hidden="true" />
+                <img className="brand-mark" src="/brand/logo-small-header.webp" alt="" width={44} height={44} aria-hidden="true" />
                 <span>
                   <span className="wordmark">bh<span>ā</span>va</span>
                   <span className="brand-sub">Devotional learning</span>

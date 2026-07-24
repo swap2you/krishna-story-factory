@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import { cantoCoverPath, brandSrc } from "@/lib/brand-assets";
 
 export const metadata: Metadata = {
   title: "Śrīmad-Bhāgavatam",
@@ -29,13 +30,14 @@ export default function SrimadBhagavatamPage() {
         eyebrow="Scripture collection"
         title="Śrīmad-Bhāgavatam"
         body="Twelve cantos of transcendental narration — the ripened fruit of Vedic literature. Stories will be adapted for young listeners with faithful source references."
+        heroSrc={brandSrc("collection-srimad-bhagavatam")}
       />
       <section className="section">
         <div className="container">
           <div className="scope-grid" style={{ marginBottom: "2rem" }}>
             <article className="scope-card">
               <h3>Purpose</h3>
-              <p>Retell the Bhāgavatam's major narratives as age-appropriate bedtime stories, each linked to its original canto, chapter, and verse range.</p>
+              <p>Retell the Bhāgavatam&apos;s major narratives as age-appropriate bedtime stories, each linked to its original canto, chapter, and verse range.</p>
             </article>
             <article className="scope-card">
               <h3>Audience</h3>
@@ -48,18 +50,26 @@ export default function SrimadBhagavatamPage() {
           </div>
 
           <h2 className="section-heading">Browse by Canto</h2>
-          <ul className="canto-list">
-            {CANTOS.map((canto) => (
-              <li key={canto.num}>
-                <Link href={`/library/srimad-bhagavatam/canto/${canto.num}`}>
-                  <span className="canto-num">{canto.num}</span>
-                  <span>
-                    <strong>{canto.title}</strong>
-                    <span className="hint" style={{ display: "block", fontSize: ".85rem" }}>{canto.summary}</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
+          <ul className="canto-grid">
+            {CANTOS.map((canto) => {
+              const cover = cantoCoverPath(canto.num);
+              return (
+                <li key={canto.num}>
+                  <Link href={`/library/srimad-bhagavatam/canto/${canto.num}`} className="canto-card">
+                    {cover ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={cover} alt="" width={320} height={400} aria-hidden="true" />
+                    ) : (
+                      <span className="canto-num">{canto.num}</span>
+                    )}
+                    <span className="canto-card__copy">
+                      <strong>Canto {canto.num}: {canto.title}</strong>
+                      <span className="hint">{canto.summary}</span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </section>
