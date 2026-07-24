@@ -64,7 +64,7 @@ function isAllowlistedAudioUrl(url: string): boolean {
   try {
     const parsed = new URL(url, typeof window !== "undefined" ? window.location.origin : "http://127.0.0.1");
     if (typeof window !== "undefined" && parsed.origin !== window.location.origin) return false;
-    return /\/api\/v1\/stories\/\d{3}\/assets\/narration\.mp3$/i.test(parsed.pathname);
+    return /narration\.mp3$/i.test(parsed.pathname);
   } catch {
     return false;
   }
@@ -235,14 +235,35 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     }
   }, []);
 
+  // Prefetch allowlisted narration so Play can start synchronously (preserve user gesture).
+  useEffect(() => {
+    if (!src) return;
+    const mediaSrc = absoluteUrl(src);
+    let cancelled = false;
+    void ensureBlobUrl(mediaSrc)
+      .then((objectUrl) => {
+        if (cancelled) return;
+        objectUrlRef.current = objectUrl;
+        setPath((prev) => (prev === "idle" ? "blob_ready" : prev));
+      })
+      .catch(() => {
+        /* Play will surface the error */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [src, ensureBlobUrl]);
+
   const playViaBlob = useCallback(async (audio: HTMLAudioElement, mediaSrc: string) => {
-    setStatus("Retrying with compatible playback…");
+    setStatus("Loading narration…");
     const objectUrl = await ensureBlobUrl(mediaSrc);
     objectUrlRef.current = objectUrl;
     setPath("blob_ready");
     const saved = Number(localStorage.getItem(resumeKey) || "0");
-    if (audio.src !== objectUrl) {
+    audio.pause();
+    if (!audio.src.startsWith("blob:") || audio.src !== objectUrl) {
       audio.src = objectUrl;
+      audio.load();
     }
     await new Promise<void>((resolve, reject) => {
       const onReady = () => {
@@ -258,7 +279,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
         audio.removeEventListener("canplay", onReady);
         audio.removeEventListener("error", onErr);
       };
-      if (audio.readyState >= 1) {
+      if (audio.readyState >= 2) {
         resolve();
         return;
       }
@@ -269,7 +290,18 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     if (saved > 0 && Number.isFinite(saved) && audio.duration && saved < audio.duration) {
       audio.currentTime = saved;
     }
-    await audio.play();
+    try {
+      await audio.play();
+    } catch (err: unknown) {
+      const name = err instanceof DOMException ? err.name : "";
+      if (name === "NotAllowedError") {
+        setPath("blob_ready");
+        setStatus("Narration ready — press Play");
+        setPlaying(false);
+        return;
+      }
+      throw err;
+    }
     const ok = await waitForAdvancement(audio, 0.05, 4000);
     if (!ok) throw new Error("Compatible playback did not advance");
     setPath("blob_playing");
@@ -289,10 +321,45 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     }
 
     const mediaSrc = absoluteUrl(activeSrcRef.current || src);
+    const cached = BLOB_CACHE.get(mediaSrc) || objectUrlRef.current;
+
+    // Synchronous gesture path when blob is already cached from prefetch.
+    if (cached) {
+      objectUrlRef.current = cached;
+      if (audio.src !== cached) {
+        audio.src = cached;
+      }
+      setPath("blob_fetching");
+      setStatus("Loading narration…");
+      const playPromise = audio.play();
+      void (async () => {
+        try {
+          if (playPromise) await playPromise;
+          const ok = await waitForAdvancement(audio, 0.05, 4000);
+          if (!ok) {
+            await playViaBlob(audio, mediaSrc);
+            return;
+          }
+          setPath("blob_playing");
+          setStatus(null);
+          setPlaying(true);
+        } catch (err: unknown) {
+          try {
+            await playViaBlob(audio, mediaSrc);
+          } catch (fallbackErr: unknown) {
+            setPlaying(false);
+            setPath("failed");
+            const message = fallbackErr instanceof Error ? fallbackErr.message : "Playback failed";
+            setError(`Narration unavailable. Download audio or retry. (${message})`);
+            setStatus(null);
+          }
+        }
+      })();
+      return;
+    }
+
     void (async () => {
       try {
-        // Blob-first policy: CoWork V1.4 proved native <audio> often never issues a request
-        // while fetch() succeeds. Prefer the known-good path immediately.
         setPath("blob_fetching");
         setStatus("Loading narration…");
         await playViaBlob(audio, mediaSrc);

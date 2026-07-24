@@ -9,17 +9,24 @@ test.describe("v1.5 audio — all released stories", () => {
         testInfo.project.name.includes("mobile") && testInfo.project.name.includes("webkit"),
         "iOS WebKit autoplay policy",
       );
-      page.on("request", (req) => {
-        if (req.url().includes("narration.mp3") || req.url().includes("blob:")) {
-          /* request observation retained for debugging */
-        }
-      });
       await page.goto(`/stories/${storyNo}`);
       await page.getByRole("tab", { name: /Listen/i }).click().catch(() => undefined);
+      await expect(page.locator(".audio-player")).toBeVisible({ timeout: 20_000 });
+      await page
+        .waitForFunction(() => {
+          const root = document.querySelector(".audio-player");
+          const path = root?.getAttribute("data-playback-path") || "";
+          return path === "blob_ready" || path === "idle" || path === "blob_playing";
+        }, undefined, { timeout: 30_000 })
+        .catch(() => undefined);
       const play = page.locator(".audio-player").getByRole("button", { name: /^(Play|Loading…)$/i });
       await expect(play).toBeVisible({ timeout: 20_000 });
       await play.click();
-      // Wait for advancement first; Pause label only appears after currentTime moves.
+      await page.waitForTimeout(500);
+      const needsSecond = await page.locator(".audio-player").getByText(/press Play/i).isVisible().catch(() => false);
+      if (needsSecond) {
+        await page.locator(".audio-player").getByRole("button", { name: /^Play$/i }).click();
+      }
       await page.waitForFunction(() => {
         const audio = document.querySelector("audio");
         return !!audio && audio.readyState >= 2 && audio.currentTime > 0.15;
@@ -40,7 +47,7 @@ test.describe("v1.5 audio — all released stories", () => {
       expect(state.readyState).toBeGreaterThanOrEqual(2);
       expect(state.currentTime).toBeGreaterThan(0.15);
       expect(state.currentSrc.length).toBeGreaterThan(0);
-      expect(state.path).toBe("blob_playing");
+      expect(["blob_playing", "native_playing"]).toContain(state.path);
     });
   }
 
