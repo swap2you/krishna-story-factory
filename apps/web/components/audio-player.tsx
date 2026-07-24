@@ -38,14 +38,36 @@ function isEditableTarget(target: EventTarget | null): boolean {
   return false;
 }
 
+function absoluteUrl(src: string): string {
+  if (typeof window === "undefined") return src;
+  try {
+    return new URL(src, window.location.origin).href;
+  } catch {
+    return src;
+  }
+}
+
+async function waitForPlayback(audio: HTMLAudioElement, minTime = 0.15, timeoutMs = 2500): Promise<boolean> {
+  const start = performance.now();
+  while (performance.now() - start < timeoutMs) {
+    if (!audio.paused && audio.readyState >= 2 && audio.currentTime > minTime) return true;
+    if (audio.error) return false;
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return !audio.paused && audio.readyState >= 2 && audio.currentTime > 0;
+}
+
 export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peaksUrl }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
+  const activeSrcRef = useRef<string>(src);
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
   const [volume, setVolume] = useState(1);
+  const [status, setStatus] = useState<string | null>(null);
   const [peaks, setPeaks] = useState<number[]>(() =>
     Array.from({ length: 64 }, (_, i) => 0.25 + ((i * 17) % 40) / 100),
   );
@@ -53,6 +75,13 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
   const [error, setError] = useState<string | null>(null);
   const resumeKey = `bhava:resume:${storyNo}`;
   const bookmarkKey = `bhava:bookmark:${storyNo}`;
+
+  const revokeObjectUrl = useCallback(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     if (audioRef.current && onAudioMount) onAudioMount(audioRef.current);
@@ -98,32 +127,34 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     });
   }, [peaks, current, duration]);
 
-  // Keep attribute src stable; reload only when the story media URL changes.
+  // Story change: reset UI and bind stable same-origin URL. Do not call load() (DEF-06).
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !src) return;
+    activeSrcRef.current = src;
     setPlaying(false);
     setCurrent(0);
+    setDuration(0);
     setError(null);
-    try {
-      audio.load();
-    } catch {
-      /* ignore */
-    }
-  }, [src]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
+    setStatus(null);
+    revokeObjectUrl();
+    if (!audio || !src) return;
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.src = absoluteUrl(src);
+    // Apply resume after metadata when available.
     const saved = Number(localStorage.getItem(resumeKey) || "0");
-    if (saved > 0 && Number.isFinite(saved)) {
-      const apply = () => {
-        if (audio.duration && saved < audio.duration) audio.currentTime = saved;
-      };
-      if (audio.readyState >= 1) apply();
-      else audio.addEventListener("loadedmetadata", apply, { once: true });
-    }
-  }, [resumeKey, src]);
+    const apply = () => {
+      if (saved > 0 && Number.isFinite(saved) && audio.duration && saved < audio.duration) {
+        audio.currentTime = saved;
+      }
+    };
+    audio.addEventListener("loadedmetadata", apply, { once: true });
+    return () => {
+      audio.removeEventListener("loadedmetadata", apply);
+    };
+  }, [src, resumeKey, revokeObjectUrl]);
+
+  useEffect(() => () => revokeObjectUrl(), [revokeObjectUrl]);
 
   useEffect(() => {
     if (sleepMinutes == null) return;
@@ -146,32 +177,93 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     audio.currentTime = Math.min(duration || audio.duration || 0, Math.max(0, audio.currentTime + delta));
   }, [duration]);
 
+  const playViaBlob = useCallback(async (audio: HTMLAudioElement, mediaSrc: string) => {
+    setStatus("Loading verified audio fallback…");
+    const response = await fetch(mediaSrc, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Audio fetch failed (${response.status})`);
+    }
+    const blob = await response.blob();
+    if (!blob.size) throw new Error("Audio response was empty");
+    revokeObjectUrl();
+    const objectUrl = URL.createObjectURL(blob);
+    objectUrlRef.current = objectUrl;
+    const saved = Number(localStorage.getItem(resumeKey) || "0");
+    audio.src = objectUrl;
+    await new Promise<void>((resolve, reject) => {
+      const onReady = () => {
+        cleanup();
+        resolve();
+      };
+      const onErr = () => {
+        cleanup();
+        reject(new Error("Blob audio failed to load"));
+      };
+      const cleanup = () => {
+        audio.removeEventListener("canplay", onReady);
+        audio.removeEventListener("error", onErr);
+      };
+      audio.addEventListener("canplay", onReady, { once: true });
+      audio.addEventListener("error", onErr, { once: true });
+      audio.load();
+    });
+    if (saved > 0 && Number.isFinite(saved) && audio.duration && saved < audio.duration) {
+      audio.currentTime = saved;
+    }
+    await audio.play();
+    const ok = await waitForPlayback(audio, 0.05, 4000);
+    if (!ok) throw new Error("Blob playback did not advance");
+    setStatus("Playing via verified fallback");
+    setPlaying(true);
+  }, [resumeKey, revokeObjectUrl]);
+
   const toggle = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
     setError(null);
-    if (audio.paused) {
-      // Call play() synchronously from the user-activation path before unrelated awaits.
-      if (!audio.getAttribute("src") && src) {
-        audio.src = src;
-      }
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        void playPromise
-          .then(() => {
-            setPlaying(true);
-          })
-          .catch((err: unknown) => {
-            setPlaying(false);
-            const message = err instanceof Error ? err.message : "Playback failed";
-            setError(`Could not start audio: ${message}`);
-          });
-      }
-    } else {
+
+    if (!audio.paused) {
       audio.pause();
       setPlaying(false);
+      return;
     }
-  }, [src]);
+
+    const mediaSrc = absoluteUrl(activeSrcRef.current || src);
+    // Start from user activation; prefer native URL, fall back to Blob when media pipeline stalls.
+    void (async () => {
+      try {
+        if (!objectUrlRef.current) {
+          if (audio.getAttribute("src") !== mediaSrc && !audio.src.startsWith("blob:")) {
+            audio.src = mediaSrc;
+          }
+          setStatus("Starting playback…");
+          const playPromise = audio.play();
+          if (playPromise) await playPromise;
+          const ok = await waitForPlayback(audio, 0.15, 2200);
+          if (ok) {
+            setStatus(null);
+            setPlaying(true);
+            return;
+          }
+          audio.pause();
+        }
+        await playViaBlob(audio, mediaSrc);
+      } catch (err: unknown) {
+        setPlaying(false);
+        const message = err instanceof Error ? err.message : "Playback failed";
+        setError(`Could not start audio: ${message}`);
+        setStatus(null);
+        try {
+          await playViaBlob(audio, mediaSrc);
+          setError(null);
+        } catch (fallbackErr: unknown) {
+          const fb = fallbackErr instanceof Error ? fallbackErr.message : "Fallback failed";
+          setError(`Could not start audio: ${fb}`);
+          setStatus(null);
+        }
+      }
+    })();
+  }, [playViaBlob, src]);
 
   useEffect(() => {
     if (!("mediaSession" in navigator) || !audioRef.current) return;
@@ -206,17 +298,13 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     <div className="audio-player" aria-label={`Audio player for ${title}`}>
       <audio
         ref={audioRef}
-        src={src}
-        preload="auto"
+        preload="metadata"
         onTimeUpdate={(event) => {
           const value = event.currentTarget.currentTime;
           setCurrent(value);
           localStorage.setItem(resumeKey, String(value));
         }}
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
-        onCanPlay={() => {
-          /* media pipeline ready */
-        }}
         onPlaying={() => setPlaying(true)}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
@@ -309,6 +397,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
       </div>
       <p className="hint" aria-live="polite">
         {formatTime(current)} / {formatTime(duration)} · remaining {formatTime(remaining)}
+        {status ? ` · ${status}` : ""}
       </p>
       {error ? (
         <div role="alert" className="hint" style={{ color: "var(--bhava-saffron)" }}>
@@ -316,14 +405,8 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
           <Button
             variant="quiet"
             onClick={() => {
-              const audio = audioRef.current;
-              if (!audio) return;
               setError(null);
-              audio.load();
-              void audio.play().then(() => setPlaying(true)).catch((err: unknown) => {
-                const message = err instanceof Error ? err.message : "Playback failed";
-                setError(`Could not start audio: ${message}`);
-              });
+              toggle();
             }}
           >
             Retry
