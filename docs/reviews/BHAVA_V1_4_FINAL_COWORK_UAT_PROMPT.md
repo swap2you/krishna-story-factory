@@ -4,7 +4,7 @@
 
 - Repository: `krishna-story-factory`
 - Branch only: `feature/bhava-portal-v1`
-- Final SHA to test: `6f968e85b7b6ccd07f9cb1511707d039e80932ee`
+- Final SHA to test: `d04ecb8996bb6ecfde11a27b728e11713edd444a`
 - Do **not** create a PR or merge. Evidence-only commits allowed after this prompt.
 
 ## Runtime
