@@ -364,9 +364,29 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
 
     const coloringLen = coloring.length;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { e.preventDefault(); setCarouselOpen(false); return; }
-      if (e.key === "ArrowLeft") { e.preventDefault(); setCarouselIndex((i) => Math.max(0, i - 1)); return; }
-      if (e.key === "ArrowRight") { e.preventDefault(); setCarouselIndex((i) => Math.min(coloringLen - 1, i + 1)); return; }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        setCarouselOpen(false);
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        e.stopPropagation();
+        setCarouselIndex((i) => Math.max(0, i - 1));
+        return;
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        e.stopPropagation();
+        setCarouselIndex((i) => Math.min(coloringLen - 1, i + 1));
+        return;
+      }
+      if (e.code === "Space") {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       if (e.key !== "Tab") return;
       const dialog = carouselDialogRef.current;
       if (!dialog) return;
@@ -379,9 +399,9 @@ export function StoryExperience({ story, storyNo }: { story: Story | null; story
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     };
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKeyDown, true);
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", onKeyDown, true);
       document.body.style.overflow = prevOverflow;
       previousFocusRef.current?.focus();
     };

@@ -1,8 +1,8 @@
 """Safe local serving for assets discovered in exact story packages."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import FileResponse, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -13,8 +13,7 @@ from ..models import Story
 router = APIRouter(prefix="/api/v1/stories", tags=["media"])
 
 
-@router.get("/{story_no}/assets/{filename}")
-def serve_asset(story_no: str, filename: str, session: Session = Depends(get_session)) -> FileResponse:
+def _resolve_asset(story_no: str, filename: str, session: Session):
     story = session.scalar(
         select(Story)
         .options(selectinload(Story.assets))
@@ -29,4 +28,25 @@ def serve_asset(story_no: str, filename: str, session: Session = Depends(get_ses
         (asset.media_type for asset in story.assets if asset.filename == filename and asset.media_type),
         None,
     ) or asset_media_type(filename)
+    return path, media_type
+
+
+@router.api_route("/{story_no}/assets/{filename}", methods=["GET", "HEAD"])
+def serve_asset(
+    story_no: str,
+    filename: str,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    path, media_type = _resolve_asset(story_no, filename, session)
+    if request.method == "HEAD":
+        size = path.stat().st_size
+        return Response(
+            status_code=200,
+            media_type=media_type,
+            headers={
+                "content-length": str(size),
+                "accept-ranges": "bytes",
+            },
+        )
     return FileResponse(path, media_type=media_type)

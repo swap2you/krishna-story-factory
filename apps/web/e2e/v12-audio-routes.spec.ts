@@ -3,7 +3,13 @@ import { expect, test } from "@playwright/test";
 test.describe("v1.2 audio and keyboard", () => {
   test("play advances currentTime on story 001", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name.includes("mobile") && testInfo.project.name.includes("webkit"), "iOS WebKit autoplay policy");
+    const requestPromise = page.waitForRequest(
+      (req) => req.url().includes("/assets/narration.mp3"),
+      { timeout: 20_000 },
+    );
     await page.goto("/stories/001");
+    const mediaReq = await requestPromise;
+    expect(mediaReq.url()).toContain("narration.mp3");
     const play = page.getByRole("button", { name: /^Play$/i });
     await expect(play).toBeVisible({ timeout: 20_000 });
     await play.click();
@@ -11,9 +17,11 @@ test.describe("v1.2 audio and keyboard", () => {
     await page.waitForTimeout(1200);
     const t = await page.evaluate(() => {
       const audio = document.querySelector("audio");
-      return audio ? audio.currentTime : -1;
+      return audio ? { currentTime: audio.currentTime, readyState: audio.readyState } : null;
     });
-    expect(t).toBeGreaterThan(0.2);
+    expect(t).not.toBeNull();
+    expect(t!.readyState).toBeGreaterThanOrEqual(2);
+    expect(t!.currentTime).toBeGreaterThan(0.2);
   });
 
   test("modal arrows do not change audio time", async ({ page }, testInfo) => {

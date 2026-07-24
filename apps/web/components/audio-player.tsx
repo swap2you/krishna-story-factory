@@ -25,8 +25,14 @@ function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   if (target.isContentEditable) return true;
   const tag = target.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
-  if (target.closest("input, textarea, select, [contenteditable='true'], [role='dialog'], [aria-modal='true']")) {
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || tag === "BUTTON" || tag === "A") {
+    return true;
+  }
+  if (
+    target.closest(
+      "input, textarea, select, button, a, [role='button'], [contenteditable='true'], [role='dialog'], [aria-modal='true']",
+    )
+  ) {
     return true;
   }
   return false;
@@ -92,6 +98,25 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     });
   }, [peaks, current, duration]);
 
+  // Deterministic source assignment — do not clear src during hydration.
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !src) return;
+    setPlaying(false);
+    setCurrent(0);
+    setDuration(0);
+    setError(null);
+    if (audio.src !== new URL(src, window.location.href).href) {
+      audio.src = src;
+    }
+    audio.preload = "metadata";
+    try {
+      audio.load();
+    } catch {
+      /* browsers may throw if aborted */
+    }
+  }, [src]);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -131,21 +156,27 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     if (!audio) return;
     setError(null);
     if (audio.paused) {
-      // Preserve user-activation: call play() synchronously from the click path.
+      // Call play() synchronously from the user-activation path before unrelated awaits.
+      if (!audio.getAttribute("src") && src) {
+        audio.src = src;
+      }
       const playPromise = audio.play();
-      setPlaying(true);
       if (playPromise !== undefined) {
-        void playPromise.catch((err: unknown) => {
-          setPlaying(false);
-          const message = err instanceof Error ? err.message : "Playback failed";
-          setError(`Could not start audio: ${message}`);
-        });
+        void playPromise
+          .then(() => {
+            setPlaying(true);
+          })
+          .catch((err: unknown) => {
+            setPlaying(false);
+            const message = err instanceof Error ? err.message : "Playback failed";
+            setError(`Could not start audio: ${message}`);
+          });
       }
     } else {
       audio.pause();
       setPlaying(false);
     }
-  }, []);
+  }, [src]);
 
   useEffect(() => {
     if (!("mediaSession" in navigator) || !audioRef.current) return;
@@ -163,6 +194,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
       if (isEditableTarget(event.target)) return;
       if (document.querySelector("[aria-modal='true'], [role='dialog']")) return;
       if (event.code === "Space") {
@@ -179,7 +211,6 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
     <div className="audio-player" aria-label={`Audio player for ${title}`}>
       <audio
         ref={audioRef}
-        src={src}
         preload="metadata"
         onTimeUpdate={(event) => {
           const value = event.currentTarget.currentTime;
@@ -187,12 +218,13 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
           localStorage.setItem(resumeKey, String(value));
         }}
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
+        onPlaying={() => setPlaying(true)}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
         onError={() => {
           setPlaying(false);
-          setError("Audio could not be loaded for this story.");
+          setError("Audio could not be loaded for this story. Use Download or Retry.");
         }}
       />
       <canvas
@@ -280,7 +312,24 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
         {formatTime(current)} / {formatTime(duration)} · remaining {formatTime(remaining)}
       </p>
       {error ? (
-        <p role="alert" className="hint" style={{ color: "var(--bhava-saffron)" }}>{error}</p>
+        <div role="alert" className="hint" style={{ color: "var(--bhava-saffron)" }}>
+          <p>{error}</p>
+          <Button
+            variant="quiet"
+            onClick={() => {
+              const audio = audioRef.current;
+              if (!audio) return;
+              setError(null);
+              audio.load();
+              void audio.play().then(() => setPlaying(true)).catch((err: unknown) => {
+                const message = err instanceof Error ? err.message : "Playback failed";
+                setError(`Could not start audio: ${message}`);
+              });
+            }}
+          >
+            Retry
+          </Button>
+        </div>
       ) : null}
       <p className="hint">Keyboard: Space play/pause · ← −15s · → +15s (disabled while a dialog is open). Progress resumes on this device.</p>
     </div>
