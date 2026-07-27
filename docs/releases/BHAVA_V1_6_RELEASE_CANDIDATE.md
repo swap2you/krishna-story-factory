@@ -6,7 +6,7 @@
 |-------|-------|
 | Branch | `feature/bhava-portal-v1` |
 | CoWork evidence commit | `8b07b9f0018413495bfa9a8de183e4c507aee8a8` |
-| Product tip (fill at gate close) | see `docs/product/uat/v1.6/runs/**/metadata.json` |
+| Product tip (matrix green) | `1fae6d89a5578a94a7376dd4b3cd386bb7a19724` |
 | PR / merge | **none** (explicit) |
 
 ## Gates closed
@@ -19,7 +19,7 @@
 6. Docs errata — V1.5 tested SHA `fe57b4661712845b12bf313ea46321d71723c1bb`.
 7. WebKit audio evidence + Safari manual checklist boundary.
 8. Lighthouse baseline recorded under `docs/product/uat/v1.6/performance/`.
-9. Full SHA-bound matrix under `docs/product/uat/v1.6/runs/<timestamp>-<short-sha>/`.
+9. Full SHA-bound matrix under `docs/product/uat/v1.6/runs/20260727-091915-1fae6d8/` (415 passed / 10 skipped / 0 failed).
 
 ## Safety preserved
 
@@ -36,4 +36,4 @@
 
 ## Verdict
 
-**READY FOR FINAL COWORK UAT** when the SHA-bound Playwright matrix reports `0 failed` at the tip SHA recorded in the run folder, local equals origin, and the tree is clean.
+**READY FOR FINAL COWORK UAT** — Playwright matrix green at `1fae6d8` (see run folder). Final evidence commit may sit one SHA ahead of the tested product tip; do not change application code after the tested SHA.

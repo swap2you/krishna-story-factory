@@ -20,4 +20,4 @@
 
 ## Verdict
 
-Pass for CoWork UAT once full Playwright matrix is green at tip SHA.
+Pass for CoWork UAT — full Playwright matrix green at `1fae6d8` (415 passed / 10 skipped / 0 failed).

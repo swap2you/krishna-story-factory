@@ -7,7 +7,8 @@ Independent review only. Do not modify code, stories, queue, scheduler generatio
 - Branch: `feature/bhava-portal-v1`
 - Confirm local SHA == origin
 - Instance: `cursor-v16` (`.bhava/instances/cursor-v16/runtime.json`)
-- Evidence: `docs/product/uat/v1.6/runs/**`
+- Evidence: `docs/product/uat/v1.6/runs/20260727-091915-1fae6d8/`
+- Tested SHA: `1fae6d89a5578a94a7376dd4b3cd386bb7a19724`
 
 ## Must verify
 

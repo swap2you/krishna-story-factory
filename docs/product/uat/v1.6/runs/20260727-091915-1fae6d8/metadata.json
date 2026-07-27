@@ -1,0 +1,10 @@
+{
+  "tested_sha": "1fae6d89a5578a94a7376dd4b3cd386bb7a19724",
+  "short_sha": "1fae6d8",
+  "instance": "cursor-v16",
+  "web_url": "http://127.0.0.1:3003",
+  "api_url": "http://127.0.0.1:8000",
+  "timestamp": "2026-07-27T13:19:15.0779885Z",
+  "note": "Final V1.6 SHA-bound matrix after Firefox audio assertion harden",
+  "branch": "feature/bhava-portal-v1"
+}
