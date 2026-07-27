@@ -1,0 +1,17 @@
+[
+  {
+    "Path": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\logs\\scheduler\\daily_20260727_100008.stdout.log",
+    "LastWriteTime": "2026-07-27T10:00:08.2985226-04:00",
+    "Length": 0
+  },
+  {
+    "Path": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\logs\\scheduler\\daily_20260727_100008.stderr.log",
+    "LastWriteTime": "2026-07-27T10:00:08.3005169-04:00",
+    "Length": 0
+  },
+  {
+    "Path": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\.bhava\\instances\\cursor-v16\\api.out.log",
+    "LastWriteTime": "2026-07-27T10:25:07.7849183-04:00",
+    "Length": 487869
+  }
+]
