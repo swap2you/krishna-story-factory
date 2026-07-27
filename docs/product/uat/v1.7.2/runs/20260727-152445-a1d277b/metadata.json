@@ -1,8 +1,0 @@
-{
-  "started_at": "2026-07-27T19:24:45.3426670Z",
-  "product_sha": "a1d277b0a55ab85b28c6e8a8a8f330a966b1b085",
-  "note": "Product SHA: Putana coverage gates, preferred activity pack, reviewed-sources 001-009. Story 009 published before matrix.",
-  "short_sha": "a1d277b",
-  "clean_tree_at_test_start": true,
-  "release": "v1.7.2"
-}

@@ -15,7 +15,7 @@ Independent release reviewer for Bhāva Portal V1.7.2 on `feature/bhava-portal-v
 
 ### Git hygiene
 
-1. Actual branch tip vs claimed product SHA `a1d277b0a55ab85b28c6e8a8a8f330a966b1b085` and the later evidence/docs commit(s).  
+1. Actual branch tip vs claimed product SHA `a1d277b0a55ab85b28c6e8a8a8f330a966b1b085` and evidence commit `7035fcd69c9dcf6c5490c14fe581b3e9fef601c2` (tip `7452a3dcd76bf59f2c8cf16ad77e7c3a2cb62063`).  
 2. Docs-only delta after product SHA (`git diff --name-only a1d277b0a55ab85b28c6e8a8a8f330a966b1b085..HEAD`).  
 3. Local equals `origin/feature/bhava-portal-v1`.  
 4. `main` / tags unchanged.
