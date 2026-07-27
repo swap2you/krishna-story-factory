@@ -6,7 +6,7 @@
 |-------|-------|
 | Starting branch SHA | `208841458a0605a7af762e9421c76571bd2303d5` |
 | Product SHA | `a1d277b0a55ab85b28c6e8a8a8f330a966b1b085` |
-| Evidence / docs tip | fill after evidence commit |
+| Evidence / docs tip | 7035fcd69c9dcf6c5490c14fe581b3e9fef601c2 |
 | Branch | `feature/bhava-portal-v1` |
 
 ## Why V1.7.2
