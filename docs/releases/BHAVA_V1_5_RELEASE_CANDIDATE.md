@@ -1,7 +1,7 @@
 # Bhāva Portal V1.5 — Release Candidate
 
 **Branch:** `feature/bhava-portal-v1`  
-**Tested SHA:** `fe57b46fbb273b9689cadb59c663fd0992d9a983`  
+**Tested SHA:** `fe57b4661712845b12bf313ea46321d71723c1bb`  
 **Evidence:** `docs/product/uat/v1.5/runs/20260724-181701-fe57b46/`  
 **PR:** none (not created)  
 **Main/master/tags:** unchanged
@@ -30,3 +30,8 @@
 ## Verdict
 
 **READY FOR FINAL COWORK UAT**
+
+## Errata
+
+- Corrected full tested SHA to `fe57b4661712845b12bf313ea46321d71723c1bb` (short `fe57b46`). An earlier draft incorrectly concatenated digits from an adjacent commit hash.
+
