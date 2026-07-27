@@ -1,13 +1,19 @@
 """Regression tests for Krishna Book non-skipping / coverage gates."""
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 
 from krishna_story_factory.coverage import (
+    clear_coverage_cache,
+    earliest_pending_major_story,
+    evaluate_ledger_integrity,
     evaluate_package_text,
+    evaluate_queue_advancement,
     evaluate_story_coverage,
     load_coverage_ledger,
 )
+from krishna_story_factory.csv_store import read_next_pending
 from krishna_story_factory.models import PlanRow, StoryContent
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -126,3 +132,157 @@ def test_archived_incorrect_009_text_would_fail_if_present() -> None:
     text = archived[0].read_text(encoding="utf-8", errors="ignore")
     result = evaluate_package_text("009", text)
     assert not result.ok
+
+
+def test_live_ledger_integrity_passes_v173() -> None:
+    clear_coverage_cache()
+    result = evaluate_ledger_integrity()
+    assert result.ok, result.errors
+    ledger = load_coverage_ledger()
+    ch7 = next(c for c in ledger["chapters"] if c["chapter"] == 7)
+    ch8 = next(c for c in ledger["chapters"] if c["chapter"] == 8)
+    assert {e["id"] for e in ch7["events"] if e["significance"] == "major"} >= {
+        "kb7-utthana-cart",
+        "kb7-trinavarta",
+        "kb7-yawn-universal-mouth",
+    }
+    assert {e["id"] for e in ch8["events"] if e["significance"] == "major"} >= {
+        "kb8-garga-name-giving",
+        "kb8-crawling-adventures",
+        "kb8-butter-complaints",
+        "kb8-dirt-universal-form",
+    }
+
+
+def test_incomplete_chapter7_only_trinavarta_fails() -> None:
+    ledger = deepcopy(load_coverage_ledger())
+    for chapter in ledger["chapters"]:
+        if chapter["chapter"] == 7:
+            chapter["events"] = [
+                {
+                    "id": "kb7-trinavarta",
+                    "significance": "major",
+                    "summary": "Tṛṇāvarta only",
+                    "mapped_stories": ["010"],
+                    "lifecycle": "pending",
+                    "reviewer": "tester",
+                }
+            ]
+    result = evaluate_ledger_integrity(ledger)
+    assert not result.ok
+    assert any("trinavarta" in e.lower() or "cart" in e.lower() for e in result.errors)
+
+
+def test_cart_breaking_absent_fails() -> None:
+    ledger = deepcopy(load_coverage_ledger())
+    for chapter in ledger["chapters"]:
+        if chapter["chapter"] == 7:
+            chapter["events"] = [e for e in chapter["events"] if e.get("id") != "kb7-utthana-cart"]
+    result = evaluate_ledger_integrity(ledger)
+    assert not result.ok
+    assert any("kb7-utthana-cart" in e or "cart" in e.lower() for e in result.errors)
+
+
+def test_first_universal_mouth_absent_fails() -> None:
+    ledger = deepcopy(load_coverage_ledger())
+    for chapter in ledger["chapters"]:
+        if chapter["chapter"] == 7:
+            chapter["events"] = [
+                e for e in chapter["events"] if e.get("id") != "kb7-yawn-universal-mouth"
+            ]
+    result = evaluate_ledger_integrity(ledger)
+    assert not result.ok
+    assert any("yawn" in e.lower() or "universal-mouth" in e.lower() for e in result.errors)
+
+
+def test_chapter8_only_universal_mouth_fails() -> None:
+    ledger = deepcopy(load_coverage_ledger())
+    for chapter in ledger["chapters"]:
+        if chapter["chapter"] == 8:
+            chapter["events"] = [
+                {
+                    "id": "kb8-universal-mouth",
+                    "significance": "major",
+                    "summary": "Only universal mouth",
+                    "mapped_stories": ["011"],
+                    "lifecycle": "planned",
+                    "reviewer": "tester",
+                }
+            ]
+    result = evaluate_ledger_integrity(ledger)
+    assert not result.ok
+    assert any("chapter 8" in e.lower() or "garga" in e.lower() for e in result.errors)
+
+
+def test_garga_absent_fails() -> None:
+    ledger = deepcopy(load_coverage_ledger())
+    for chapter in ledger["chapters"]:
+        if chapter["chapter"] == 8:
+            chapter["events"] = [
+                e for e in chapter["events"] if e.get("id") != "kb8-garga-name-giving"
+            ]
+    result = evaluate_ledger_integrity(ledger)
+    assert not result.ok
+    assert any("garga" in e.lower() for e in result.errors)
+
+
+def test_butter_and_dirt_collapsed_summary_fails() -> None:
+    ledger = deepcopy(load_coverage_ledger())
+    for chapter in ledger["chapters"]:
+        if chapter["chapter"] == 8:
+            chapter["events"] = [
+                {
+                    "id": "kb8-collapsed-butter-dirt",
+                    "significance": "major",
+                    "summary": "Butter-stealing and dirt-eating and universal form in one summary",
+                    "mapped_stories": ["015"],
+                    "lifecycle": "pending",
+                    "reviewer": "tester",
+                }
+            ]
+    result = evaluate_ledger_integrity(ledger)
+    assert not result.ok
+    assert any("collapsed" in e.lower() or "garga" in e.lower() or "missing" in e.lower() for e in result.errors)
+
+
+def test_story_010_as_trinavarta_while_cart_uncovered_fails() -> None:
+    ledger = deepcopy(load_coverage_ledger())
+    for chapter in ledger["chapters"]:
+        if chapter["chapter"] == 7:
+            for event in chapter["events"]:
+                if event.get("id") == "kb7-trinavarta":
+                    event["mapped_stories"] = ["010"]
+                if event.get("id") == "kb7-utthana-cart":
+                    event["mapped_stories"] = ["011"]
+    result = evaluate_ledger_integrity(ledger)
+    assert not result.ok
+    assert any("010" in e and ("trinavarta" in e.lower() or "cart" in e.lower()) for e in result.errors)
+
+
+def test_one_universal_story_cannot_cover_both_chapters() -> None:
+    ledger = deepcopy(load_coverage_ledger())
+    for chapter in ledger["chapters"]:
+        if chapter["chapter"] == 7:
+            for event in chapter["events"]:
+                if event.get("id") == "kb7-yawn-universal-mouth":
+                    event["mapped_stories"] = ["012"]
+        if chapter["chapter"] == 8:
+            for event in chapter["events"]:
+                if event.get("id") == "kb8-dirt-universal-form":
+                    event["mapped_stories"] = ["012"]
+    result = evaluate_ledger_integrity(ledger)
+    assert not result.ok
+    assert any("universal" in e.lower() for e in result.errors)
+
+
+def test_next_pending_is_cart_breaking() -> None:
+    nxt = read_next_pending(ROOT)
+    assert nxt is not None
+    assert nxt.chapter_no == "010"
+    assert "cart" in nxt.slug
+    queue = {f"{n:03d}": ("done" if n <= 9 else "pending") for n in range(1, 20)}
+    assert earliest_pending_major_story(queue) == "010"
+    ok = evaluate_queue_advancement("010", queue)
+    assert ok.ok, ok.errors
+    bad = evaluate_queue_advancement("011", queue)
+    assert not bad.ok

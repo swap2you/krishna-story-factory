@@ -127,23 +127,80 @@ chapters:
   - chapter: 7
     title: The Salvation of Tṛṇāvarta
     source: Krishna Book Ch.7 / SB 10.7
+    notes: >
+      Chapter 7 contains multiple major pastimes. Do not compress to Tṛṇāvarta alone.
+      First universal-mouth vision (yawning/nursing) is distinct from Chapter 8 dirt-eating vision.
     events:
-      - id: kb7-trinavarta
+      - id: kb7-utthana-cart
+        title: Baby Kṛṣṇa Breaks the Cart
+        source_boundary: ceremony through protective rites after cart collapse
         significance: major
-        summary: Tṛṇāvarta whirlwind demon; Kṛṣṇa delivers him
+        summary: Utthāna/birthday ceremony; hungry Kṛṣṇa under handcart kicks; cart breaks; children report; rites and charity
         mapped_stories: ["010"]
         lifecycle: pending
+        reviewer: Svarna Gauranga Das
+        notes: Must be Story 010 — cannot skip to Tṛṇāvarta
+      - id: kb7-trinavarta
+        title: The Salvation of Tṛṇāvarta
+        source_boundary: heavy in lap through residents recover Kṛṣṇa
+        significance: major
+        summary: Heavy in Yaśodā's lap; Tṛṇāvarta whirlwind; dust; neck caught; demon falls; Kṛṣṇa safe
+        mapped_stories: ["011"]
+        lifecycle: pending
+        reviewer: Svarna Gauranga Das
+        notes: Follows cart-breaking; not Story 010
+      - id: kb7-yawn-universal-mouth
+        title: Yaśodā Sees the Universe While Kṛṣṇa Yawns
+        source_boundary: nursing/yawning first mouth vision
+        significance: major
+        summary: While nursing, Kṛṣṇa yawns; Yaśodā sees the universe in His mouth (first manifestation)
+        mapped_stories: ["012"]
+        lifecycle: pending
+        reviewer: Svarna Gauranga Das
+        notes: Distinct from kb8-dirt-universal-form; cannot be satisfied by Chapter 8 alone
     reviewer: Svarna Gauranga Das
 
   - chapter: 8
     title: Vision of the Universal Form
     source: Krishna Book Ch.8 / SB 10.8
+    notes: >
+      Chapter 8 is not a single universal-mouth story. Garga, crawling, butter complaints,
+      and dirt-eating/second universal form each require dedicated (or reviewed-combined) coverage.
     events:
-      - id: kb8-universal-mouth
+      - id: kb8-garga-name-giving
+        title: Garga Muni Names Kṛṣṇa and Balarāma
+        source_boundary: Garga arrives through prophecies and departure
         significance: major
-        summary: Yaśodā sees the universe within Kṛṣṇa's mouth
-        mapped_stories: ["011"]
-        lifecycle: planned
+        summary: Secret name-giving; Rāma/Baladeva/Saṅkarṣaṇa; Kṛṣṇa/Vāsudeva; prophecies
+        mapped_stories: ["013"]
+        lifecycle: pending
+        reviewer: Svarna Gauranga Das
+      - id: kb8-crawling-adventures
+        title: Kṛṣṇa and Balarāma’s Crawling Adventures
+        source_boundary: crawling through early walking protection
+        significance: major
+        summary: Crawling, bells, clay, calves' tails; mothers protect from animals, water, fire
+        mapped_stories: ["014"]
+        lifecycle: pending
+        reviewer: Svarna Gauranga Das
+      - id: kb8-butter-complaints
+        title: The Gopīs Complain About Butter Theft
+        source_boundary: loving gopī complaints about butter/yogurt mischief
+        significance: major
+        summary: Butter, yogurt, milk mischief; gopīs complain lovingly; Yaśodā soft response
+        mapped_stories: ["015"]
+        lifecycle: pending
+        reviewer: Svarna Gauranga Das
+        notes: Not the same as Chapter 9 Dāmodara binding
+      - id: kb8-dirt-universal-form
+        title: Kṛṣṇa Eats Dirt and Reveals the Universe
+        source_boundary: dirt accusation through Droṇa-Dharā benediction
+        significance: major
+        summary: Dirt-eating; second universal-form vision; philosophy; yoga-māyā; Droṇa-Dharā
+        mapped_stories: ["016"]
+        lifecycle: pending
+        reviewer: Svarna Gauranga Das
+        notes: Second universal-form manifestation — distinct from kb7-yawn-universal-mouth
     reviewer: Svarna Gauranga Das
 
   - chapter: 9
@@ -151,10 +208,13 @@ chapters:
     source: Krishna Book Ch.9 / SB 10.9
     events:
       - id: kb9-damodara
+        title: Mother Yaśodā Binds Lord Kṛṣṇa
+        source_boundary: Complete Krishna Book Chapter 9
         significance: major
-        summary: Butter mischief; mother binds Kṛṣṇa
-        mapped_stories: ["012"]
+        summary: Butter mischief culminates; mother binds Kṛṣṇa (Dāmodara)
+        mapped_stories: ["017"]
         lifecycle: planned
+        reviewer: Svarna Gauranga Das
     reviewer: Svarna Gauranga Das
 
   - chapter: 10
@@ -162,8 +222,11 @@ chapters:
     source: Krishna Book Ch.10 / SB 10.10
     events:
       - id: kb10-arjuna-trees
+        title: The Deliverance of Nalakūvara and Maṇigrīva
+        source_boundary: Complete Krishna Book Chapter 10
         significance: major
         summary: Twin arjuna trees; Nalakūvara and Maṇigrīva delivered
-        mapped_stories: ["013"]
+        mapped_stories: ["018"]
         lifecycle: planned
+        reviewer: Svarna Gauranga Das
     reviewer: Svarna Gauranga Das

@@ -1,18 +1,17 @@
-# Bhāva Stories 001–009 — Canonical Coverage Audit (V1.7.2)
+# Bhāva Stories 001–009 — Canonical Coverage Audit
 
-**Release:** V1.7.2 Pūtanā repair  
-**Product SHA (gates + activity pack + reviewed-sources test):** `a1d277b0a55ab85b28c6e8a8a8f330a966b1b085`  
+**Releases:** V1.7.2 (Pūtanā repair) + V1.7.3 (Ch.7–8 future sequence)  
 **Ledger:** `data/series/krishna_book_coverage.yaml`  
-**Constraint:** Stories 001–008 were not modified. Story 010 remains pending/hidden.
+**Constraint:** Stories 001–009 packages were not modified in V1.7.3. Story 010 is **not generated**.
 
 ## Method
 
 - Compared each public package’s manifest source fields to the coverage ledger.
-- Verified Stories 001–008 SHA-256 hashes against `docs/releases/BHAVA_V1_7_2_SAFETY_BASELINE.json` (all match).
-- For Story 009, checked main-story body (excluding Next Story Preview) for prohibited later-chapter leakage and required Pūtanā markers.
-- Did not rewrite Stories 001–008 even if future editorial depth improvements are desirable.
+- Verified Stories 001–009 SHA-256 hashes against `docs/releases/BHAVA_V1_7_3_SAFETY_BASELINE.json`.
+- For Story 009, confirmed full Pūtanā coverage remains (no universe-in-mouth as Ch.6 event).
+- Added future-sequence audit for Chapters 7–10 (planning only).
 
-## Summary verdict
+## Summary verdict (published packages)
 
 | Story | Source chapter | Coverage vs ledger | Later-chapter leak | Verdict |
 |------:|----------------|--------------------|--------------------|---------|
@@ -24,61 +23,45 @@
 | 006 | KB Ch.3 | Major event `kb3-birth` | None observed | PASS (unchanged) |
 | 007 | KB Ch.4 | Major event `kb4-yogamaya-durga` | None observed | PASS (unchanged) |
 | 008 | KB Ch.5 | Major event `kb5-nanda-vasudeva` | None observed | PASS (unchanged) |
-| 009 | KB Ch.6 / SB 10.6 | Full Pūtanā event set `kb6-*` | None in main body (Tṛṇāvarta only in Next Preview) | PASS (repaired) |
+| 009 | KB Ch.6 / SB 10.6 | Full Pūtanā event set `kb6-*` | None in main body | PASS (locked) |
 
-**Blockers found for V1.7.2 scope:** none.  
-**Story 010:** Tṛṇāvarta (KB Ch.7) remains `pending` with no public `output/010_*` package — correct.
+**Story 010 package:** absent (`output/010_*` not present) — correct for V1.7.3.
 
-## Per-story notes
+## Future sequence (Chapters 7–10) — V1.7.3
 
-### 001 — The Earth Prays for Krishna to Come
-- **Folder:** `001_the-earth-prays-for-krishna`
-- **Covered units:** Mother Earth / Brahmā / Ocean of Milk opening (`kb1-bhumi-brahma`)
-- **Omissions:** Remaining Ch.1 majors correctly deferred to 002–004
-- **Verdict:** PASS — hash-locked; not modified
+| Story | Planned pastime | Source | Lifecycle |
+|------:|-----------------|--------|-----------|
+| 010 | Baby Kṛṣṇa Breaks the Cart | KB Ch.7 | pending (next) |
+| 011 | The Salvation of Tṛṇāvarta | KB Ch.7 | pending |
+| 012 | Yaśodā Sees the Universe While Kṛṣṇa Yawns (1st mouth vision) | KB Ch.7 | pending |
+| 013 | Garga Muni Names Kṛṣṇa and Balarāma | KB Ch.8 | pending |
+| 014 | Kṛṣṇa and Balarāma’s Crawling Adventures | KB Ch.8 | pending |
+| 015 | The Gopīs Complain About Butter Theft | KB Ch.8 | pending |
+| 016 | Kṛṣṇa Eats Dirt and Reveals the Universe (2nd vision) | KB Ch.8 | pending |
+| 017 | Mother Yaśodā Binds Lord Kṛṣṇa | KB Ch.9 | planned |
+| 018 | Nalakūvara and Maṇigrīva | KB Ch.10 | planned |
 
-### 002 — The Wedding and the Heavenly Voice
-- **Covered units:** Wedding + heavenly voice (`kb1-wedding-voice`)
-- **Verdict:** PASS — hash-locked; not modified
+Confirmations:
 
-### 003 — Vasudeva Keeps His Word
-- **Covered units:** First son / word kept (`kb1-kirtiman`)
-- **Verdict:** PASS — hash-locked; not modified
+- Story 010 is **cart-breaking**, not Tṛṇāvarta
+- Tṛṇāvarta is mapped (011), not skipped
+- Both universal-form manifestations mapped separately (012 vs 016)
+- Chapter 8 majors (Garga, crawling, butter, dirt) each mapped
+- Story 010 has **not** been generated
 
-### 004 — Narada’s Warning and Kamsa’s Decision
-- **Covered units:** Nārada warning / imprisonment (`kb1-narada-imprisonment`)
-- **Verdict:** PASS — hash-locked; not modified
+Boundary review: `docs/editorial/KRISHNA_BOOK_CHAPTERS_7_8_EVENT_BOUNDARY_REVIEW.md`  
+Migration record: `docs/editorial/BHAVA_V1_7_3_FUTURE_SEQUENCE_MIGRATION.md`
 
-### 005 — Prayers by the Demigods for Lord Krishna in the Womb
-- **Covered units:** Demigod prayers (`kb2-demigod-prayers`)
-- **Verdict:** PASS — hash-locked; not modified
+## Per-story notes (001–009)
 
-### 006 — The Birth of Lord Krishna
-- **Covered units:** Birth appearance (`kb3-birth`)
-- **Verdict:** PASS — hash-locked; not modified
+### 001–008
+Hash-locked against the V1.7.3 safety baseline; not modified. Ledger mappings unchanged from prior published coverage.
 
-### 007 — Kamsa Begins His Persecutions
-- **Covered units:** Yoga-māyā / Durgā / persecution (`kb4-yogamaya-durga`)
-- **Verdict:** PASS — hash-locked; not modified
-
-### 008 — The Meeting of Nanda and Vasudeva
-- **Covered units:** Mathurā meeting (`kb5-nanda-vasudeva`)
-- **Next link:** Portal should surface repaired Story 009 (Pūtanā), not the retired wrong package
-- **Verdict:** PASS — hash-locked; not modified
-
-### 009 — Pūtanā — Kṛṣṇa’s Astonishing Mercy (repaired)
-- **Folder:** `009_putana-krishnas-astonishing-mercy` (replaces retired `009_baby-krishna-protects-gokula`)
-- **Sources:** Krishna Book Chapter 6 “Pūtanā Killed”; Śrīmad-Bhāgavatam 10.6
-- **Covered units (main story + narration):** Nanda’s shelter; Kaṁsa sends Pūtanā; beautiful form; lap / poison breast; life air drawn; gigantic fall; gopī protection; fragrant pyre; motherly destination; hearing brings favor of Govinda
-- **Prohibited content check:** No universe-in-mouth as Ch.6 event; no Tṛṇāvarta/whirlwind in main body; Pūtanā is the present pastime (not “already defeated”)
-- **Preview:** May announce Tṛṇāvarta only after the full Pūtanā narration
-- **Artifacts:** Exact-eight rebuilt and publishable=`true`, quality=`PASS`
-- **Verdict:** PASS (V1.7.2 repair)
-
-## Defect closed by this audit
-
-Previous Story 009 claimed Chapter 6 while narrating post-Pūtanā / universe-in-mouth material and treating Pūtanā as already past. That package is privately archived and unpublished; public 009 is now the full Pūtanā pastime.
+### 009 — Pūtanā — Kṛṣṇa’s Astonishing Mercy (locked)
+- **Folder:** `009_putana-krishnas-astonishing-mercy`
+- **Sources:** Krishna Book Chapter 6; Śrīmad-Bhāgavatam 10.6
+- **Verdict:** PASS — unchanged in V1.7.3
 
 ## Non-skipping guard
 
-Publication is blocked when major events are omitted, only mentioned in recap/preview, or replaced by later-chapter material. Regression coverage: `tests/test_coverage_non_skipping.py`.
+Publication and ledger integrity block incomplete Chapter 7–8 maps, recap/preview-only coverage, and queue jumps over uncovered majors. Regressions: `tests/test_coverage_non_skipping.py`.
