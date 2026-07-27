@@ -28,6 +28,7 @@ from .csv_store import (
 )
 from .generation.story_generator import StoryGenerator
 from .generation.source_guard import run_source_guard
+from .coverage import evaluate_story_coverage
 from .images.generator import generate_coloring, generate_poster, generate_simple_coloring
 from .images.client import ImageClient
 from .manifest import update_component_manifest, write_manifest
@@ -447,6 +448,9 @@ def _run_once(
 
         content = apply_known_story_repairs(plan.chapter_no, content)
         source_errors = run_source_guard(plan, content)
+        coverage = evaluate_story_coverage(plan, content)
+        if coverage.errors:
+            source_errors = list(source_errors) + list(coverage.errors)
         if source_errors:
             raise PipelineError("Source-fact validation failed: " + " | ".join(source_errors))
         story_md = content.to_markdown()

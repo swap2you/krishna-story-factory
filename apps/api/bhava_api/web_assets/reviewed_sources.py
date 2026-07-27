@@ -1,4 +1,4 @@
-"""Hand-reviewed source boundaries and verified Vedabase URLs for Stories 001–007.
+"""Hand-reviewed source boundaries and verified Vedabase URLs for Stories 001–009.
 
 URLs were opened and confirmed on vedabase.io before recording. Do not invent links.
 Private local PDF page ranges stay optional and are never served publicly.
@@ -16,8 +16,12 @@ KB_1 = "https://vedabase.io/en/library/kb/1/"
 KB_2 = "https://vedabase.io/en/library/kb/2/"
 KB_3 = "https://vedabase.io/en/library/kb/3/"
 KB_4 = "https://vedabase.io/en/library/kb/4/"
+KB_5 = "https://vedabase.io/en/library/kb/5/"
+KB_6 = "https://vedabase.io/en/library/kb/6/"
 SB_10_1 = "https://vedabase.io/en/library/sb/10/1/"
 SB_10_4 = "https://vedabase.io/en/library/sb/10/4/"
+SB_10_5 = "https://vedabase.io/en/library/sb/10/5/"
+SB_10_6 = "https://vedabase.io/en/library/sb/10/6/"
 
 
 REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
@@ -186,6 +190,56 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         "reviewed_date": REVIEWED_DATE,
         "permissions_note": (
             "Story maps to Krishna Book Chapter 4 with SB 10.4 as companion scripture. "
+            "Open Vedabase for published text; Bhāva does not mirror it."
+        ),
+    },
+    "008": {
+        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
+        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "chapter_number": 5,
+        "chapter_title": "The Meeting of Nanda and Vasudeva",
+        "passage_start": "Opening of Krishna Book Chapter 5",
+        "passage_end": "Conclusion of Krishna Book Chapter 5",
+        "vedabase_url": KB_5,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 5,
+            "vedabase_url": SB_10_5,
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": "2026-07-27",
+        "permissions_note": (
+            "Story maps to Krishna Book Chapter 5 with SB 10.5 as companion scripture. "
+            "Open Vedabase for published text; Bhāva does not mirror it."
+        ),
+    },
+    "009": {
+        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
+        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "chapter_number": 6,
+        "chapter_title": "Pūtanā Killed",
+        "passage_start": "Nanda takes shelter; Kaṁsa sends Pūtanā",
+        "passage_end": "Fragrant pyre and motherly destination teaching",
+        "vedabase_url": KB_6,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 6,
+            "vedabase_url": SB_10_6,
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": "2026-07-27",
+        "permissions_note": (
+            "V1.7.2 repair: Story 009 must narrate the full Pūtanā pastime (KB Ch.6 / SB 10.6). "
             "Open Vedabase for published text; Bhāva does not mirror it."
         ),
     },

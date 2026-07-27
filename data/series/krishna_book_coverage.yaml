@@ -1,0 +1,169 @@
+# Krishna Book chapter-event coverage ledger (Bhāva V1.7.2+)
+# A chapter may map to multiple stories. Never compress a major pastime
+# merely to preserve one-story-per-chapter. Recap/preview mentions are NOT coverage.
+
+schema_version: 1
+reviewer: Svarna Gauranga Das
+updated_for_release: v1.7.2
+
+rules:
+  - recap_mention_is_not_coverage: true
+  - preview_mention_is_not_coverage: true
+  - one_sentence_mention_is_not_full_coverage_of_major: true
+  - later_chapter_events_must_not_leak: true
+
+chapters:
+  - chapter: 1
+    title: Advent of Lord Kṛṣṇa
+    source: Krishna Book Ch.1 / SB 10.1
+    events:
+      - id: kb1-bhumi-brahma
+        significance: major
+        summary: Mother Earth as cow; Brahmā; Ocean of Milk; message in heart
+        mapped_stories: ["001"]
+        lifecycle: published
+      - id: kb1-wedding-voice
+        significance: major
+        summary: Devakī-Vasudeva wedding; heavenly voice; Kaṁsa calmed by promise
+        mapped_stories: ["002"]
+        lifecycle: published
+      - id: kb1-kirtiman
+        significance: major
+        summary: First son Kīrtimān; Vasudeva keeps word; Kaṁsa initially returns child
+        mapped_stories: ["003"]
+        lifecycle: published
+      - id: kb1-narada-imprisonment
+        significance: major
+        summary: Nārada warns; imprisonment; Ugrasena removed
+        mapped_stories: ["004"]
+        lifecycle: published
+    reviewer: Svarna Gauranga Das
+
+  - chapter: 2
+    title: Prayers by the Demigods for Lord Kṛṣṇa in the Womb
+    source: Krishna Book Ch.2 / SB 10.2
+    events:
+      - id: kb2-demigod-prayers
+        significance: major
+        summary: Demigods pray to the Lord within Devakī
+        mapped_stories: ["005"]
+        lifecycle: published
+    reviewer: Svarna Gauranga Das
+
+  - chapter: 3
+    title: The Birth of Lord Kṛṣṇa
+    source: Krishna Book Ch.3 / SB 10.3
+    events:
+      - id: kb3-birth
+        significance: major
+        summary: Auspicious signs; four-armed appearance; infant; Vasudeva prepares departure
+        mapped_stories: ["006"]
+        lifecycle: published
+    reviewer: Svarna Gauranga Das
+
+  - chapter: 4
+    title: Kaṁsa Begins His Persecutions
+    source: Krishna Book Ch.4 / SB 10.4
+    events:
+      - id: kb4-yogamaya-durga
+        significance: major
+        summary: Yoga-māyā cries; eight-armed Durgā; release; ministers; persecution
+        mapped_stories: ["007"]
+        lifecycle: published
+    reviewer: Svarna Gauranga Das
+
+  - chapter: 5
+    title: The Meeting of Nanda and Vasudeva
+    source: Krishna Book Ch.5 / SB 10.5
+    events:
+      - id: kb5-nanda-vasudeva
+        significance: major
+        summary: Nanda and Vasudeva meet; gifts; exchange of news; return preparations
+        mapped_stories: ["008"]
+        lifecycle: published
+    reviewer: Svarna Gauranga Das
+
+  - chapter: 6
+    title: Pūtanā Killed
+    source: Krishna Book Ch.6 / SB 10.6
+    events:
+      - id: kb6-nanda-shelter
+        significance: supporting
+        summary: Nanda remembers Vasudeva's warning and takes shelter
+        mapped_stories: ["009"]
+        lifecycle: published
+      - id: kb6-putana-sent
+        significance: major
+        summary: Kaṁsa sends Pūtanā; she kills infants
+        mapped_stories: ["009"]
+        lifecycle: published
+      - id: kb6-beautiful-form
+        significance: major
+        summary: Pūtanā assumes beautiful form and enters Gokula
+        mapped_stories: ["009"]
+        lifecycle: published
+      - id: kb6-poison-breast
+        significance: major
+        summary: Takes Kṛṣṇa on lap; offers poison-smeared breast; life air taken
+        mapped_stories: ["009"]
+        lifecycle: published
+      - id: kb6-gigantic-fall
+        significance: major
+        summary: Gigantic form revealed and falls; Kṛṣṇa plays safely
+        mapped_stories: ["009"]
+        lifecycle: published
+      - id: kb6-gopi-protection
+        significance: major
+        summary: Yaśodā, Rohiṇī, gopīs protect remembering Viṣṇu's names
+        mapped_stories: ["009"]
+        lifecycle: published
+      - id: kb6-fragrant-mercy
+        significance: major
+        summary: Body burned fragrant; motherly destination; hearing brings attachment to Govinda
+        mapped_stories: ["009"]
+        lifecycle: published
+    reviewer: Svarna Gauranga Das
+
+  - chapter: 7
+    title: The Salvation of Tṛṇāvarta
+    source: Krishna Book Ch.7 / SB 10.7
+    events:
+      - id: kb7-trinavarta
+        significance: major
+        summary: Tṛṇāvarta whirlwind demon; Kṛṣṇa delivers him
+        mapped_stories: ["010"]
+        lifecycle: pending
+    reviewer: Svarna Gauranga Das
+
+  - chapter: 8
+    title: Vision of the Universal Form
+    source: Krishna Book Ch.8 / SB 10.8
+    events:
+      - id: kb8-universal-mouth
+        significance: major
+        summary: Yaśodā sees the universe within Kṛṣṇa's mouth
+        mapped_stories: ["011"]
+        lifecycle: planned
+    reviewer: Svarna Gauranga Das
+
+  - chapter: 9
+    title: Mother Yaśodā Binds Lord Kṛṣṇa
+    source: Krishna Book Ch.9 / SB 10.9
+    events:
+      - id: kb9-damodara
+        significance: major
+        summary: Butter mischief; mother binds Kṛṣṇa
+        mapped_stories: ["012"]
+        lifecycle: planned
+    reviewer: Svarna Gauranga Das
+
+  - chapter: 10
+    title: The Deliverance of Nalakūvara and Maṇigrīva
+    source: Krishna Book Ch.10 / SB 10.10
+    events:
+      - id: kb10-arjuna-trees
+        significance: major
+        summary: Twin arjuna trees; Nalakūvara and Maṇigrīva delivered
+        mapped_stories: ["013"]
+        lifecycle: planned
+    reviewer: Svarna Gauranga Das

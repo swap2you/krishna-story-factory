@@ -63,6 +63,29 @@ def source_fact_brief(plan: PlanRow) -> str:
             "fabricated Kamsa dialogue quotations; absolute claims that Krishna prevents all physical suffering; "
             "Chapter 5 meeting of Nanda as main-story content."
         )
+    if plan.chapter_no == "009":
+        brief += (
+            "\nSTORY 009 HARD BOUNDARY (Krishna Book Ch. 6 / SB 10.6 — Pūtanā Killed): "
+            "Narrate the FULL Pūtanā pastime in main_story AND audio_script (not only recap/preview). "
+            "Required coverage in order: Nanda remembers Vasudeva's warning and takes shelter; "
+            "Kaṁsa sends Pūtanā who kills infants; she assumes a beautiful form and enters Gokula; "
+            "she enters Nanda's home and takes Kṛṣṇa on her lap; Kṛṣṇa may close His eyes "
+            "(simple source-supported interpretation only); she offers her poison-smeared breast; "
+            "Kṛṣṇa sucks the poison and her life air; she reveals her gigantic form and falls; "
+            "Kṛṣṇa remains safe and plays fearlessly on her body; Yaśodā, Rohiṇī, and the gopīs "
+            "lift Him and perform source-supported protection while remembering Viṣṇu's names; "
+            "Nanda and the cowherd men return; her body is burned and gives a fragrant aroma "
+            "because Kṛṣṇa purified her; He grants her a motherly/nurse-like destination despite "
+            "her murderous intention; faithful hearing brings attachment to Govinda. "
+            "CENTRAL LESSON: Kṛṣṇa magnifies even the smallest appearance of service—Pūtanā came "
+            "with poison, yet because she approached in the outward role of a mother, Kṛṣṇa purified "
+            "her and granted astonishing mercy. "
+            "Next preview may announce Tṛṇāvarta ONLY after the full Pūtanā story. "
+            "FORBIDDEN as Chapter 6 events: universe in Kṛṣṇa's mouth; Tṛṇāvarta whirlwind/storm; "
+            "spirits/goblins circling Gokula; fabricated shadow-creatures/omens; claiming Pūtanā was "
+            "already defeated before this story; Chapter 7 or 8 material as main content; "
+            "claiming the Pūtanā episode alone made Śukadeva a devotee."
+        )
     return brief
 
 
@@ -270,6 +293,84 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
             errors.append("Story 007 must have exactly five reflection questions.")
         if len([x for x in (content.five_star_challenge or []) if str(x).strip()]) != 5:
             errors.append("Story 007 must have exactly five challenges.")
+    if plan.chapter_no == "009":
+        brief_terms = (
+            ("putana", "pūtanā", "putanā"),
+            ("poison", "poison-smear", "poisoned"),
+            ("breast",),
+            ("gigantic", "huge form", "giant form", "enormous"),
+            ("fragrant", "sweet aroma", "sweet-smelling", "perfume"),
+            ("yasoda", "yaśodā", "yashoda"),
+            ("mercy", "motherly", "nurse"),
+        )
+        labels = (
+            "Story 009 must narrate Pūtanā by name.",
+            "Story 009 must include the poison offered to Kṛṣṇa.",
+            "Story 009 must include the poison-smeared breast.",
+            "Story 009 must include Pūtanā's gigantic form falling.",
+            "Story 009 must include the fragrant aroma when her body is burned.",
+            "Story 009 must include Yaśodā (and the gopīs' protection).",
+            "Story 009 must teach Kṛṣṇa's astonishing mercy / motherly destination.",
+        )
+        for choices, message in zip(brief_terms, labels):
+            _require(combined, choices, message, errors)
+        _require(combined, ("nanda",), "Story 009 must include Nanda.", errors)
+        _require(combined, ("kamsa", "kaṁsa", "kamsa"), "Story 009 must include Kaṁsa sending Pūtanā.", errors)
+        _require(
+            combined,
+            ("life air", "life-air", "vital air", "sucked out her life", "took her life"),
+            "Story 009 must say Kṛṣṇa took her life air with the poison.",
+            errors,
+        )
+        for phrase in (
+            "after putana's defeat",
+            "after pūtanā's defeat",
+            "putana was already",
+            "pūtanā was already",
+            "already defeated",
+            "universe in",
+            "universal form",
+            "whole universe",
+            "yawning showed",
+            "trinavarta",
+            "tṛṇāvarta",
+            "whirlwind",
+            "goblins circling",
+            "spirits circling",
+            "shadow-creature",
+            "shadow creature",
+        ):
+            if phrase in combined:
+                # Allow next-preview only in next_story_preview / end matter, not main narrative.
+                if phrase in ("trinavarta", "tṛṇāvarta", "whirlwind") and phrase in (
+                    content.next_story_preview or ""
+                ).lower():
+                    continue
+                if phrase in story or phrase in narration.replace(
+                    (content.next_story_preview or "").lower(), " "
+                ):
+                    errors.append(f"Story 009 Chapter 6 boundary violation: {phrase!r}.")
+        if "sukadeva" in combined and "putana" in combined:
+            if re.search(r"sukadeva.{0,80}(only|specifically).{0,40}putan", combined) or re.search(
+                r"putan.{0,80}(made|caused).{0,40}sukadeva", combined
+            ):
+                errors.append(
+                    "Story 009 must not claim the Pūtanā episode alone made Śukadeva a devotee."
+                )
+        if len([x for x in (content.five_lessons or []) if str(x).strip()]) != 5:
+            errors.append("Story 009 must have exactly five lessons.")
+        # Required event-unit coverage (major pastime cannot be recap-only).
+        main_only = f"{content.main_story}\n{content.audio_script}".lower()
+        for needle, msg in (
+            ("breast", "Main story/narration must cover the poison breast event, not only a recap."),
+            ("fragrant", "Main story/narration must cover the fragrant pyre, not only a recap."),
+            ("gigantic", "Main story/narration must cover the gigantic form, not only a recap."),
+        ):
+            if needle not in main_only and needle == "gigantic":
+                if not any(t in main_only for t in ("huge form", "giant form", "enormous form")):
+                    errors.append(msg)
+            elif needle not in main_only and needle != "gigantic":
+                errors.append(msg)
     return errors
 
 
