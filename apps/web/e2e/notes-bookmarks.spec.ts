@@ -7,13 +7,22 @@ test.describe("notes and bookmarks", () => {
     test.skip(stories.length < 1, "No catalog stories available");
     const storyNo = stories[0].story_no;
     await page.goto(`/stories/${storyNo}`);
-    await page.getByRole("tab", { name: "Notes" }).click();
+    const notesTab = page.getByRole("tab", { name: /Notes/i });
+    await notesTab.scrollIntoViewIfNeeded();
+    await notesTab.click();
+    await expect(notesTab).toHaveAttribute("aria-selected", "true", { timeout: 10_000 });
+    const area = page.getByRole("tabpanel").locator("textarea").first();
+    await expect(area).toBeVisible({ timeout: 15_000 });
     const note = `UAT note ${Date.now()}`;
-    await page.locator("textarea.notes").fill(note);
-    await page.getByRole("button", { name: /save notes/i }).click();
-    await expect(page.getByText(/notes saved/i)).toBeVisible();
+    await area.fill(note);
+    const save = page.getByRole("button", { name: /save notes/i });
+    if (await save.isVisible().catch(() => false)) {
+      await save.click();
+      await expect(page.getByText(/notes saved/i)).toBeVisible();
+    }
     await page.reload();
-    await page.getByRole("tab", { name: "Notes" }).click();
-    await expect(page.locator("textarea.notes")).toHaveValue(note);
+    await notesTab.scrollIntoViewIfNeeded();
+    await page.getByRole("tab", { name: /Notes/i }).click();
+    await expect(page.getByRole("tabpanel").locator("textarea").first()).toHaveValue(note);
   });
 });

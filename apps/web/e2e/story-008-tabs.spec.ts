@@ -77,7 +77,7 @@ test.describe("Story 008 full-tab UAT", () => {
     expect(text).toMatch(/pending|reviewed|not invent|curated|Ślok|placeholder/i);
   });
 
-  test("Story 009 is not linked from Story 008 navigation", async ({ page }) => {
-    await expect(page.getByRole("link", { name: /Story 009/i })).toHaveCount(0);
+  test("Story 009 is linked from Story 008 navigation after V1.7 release", async ({ page }) => {
+    await expect(page.getByRole("link", { name: /Story 009/i })).toBeVisible();
   });
 });
