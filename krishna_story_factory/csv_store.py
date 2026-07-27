@@ -303,5 +303,14 @@ def already_completed_production_today(project_root: Path, timezone_name: str) -
                     continue
                 if "test_preview" in detail:
                     continue
+                # Scheduler validate/simulate successes must not block production.
+                if "simulate" in detail or "validate-scheduler" in detail or "mode=simulate" in detail:
+                    continue
+                if "scheduler-simulate" in detail or "simulate-production" in detail:
+                    continue
+                # Require a real chapter marker from a production package run.
+                chapter = (row.get("chapter_no") or "").strip()
+                if not chapter:
+                    continue
                 return True
     return False

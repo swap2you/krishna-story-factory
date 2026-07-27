@@ -335,7 +335,15 @@ $Detail = (Get-Content -LiteralPath $Log -Raw -ErrorAction SilentlyContinue)
 if ($Detail -and $Detail.Length -gt 1000) { $Detail = $Detail.Substring($Detail.Length - 1000) }
 $Row = [pscustomobject]@{
     started_at = $Started.ToString("o"); completed_at = $Completed.ToString("o")
-    status = $(if ($ExitCode -eq 0) { "SUCCESS" } else { "FAILED" })
+    status = $(
+        if ($SimulateProduction) {
+            if ($ExitCode -eq 0) { "SIMULATE_SUCCESS" } else { "SIMULATE_FAILED" }
+        } elseif ($ExitCode -eq 0) {
+            "SUCCESS"
+        } else {
+            "FAILED"
+        }
+    )
     chapter_no = ""; slug = ""; detail = $Detail; exit_code = [string]$ExitCode
 }
 if (-not (Test-Path -LiteralPath $History)) {
