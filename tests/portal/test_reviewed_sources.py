@@ -1,11 +1,11 @@
-"""Regression: Stories 001–007 expose reviewed Vedabase URLs and provenance."""
+"""Regression: Stories 001–009 expose reviewed Vedabase URLs and provenance."""
 from __future__ import annotations
 
 from bhava_api.web_assets.reviewed_sources import REVIEWED_SOURCES, source_links_for_story
 
 
 def test_reviewed_sources_cover_released_stories():
-    assert set(REVIEWED_SOURCES) == {f"{n:03d}" for n in range(1, 8)}
+    assert set(REVIEWED_SOURCES) == {f"{n:03d}" for n in range(1, 10)}
 
 
 def test_reviewed_sources_have_verified_vedabase_urls():
