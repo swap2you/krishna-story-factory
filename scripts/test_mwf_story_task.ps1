@@ -5,20 +5,34 @@ $ProjectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Pa
 $Runner = Get-Content -LiteralPath (Join-Path $ProjectRoot "scripts\run_daily_story_scheduled.ps1") -Raw
 $Installer = Get-Content -LiteralPath (Join-Path $ProjectRoot "scripts\install_mwf_story_task.ps1") -Raw
 $Failures = @()
-if ($Runner -notmatch 'Start-Process') { $Failures += "runner must use Start-Process so stderr warnings are not terminating" }
-if ($Runner -match 'Tee-Object') { $Failures += "runner must not Tee-Object native stderr (Story 008 abort class)" }
-if ($Runner -notmatch 'RedirectStandardError') { $Failures += "runner must redirect stderr to a file separately from PowerShell error stream" }
+
+# Runner: .NET Process isolation (no Start-Process / NoNewWindow production path)
+if ($Runner -notmatch 'System\.Diagnostics\.Process') { $Failures += "runner must use System.Diagnostics.Process" }
+if ($Runner -notmatch 'UseShellExecute\s*=\s*\$false') { $Failures += "runner must set UseShellExecute=false" }
+if ($Runner -notmatch 'CreateNoWindow\s*=\s*\$true') { $Failures += "runner must set CreateNoWindow=true" }
+if ($Runner -notmatch 'RedirectStandardOutput\s*=\s*\$true') { $Failures += "runner must redirect stdout" }
+if ($Runner -notmatch 'RedirectStandardError\s*=\s*\$true') { $Failures += "runner must redirect stderr" }
+if ($Runner -notmatch 'ReadToEndAsync') { $Failures += "runner must drain stdout/stderr asynchronously (ReadToEndAsync)" }
+if ($Runner -match 'Start-Process') { $Failures += "runner must not use Start-Process in the production path" }
+if ($Runner -match 'NoNewWindow') { $Failures += "runner must not use -NoNewWindow" }
+if ($Runner -match 'Tee-Object') { $Failures += "runner must not Tee-Object native stderr" }
 if ($Runner -notmatch '\.venv\\Scripts\\python\.exe') { $Failures += "runner does not use venv Python" }
 if ($Runner -notmatch '"--mode", "prod"' -and $Runner -notmatch '--mode prod') { $Failures += "runner command is not safe production command" }
-if ($Runner -match '--force') { $Failures += "runner command is not safe production command" }
+if ($Runner -match '--force') { $Failures += "runner command must not use --force" }
 if ($Runner -notmatch 'WHATSAPP_SEND_ENABLED\s*=\s*"false"') { $Failures += "WhatsApp is not disabled" }
 if ($Runner -notmatch 'TELEGRAM_SEND_ENABLED\s*=\s*"false"') { $Failures += "Telegram is not disabled" }
-if ($Runner -notmatch 'GOOGLE_DRIVE_UPLOAD_ENABLED\s*=\s*"true"') { $Failures += "Drive upload is not enabled" }
+if ($Runner -notmatch 'GOOGLE_DRIVE_UPLOAD_ENABLED\s*=\s*"true"') { $Failures += "Drive upload is not enabled for production" }
+
+# Installer source expectations (must fully reproduce accepted task)
 if ($Installer -notmatch 'MultipleInstances IgnoreNew') { $Failures += "overlap prevention is missing" }
 if ($Installer -notmatch 'RestartCount 2' -or $Installer -notmatch 'Minutes 30') { $Failures += "retry policy is incorrect" }
 if ($Installer -notmatch 'PrimaryTime = "10:00"') { $Failures += "primary 10:00 schedule missing" }
 if ($Installer -notmatch 'BackupTime = "12:00"') { $Failures += "noon backup schedule missing" }
-if ($Installer -notmatch 'StartWhenAvailable = \$false') { $Failures += "StartWhenAvailable must be False" }
+if ($Installer -notmatch 'Hours 4' -and $Installer -notmatch 'PT4H') { $Failures += "installer must set ExecutionTimeLimit to 4 hours (PT4H)" }
+if ($Installer -notmatch 'StartWhenAvailable = \$true') { $Failures += "StartWhenAvailable must be true in installer source" }
+if ($Installer -notmatch 'StopOnIdleEnd = \$false' -and $Installer -notmatch 'DontStopOnIdleEnd') {
+    $Failures += "StopOnIdleEnd must be false (DontStopOnIdleEnd / IdleSettings)"
+}
 if ($Installer -notmatch 'WakeToRun = \$false') { $Failures += "WakeToRun must be False" }
 foreach ($day in @("Monday", "Wednesday", "Friday")) {
     if ($Installer -notmatch "-DaysOfWeek $day -At \`\$PrimaryTime" -and $Installer -notmatch "-DaysOfWeek $day") {
@@ -26,14 +40,47 @@ foreach ($day in @("Monday", "Wednesday", "Friday")) {
     }
 }
 if ($Installer -notmatch 'Krishna Story Factory MWF') { $Failures += "MWF task name missing from installer" }
+
 if (-not $StaticOnly) {
     $Task = Get-ScheduledTask -TaskName $TaskName -ErrorAction Stop
     $Info = Get-ScheduledTaskInfo -TaskName $TaskName
     if ($Task.State -notin @("Disabled", "Ready", "Running")) { $Failures += "unexpected task state: $($Task.State)" }
-    if ($Task.Actions.Arguments -match '--force') { $Failures += "registered action uses --force" }
+
+    $action = @($Task.Actions)[0]
+    $args = [string]$action.Arguments
+    $wd = [string]$action.WorkingDirectory
+    $runnerPath = Join-Path $ProjectRoot "scripts\run_daily_story_scheduled.ps1"
+    if ($args -match '--force') { $Failures += "registered action uses --force" }
+    if ($args -notmatch [regex]::Escape($runnerPath) -and $args -notmatch 'run_daily_story_scheduled\.ps1') {
+        $Failures += "registered action is not the current wrapper"
+    }
+    if ($wd -and ((Resolve-Path $wd).Path -ne (Resolve-Path $ProjectRoot).Path)) {
+        $Failures += "registered WorkingDirectory mismatch: $wd"
+    }
+
     if ($Task.Settings.MultipleInstances -ne "IgnoreNew") { $Failures += "registered task permits overlap" }
-    if ($Task.Settings.StartWhenAvailable -ne $false) { $Failures += "StartWhenAvailable must be False (saw: $($Task.Settings.StartWhenAvailable))" }
+    if ($Task.Settings.StartWhenAvailable -ne $true) {
+        $Failures += "StartWhenAvailable must be True (saw: $($Task.Settings.StartWhenAvailable))"
+    }
     if ($Task.Settings.WakeToRun -eq $true) { $Failures += "WakeToRun must not be True" }
+
+    $limit = $Task.Settings.ExecutionTimeLimit
+    $limitOk = $false
+    if ($limit -is [TimeSpan]) {
+        $limitOk = $limit.TotalHours -eq 4
+    } else {
+        $limitOk = ("$limit" -match 'PT4H' -or "$limit" -eq "04:00:00")
+    }
+    if (-not $limitOk) { $Failures += "ExecutionTimeLimit must be PT4H (saw: $limit)" }
+
+    $stopIdle = $null
+    if ($null -ne $Task.Settings.IdleSettings) {
+        $stopIdle = $Task.Settings.IdleSettings.StopOnIdleEnd
+    }
+    if ($stopIdle -ne $false) { $Failures += "StopOnIdleEnd must be false (saw: $stopIdle)" }
+
+    $restart = $Task.Settings.RestartCount
+    if ([int]$restart -ne 2) { $Failures += "RestartCount must be 2 (saw: $restart)" }
 
     $triggers = @($Task.Triggers)
     if ($triggers.Count -ne 6) { $Failures += "expected 6 triggers; saw $($triggers.Count)" }
