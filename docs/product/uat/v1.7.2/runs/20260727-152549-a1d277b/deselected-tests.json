@@ -1,0 +1,5 @@
+{
+  "marker": "not slow",
+  "deselected_count": 5,
+  "note": "Slow/provider tests remain deselected; no paid APIs during matrix."
+}
