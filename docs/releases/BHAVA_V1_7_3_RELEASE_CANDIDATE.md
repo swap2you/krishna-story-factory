@@ -6,7 +6,7 @@
 |-------|-------|
 | Starting tip | `867182405ca376ccdde6be1b80ca5c36c2b64aca` |
 | Product SHA | `aeb5104b8780b5a7a267db609060bfd870228a62` |
-| Evidence / docs tip | fill after evidence commit |
+| Evidence / docs tip | 919841d1e5b9df35c792ea2daa94b374a0b71b54 |
 | Branch | `feature/bhava-portal-v1` |
 
 Resolve final tip live with `git rev-parse HEAD` / `origin/feature/bhava-portal-v1` (do not trust hard-coded obsolete tips).
