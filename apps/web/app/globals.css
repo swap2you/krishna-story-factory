@@ -238,6 +238,7 @@ main { flex: 1; }
 .plain-list li { margin: 0.35rem 0; }
 .prose { max-width: 760px; line-height: 1.7; }
 .site-footer { margin-top: auto; padding: 2.4rem 0; background: linear-gradient(180deg, #0a1f36, #061628); color: #f4e9d4; }
+.site-footer .hint { color: rgba(244, 233, 212, 0.88); }
 .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
 .footer-links { display: flex; flex-wrap: wrap; gap: .8rem 1.1rem; }
 .footer-links a { color: #f0d48a; text-decoration: none; }
@@ -365,6 +366,24 @@ main { flex: 1; }
 .editorial-status { display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .75rem; border-radius: 999px; font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .editorial-status.planned { background: rgba(212,168,75,.16); color: #8a6a20; border: 1px solid rgba(212,168,75,.3); }
 .editorial-status.active { background: rgba(63,109,79,.14); color: #2f6844; border: 1px solid rgba(63,109,79,.3); }
+/* Badges on dark collection panels (home/library art cards) */
+.collection-card .editorial-status.planned {
+  background: rgba(231, 181, 80, 0.22);
+  color: #ffe9b0;
+  border-color: rgba(231, 181, 80, 0.45);
+}
+.collection-card .editorial-status.active {
+  background: rgba(120, 190, 140, 0.22);
+  color: #d7f5df;
+  border-color: rgba(120, 190, 140, 0.45);
+}
+.sanskrit {
+  font-family: "Noto Serif Devanagari", "Noto Serif", Georgia, serif;
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: var(--bhava-midnight);
+  margin: 0 0 .75rem;
+}
 .scope-card { padding: 1.35rem 1.45rem; border-radius: 1.35rem; background: rgba(255,252,246,.95); border: 1px solid rgba(20,40,70,.08); box-shadow: var(--bhava-shadow-soft); }
 .scope-card h3 { margin: 0 0 .6rem; font-size: 1.2rem; color: var(--bhava-midnight); }
 .scope-card p { margin: 0; color: var(--bhava-muted); line-height: 1.6; }
