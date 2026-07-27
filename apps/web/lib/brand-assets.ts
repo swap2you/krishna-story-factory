@@ -48,6 +48,7 @@ export function collectionCoverPath(slug: string): string | undefined {
     "bhakti-blog": "collection-bhakti-blog",
     vani: "collection-prabhupada-vani",
     "prabhupada-vani": "collection-prabhupada-vani",
+    "devotee-lives": "collection-bhakti-blog",
   };
   const id = map[slug];
   return id ? brandSrc(id) : undefined;

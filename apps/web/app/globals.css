@@ -177,10 +177,26 @@ main { flex: 1; }
 .story-card p { margin: 0; color: var(--bhava-muted); font-size: .92rem; line-height: 1.5; }
 .story-chip { position: absolute; left: .75rem; top: .75rem; padding: .35rem .65rem; border-radius: 999px; background: rgba(6, 22, 40, 0.84); color: #fff; font-size: .72rem; font-weight: 800; }
 .collection-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
-.collection-card { position: relative; overflow: hidden; min-height: 180px; padding: 1.5rem; border-radius: var(--bhava-radius-lg); color: #fff; text-decoration: none; box-shadow: var(--bhava-shadow-soft); transition: transform .25s ease; }
+/* DEF-CONTRAST-01: never allow white text on transparent/cream — default to dark panel. */
+.collection-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 180px;
+  padding: 1.5rem;
+  border-radius: var(--bhava-radius-lg);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: var(--bhava-shadow-soft);
+  transition: transform .25s ease;
+  background: linear-gradient(145deg, #0d2748, #1f3f66);
+}
 .collection-card:hover { transform: translateY(-4px); }
-.collection-card h3 { margin: 0 0 .5rem; font-size: 1.45rem; }
-.collection-card p { margin: 0; max-width: 22ch; color: rgba(255,255,255,.82); line-height: 1.5; }
+.collection-card:focus-visible {
+  outline: 3px solid #e7b550;
+  outline-offset: 3px;
+}
+.collection-card h3 { margin: 0 0 .5rem; font-size: 1.45rem; color: #fff; }
+.collection-card p { margin: 0; max-width: 22ch; color: rgba(255,255,255,.9); line-height: 1.5; }
 .collection-card .orb { position: absolute; width: 170px; height: 170px; border-radius: 50%; right: -50px; bottom: -60px; background: rgba(255,255,255,.12); }
 .collection-card.krishna { background: linear-gradient(145deg, #0d2748, #1f5a86); }
 .collection-card.lotus { background: linear-gradient(145deg, #5d2a3c, #a24d66); }
@@ -201,9 +217,18 @@ main { flex: 1; }
 .page-hero p { max-width: 58ch; margin: 1rem 0 0; color: var(--bhava-muted); line-height: 1.65; font-size: 1.08rem; }
 .collection-card--art { color: #fff; background: #0d2748; padding: 0; display: grid; grid-template-rows: 1fr auto; }
 .collection-card__media { width: 100%; height: 160px; object-fit: cover; display: block; }
-.collection-card__body { padding: 1.15rem 1.25rem 1.35rem; background: linear-gradient(180deg, rgba(6,22,40,.55), rgba(6,22,40,.92)); }
-.collection-card--art h3 { margin: 0 0 .45rem; font-size: 1.25rem; }
-.collection-card--art p { margin: 0 0 .75rem; max-width: none; color: rgba(255,255,255,.86); }
+.collection-card__panel-fallback {
+  width: 100%;
+  height: 160px;
+  background: linear-gradient(145deg, #0a1f38, #1a4a6e 55%, #2f5238);
+}
+.collection-card__body {
+  padding: 1.15rem 1.25rem 1.35rem;
+  background: linear-gradient(180deg, rgba(6,22,40,.72), rgba(6,22,40,.96));
+  color: #fff;
+}
+.collection-card--art h3 { margin: 0 0 .45rem; font-size: 1.25rem; color: #fff; }
+.collection-card--art p { margin: 0 0 .75rem; max-width: none; color: rgba(255,255,255,.92); }
 .canto-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 .canto-card { display: grid; gap: .75rem; text-decoration: none; color: inherit; border-radius: 1.1rem; overflow: hidden; background: #fffaf2; border: 1px solid rgba(20,40,70,.08); box-shadow: var(--bhava-shadow-soft); }
 .canto-card img { width: 100%; height: 200px; object-fit: cover; display: block; }

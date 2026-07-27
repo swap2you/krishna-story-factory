@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CollectionCard } from "@/components/collection-card";
 import { getStories } from "@/lib/catalog";
 import { StoryGrid } from "@/components/story-grid";
 
@@ -12,15 +13,64 @@ const audiences = [
   { title: "Families & Educators", ages: "homes & classrooms", body: "Printables, Sunday School planning, and reviewed source notes." },
 ];
 
+/** Core areas use Library collection-card pattern (art + dark scrim) — never white text on transparent cream. */
 const areas = [
-  ["Krishna Book Stories", "/library/krishna-book", "Published bedtime packages with audio and printables."],
-  ["Knowledge Library", "/knowledge", "Governed pathways, questions, and reviewed guides."],
-  ["Prayers & Ślokas", "/library/prayers-mantras", "Public prayer and mantra learning spaces."],
-  ["Sunday School", "/sunday-school", "Weekly planning structure for age groups."],
-  ["Teacher Resources", "/teachers", "Class packs and classroom pathways."],
-  ["Printables", "/printables", "Posters, coloring, and activity sheets from real packages."],
-  ["Prabhupāda Vāṇī", "/prabhupada-vani", "Source-governed taxonomy for future reviewed records."],
-  ["Devotee Lives", "/library", "Bhaktamāla / lives of devotees — planned with care."],
+  {
+    href: "/library/krishna-book",
+    slug: "krishna-book",
+    title: "Krishna Book Stories",
+    description: "Published bedtime packages with audio and printables.",
+    status: "active" as const,
+  },
+  {
+    href: "/knowledge",
+    slug: "knowledge",
+    title: "Knowledge Library",
+    description: "Governed pathways, questions, and reviewed guides.",
+    status: "active" as const,
+  },
+  {
+    href: "/library/prayers-mantras",
+    slug: "prayers-mantras",
+    title: "Prayers & Ślokas",
+    description: "Public prayer and mantra learning spaces.",
+    status: "active" as const,
+  },
+  {
+    href: "/sunday-school",
+    slug: "sunday-school",
+    title: "Sunday School",
+    description: "Weekly planning structure for age groups.",
+    status: "planned" as const,
+  },
+  {
+    href: "/teachers",
+    slug: "teacher-resources",
+    title: "Teacher Resources",
+    description: "Class packs and classroom pathways.",
+    status: "planned" as const,
+  },
+  {
+    href: "/printables",
+    slug: "printables",
+    title: "Printables",
+    description: "Posters, coloring, and activity sheets from real packages.",
+    status: "active" as const,
+  },
+  {
+    href: "/prabhupada-vani",
+    slug: "prabhupada-vani",
+    title: "Prabhupāda Vāṇī",
+    description: "Source-governed taxonomy for future reviewed records.",
+    status: "planned" as const,
+  },
+  {
+    href: "/library",
+    slug: "devotee-lives",
+    title: "Devotee Lives",
+    description: "Bhaktamāla / lives of devotees — planned with care.",
+    status: "planned" as const,
+  },
 ];
 
 export default async function Home() {
@@ -83,12 +133,9 @@ export default async function Home() {
         <div className="container">
           <p className="eyebrow">Core areas</p>
           <h2 className="section-heading">A complete devotional learning platform</h2>
-          <div className="collection-grid">
-            {areas.map(([title, href, body]) => (
-              <Link key={href + title} href={href} className="collection-card">
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </Link>
+          <div className="collection-grid" data-testid="home-core-areas">
+            {areas.map((card) => (
+              <CollectionCard key={card.href + card.title} {...card} />
             ))}
           </div>
         </div>
