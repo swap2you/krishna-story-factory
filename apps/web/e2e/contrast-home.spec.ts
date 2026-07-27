@@ -67,6 +67,7 @@ test.describe("DEF-CONTRAST-01 home core areas", () => {
             hasDarkScrim,
             transparentCard:
               (csCard.backgroundColor === "rgba(0, 0, 0, 0)" || csCard.backgroundColor === "transparent") &&
+              (csBody.backgroundColor === "rgba(0, 0, 0, 0)" || csBody.backgroundColor === "transparent") &&
               (!cardBgImage || cardBgImage === "none") &&
               (!bodyBgImage || bodyBgImage === "none"),
           };
