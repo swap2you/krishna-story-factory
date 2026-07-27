@@ -78,6 +78,7 @@ class ActivityPlanner:
             "005": _pack_005,
             "006": _pack_006,
             "007": _pack_007,
+            "009": _pack_009,
         }
         builder = builders.get(plan.chapter_no.strip().zfill(3))
         return builder(plan) if builder else None
@@ -1001,6 +1002,87 @@ def _pack_007(plan: PlanRow) -> ActivityPack:
             "bad vs wise association matching",
             "family shelter reflection",
             "child-safe wording",
+            "answers only in manifest",
+        ],
+    )
+
+
+def _pack_009(plan: PlanRow) -> ActivityPack:
+    connection = (
+        "Pūtanā comes with poison, yet Kṛṣṇa magnifies the outward motherly approach, "
+        "purifies her, and grants astonishing mercy (Krishna Book Ch.6 / SB 10.6)."
+    )
+    sequence = [
+        SequenceCard("Nanda remembers Vasudeva's warning and takes shelter.", "Draw Nanda praying quietly.", 1),
+        SequenceCard("Kaṁsa sends Pūtanā, who harms infants.", "Draw a distant shadowed messenger only—no gore.", 2),
+        SequenceCard("Pūtanā enters Gokula in a beautiful form.", "Draw a gentle visitor with flowers—no scary face.", 3),
+        SequenceCard("She offers the poison-smeared breast to baby Kṛṣṇa.", "Draw baby Kṛṣṇa on her lap, calm and child-safe.", 4),
+        SequenceCard("Kṛṣṇa draws out the poison and her life air.", "Draw a soft glow around baby Kṛṣṇa—no violence.", 5),
+        SequenceCard("Her gigantic form falls; Kṛṣṇa remains safe.", "Draw Kṛṣṇa sitting safely with light around Him.", 6),
+        SequenceCard("Yaśodā, Rohiṇī, and the gopīs protect Him.", "Draw mothers lifting Kṛṣṇa with flower garlands.", 7),
+        SequenceCard("The pyre gives a fragrant aroma of mercy.", "Draw fragrant smoke and peaceful villagers.", 8),
+    ]
+    # Shuffle print order while preserving source_order answers.
+    printed = [sequence[i] for i in (3, 0, 5, 1, 7, 2, 6, 4)]
+    return ActivityPack(
+        activity_title="Pūtanā Pastime Sequence",
+        activity_type="STORY_SEQUENCE",
+        send_mode="PARENT_GUIDED",
+        estimated_minutes=18,
+        parent_effort="Low: help children number the cards and retell the mercy lesson.",
+        learning_goal="Retell the Chapter 6 Pūtanā events in order and name Kṛṣṇa's astonishing mercy.",
+        story_connection=connection,
+        materials=["pencil", "crayons"],
+        pages=[
+            ActivityPage(
+                page_title="Put the Pūtanā pastime in order",
+                page_type="STORY_SEQUENCE_CARDS",
+                instructions=[
+                    "Number the eight events in story order.",
+                    "Draw one gentle, child-safe detail on each card.",
+                    "Circle the card that shows Kṛṣṇa's purifying mercy.",
+                ],
+                components=printed,
+                story_connection=connection,
+            ),
+            ActivityPage(
+                page_title="Mercy matching",
+                page_type="MATCHING_CARDS",
+                instructions=[
+                    "Draw a line from each left item to its matching right meaning.",
+                    "Talk about how Kṛṣṇa magnifies even a small appearance of service.",
+                ],
+                components=[
+                    MatchingCard("poison breast", "Pūtanā's harmful plan", "danger", pair_id="A"),
+                    MatchingCard("life air drawn out", "Kṛṣṇa ends her power safely", "protection", pair_id="B"),
+                    MatchingCard("fragrant pyre", "Kṛṣṇa purified her", "mercy", pair_id="C"),
+                    MatchingCard("motherly destination", "astonishing reward of mercy", "result", pair_id="D"),
+                    MatchingCard("hearing the pastime", "attachment to Govinda", "hearing", pair_id="E"),
+                    MatchingCard("gopīs' protection", "remembering Viṣṇu's names", "care", pair_id="F"),
+                ],
+                story_connection=connection,
+            ),
+        ],
+        age_variants={
+            "ages_6_8": "Number cards and draw flowers around baby Kṛṣṇa.",
+            "ages_9_13": "Explain why the fragrant smoke teaches mercy.",
+        },
+        safety_note="PARENT HELP: Keep images calm; no gore, no horror-style demon faces.",
+        completion_prompt="Retell the eight events, then say one way Kṛṣṇa showed mercy.",
+        review_questions=[
+            "What did Nanda remember before danger came?",
+            "What happened when Pūtanā's body was burned?",
+        ],
+        answer_key=[card.event for card in sequence],
+        parent_note=(
+            "Stay inside Krishna Book Chapter 6 / SB 10.6. Do not include the universe-in-the-mouth "
+            "episode or Tṛṇāvarta as main content. Next preview may mention Tṛṇāvarta only after this pastime."
+        ),
+        qa_requirements=[
+            "eight Chapter 6 Putana sequence events",
+            "mercy matching pairs",
+            "child-safe wording",
+            "no universe-in-mouth",
             "answers only in manifest",
         ],
     )
