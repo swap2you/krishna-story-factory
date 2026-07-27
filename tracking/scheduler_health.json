@@ -1,0 +1,17 @@
+﻿{
+    "wrapper_version":  "v1.7.0-dotnet-process",
+    "elapsed_seconds":  1,
+    "run_id":  "prod-20260727_120002",
+    "timestamp":  "2026-07-27T16:00:03.7394047Z",
+    "git_sha":  "169090b58f7ff10c9dd4c76e60e15beb81bdb061",
+    "updated_at":  "2026-07-27T16:00:03.7394047Z",
+    "child_start":  "2026-07-27T16:00:02.9318735Z",
+    "child_exit":  "2026-07-27T16:00:03.7298838Z",
+    "mode":  "prod",
+    "wrapper_pid":  35380,
+    "current_stage":  "exited",
+    "last_output_time":  "2026-07-27T16:00:03.7344060Z",
+    "queue_story":  "auto",
+    "child_exit_code":  0,
+    "child_pid":  8664
+}
