@@ -11,6 +11,8 @@ whatsapp_test_outbox/
 logs/
 tracking/*.csv
 tracking/latest_run_summary.json
+tracking/scheduler_health.json
+tracking/scheduler_health.*.json
 !tracking/templates/
 !tracking/templates/*.csv
 credentials/
