@@ -1,0 +1,35 @@
+
+State                 : Ready
+Actions               : {MSFT_TaskExecAction}
+Author                : 
+Date                  : 
+Description           : Generate and upload the next Krishna Story package Mon/Wed/Fri at 10:00 with 12:00 backup; same-day guard; WhatsApp/Telegram disabled; Drive enabled.
+Documentation         : 
+Principal             : MSFT_TaskPrincipal2
+SecurityDescriptor    : 
+Settings              : MSFT_TaskSettings3
+Source                : 
+TaskName              : Krishna Story Factory MWF
+TaskPath              : \
+Triggers              : {MSFT_TaskWeeklyTrigger, MSFT_TaskWeeklyTrigger, MSFT_TaskWeeklyTrigger, MSFT_TaskWeeklyTrigger…}
+URI                   : \Krishna Story Factory MWF
+Version               : 
+PSComputerName        : 
+CimClass              : Root/Microsoft/Windows/TaskScheduler:MSFT_ScheduledTask
+CimInstanceProperties : {Actions, Author, Date, Description…}
+CimSystemProperties   : Microsoft.Management.Infrastructure.CimSystemProperties
+
+
+
+LastRunTime           : 7/24/2026 12:00:00 PM
+LastTaskResult        : 1
+NextRunTime           : 7/27/2026 10:00:00 AM
+NumberOfMissedRuns    : 0
+TaskName              : Krishna Story Factory MWF
+TaskPath              : 
+PSComputerName        : 
+CimClass              : Root/Microsoft/Windows/TaskScheduler:MSFT_TaskDynamicInfo
+CimInstanceProperties : {LastRunTime, LastTaskResult, NextRunTime, NumberOfMissedRuns…}
+CimSystemProperties   : Microsoft.Management.Infrastructure.CimSystemProperties
+
+
