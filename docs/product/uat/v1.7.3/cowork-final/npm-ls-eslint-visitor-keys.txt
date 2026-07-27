@@ -1,0 +1,11 @@
+bhava-portal@1.0.0 /sessions/optimistic-zen-davinci/mnt/krishna-story-factory
+├─┬ @eslint-community/eslint-utils@4.10.1 extraneous
+│ └── eslint-visitor-keys@3.4.3 extraneous
+├─┬ @typescript-eslint/visitor-keys@8.65.0 extraneous
+│ └── eslint-visitor-keys@5.0.1 extraneous
+├── eslint-visitor-keys@4.2.1 extraneous
+├─┬ eslint@9.39.5 extraneous
+│ └── eslint-visitor-keys@4.2.1 deduped
+└─┬ espree@10.4.0 extraneous
+  └── eslint-visitor-keys@4.2.1 deduped
+
