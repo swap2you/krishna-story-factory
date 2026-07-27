@@ -75,7 +75,9 @@ def test_seed_recovery_marks_story_and_narration(tmp_path: Path):
 
 def test_scheduled_runner_does_not_tee_stderr():
     text = Path("scripts/run_daily_story_scheduled.ps1").read_text(encoding="utf-8")
-    assert "Start-Process" in text
-    assert "RedirectStandardError" in text
+    assert "System.Diagnostics.Process" in text
+    assert "RedirectStandardError" in text or "RedirectStandardError = $true" in text
     assert "Tee-Object" not in text
-    assert '*>&1 | Tee-Object' not in text
+    assert "*>&1 | Tee-Object" not in text
+    code_lines = [ln for ln in text.splitlines() if not ln.lstrip().startswith("#")]
+    assert "NoNewWindow" not in "\n".join(code_lines)

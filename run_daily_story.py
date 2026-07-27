@@ -42,6 +42,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Explicitly allow generating only missing Story artifacts while reusing locked story/narration.",
     )
+    parser.add_argument(
+        "--scheduler-simulate",
+        action="store_true",
+        help="Safe scheduled-task simulation: lock, queue probe, stage_state, permissions; no providers/Drive/queue writes.",
+    )
     return parser.parse_args()
 
 
@@ -49,6 +54,12 @@ def main() -> int:
     args = parse_args()
     project_root = Path(__file__).resolve().parent
     ensure_csv_files(project_root)
+    if args.scheduler_simulate:
+        from krishna_story_factory.scheduler_simulate import run_scheduler_simulate
+
+        result = run_scheduler_simulate(project_root)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return 0 if result.get("status") == "SUCCESS" else 1
     settings = load_settings(project_root)
     if args.rebuild_range:
         result = rebuild_story_range(

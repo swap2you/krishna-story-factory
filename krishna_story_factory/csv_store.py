@@ -200,83 +200,46 @@ def reset_tracking_logs(project_root: Path) -> None:
 
 
 def _lock_meta(lock: Path) -> dict:
-    raw = lock.read_text(encoding="utf-8").strip()
-    if not raw:
-        return {}
-    if raw.startswith("{"):
-        try:
-            data = json.loads(raw)
-            return data if isinstance(data, dict) else {"started_at": raw}
-        except json.JSONDecodeError:
-            return {"started_at": raw}
-    return {"started_at": raw}
+    from .pipeline_lock import read_lock_meta
+
+    return read_lock_meta(lock)
 
 
 def _pid_alive(pid: int) -> bool:
-    if pid <= 0:
-        return False
-    try:
-        os.kill(pid, 0)
-    except OSError:
-        return False
-    except SystemError:
-        return False
-    else:
-        return True
+    from .pipeline_lock import _pid_alive as alive
+
+    return alive(pid)
 
 
 def _lock_is_stale(meta: dict, *, stale_after_sec: float) -> bool:
-    pid = int(meta.get("pid") or 0)
-    if pid and not _pid_alive(pid):
-        return True
-    started = str(meta.get("started_at") or "")
-    if not started:
-        return True
-    try:
-        started_dt = datetime.fromisoformat(started)
-    except ValueError:
-        return True
-    age = (datetime.now() - started_dt.replace(tzinfo=None)).total_seconds()
-    return age >= stale_after_sec
+    from .pipeline_lock import lock_is_stale
+
+    return lock_is_stale(meta, stale_after_sec=stale_after_sec)
 
 
-def acquire_pipeline_lock(project_root: Path, *, stale_after_sec: float = 7200.0) -> Path:
+def acquire_pipeline_lock(project_root: Path, *, stale_after_sec: float = 7200.0, **kwargs) -> Path:
     """Acquire exclusive pipeline lock; reclaim stale/dead-PID locks safely."""
-    lock = project_root / ".pipeline.lock"
-    if lock.exists():
-        meta = _lock_meta(lock)
-        if _lock_is_stale(meta, stale_after_sec=stale_after_sec):
-            lock.unlink(missing_ok=True)
-            try:
-                reset_processing_to_pending(project_root)
-            except Exception:
-                # Lock reclaim must succeed even when queue CSVs are absent (unit tests / fresh trees).
-                pass
-        else:
-            detail = meta.get("pid") or meta.get("started_at") or "unknown"
-            raise RuntimeError(
-                f"Another pipeline run appears to be in progress (.pipeline.lock exists; holder={detail})."
-            )
-    payload = {
-        "pid": os.getpid(),
-        "started_at": datetime.now().isoformat(timespec="seconds"),
-    }
-    tmp = lock.with_suffix(".lock.tmp")
-    tmp.write_text(json.dumps(payload), encoding="utf-8")
-    tmp.replace(lock)
-    return lock
+    from .pipeline_lock import acquire_pipeline_lock as _acquire
+
+    return _acquire(project_root, stale_after_sec=stale_after_sec, **kwargs)
 
 
-def release_pipeline_lock(lock_path: Path) -> None:
-    lock_path.unlink(missing_ok=True)
+def release_pipeline_lock(lock_path: Path, **kwargs) -> None:
+    from .pipeline_lock import release_pipeline_lock as _release
+
+    # CLI/pipeline callers historically delete unconditionally; ownership checks are opt-in.
+    force = bool(kwargs.pop("force", True))
+    _release(lock_path, force=force, **kwargs)
 
 
 def reclaim_stale_processing(project_root: Path) -> int:
     """Reset processing rows to pending when no live lock is held."""
-    lock = project_root / ".pipeline.lock"
+    from .pipeline_lock import lock_is_stale, lock_path_for, read_lock_meta
+
+    lock = lock_path_for(project_root)
     if lock.exists():
-        meta = _lock_meta(lock)
-        if not _lock_is_stale(meta, stale_after_sec=7200.0):
+        meta = read_lock_meta(lock)
+        if not lock_is_stale(meta, stale_after_sec=7200.0):
             return 0
         lock.unlink(missing_ok=True)
     before = [r for r in read_queue_state(project_root) if (r.get("status") or "").lower() == "processing"]
