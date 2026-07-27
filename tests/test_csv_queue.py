@@ -25,7 +25,7 @@ def _read_recipient_rows() -> list[dict[str, str]]:
 
 def test_series_plan_parses_complete_static_plan() -> None:
     rows = _read_series_rows()
-    assert len(rows) == 93
+    assert len(rows) == 98
     assert "status" not in rows[0]
 
 

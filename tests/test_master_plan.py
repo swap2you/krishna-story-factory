@@ -8,7 +8,7 @@ MASTER = ROOT / "input" / "krishna_book_master_plan.csv"
 
 def test_master_plan_covers_all_krishna_book_chapters() -> None:
     rows = load_master_plan(MASTER)
-    assert len(rows) == 93
+    assert len(rows) == 98
     assert {int(row["source_chapter"]) for row in rows} == set(range(1, 91))
     assert validate_master_plan(MASTER) == []
 
