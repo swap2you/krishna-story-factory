@@ -65,9 +65,15 @@ def evaluate_story_coverage(plan: PlanRow, content: StoryContent) -> CoverageGat
     """Block publication when major pastimes are skipped, recap-only, or replaced."""
     errors: list[str] = []
     story_no = str(plan.chapter_no).zfill(3)
-    main = f"{content.main_story}\n{content.audio_script}".lower()
-    recap = (content.recap or "").lower()
     preview = (content.next_story_preview or "").lower()
+    # Audio/main must be judged without the next-preview paragraph (preview may name the next major pastime).
+    main_story = (content.main_story or "").lower()
+    audio = (content.audio_script or "").lower()
+    if preview:
+        audio = audio.replace(preview, " ")
+        main_story = main_story.replace(preview, " ")
+    main = f"{main_story}\n{audio}"
+    recap = (content.recap or "").lower()
     full = f"{recap}\n{main}\n{preview}\n{(content.devotional_meaning or '').lower()}"
 
     ledger = load_coverage_ledger()
