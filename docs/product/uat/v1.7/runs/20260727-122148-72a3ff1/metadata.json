@@ -1,0 +1,8 @@
+{
+  "instance": "cursor-v16",
+  "tested_sha": "72a3ff19daa3a506015222c7c316dd6294fc8b6d",
+  "web_url": "http://127.0.0.1:3003",
+  "playwright": "415 passed / 10 skipped / 0 failed",
+  "short_sha": "72a3ff1",
+  "pytest": "417 passed"
+}

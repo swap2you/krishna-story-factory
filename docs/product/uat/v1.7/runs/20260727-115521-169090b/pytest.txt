@@ -1,0 +1,69 @@
+......................F................................................. [ 17%]
+........................................................................ [ 34%]
+...............................................F........................ [ 51%]
+........................................................................ [ 69%]
+........................................................................ [ 86%]
+..........................F..............................                [100%]
+================================== FAILURES ===================================
+___________________ test_queue_001_008_done_and_009_pending ___________________
+
+    def test_queue_001_008_done_and_009_pending() -> None:
+        if not QUEUE.is_file():
+            pytest.skip("Runtime queue_state.csv not present in this environment.")
+        rows = list(csv.DictReader(QUEUE.open(encoding="utf-8")))
+        by_chapter = {str(row["chapter_no"]).zfill(3): row["status"] for row in rows}
+        for chapter in ("001", "002", "003", "004", "005", "006", "007", "008"):
+            assert by_chapter.get(chapter) == "done", chapter
+>       assert by_chapter.get("009") == "pending"
+E       AssertionError: assert 'done' == 'pending'
+E         
+E         - pending
+E         + done
+
+tests\portal\test_queue_guard.py:29: AssertionError
+__________________ test_queue_009_pending_after_008_release ___________________
+
+baseline = {'recorded_at': '2026-07-23T15:22:30Z', 'branch': 'feature/bhava-portal-v1', 'head_sha': '543317f3149b00ced7008102d7a4dedd31af32b1', 'main_sha': '3bae97850ef8b934bbec3a48f42f92fbe6de169f', ...}
+
+    def test_queue_009_pending_after_008_release(baseline: dict) -> None:
+        """V1.1 baseline recorded 008 pending; V1.5 recovered 008 ù assert 009 is next."""
+        if not QUEUE.is_file():
+            pytest.skip("Runtime queue_state.csv not present in this environment.")
+        rows = list(csv.DictReader(QUEUE.open(encoding="utf-8")))
+        by_chapter = {str(row["chapter_no"]).zfill(3): row["status"] for row in rows}
+        assert by_chapter.get("008") == "done", (
+            f"Story 008 must be done after V1.5 recovery; found status={by_chapter.get('008')!r}"
+        )
+>       assert by_chapter.get("009") == "pending", (
+            f"Story 009 must remain pending; found status={by_chapter.get('009')!r}"
+        )
+E       AssertionError: Story 009 must remain pending; found status='done'
+E       assert 'done' == 'pending'
+E         
+E         - pending
+E         + done
+
+tests\portal\test_v11_safety_baseline.py:84: AssertionError
+______________ test_scheduler_is_unattended_and_non_overlapping _______________
+
+    def test_scheduler_is_unattended_and_non_overlapping() -> None:
+        runner = (ROOT / "scripts" / "run_daily_story_scheduled.ps1").read_text(encoding="utf-8")
+        mwf = (ROOT / "scripts" / "install_mwf_story_task.ps1").read_text(encoding="utf-8")
+        daily = (ROOT / "scripts" / "install_daily_story_task.ps1").read_text(encoding="utf-8")
+        assert ".venv\\Scripts\\python.exe" in runner
+        assert ('"--mode", "prod"' in runner or "--mode prod" in runner) and "--force" not in runner
+>       assert "Start-Process" in runner
+E       AssertionError: assert 'Start-Process' in '\ufeff# Scheduled production runner - isolated .NET Process launch (CreateNoWindow; console-detached).\n# Modes:\n#  ...peInformation\n} else {\n    $Row | Export-Csv -LiteralPath $History -NoTypeInformation -Append\n}\nexit $ExitCode\n\n'
+
+tests\test_scheduler_scripts.py:12: AssertionError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Development\Workspace\DevotionalRepo\krishna-story-factory\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/portal/test_queue_guard.py::test_queue_001_008_done_and_009_pending
+FAILED tests/portal/test_v11_safety_baseline.py::test_queue_009_pending_after_008_release
+FAILED tests/test_scheduler_scripts.py::test_scheduler_is_unattended_and_non_overlapping
+3 failed, 414 passed, 5 deselected, 1 warning in 48.39s

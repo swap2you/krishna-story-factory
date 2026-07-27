@@ -12,3 +12,8 @@
 ## Gates
 
 Scheduler process isolation · ownership locks · PT4H task · validate/simulate · temp task · Story 009 · registered no-op · 001–008 unchanged.
+
+## Matrix tip
+
+`72a3ff19daa3a506015222c7c316dd6294fc8b6d` — Playwright 415 passed / 10 skipped / 0 failed.
+
