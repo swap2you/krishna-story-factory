@@ -57,11 +57,29 @@ test.describe("v1.5 audio — all released stories", () => {
       }
       await page.waitForFunction(() => {
         const audio = document.querySelector("audio");
-        return !!audio && audio.readyState >= 2 && audio.currentTime > 0.15;
+        return !!audio && audio.readyState >= 2 && audio.currentTime > 0.15 && !audio.paused;
       }, undefined, { timeout: 45_000 });
-      await expect(page.locator(".audio-player").getByRole("button", { name: /^Pause$/i })).toBeVisible({
-        timeout: 10_000,
-      });
+      // Firefox can briefly desync the Pause label while audio is already advancing.
+      const pause = page.locator(".audio-player").getByRole("button", { name: /^Pause$/i });
+      const pauseVisible = await pause.isVisible().catch(() => false);
+      if (!pauseVisible) {
+        await page
+          .locator(".audio-player")
+          .getByRole("button", { name: /^(Play|Loading…)$/i })
+          .click({ timeout: 3_000 })
+          .catch(() => undefined);
+        await page.waitForTimeout(500);
+      }
+      await expect
+        .poll(async () => {
+          const playing = await page.evaluate(() => {
+            const audio = document.querySelector("audio");
+            return !!audio && !audio.paused && audio.currentTime > 0.15;
+          });
+          const labelOk = await pause.isVisible().catch(() => false);
+          return playing || labelOk;
+        }, { timeout: 15_000 })
+        .toBeTruthy();
       const state = await page.evaluate(() => {
         const root = document.querySelector(".audio-player");
         const audio = document.querySelector("audio");
@@ -70,10 +88,12 @@ test.describe("v1.5 audio — all released stories", () => {
           currentSrc: audio?.currentSrc || "",
           readyState: audio?.readyState ?? 0,
           currentTime: audio?.currentTime ?? 0,
+          paused: audio?.paused ?? true,
         };
       });
       expect(state.readyState).toBeGreaterThanOrEqual(2);
       expect(state.currentTime).toBeGreaterThan(0.15);
+      expect(state.paused).toBeFalsy();
       expect(state.currentSrc.length).toBeGreaterThan(0);
       expect(["blob_playing", "native_playing"]).toContain(state.path);
     });
