@@ -1,0 +1,10 @@
+{
+  "sources": [
+    "apps/web/e2e/v14-audio-all-stories.spec.ts (test.skip webkit+mobile)",
+    "apps/web/e2e/v12-audio-routes.spec.ts (test.skip webkit+mobile)"
+  ],
+  "raw_log": "docs/product/uat/v1.7.1/runs/20260727-130534-86d43f1/playwright-full.txt",
+  "count": 10,
+  "raw_playwright_summary_line": "10 skipped",
+  "justification": "iOS WebKit autoplay policy: e2e skips when project is webkit-mobile (v14-audio-all-stories for stories 001-008 = 8 skips; v12-audio-routes contributes additional webkit-mobile skips to reach 10)."
+}

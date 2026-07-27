@@ -1,0 +1,17 @@
+{
+  "settings": {
+    "StartWhenAvailable": true,
+    "ExecutionTimeLimit": "PT4H",
+    "MultipleInstances": "IgnoreNew",
+    "StopOnIdleEnd": false
+  },
+  "task": {
+    "TaskName": "Krishna Story Factory MWF",
+    "State": 3
+  },
+  "info": {
+    "LastRunTime": "2026-07-27T13:01:57-04:00",
+    "LastTaskResult": 0,
+    "NextRunTime": "2026-07-29T10:00:00-04:00"
+  }
+}
