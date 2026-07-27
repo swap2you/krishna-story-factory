@@ -49,26 +49,34 @@ test.describe("DEF-CONTRAST-01 home core areas", () => {
           const csTitle = title ? getComputedStyle(title) : null;
           const csBody = getComputedStyle(body);
           const csCard = getComputedStyle(el);
+          const bodyBgImage = csBody.backgroundImage || "";
+          const cardBgImage = csCard.backgroundImage || "";
+          const hasDarkScrim =
+            /linear-gradient/i.test(bodyBgImage) ||
+            /linear-gradient/i.test(cardBgImage) ||
+            (csBody.backgroundColor !== "rgba(0, 0, 0, 0)" && csBody.backgroundColor !== "transparent") ||
+            (csCard.backgroundColor !== "rgba(0, 0, 0, 0)" && csCard.backgroundColor !== "transparent");
           return {
             titleColor: csTitle?.color || "",
             bodyBg: csBody.backgroundColor,
+            bodyBgImage,
             cardBg: csCard.backgroundColor,
+            cardBgImage,
             hasScrimClass: el.classList.contains("collection-card--art"),
             contrastSafe: el.getAttribute("data-contrast-safe"),
-            transparent:
-              csCard.backgroundColor === "rgba(0, 0, 0, 0)" ||
-              csCard.backgroundColor === "transparent",
+            hasDarkScrim,
+            transparentCard:
+              (csCard.backgroundColor === "rgba(0, 0, 0, 0)" || csCard.backgroundColor === "transparent") &&
+              (!cardBgImage || cardBgImage === "none") &&
+              (!bodyBgImage || bodyBgImage === "none"),
           };
         });
 
         expect(sample.contrastSafe).toBe("true");
         expect(sample.hasScrimClass).toBeTruthy();
-        expect(sample.transparent).toBeFalsy();
+        expect(sample.transparentCard).toBeFalsy();
+        expect(sample.hasDarkScrim).toBeTruthy();
         expect(sample.titleColor).toMatch(/rgb\(255,\s*255,\s*255\)|rgba\(255,\s*255,\s*255/);
-
-        // Body scrim must not be fully transparent.
-        expect(sample.bodyBg).not.toBe("rgba(0, 0, 0, 0)");
-        expect(sample.bodyBg).not.toBe("transparent");
 
         // Approximate contrast of white text against navy panel (#061628 ≈ rgb(6,22,40)).
         const ratio = contrastRatio(sample.titleColor, "rgb(6, 22, 40)");

@@ -188,7 +188,8 @@ main { flex: 1; }
   text-decoration: none;
   box-shadow: var(--bhava-shadow-soft);
   transition: transform .25s ease;
-  background: linear-gradient(145deg, #0d2748, #1f3f66);
+  background-color: #0d2748;
+  background-image: linear-gradient(145deg, #0d2748, #1f3f66);
 }
 .collection-card:hover { transform: translateY(-4px); }
 .collection-card:focus-visible {
@@ -224,7 +225,8 @@ main { flex: 1; }
 }
 .collection-card__body {
   padding: 1.15rem 1.25rem 1.35rem;
-  background: linear-gradient(180deg, rgba(6,22,40,.72), rgba(6,22,40,.96));
+  background-color: #061628;
+  background-image: linear-gradient(180deg, rgba(6,22,40,.72), rgba(6,22,40,.96));
   color: #fff;
 }
 .collection-card--art h3 { margin: 0 0 .45rem; font-size: 1.25rem; color: #fff; }

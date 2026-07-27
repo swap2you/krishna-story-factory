@@ -90,6 +90,8 @@ export default async function Home() {
           width={1920}
           height={1080}
           aria-hidden="true"
+          fetchPriority="high"
+          decoding="async"
         />
         <div className="container hero-platform-copy">
           <p className="brand-kicker brand-display">Bhāva</p>

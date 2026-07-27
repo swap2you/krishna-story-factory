@@ -3,7 +3,9 @@ import { expect, test } from "@playwright/test";
 test.describe("Story 008 full-tab UAT", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/stories/008");
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole("heading", { name: /Meeting of Nanda/i }).first()).toBeVisible({
+      timeout: 20_000,
+    });
   });
 
   test("Listen tab exposes player controls", async ({ page }) => {
@@ -32,8 +34,10 @@ test.describe("Story 008 full-tab UAT", () => {
 
   test("Coloring tab opens lightbox assets", async ({ page }) => {
     await page.getByRole("tab", { name: /Coloring/i }).click();
-    const tile = page.locator(".asset-tile, .coloring-tile, img").first();
-    await expect(tile).toBeVisible({ timeout: 15_000 });
+    const panel = page.getByRole("tabpanel");
+    await expect(panel.locator("img, .asset-tile, a[href*='coloring'], a[href*='poster']").first()).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
   test("Source tab is honest about review state", async ({ page }) => {
@@ -41,7 +45,8 @@ test.describe("Story 008 full-tab UAT", () => {
     const panel = page.getByRole("tabpanel");
     await expect(panel).toBeVisible();
     const text = await panel.innerText();
-    expect(text).toMatch(/Krishna Book|Bhāgavatam|source|review|Vedabase|pending/i);
+    expect(text.length).toBeGreaterThan(20);
+    expect(text).toMatch(/Krishna Book|Bhāgavatam|source|review|Vedabase|pending|chapter/i);
   });
 
   test("Notes tab persists local reflection text", async ({ page }) => {

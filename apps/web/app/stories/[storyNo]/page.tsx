@@ -32,6 +32,9 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
           <img
             src={story.poster_url}
             alt={`${story.title ?? `Story ${storyNo}`} story poster`}
+            width={720}
+            height={900}
+            decoding="async"
           />
         ) : (
           <div style={{ aspectRatio: "1", margin: "1rem 0", borderRadius: "1.15rem", background: "linear-gradient(145deg,#1a3354,#6a3a4a)" }} />
