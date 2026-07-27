@@ -7,7 +7,7 @@
 | Starting branch SHA | `df1dcf029dd57b6c46c0662661a9125edbcaaa7d` |
 | Product SHA | `86d43f1d64e2ac738e68b5d1c7f0182b8b5c41d5` |
 | Evidence commit | `f152490f1a1d78638d2bba5ebcd2ce470c6d50e4` |
-| Final branch SHA | c86edcce5a4a407abc81b504a97052b72682b117 |
+| Final branch tip | verify `git rev-parse origin/feature/bhava-portal-v1` (docs-only after product; includes SHA-reference fills) |
 | Branch | `feature/bhava-portal-v1` |
 
 ## Why V1.7.1
