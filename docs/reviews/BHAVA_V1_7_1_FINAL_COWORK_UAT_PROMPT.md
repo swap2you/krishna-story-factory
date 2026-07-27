@@ -15,8 +15,8 @@ Independent release reviewer for Bhāva Portal V1.7.1 on `feature/bhava-portal-v
 
 ### Git hygiene
 
-1. Actual branch tip vs claimed product SHA `86d43f1d64e2ac738e68b5d1c7f0182b8b5c41d5`.
-2. Docs-only delta after product SHA (`git diff --name-only 86d43f1..HEAD`).
+1. Actual branch tip vs claimed product SHA `86d43f1d64e2ac738e68b5d1c7f0182b8b5c41d5` and evidence SHA `f152490f1a1d78638d2bba5ebcd2ce470c6d50e4` (plus any later docs-only SHA-fill commits).
+2. Docs-only delta after product SHA (`git diff --name-only 86d43f1d64e2ac738e68b5d1c7f0182b8b5c41d5..HEAD`).
 3. `tracking/scheduler_health.json` is **untracked** and listed in `.gitignore`.
 4. Local equals `origin/feature/bhava-portal-v1`.
 5. `main` / tags unchanged.

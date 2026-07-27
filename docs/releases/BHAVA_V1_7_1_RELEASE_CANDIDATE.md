@@ -6,8 +6,8 @@
 |-------|-------|
 | Starting branch SHA | `df1dcf029dd57b6c46c0662661a9125edbcaaa7d` |
 | Product SHA | `86d43f1d64e2ac738e68b5d1c7f0182b8b5c41d5` |
-| Evidence commit | *(this docs commit after matrix)* |
-| Final branch SHA | *(evidence tip after push)* |
+| Evidence commit | `f152490f1a1d78638d2bba5ebcd2ce470c6d50e4` |
+| Final branch SHA | see tip after SHA-fill docs commit |
 | Branch | `feature/bhava-portal-v1` |
 
 ## Why V1.7.1
@@ -28,7 +28,7 @@ V1.7 published Story 009 and repaired the scheduler launch path, but the tip lat
 | Triggers | MWF 10:00 + 12:00 (6) | 6 | yes |
 | WakeToRun | false (explicit) | false | yes |
 
-Final enabled XML: `docs/operations/SCHEDULER_V1_7_1_CONFIGURATION_FINAL_ENABLED.xml` (no `<Enabled>false</Enabled>`).
+Final enabled XML: `docs/operations/SCHEDULER_V1_7_1_CONFIGURATION_FINAL_ENABLED.xml` (no `<Enabled>false</Enabled>`; Windows may omit `<Enabled>` when the task is Ready).
 
 ## Validation / no-op
 
@@ -70,4 +70,4 @@ Raw logs: `pytest-full.txt`, `playwright-full.txt` (not summary-only).
 
 ## Verdict
 
-Ready for final CoWork UAT after evidence commit lands on origin.
+**READY FOR FINAL COWORK UAT**
