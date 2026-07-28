@@ -38,7 +38,7 @@ const CAPTURES: Array<{ route: string; file: string; tab?: RegExp; section?: str
   { route: "/stories/009", file: "story-009-coloring", tab: /Coloring/i, section: "Coloring" },
   { route: "/stories/009", file: "story-009-source", tab: /Source/i, section: "Source" },
   { route: "/stories/009", file: "story-009-notes", tab: /Notes/i, section: "Notes" },
-  { route: "/stories/009", file: "story-009-shlokas", tab: /Ślokas|Shlokas/i, section: "Ślokas" },
+  { route: "/stories/009", file: "story-009-shlokas", tab: /Ślok/i, section: "Ślokās" },
 ];
 
 const OUT_ROOT = path.resolve(__dirname, "../../../docs/product/launch/screenshots");
@@ -56,8 +56,11 @@ test.describe("launch screenshots", () => {
             await page.goto(capture.route);
           });
           if (capture.tab) {
-            await page.getByRole("tab", { name: capture.tab }).click().catch(() => undefined);
-            await page.waitForTimeout(400);
+            const tab = page.getByRole("tab", { name: capture.tab });
+            if (await tab.count()) {
+              await tab.first().click({ timeout: 10_000 }).catch(() => undefined);
+              await page.waitForTimeout(300).catch(() => undefined);
+            }
           }
           const filePath = path.join(dir, `${capture.file}.png`);
           await page.screenshot({ path: filePath, fullPage: true });
