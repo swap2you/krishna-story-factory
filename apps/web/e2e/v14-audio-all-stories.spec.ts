@@ -1,14 +1,19 @@
 import { expect, test } from "@playwright/test";
+import { fetchStories } from "./helpers";
 
-const STORIES = ["001", "002", "003", "004", "005", "006", "007", "008"];
+test.describe("published-story audio advancement", () => {
+  test("catalog-driven play advances currentTime for every published story", async ({ page, request }, testInfo) => {
+    test.skip(
+      testInfo.project.name.includes("mobile") && testInfo.project.name.includes("webkit"),
+      "iOS WebKit autoplay policy",
+    );
+    const stories = await fetchStories(request);
+    expect(stories.length).toBeGreaterThanOrEqual(9);
+    const storyNos = stories.map((s) => String(s.story_no).padStart(3, "0"));
+    expect(storyNos).toContain("009");
+    expect(storyNos).not.toContain("010");
 
-test.describe("v1.5 audio — all released stories", () => {
-  for (const storyNo of STORIES) {
-    test(`story ${storyNo} play advances currentTime`, async ({ page }, testInfo) => {
-      test.skip(
-        testInfo.project.name.includes("mobile") && testInfo.project.name.includes("webkit"),
-        "iOS WebKit autoplay policy",
-      );
+    for (const storyNo of storyNos) {
       await page.goto(`/stories/${storyNo}`);
       await page.getByRole("tab", { name: /Listen/i }).click().catch(() => undefined);
       await expect(page.locator(".audio-player")).toBeVisible({ timeout: 20_000 });
@@ -59,7 +64,6 @@ test.describe("v1.5 audio — all released stories", () => {
         const audio = document.querySelector("audio");
         return !!audio && audio.readyState >= 2 && audio.currentTime > 0.15 && !audio.paused;
       }, undefined, { timeout: 45_000 });
-      // Firefox can briefly desync the Pause label while audio is already advancing.
       const pause = page.locator(".audio-player").getByRole("button", { name: /^Pause$/i });
       const pauseVisible = await pause.isVisible().catch(() => false);
       if (!pauseVisible) {
@@ -91,16 +95,24 @@ test.describe("v1.5 audio — all released stories", () => {
           paused: audio?.paused ?? true,
         };
       });
-      expect(state.readyState).toBeGreaterThanOrEqual(2);
-      expect(state.currentTime).toBeGreaterThan(0.15);
-      expect(state.paused).toBeFalsy();
-      expect(state.currentSrc.length).toBeGreaterThan(0);
-      expect(["blob_playing", "native_playing"]).toContain(state.path);
-    });
-  }
+      expect(state.readyState, `story ${storyNo}`).toBeGreaterThanOrEqual(2);
+      expect(state.currentTime, `story ${storyNo}`).toBeGreaterThan(0.15);
+      expect(state.paused, `story ${storyNo}`).toBeFalsy();
+      expect(state.currentSrc.length, `story ${storyNo}`).toBeGreaterThan(0);
+      expect(["blob_playing", "native_playing"], `story ${storyNo}`).toContain(state.path);
+    }
+  });
 
-  test("story 007 links to published 008", async ({ page }) => {
-    await page.goto("/stories/007");
-    await expect(page.getByRole("link", { name: /Story 008/i })).toBeVisible();
+  test("penultimate published story links to the latest published story", async ({ page, request }) => {
+    const stories = await fetchStories(request);
+    expect(stories.length).toBeGreaterThanOrEqual(2);
+    const nos = stories
+      .map((s) => Number.parseInt(String(s.story_no), 10))
+      .filter((n) => Number.isFinite(n))
+      .sort((a, b) => a - b);
+    const last = nos[nos.length - 1];
+    const prev = nos[nos.length - 2];
+    await page.goto(`/stories/${String(prev).padStart(3, "0")}`);
+    await expect(page.getByRole("link", { name: new RegExp(`Story ${String(last).padStart(3, "0")}`, "i") })).toBeVisible();
   });
 });

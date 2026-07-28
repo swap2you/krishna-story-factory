@@ -11,12 +11,13 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..catalog.filesystem import package_file
+from ..catalog.next_preview import apply_dynamic_next_preview
 from ..config import get_settings
 from ..db import get_session
 from ..models import Story
 from ..web_assets.builder import build_web_assets_for_package
 from ..web_assets.story_parser import parse_story_markdown
-from ..web_assets.waveform import peaks_for_mp3_placeholder, write_peaks_json
+from ..web_assets.waveform import write_peaks_json
 
 router = APIRouter(prefix="/api/v1/stories", tags=["reader"])
 
@@ -79,17 +80,20 @@ def reader_md(story_no: str, session: Session = Depends(get_session)) -> PlainTe
 
     asset = _web_asset_path(padded, "reader.md")
     if asset is not None:
-        return PlainTextResponse(asset.read_text(encoding="utf-8"), media_type="text/markdown")
+        md = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
+        return PlainTextResponse(md, media_type="text/markdown")
 
     story = _get_story_record(session, story_no)
     try:
         ensure_web_assets(story)
         asset = _web_asset_path(padded, "reader.md")
         if asset is not None:
-            return PlainTextResponse(asset.read_text(encoding="utf-8"), media_type="text/markdown")
+            md = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
+            return PlainTextResponse(md, media_type="text/markdown")
     except HTTPException:
         pass
     md, _ = _parse_on_the_fly(story)
+    md = apply_dynamic_next_preview(md, padded)
     return PlainTextResponse(md, media_type="text/markdown")
 
 
@@ -100,17 +104,20 @@ def reader_txt(story_no: str, session: Session = Depends(get_session)) -> PlainT
 
     asset = _web_asset_path(padded, "reader.txt")
     if asset is not None:
-        return PlainTextResponse(asset.read_text(encoding="utf-8"), media_type="text/plain")
+        txt = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
+        return PlainTextResponse(txt, media_type="text/plain")
 
     story = _get_story_record(session, story_no)
     try:
         ensure_web_assets(story)
         asset = _web_asset_path(padded, "reader.txt")
         if asset is not None:
-            return PlainTextResponse(asset.read_text(encoding="utf-8"), media_type="text/plain")
+            txt = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
+            return PlainTextResponse(txt, media_type="text/plain")
     except HTTPException:
         pass
     _, txt = _parse_on_the_fly(story)
+    txt = apply_dynamic_next_preview(txt, padded)
     return PlainTextResponse(txt, media_type="text/plain")
 
 

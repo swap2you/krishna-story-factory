@@ -1,9 +1,29 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStory, getStories } from "@/lib/catalog";
 import { StoryExperience } from "@/components/story-experience";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ storyNo: string }>;
+}): Promise<Metadata> {
+  const { storyNo } = await params;
+  const story = await getStory(storyNo).catch(() => null);
+  if (!story) {
+    return {
+      title: `Story ${storyNo} — in preparation`,
+      robots: { index: false, follow: false },
+    };
+  }
+  return {
+    title: story.title,
+    description: story.source_reference ?? `Krishna Book bedtime story ${story.story_no}`,
+  };
+}
 
 export default async function StoryPage({ params }: { params: Promise<{ storyNo: string }> }) {
   const { storyNo } = await params;
@@ -41,7 +61,13 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
         )}
         <p className="source-pill">Story {story?.story_no ?? storyNo}</p>
         <h2>{story?.title ?? "A story in preparation"}</h2>
-        <p>{story?.age_range ? `Suggested for ${story.age_range}` : "A gentle Radha-Krishna bedtime experience."}</p>
+        <p>
+          {story
+            ? story.age_range
+              ? `Suggested for ${story.age_range}`
+              : "A gentle Radha-Krishna bedtime experience."
+            : "This chapter is not published yet. The public catalog only lists completed, release-gated packages."}
+        </p>
         <p>{story?.source_reference ?? "Source references appear when the catalog is connected."}</p>
       </aside>
       <section className="story-main">
@@ -50,7 +76,7 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
             <p className="eyebrow">Listen · Read · Activities</p>
             <h1>{story?.title ?? "A story in preparation"}</h1>
           </div>
-          <span className="status-chip">{story?.quality_status ?? "Catalog"}</span>
+          <span className="status-chip">{story?.quality_status ?? (story ? "Catalog" : "Unpublished")}</span>
         </div>
         <StoryExperience
           story={story}

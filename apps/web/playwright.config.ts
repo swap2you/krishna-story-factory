@@ -15,11 +15,16 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   projects: [
-    { name: "chromium-desktop", use: { ...devices["Desktop Chrome"] } },
-    { name: "firefox-desktop", use: { ...devices["Desktop Firefox"] } },
-    { name: "webkit-desktop", use: { ...devices["Desktop Safari"] } },
-    { name: "chromium-mobile", use: { ...devices["Pixel 5"] } },
-    { name: "webkit-mobile", use: { ...devices["iPhone 13"] } },
+    { name: "chromium-desktop", use: { ...devices["Desktop Chrome"] }, testIgnore: /launch-screenshots\.spec\.ts/ },
+    { name: "firefox-desktop", use: { ...devices["Desktop Firefox"] }, testIgnore: /launch-screenshots\.spec\.ts/ },
+    { name: "webkit-desktop", use: { ...devices["Desktop Safari"] }, testIgnore: /launch-screenshots\.spec\.ts/ },
+    { name: "chromium-mobile", use: { ...devices["Pixel 5"] }, testIgnore: /launch-screenshots\.spec\.ts/ },
+    { name: "webkit-mobile", use: { ...devices["iPhone 13"] }, testIgnore: /launch-screenshots\.spec\.ts/ },
+    {
+      name: "screenshots",
+      testMatch: /launch-screenshots\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
   ],
   // External UAT runner starts API+web; local `npm run test:e2e` may set BHAVA_WEB_URL to an already-running instance.
   webServer: process.env.BHAVA_WEB_URL

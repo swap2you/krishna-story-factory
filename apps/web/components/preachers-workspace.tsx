@@ -64,20 +64,21 @@ export function PreachersWorkspace({ stories }: Props) {
                 {stories.map((story) => {
                   const active = story.story_no === selectedNo;
                   return (
-                    <button
-                      key={story.story_no}
-                      type="button"
-                      aria-pressed={active}
-                      className={`scope-card${active ? " is-active" : ""}`}
-                      onClick={() => setSelectedNo(story.story_no)}
-                      style={{ textAlign: "left", cursor: "pointer" }}
-                    >
-                      <h3 style={{ fontSize: "1.05rem", marginTop: 0 }}>
-                        <span style={{ color: "var(--bhava-saffron)", marginRight: ".4rem" }}>#{story.story_no}</span>
-                        {story.title}
-                      </h3>
-                      {story.source_reference ? <p style={{ margin: ".35rem 0 0", fontSize: ".88rem" }}><strong>Source:</strong> {story.source_reference}</p> : null}
-                    </button>
+                    <div key={story.story_no} role="listitem">
+                      <button
+                        type="button"
+                        aria-pressed={active}
+                        className={`scope-card${active ? " is-active" : ""}`}
+                        onClick={() => setSelectedNo(story.story_no)}
+                        style={{ textAlign: "left", cursor: "pointer", width: "100%" }}
+                      >
+                        <h3 style={{ fontSize: "1.05rem", marginTop: 0 }}>
+                          <span style={{ color: "var(--bhava-saffron)", marginRight: ".4rem" }}>#{story.story_no}</span>
+                          {story.title}
+                        </h3>
+                        {story.source_reference ? <p style={{ margin: ".35rem 0 0", fontSize: ".88rem" }}><strong>Source:</strong> {story.source_reference}</p> : null}
+                      </button>
+                    </div>
                   );
                 })}
               </div>

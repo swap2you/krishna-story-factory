@@ -97,20 +97,28 @@ export default async function Home() {
           <p className="brand-kicker brand-display">Bhāva</p>
           <h1>Timeless devotion for growing hearts and minds.</h1>
           <p className="hero-copy-text">
-            Stories, scripture, practice, and learning paths for children, youth, families, and teachers.
+            Start with Krishna Book bedtime stories — listen, read, color, and print — while Knowledge and classroom libraries grow with honest planned labels.
           </p>
-          <div className="actions">
-            <Link className="bhava-button bhava-button--accent" href="/library">Explore the Library</Link>
-            <Link className="bhava-button bhava-button--quiet" href="/knowledge">Browse Knowledge</Link>
-            <Link className="bhava-button bhava-button--quiet" href="/learning/children-youth">Start Learning</Link>
-          </div>
-          <div className="actions actions--secondary">
+          <div className="actions" data-testid="home-story-primary-ctas">
+            <Link className="bhava-button bhava-button--accent" href="/library/krishna-book">
+              Start the Stories
+            </Link>
             {latestStory ? (
               <Link className="bhava-button bhava-button--quiet" href={`/stories/${latestStory.story_no}`}>
-                Latest Story
+                Listen to the Latest Story
               </Link>
             ) : null}
-            <Link className="bhava-button bhava-button--quiet" href="/printables">Printables</Link>
+            <Link className="bhava-button bhava-button--quiet" href="/printables">
+              Browse Activities
+            </Link>
+            <Link className="bhava-button bhava-button--quiet" href="/printables">
+              Print Coloring &amp; Worksheets
+            </Link>
+          </div>
+          <div className="actions actions--secondary">
+            <Link className="bhava-button bhava-button--quiet" href="/library">Explore the Library</Link>
+            <Link className="bhava-button bhava-button--quiet" href="/knowledge">Browse Knowledge</Link>
+            <Link className="bhava-button bhava-button--quiet" href="/learning/children-youth">Start Learning</Link>
           </div>
         </div>
       </section>

@@ -45,7 +45,7 @@ function ensurePackage(pkg, version) {
 
 if (process.platform === "win32" && process.arch === "x64") {
   ensurePackage("@rollup/rollup-win32-x64-msvc", "4.62.2");
-  ensurePackage("@next/swc-win32-x64-msvc", "15.3.5");
+  ensurePackage("@next/swc-win32-x64-msvc", "15.5.22");
 } else if (process.platform === "linux" && process.arch === "x64") {
   ensurePackage("@rollup/rollup-linux-x64-gnu", "4.62.2");
 } else if (process.platform === "darwin" && process.arch === "arm64") {
@@ -53,3 +53,19 @@ if (process.platform === "win32" && process.arch === "x64") {
 } else if (process.platform === "darwin" && process.arch === "x64") {
   ensurePackage("@rollup/rollup-darwin-x64", "4.62.2");
 }
+
+// Next still vendors postcss@8.4.31 under node_modules/next/node_modules.
+// Remove the nested copy so resolution uses the patched hoisted postcss (overrides).
+function removeNestedVulnerablePostcss() {
+  const nested = path.join(root, "node_modules", "next", "node_modules", "postcss");
+  if (!fs.existsSync(nested)) return;
+  try {
+    fs.rmSync(nested, { recursive: true, force: true });
+    console.log("[bhava] removed nested next/postcss so hoisted patched postcss is used");
+  } catch (err) {
+    console.warn("[bhava] could not remove nested next/postcss:", err && err.message ? err.message : err);
+  }
+}
+
+removeNestedVulnerablePostcss();
+

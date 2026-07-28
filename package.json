@@ -18,10 +18,26 @@
     "postinstall": "node scripts/ensure_native_optionals.cjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.19.0"
   },
   "optionalDependencies": {
-    "@next/swc-win32-x64-msvc": "15.3.5",
+    "@next/swc-win32-x64-msvc": "15.5.22",
     "@rollup/rollup-win32-x64-msvc": "4.62.2"
+  },
+  "dependencies": {
+    "postcss": "8.5.24",
+    "react": "19.1.9",
+    "react-dom": "19.1.9",
+    "sharp": "0.35.3"
+  },
+  "overrides": {
+    "react": "19.1.9",
+    "react-dom": "19.1.9",
+    "postcss": "8.5.24",
+    "sharp": "0.35.3",
+    "next": {
+      "postcss": "8.5.24",
+      "sharp": "0.35.3"
+    }
   }
 }
