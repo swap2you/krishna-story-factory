@@ -1,0 +1,24 @@
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+
+> bhava-portal@1.0.0 postinstall
+> node scripts/ensure_native_optionals.cjs
+
+[bhava] extracting optional native package @rollup/rollup-win32-x64-msvc@4.62.2
+[bhava] installed @rollup/rollup-win32-x64-msvc -> C:\Development\Workspace\DevotionalRepo\krishna-story-factory\node_modules\@rollup\rollup-win32-x64-msvc
+[bhava] extracting optional native package @next/swc-win32-x64-msvc@15.5.22
+[bhava] installed @next/swc-win32-x64-msvc -> C:\Development\Workspace\DevotionalRepo\krishna-story-factory\node_modules\@next\swc-win32-x64-msvc
+
+added 501 packages, and audited 505 packages in 1m
+
+169 packages are looking for funding
+  run `npm fund` for details
+
+9 high severity vulnerabilities
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.

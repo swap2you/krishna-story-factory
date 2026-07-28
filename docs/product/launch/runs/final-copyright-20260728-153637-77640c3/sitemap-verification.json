@@ -1,0 +1,17 @@
+{
+  "public_story_count_const": true,
+  "includes_rights": true,
+  "excludes_010_route": true,
+  "stories_001_009_expected": [
+    "001",
+    "002",
+    "003",
+    "004",
+    "005",
+    "006",
+    "007",
+    "008",
+    "009"
+  ],
+  "private_prefixes_documented": true
+}
