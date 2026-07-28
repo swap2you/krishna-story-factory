@@ -1,0 +1,299 @@
+{
+  "001": {
+    "version": "2.1.1-copyright",
+    "public": {
+      "story.md": "2e5aca16945c2fb218bad3f0ae49cbf93ec05d2f79ff3642c396575550a34641",
+      "narration.mp3": "c380c3c285cc48214abafa18ff10ffb95f577e3f267a8d85ff9d3d23e8026056",
+      "story_poster.png": "e41c44bdd1374f56435fef72fa4f5a9a2e8a6971acfbcea31880623578bf3c74",
+      "coloring_page.png": "57083eedae016d8cc9cb9127f19d47f17083b339d72fc9a5955ddf98db280a13",
+      "simple_coloring_page.png": "a41cb6324f599612353fe8efd761d1c609bb4a35fae0ed12a56796160bda91f8",
+      "activity_sheet.pdf": "3df96904b2286cdd0361499dbff96752a10bed8d80f9cbcea77f7e7cd531c0eb",
+      "whatsapp_caption.txt": "70fae4bcad8f473313dd8a037bbaff481dfd91e5e54ac36d2a5b2dce69bf4f28",
+      "manifest.json": "4add15df4b08578f937dde61f0e7443a49dfdedbee128a9a1c947c0436d90ae5"
+    },
+    "archive_2_1_0": {
+      "story.md": "b78b48849c8809dcb8aebe707ce57b4d671e7d7bcc7f604a43723783a50c242e",
+      "narration.mp3": "c380c3c285cc48214abafa18ff10ffb95f577e3f267a8d85ff9d3d23e8026056",
+      "story_poster.png": "3057fe5f3946631ba206af49e331768fce90d82e330236a08ccd00871008799f",
+      "coloring_page.png": "75644f244b23e319ee6bc4ca4b656542fb73af06aac63727e56d841d933a60b9",
+      "simple_coloring_page.png": "62dece4c486bee279852a7b35f9b8d8ee305b611f4bbd7b56584757bfc022ff9",
+      "activity_sheet.pdf": "a47f335c2b63727555f6d76e2071f588fc4bd4db19186ef6956e28a676f5fc3d",
+      "whatsapp_caption.txt": "70fae4bcad8f473313dd8a037bbaff481dfd91e5e54ac36d2a5b2dce69bf4f28",
+      "manifest.json": "771f7a031abceca136fa89a8c993898fa2322d8d8e2906bf4908b7f3290ad6d7"
+    },
+    "archive_2_0": {
+      "story.md": "6dc5ecc96cad0d7b913b89031517b4ca99fea4bc302e09366b1de61ca09412e1",
+      "narration.mp3": "974f2194e935fd8c8e4ada70633fc59990121986705d2e841a109963eb82edf0",
+      "story_poster.png": "a0229fa3bfc4f1d33f8f30a58d6b81bfccce28b290623310dc05896c15d145aa",
+      "coloring_page.png": "2e17c64db0ee15085c8fa6303379d05107c2c7dbb73b38e949032b56d5a1c2bc",
+      "simple_coloring_page.png": "cfbc89f19516a3a17f70fee8f36edee00ecad9ba7ce015f20ed4a285a20c9f1d",
+      "activity_sheet.pdf": "9e480c4592b4c06d1612e3a87e8f050ba0bd375f6b01dbf87cc9da756a79a34a",
+      "whatsapp_caption.txt": "a3878fea33d664a1b087f4785b66184a0ad25070c12f4730909ce1df5641dbc5",
+      "manifest.json": "2087d0b0998a13bb359b157682520ccdedfba018a9da8d596232e05c4d775af0"
+    }
+  },
+  "002": {
+    "version": "2.1.1-copyright",
+    "public": {
+      "story.md": "68c2aab214eb302be2cdcc4dbcd26033650e4f3e5af262c6bdcdec0f0989d45e",
+      "narration.mp3": "5bda1e01a7572cb0e76778b221470028649a0d30d144d82e4eded14497c3bd7e",
+      "story_poster.png": "e2decbf5185d8a6bd4daea7b49075e7f1216f25377fafaaff1f1bb1b2bf11981",
+      "coloring_page.png": "837419e38f9962286b044492c892b04a3710833185453044e5c26e03853150b0",
+      "simple_coloring_page.png": "4ace2fe86462c29ffcc21eda8ab2f9fa8489cc3569d93fbff79029dcc3fe02c5",
+      "activity_sheet.pdf": "1eda79c4b1a64616d20989caa75d7bdc423b74ce5fdf56b96dfb781e0dcea651",
+      "whatsapp_caption.txt": "68ddfd1cf2afc72d967a9cf824df33b73cfbc0f098098d4b3e6d6e7acbbb1fb3",
+      "manifest.json": "194d7422d7183bbff974c3bcd0f2748b73a063227c562dd25642255e574924eb"
+    },
+    "archive_2_1_0": {
+      "story.md": "9279436d708ccc34b1ec2ddc692316c01231cc5141bcf607ec2be3b32add5986",
+      "narration.mp3": "5bda1e01a7572cb0e76778b221470028649a0d30d144d82e4eded14497c3bd7e",
+      "story_poster.png": "8d33b41ea894911851a0543b90e2d9c5705a883e8ce8d3c5d6167bef647e1fc9",
+      "coloring_page.png": "a38ebba9b25646843029cef658705e2e5636abef2af668535b6371845a497d32",
+      "simple_coloring_page.png": "96102d69af917f12ebd8af7d8b27a6bfa91417ed330e26bb58ef8b22afa1bb53",
+      "activity_sheet.pdf": "b9338ca9ab125fcad3a62e0297645ce7d5821af94fda9f653068291351eeb85d",
+      "whatsapp_caption.txt": "68ddfd1cf2afc72d967a9cf824df33b73cfbc0f098098d4b3e6d6e7acbbb1fb3",
+      "manifest.json": "5420f61a24b64b9ff45efa58560e995b064fd2b2d62c27794b9b42b6bab12706"
+    },
+    "archive_2_0": {
+      "story.md": "de01a0849a8a6a8cf1727454492faf726fb4ae8417b1ee559ceabd1907156a0b",
+      "narration.mp3": "ece054da9726df7ba1f361822b76073694474e4b85f93c9b00b152f89594e52a",
+      "story_poster.png": "1559cccf3294a3da1fa904fc029268793b738073f88a946d90c88621bbd5bd1a",
+      "coloring_page.png": "d80f6845d6f7502933b8c497e543cdf84e7f55435868ef24116a133758986c6a",
+      "simple_coloring_page.png": "23b37aacea41cdcbc57680092336d9d77f2062ed5ae4083364d0d157403572d6",
+      "activity_sheet.pdf": "3b4fd8c5f5907e910ce83ede4c585fa35afea3bd9e437e9c075fb796fddbb2fa",
+      "whatsapp_caption.txt": "02a8bbf1b640dcfe19c7850a823536ee35cd0ee1c49159fb76bc719dee92700a",
+      "manifest.json": "ae98dc23df7fbb32135ed422a58c6d464131e9291fea8f5c1ff08863536941ec"
+    }
+  },
+  "003": {
+    "version": "2.1.1-copyright",
+    "public": {
+      "story.md": "9b199f673aa9ab3e4fae73e01a2371088bd0b3cff9916f98c88e783b69070c26",
+      "narration.mp3": "70a075366612329132d41ee06403b0473a575e6f0dec6877d91622e410bda68b",
+      "story_poster.png": "47564f16a484882a8bd0085ae9a225b31dbcc63bf1366c9380f2dd89312d6ef8",
+      "coloring_page.png": "8f9abb49947c8fc962b4d9b0c9146890b0d0731a291d0d50ecdfb4a080ffb41c",
+      "simple_coloring_page.png": "4bb3113623b081da464a0438f98bb28468d83e2cfcc9a845545ac8dae26d106b",
+      "activity_sheet.pdf": "1486ae09edc05669640e772c610a0ea954188cfefacd8aed8eacf9cb008bc6a4",
+      "whatsapp_caption.txt": "a86a2c28eac073a919a905d236b158cbf8d7cfe2b63101fa18574e5a0d1f2e32",
+      "manifest.json": "3af5e59a15a9c8175f115268afdcc31c1cd381fbf6bd8d20099edec9ed156fc7"
+    },
+    "archive_2_1_0": {
+      "story.md": "8aab314f838411fbb7fbb31826b7dc4a0b5575af9ca40daa50f741761597fc2e",
+      "narration.mp3": "70a075366612329132d41ee06403b0473a575e6f0dec6877d91622e410bda68b",
+      "story_poster.png": "0686901117d0956c4cb9ec3564bc82e10c297c61a516f71376ee9f065d54ab60",
+      "coloring_page.png": "704e0f0cbc7a02d65e79e8a4c7197278aa62a8d9fa2b7b27ce1565b41adc2267",
+      "simple_coloring_page.png": "abf95220ab3f8578502f545b3973201394f4a1011585813016f58ac26821cd16",
+      "activity_sheet.pdf": "e040036ddf46e1a87cd866d8af1dd03f232c74eb4883f9d1def6fbd688a9541a",
+      "whatsapp_caption.txt": "a86a2c28eac073a919a905d236b158cbf8d7cfe2b63101fa18574e5a0d1f2e32",
+      "manifest.json": "02a61419f9c0964bd7724035d4c7afb35eb7f02d2aec2f09243db1c83aa4bbe7"
+    },
+    "archive_2_0": {
+      "story.md": "e3c8fea3e401f3377e0636a21c761e55a41b1a353c7ac3d2cc1e1cfd955cd948",
+      "narration.mp3": "3a78f5553c71de4650186f69d3816c204401c3a7ca4025707509e5bd7a3e967d",
+      "story_poster.png": "af4935471af5594269aa66997387e877eec3cb86ff3c38fcdc5ef52d54fe6fe8",
+      "coloring_page.png": "f45a7998c142e6a868c1befa6856b47d435b06085c3f97c642fb0cff749e0434",
+      "simple_coloring_page.png": "538b7f96d85e2dac435bb33e54c31e37dc774868cba8b936dd40cef450497577",
+      "activity_sheet.pdf": "8061383860b2047b20fbe775dce68c5b345c61501524edf23535589cac189195",
+      "whatsapp_caption.txt": "38ead2ba553e540542f69395672d098bc5affa911a85c192bc6b6381210ff943",
+      "manifest.json": "7cbf182eb5f69b19129f9e8cd6b50c5fa93583f4ffc0001d4b9a4992e683ad3a"
+    }
+  },
+  "004": {
+    "version": "2.1.1-copyright",
+    "public": {
+      "story.md": "d87fec53f7f677142d6198ad0bce18a4410b709f0d8d9dc3c0d5a6aee6841d6f",
+      "narration.mp3": "d2745a1103812ba681c0393e2c9bbd48c4dcdb72f69903e08bf55551b4c84cc7",
+      "story_poster.png": "a7284b9a5f816573d3d11b4b53bff44b89653992c539276b2a3f510e77307352",
+      "coloring_page.png": "2cc4404225fb39b7548448f991931c1ae611554a1b180bc6375e018af9452b73",
+      "simple_coloring_page.png": "fdc0e363b8edcc4d31754fe9a3aa240f89538d02a766c35d0df41b8e84e53b87",
+      "activity_sheet.pdf": "6ff84f9b9ec984cf6b77a3b6feb3571e8a74704bbd2859b872cab3d7db2ace54",
+      "whatsapp_caption.txt": "26476eef4ad941544f83087ec4ca3698829effa56035a3216b1f0cc5aad2b45a",
+      "manifest.json": "acd36f33530a2cb4e205d90db5bab64a63e83270599b31967e16b28f6e4a6868"
+    },
+    "archive_2_1_0": {
+      "story.md": "2310ce1a15fb231a400bb051a1dab2e11def70ef5ac927a3109e457f516ea40e",
+      "narration.mp3": "d2745a1103812ba681c0393e2c9bbd48c4dcdb72f69903e08bf55551b4c84cc7",
+      "story_poster.png": "a44e1cdf9370e8eed252f7dadcde1ecbf82d862da4cadfd21914d7c89f662774",
+      "coloring_page.png": "cf3c1ad7d5aae39137dcf618347249b57a3a4fd73ef631bf56d550750c86767e",
+      "simple_coloring_page.png": "3980a694bf7eb626e72b2e55d3b954958d6253d5ca831c250f0da4e4ecf2897c",
+      "activity_sheet.pdf": "aed65e7391d648b0f282766cbce8bae4cf13231bc002df0a4c77979e1a63aa30",
+      "whatsapp_caption.txt": "26476eef4ad941544f83087ec4ca3698829effa56035a3216b1f0cc5aad2b45a",
+      "manifest.json": "131c89666abad95d2f0cab87aa32f65080b4ee605f02f87014bd824fd7a15ad0"
+    },
+    "archive_2_0": {
+      "story.md": "d7edf6310310b514e41518e7c914d11bf61d2911cf4a31a8c64f376cc28aa06d",
+      "narration.mp3": "127afeee04f0332912a4cdd2f669fbd9b1b1efc12be2343bd72ce427d3951822",
+      "story_poster.png": "6a089a9041daebe544af0c23375ebb61eef5960d456f5526247e9cf0a306c70a",
+      "coloring_page.png": "be6f6823b1c72acd56f75a57911944e9652eb7fff76833fe9341b868b5d75b17",
+      "simple_coloring_page.png": "6dc8ff47d861864aebf3ec03fea8bd2632f8c8252479ebfccda50517ba1e85c8",
+      "activity_sheet.pdf": "e8cc68212d66fcea4207ed1fd48b2b090d27c4a8ff112df69aa6f6b1637f24b2",
+      "whatsapp_caption.txt": "f0a10526b46e7f336b78bbde1fd763f5e342585228b4092756031394ac36e98c",
+      "manifest.json": "56bf9c007f98d118bca33ea64242822105cf545a14f9fd408a8792b48442096f"
+    }
+  },
+  "005": {
+    "version": "2.1.1-copyright",
+    "public": {
+      "story.md": "e5b31b06ef4b8b864b29f7edc8451c95d6ac96e345bf7f78435dd54422e7a57a",
+      "narration.mp3": "5c128a6177c939a738fa1cfb537695e0aef457e159d073221dd8d27c645cf627",
+      "story_poster.png": "e6447133daaf3b786fbe4a8c15c4cb3790c32400d7857ed4c788cc8bdf40358c",
+      "coloring_page.png": "979d95be880dd10a63661d07dff872983ab6f082fc2d5243e4462a0ca2a2d629",
+      "simple_coloring_page.png": "cc5fc5fbfcab1ea80ad12a67cf2b36d99b943f0dc535ea7a2fd6899e872b9dcc",
+      "activity_sheet.pdf": "534824ad4c1386fc53012ffab4dabbcf8d4ff8261500159f8c34c37c020f9ac8",
+      "whatsapp_caption.txt": "ae2e0087cc046feb67b5f66f77f689eb01bc8017568a4ec688a12ebe02e0257f",
+      "manifest.json": "bcbdedf21bbcdf5c498f11a8b308d4095534298dc3ab3469e4a30be891237b58"
+    },
+    "archive_2_1_0": {
+      "story.md": "faebb6797a7939b70aaf7ce2ccb93c902e73f49886c37ddeb88b27beaa3d4071",
+      "narration.mp3": "5c128a6177c939a738fa1cfb537695e0aef457e159d073221dd8d27c645cf627",
+      "story_poster.png": "4c1cac3cc80a84e55ac2b53d16a5c92507385a4798cf3b9e51e0de8bbd5d21aa",
+      "coloring_page.png": "bbb7a4d2dd3d4e99821f13e8745ab34d2c9aad807b2a711a09ab26e196196749",
+      "simple_coloring_page.png": "af4b696f408c16ce5f1b8c03751a457fe6e8668d35992a70a7d97f4dddd39e19",
+      "activity_sheet.pdf": "7febc0392986cdd8c43e6d6be10d6984437bfe99338f078787188b72738d4428",
+      "whatsapp_caption.txt": "ae2e0087cc046feb67b5f66f77f689eb01bc8017568a4ec688a12ebe02e0257f",
+      "manifest.json": "10bef12c602d50c745b2ea5d7e47ef0a58925256aa2d49e75069cf2a75ffbeae"
+    },
+    "archive_2_0": {
+      "story.md": "a35f1761c8b809d095f00f8d94983d2a55cd206b3b04cf22a058d7058de44d26",
+      "narration.mp3": "9528f808602bdb7a775c0560cd65f0e24f3b7374895649ff29e0439e00f8eba3",
+      "story_poster.png": "19e8eacc4431a1102ec41c94a76ca8cc1682b63ce00dfe499a153b835e9e1498",
+      "coloring_page.png": "707a9cc3d4fd16866e1ed7359b410e0361fd1f584ad7edd1be1e011276ea6b88",
+      "simple_coloring_page.png": "424d6341603633e7c807e0170088b2e6f481e2dde5d5760feb30d4f669c9dbc3",
+      "activity_sheet.pdf": "9ab2cd5b48f4420a34e080a6360220f986dff1c83cb92a67ee8fac6d37a6f3b6",
+      "whatsapp_caption.txt": "02dcddcf4b8d7f45d4c842866f6afbe7eff47d7e59433557dfe64b252d38a6d1",
+      "manifest.json": "d35b927381849b0e91e145a9ae291fbb0bdd8ea2fd77aefff1068b3371b9ed3a"
+    }
+  },
+  "006": {
+    "version": "2.1.1-copyright",
+    "public": {
+      "story.md": "5131a7239f1e75a7deb42a06df6769b11f9eead48f57f62f5f5cd28bfdf35d31",
+      "narration.mp3": "d7e72b57a1851d19a4f304dcacf50f60ed41362f192c064305ad68627f72db7f",
+      "story_poster.png": "0221e26735ba87189733e7eac3e86dde08db51518dfa29538524435440605a59",
+      "coloring_page.png": "db423c8bcf3720dcab0036fef79dfa149d845c8a38f3e4499ad94c391d9ba4e2",
+      "simple_coloring_page.png": "07f7476ccb1f6ba3b02a1c4d2c5de236694b19a1f8523441d38264885d6eae09",
+      "activity_sheet.pdf": "a1b83b50961dc8285b80ba18a1d6e3891e817db0e6308175710aedfcc52e2448",
+      "whatsapp_caption.txt": "c99d24fc81e0295f78453810fddc892c2bb019fa8ff12968afa5c043f5a66cb3",
+      "manifest.json": "a3a48f5ce2ff6e3abdff71c461fe5ad8924d9e8593fbba27e4cb84508de73009"
+    },
+    "archive_2_1_0": {
+      "story.md": "1a3314a05b058302055e65f5788ccada3fb257fb3af332c52296eee9fee306f3",
+      "narration.mp3": "d7e72b57a1851d19a4f304dcacf50f60ed41362f192c064305ad68627f72db7f",
+      "story_poster.png": "db8992e57ad1259d959977d16c5fee7713081d08df3b1e20c525a549a51b2d15",
+      "coloring_page.png": "2bab071c5e4b5267e56c0f127a8326fd86a1556dec551088fc9464b82a5ac931",
+      "simple_coloring_page.png": "71a926ebd6668127b1c8c4ca268261a0274548d27386fccd45e38ce25d859269",
+      "activity_sheet.pdf": "0642fbbf941c5658861d23c502fc96fa1b79636e0cacbb509543db5be331f107",
+      "whatsapp_caption.txt": "c99d24fc81e0295f78453810fddc892c2bb019fa8ff12968afa5c043f5a66cb3",
+      "manifest.json": "3b09de79f0868800cd1b442eefc5206fbc9285422e57a946270ac02edc1b7a97"
+    },
+    "archive_2_0": {
+      "story.md": "bacf589e8854a677aebe86325ece0b04803c79f4ce96eb1050f708436520244d",
+      "narration.mp3": "76f020f332eadeb45ac24c584a98971be0e57898ea2ea92ae66fe7142ff43248",
+      "story_poster.png": "da303d34aa02846ead1e04e9f28c0cabd74e6b3c692dab1279bde045797fd4d0",
+      "coloring_page.png": "b6b7a6f0e0503d728083e25c04815cd61710db88a2e56bdfd65832ffae98dc49",
+      "simple_coloring_page.png": "9ed59041099dc0b9101a92a1efd089a0bcac9934696e0376ec4d4b62a8c77eb4",
+      "activity_sheet.pdf": "1be80501cd2a828d17dbd7dc2b67fd41d1001491139fefb6815f0a30ad78f80c",
+      "whatsapp_caption.txt": "33ba07bc7996658721d8cdb2c74be7f5e47961a31a75de9b8cd3f63c50e10f20",
+      "manifest.json": "0770f101860e5dbf9f8bcf1d9da45207df9c1637f38b282c2b8b5b173f1fdce9"
+    }
+  },
+  "007": {
+    "version": "2.1.1-copyright",
+    "public": {
+      "story.md": "bf70e18b7fc26228bdde01bd6494b5510fb3741bba42a2ff823e347d6b57ec98",
+      "narration.mp3": "85437f1b000351b105ce695c06aa5eeee0f4b2b12c81a2d04747710d5fb184ed",
+      "story_poster.png": "13b47d93075e2c174bb4790739fe35d85e26f45b4c3a82fa70a6b481ca8991fe",
+      "coloring_page.png": "9edb974ba00b74bd74be18c6ac9473ef789a36c0afc7eb88df612868bec0af87",
+      "simple_coloring_page.png": "41dcea3190f13412fb516bf6adb6fd4df946315d3fbd3da8d880e9944089e060",
+      "activity_sheet.pdf": "d841e0e275973c93cd59eb286aec3fb03332aef6b22360cddb138a1e49d1043e",
+      "whatsapp_caption.txt": "2c6a1337659df51b93f18461670007ce98b95de01b82867a2ba3295bcaa539fb",
+      "manifest.json": "53ac86da6a366d669835fb91f575fd65a0b1c789784670f56568bf28f6046c24"
+    },
+    "archive_2_1_0": {
+      "story.md": "d71414742193db2dd964d8c7a56b30049185d364bf108c0578e7ad9f0fc54e2b",
+      "narration.mp3": "85437f1b000351b105ce695c06aa5eeee0f4b2b12c81a2d04747710d5fb184ed",
+      "story_poster.png": "4ab3e152ae95ba27c97ac79852efea40a0cad22f1fe1e0baaf0e7be609b11f5b",
+      "coloring_page.png": "94e97e8825f9c286e74d3b52b0cb8b5d0275376cab2e81b90880425b9dd28876",
+      "simple_coloring_page.png": "7962c15ced5fe955f764c5f820a46c3ca6dabeb65b77f70da9024d51ef25283f",
+      "activity_sheet.pdf": "7c2e17ad80a026958a6c7d764560366087d8941aa02ec4bc3557366febf773f0",
+      "whatsapp_caption.txt": "2c6a1337659df51b93f18461670007ce98b95de01b82867a2ba3295bcaa539fb",
+      "manifest.json": "6ce134d0243a9db8a50ded7caf9f4e25bdad98254639ae82dd83665363381693"
+    },
+    "archive_2_0": {
+      "story.md": "5f6350da7c09b67341e03d06bea4e648d26f0fc1af58b105226f7c57c3c897e7",
+      "narration.mp3": "f1812190db9c6f057209d866aef8e80389216a3698e160cd5124ad03f07897f5",
+      "story_poster.png": "510060bf3a62493336023b79c5f6ca996e4eea084f89f512c1f8cb8c12e4382d",
+      "coloring_page.png": "75f85d86999c1109f64ec206bac52ab65eea7f3f86f5e11a4c132a31e701b1a0",
+      "simple_coloring_page.png": "6108168bfc642e0d5ce20ecf4a652b7b513a86708dfac910eb039bd8dd09ac53",
+      "activity_sheet.pdf": "ac1cd03f012676221b98680e8071fc887f9f8004786743f37a6d7e29721ab70c",
+      "whatsapp_caption.txt": "34df151ca18d0cb6c5726b0324c1cb4f4e314cc0e105c4f1a8340d7f5992d970",
+      "manifest.json": "039ba500c98e4f9e47b5203f6e5be7ef08042e605b2c220852cf9c237385f681"
+    }
+  },
+  "008": {
+    "version": "2.1.1-copyright",
+    "public": {
+      "story.md": "3b80dd641694cd022b204b251ca05793ccf945c56f90a8089bddfc88e6a2cf90",
+      "narration.mp3": "11a56bfb55ae58c76b75e1d2fdfd407aa37fd0b055e5f1b91f20f3cdc50eddf2",
+      "story_poster.png": "49647faec53609e70757547f5ac4e931a0c27752b6987c7eae47911ed1e56a0d",
+      "coloring_page.png": "50fab73d05ea9c088864f38a649cb1ac80800e9a4adb093d6f44d853beae49dc",
+      "simple_coloring_page.png": "47ac4f48420d95eb380d27fbf2290390498ac7b4417573302650e3a4a6be72a5",
+      "activity_sheet.pdf": "0e1c3bcea41c35e0e4923a15a597c50cd5022026aeb99050366b3496c9750c32",
+      "whatsapp_caption.txt": "3bb1b2e669357bb8da0aa9665f207b2f0f37676fe5a4b9feb6d2cfa7dc3b35ce",
+      "manifest.json": "8e6d0de428181b16a56dcdb581c8353bce314ba27727cc6a7e4af6829fd5d108"
+    },
+    "archive_2_1_0": {
+      "story.md": "7bf0576ecc0661eb3d3110f09ac6e10cc7b6e82b149142c3ceeb49d333488467",
+      "narration.mp3": "11a56bfb55ae58c76b75e1d2fdfd407aa37fd0b055e5f1b91f20f3cdc50eddf2",
+      "story_poster.png": "4fa9db9be8be99a67137f2fb2f49ae3ecc3821c6e0eec2a287ff51098b2f6b61",
+      "coloring_page.png": "a8bb8bad03d72063cab3cb77f89785529db3ea8d92202bb04b7d17d718c56373",
+      "simple_coloring_page.png": "4c5ee5fd60451344511e9cee9052831b9fe24adf61e82f3977e2a6750906638f",
+      "activity_sheet.pdf": "a433fd402310dbcb99664ee892a23adde3d98a03d689acd5a49efb6d3f573d9f",
+      "whatsapp_caption.txt": "3bb1b2e669357bb8da0aa9665f207b2f0f37676fe5a4b9feb6d2cfa7dc3b35ce",
+      "manifest.json": "51c61860b5b4966caa0daa4be058d9f2c01dde22ba385c8ed8c095d0a092b867"
+    },
+    "archive_2_0": {
+      "story.md": "e24e0542312d1db25142d06a53563aab77ac5d8903dda0874932bef17bc77fc2",
+      "narration.mp3": "2a23cc3d41a1b4cab74ba0e6ab4b7535a2218c8765fbb29367d5063c9d655f7c",
+      "story_poster.png": "1c50f4b38591d5b7583da0a812bfaa8835646ce18c89b79fc7a1a39d6e9f887e",
+      "coloring_page.png": "adbf5c10a9426f7c543956579a0178257f83406af1dd377d6264c8c7a77fd376",
+      "simple_coloring_page.png": "3aa3d312139584c5df3c4679349a24ad03c3c88bcd74c460b26d6948dd17d749",
+      "activity_sheet.pdf": "ae3b832c7c0ac2a47a4eeaec7b751ab26d11e4dc84b28743c1ed89b8ba0ce8cc",
+      "whatsapp_caption.txt": "312353121e951f0f8e996de5b4150f18003814b2c161e3cc77c130f62cb56721",
+      "manifest.json": "d04606e2bc368ee2661540719c7ad5f22a20328d0dc126b63f0a5380dd7ee760"
+    }
+  },
+  "009": {
+    "version": "2.1.1-copyright",
+    "public": {
+      "story.md": "dd89ef1fd47d801d322ab87af9c04eb029f34dfe9c0f94688b6f1a586821d24b",
+      "narration.mp3": "7d8b6367b5a280dd0813b6414b444aa6c7aa9afe54dec773f92b0e346234dee1",
+      "story_poster.png": "c8b81a7daf9d8a07c3c4d0fa9e3891c3e428424c38efe198b8776d353a8a2710",
+      "coloring_page.png": "34dba08239c7d16c8ece191a77fc9b13616dea4b57058004e3cb67a2f30f0358",
+      "simple_coloring_page.png": "2aaf8f10f1e7c4ab19d10682e6be89f39a0cd314419749b4fa9dd8e58e4ae57a",
+      "activity_sheet.pdf": "6f65fd6011e19a7d1dab750667e50feac52b9d761bb5596f38f5aa60cadba78e",
+      "whatsapp_caption.txt": "acf80a8798c5dbd67ceadcf10aa69d103606d102a0d8ba25d0b401b81ff88e7c",
+      "manifest.json": "10006478da7964980a70c88b70e7bf007a2ee495a67179e1885f5e69fe07ecf7"
+    },
+    "archive_2_1_0": {
+      "story.md": "7a8f5fe458efcccb76a0c928e4ef3e463c447ece2c8c0dfedc2d43dddfa4f35a",
+      "narration.mp3": "7d8b6367b5a280dd0813b6414b444aa6c7aa9afe54dec773f92b0e346234dee1",
+      "story_poster.png": "17b6158e3e6188604261d683ff32a5e87544417f8d301848c42322558deae88f",
+      "coloring_page.png": "b29c1c03d4fb052991c3edfcdfef60c503a170c30a602c18f47db0f93e5b9ba3",
+      "simple_coloring_page.png": "d30ceb0b8e51391890cec4f90aac49daf8fbcc3cfbbcc5c914ac21e34d136488",
+      "activity_sheet.pdf": "d588e2f81ab0b253b1e33aec1c17daba24f4330bb63251bcf7cbd70da2d71e07",
+      "whatsapp_caption.txt": "acf80a8798c5dbd67ceadcf10aa69d103606d102a0d8ba25d0b401b81ff88e7c",
+      "manifest.json": "3ef22d1f999d7becb110713480870cdf9189b36b788afe741abd5b03f555b0b4"
+    },
+    "archive_2_0": {
+      "story.md": "7ae531b00bcc6e95424bd6b56a51d0be089d66a8571b60be0e6eb4c762c0be5f",
+      "narration.mp3": "0272582d97ea17aa0a8873ea40730cd9c20685a06b754a20156608ce1997cb7e",
+      "story_poster.png": "44fa4b0a21fc1ba06977371d3e084010f14fa0090b4a49abc4fe78b348ce6ec7",
+      "coloring_page.png": "b5188a261a020bdcdc1d00dc0783910b3ae1ea9a244504d04011d0ea0f861d4b",
+      "simple_coloring_page.png": "27ae150f755ceac2e31f418a63522a5eef1bc2cb940f8e7a0c4a9b7e9df9d617",
+      "activity_sheet.pdf": "4ae95403b60b10a3cb4c982f6081c3a834ef041823b078fd678af42cd6fc13c7",
+      "whatsapp_caption.txt": "f57f8e9b3f87cc1bd01260c86b20801268719d00e32a6a3d1a85cac7b5c88b5f",
+      "manifest.json": "9672742c7e9a3c5d85e2270d64c8a916516ff3427e3836294f0287ec916dd743"
+    }
+  }
+}

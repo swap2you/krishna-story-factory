@@ -1,0 +1,67 @@
+{
+  "stories": {
+    "001": {
+      "pages": 3,
+      "activity_pages": 2,
+      "footer_pages_passed": 2,
+      "rights_has_bhava": true,
+      "rights_has_project_line": true
+    },
+    "002": {
+      "pages": 4,
+      "activity_pages": 3,
+      "footer_pages_passed": 3,
+      "rights_has_bhava": true,
+      "rights_has_project_line": true
+    },
+    "003": {
+      "pages": 3,
+      "activity_pages": 2,
+      "footer_pages_passed": 2,
+      "rights_has_bhava": true,
+      "rights_has_project_line": true
+    },
+    "004": {
+      "pages": 4,
+      "activity_pages": 3,
+      "footer_pages_passed": 3,
+      "rights_has_bhava": true,
+      "rights_has_project_line": true
+    },
+    "005": {
+      "pages": 4,
+      "activity_pages": 3,
+      "footer_pages_passed": 3,
+      "rights_has_bhava": true,
+      "rights_has_project_line": true
+    },
+    "006": {
+      "pages": 4,
+      "activity_pages": 3,
+      "footer_pages_passed": 3,
+      "rights_has_bhava": true,
+      "rights_has_project_line": true
+    },
+    "007": {
+      "pages": 4,
+      "activity_pages": 3,
+      "footer_pages_passed": 3,
+      "rights_has_bhava": true,
+      "rights_has_project_line": true
+    },
+    "008": {
+      "pages": 3,
+      "activity_pages": 2,
+      "footer_pages_passed": 2,
+      "rights_has_bhava": true,
+      "rights_has_project_line": true
+    },
+    "009": {
+      "pages": 4,
+      "activity_pages": 3,
+      "footer_pages_passed": 3,
+      "rights_has_bhava": true,
+      "rights_has_project_line": true
+    }
+  }
+}
