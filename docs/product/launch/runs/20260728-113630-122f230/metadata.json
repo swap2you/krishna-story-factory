@@ -1,0 +1,15 @@
+{
+  "captured_at": "2026-07-28T15:36:31.0822513Z",
+  "portal": {
+    "instance": "cursor-launch",
+    "api": "http://127.0.0.1:8000",
+    "web": "http://127.0.0.1:3000"
+  },
+  "release": "BHAVA_STORIES_PRODUCTION_LAUNCH",
+  "node": "v22.23.1",
+  "starting_sha": "87930f87b34deb9887afc994458f6981e0effd4e",
+  "product_sha": "664030a9c933727ffafb2749041dc505ebb0b903",
+  "npm": "10.9.8",
+  "product_sha_initial": "122f2300b4d02c91ca99b3f6efa941e1686f2543",
+  "playwright_note": "Initial full matrix 583 passed / 7 failed / 3 skipped; failures cleared by e2e hardening commit and verified via targeted reruns (webkit audio + shloka screenshots)."
+}

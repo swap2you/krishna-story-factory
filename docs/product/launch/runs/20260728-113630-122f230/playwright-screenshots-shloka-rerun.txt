@@ -1,0 +1,23 @@
+
+Running 6 tests using 6 workers
+
+(node:10484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54832) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:53428) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3620) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-shlokas (20.5s)
+  ok 4 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-shlokas (21.1s)
+  ok 2 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-shlokas (21.3s)
+  ok 5 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-shlokas (21.2s)
+  ok 6 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-shlokas (21.7s)
+  ok 1 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-shlokas (22.3s)
+
+  6 passed (24.4s)

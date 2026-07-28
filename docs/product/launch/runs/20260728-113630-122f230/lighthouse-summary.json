@@ -1,0 +1,10 @@
+{
+  "url": "http://127.0.0.1:3000/",
+  "performance": 67,
+  "accessibility": 100,
+  "best_practices": 100,
+  "seo": 100,
+  "lcp": "9.6\u00a0s",
+  "cls": "0.107",
+  "tbt": "90\u00a0ms"
+}
