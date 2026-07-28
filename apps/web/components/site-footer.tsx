@@ -31,6 +31,7 @@ const groups = [
   {
     title: "Trust & Policies",
     links: [
+      ["Copyright & Permissions", "/rights"],
       ["Sources & Permissions", "/source-permissions"],
       ["Editorial Standards", "/knowledge/standards"],
       ["Privacy", "/privacy"],
@@ -58,6 +59,11 @@ export function SiteFooter() {
             children, youth, families, and teachers.
           </p>
           <p className="hint">Stewarded with care by Svarna Gauranga Das · Harrisburg, Pennsylvania</p>
+          <p className="hint footer-copyright">
+            © 2026 Svarna Gauranga Das. All rights reserved.
+            <br />
+            Published by Dauji Publication · A Bhāva Project publication
+          </p>
         </div>
         {groups.map((group) => (
           <div key={group.title} className="footer-group">

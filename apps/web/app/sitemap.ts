@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
 
+const PUBLIC_STORY_COUNT = 9;
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://bhava.me";
+  const base = process.env.BHAVA_CANONICAL_ORIGIN?.replace(/\/$/, "") || "https://bhava.me";
   const staticRoutes = [
     "",
     "/library",
@@ -33,10 +35,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/privacy",
     "/accessibility",
     "/source-permissions",
+    "/rights",
   ];
   const cantos = Array.from({ length: 12 }, (_, i) => `/library/srimad-bhagavatam/canto/${i + 1}`);
-  const stories = Array.from({ length: 7 }, (_, index) => `/stories/${String(index + 1).padStart(3, "0")}`);
-  return [...staticRoutes, ...cantos, ...stories].map((path) => ({
+  // Governed published catalog for launch: Stories 001–009 only. Story 010 stays excluded.
+  const stories = Array.from(
+    { length: PUBLIC_STORY_COUNT },
+    (_, index) => `/stories/${String(index + 1).padStart(3, "0")}`,
+  );
+  const privatePrefixes = ["/studio", "/dev", "/api/studio"];
+  const paths = [...staticRoutes, ...cantos, ...stories].filter(
+    (path) => !privatePrefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`)),
+  );
+  return paths.map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
   }));

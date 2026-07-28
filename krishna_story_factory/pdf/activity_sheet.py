@@ -55,10 +55,8 @@ class ActivitySheetGenerator:
     def generate(self, plan: PlanRow, activity: ActivityPack, output_path: Path) -> PdfCheckResult:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         canvas = Canvas(str(output_path), pagesize=letter, pageCompression=1)
-        canvas.setTitle(activity.activity_title or "Activity Sheet")
-        canvas.setAuthor("Krishna Story Factory")
-        # Prefer rich deterministic layouts for known packs; otherwise render each page.
-        if activity.activity_type == "PRAYER_OR_GRATITUDE_CRAFT" and any(
+        _apply_pdf_identity_metadata(canvas, activity.activity_title or "Activity Sheet")
+        # Prefer rich deterministic layouts for known packs; otherwise render each page.        if activity.activity_type == "PRAYER_OR_GRATITUDE_CRAFT" and any(
             p.page_type == "PRAYER_WHEEL" for p in activity.pages
         ):
             _render_prayer_wheel(canvas, plan, activity)
@@ -340,9 +338,25 @@ def _header(c: Canvas, plan: PlanRow, activity: ActivityPack, page: int, page_ti
 
 
 def _footer(c: Canvas, plan: PlanRow, page: int) -> None:
+    from ..publication.notices import compact_footer
+    from ..publication.work_manifest import first_publication_year
+
     c.setFont(FONT_REGULAR, 9)
-    c.drawString(MARGIN, 0.35 * inch, plan.title[:72])
-    c.drawRightString(PAGE_W - MARGIN, 0.35 * inch, f"Page {page}")
+    c.drawString(MARGIN, 0.48 * inch, plan.title[:72])
+    c.drawRightString(PAGE_W - MARGIN, 0.48 * inch, f"Page {page}")
+    # Compact rights line inside printable bottom margin (future generators).
+    year = first_publication_year({})  # no year until reviewed first-publication
+    c.setFont(FONT_REGULAR, 8)
+    c.drawCentredString(PAGE_W / 2, 0.30 * inch, compact_footer(year=year)[:110])
+
+
+def _apply_pdf_identity_metadata(canvas: Canvas, activity_title: str) -> None:
+    from ..publication.identity import get_identity
+
+    ident = get_identity()
+    canvas.setTitle(activity_title or "Activity Sheet")
+    canvas.setAuthor(ident.copyright_owner)
+    canvas.setCreator(f"{ident.project} / {ident.publisher}")
 
 
 def _wrapped(c: Canvas, text: str, x: float, y: float, width: float, size: float = 10.5, leading: float = 13) -> float:

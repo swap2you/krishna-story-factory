@@ -634,6 +634,15 @@ export function StoryExperience({
                   <h3>Publication care</h3>
                   <p><strong>Quality:</strong> {story?.quality_status ?? "See package manifest."}</p>
                   <p>Stewarded for families and teachers by <strong>Svarna Gauranga Das</strong>.</p>
+                  <p className="hint" style={{ marginTop: "0.75rem" }}>
+                    © Svarna Gauranga Das · Dauji Publication · Bhāva. Scripture and preexisting
+                    source texts are not claimed as original authorship. See{" "}
+                    <a href="/rights">Copyright &amp; Permissions</a>.
+                  </p>
+                  <p className="hint">
+                    A copyright notice and evidence record are not the same as formal U.S. Copyright
+                    Office registration.
+                  </p>
                 </div>
               </div>
             )}

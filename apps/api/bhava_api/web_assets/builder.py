@@ -119,6 +119,7 @@ def build_web_assets_for_package(
         "story_no": story_no,
         "package_sha": _sha256(manifest_path),
         "built_at": datetime.now(timezone.utc).isoformat(),
+        "rights": manifest.get("rights") or manifest.get("publication") or {},
         "statuses": {
             "reader": "clean" if not parsed.has_internal_leak_markers else "has_leak_markers",
             "narration": "present" if parsed.narration_txt else "missing",

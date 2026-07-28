@@ -23,6 +23,7 @@ PUBLIC_PAGES = [
     WEB / "app" / "about" / "page.tsx",
     WEB / "app" / "privacy" / "page.tsx",
     WEB / "app" / "source-permissions" / "page.tsx",
+    WEB / "app" / "rights" / "page.tsx",
     WEB / "app" / "layout.tsx",
 ]
 
@@ -47,6 +48,8 @@ class TestContactConfig:
         allowed = {
             "project_name", "domain", "steward_name", "public_email",
             "location_city", "location_state", "location_country",
+            "publisher", "publisher_role", "copyright_owner",
+            "website_copyright_year", "rights_page_path",
         }
         extra = set(data.keys()) - allowed
         assert not extra, f"Unexpected keys in contact.json: {extra}"

@@ -18,6 +18,7 @@ API_RANGE = range(8000, 8100)
 INSTANCE_PRESETS: dict[str, tuple[int, int]] = {
     "default": (3000, 8000),
     "cursor": (3000, 8000),
+    "bhava-final": (3000, 8000),
     "cowork": (3001, 8001),
     "codex": (3002, 8002),
     "claude": (3003, 8003),
@@ -59,7 +60,19 @@ def port_free(port: int, host: str = "127.0.0.1") -> bool:
     return True
 
 
-def allocate_port(preferred: int, port_range: range, host: str = "127.0.0.1") -> int:
+def allocate_port(
+    preferred: int,
+    port_range: range,
+    host: str = "127.0.0.1",
+    *,
+    strict: bool = False,
+) -> int:
+    if strict:
+        if port_free(preferred, host=host):
+            return preferred
+        raise RuntimeError(
+            f"Preferred port {preferred} is occupied; refusing fallback (strict allocation)."
+        )
     candidates = [preferred] + [p for p in port_range if p != preferred]
     for port in candidates:
         if port_free(port, host=host):
@@ -102,7 +115,13 @@ def write_runtime(data: dict[str, Any], root: Path | None = None) -> Path:
     return path
 
 
-def allocate(instance: str, preferred_web: int | None, preferred_api: int | None) -> dict[str, Any]:
+def allocate(
+    instance: str,
+    preferred_web: int | None,
+    preferred_api: int | None,
+    *,
+    strict_preferred: bool = False,
+) -> dict[str, Any]:
     name = _safe_name(instance)
     if name in INSTANCE_PRESETS:
         preset_web, preset_api = INSTANCE_PRESETS[name]
@@ -114,8 +133,10 @@ def allocate(instance: str, preferred_web: int | None, preferred_api: int | None
         raise ValueError(f"Preferred web port {web_pref} outside {WEB_RANGE.start}-{WEB_RANGE.stop - 1}")
     if api_pref not in API_RANGE:
         raise ValueError(f"Preferred API port {api_pref} outside {API_RANGE.start}-{API_RANGE.stop - 1}")
-    web_port = allocate_port(web_pref, WEB_RANGE)
-    api_port = allocate_port(api_pref, API_RANGE)
+    # Final launch instance must not silently fall back to alternate ports.
+    strict = strict_preferred or name == "bhava-final"
+    web_port = allocate_port(web_pref, WEB_RANGE, strict=strict)
+    api_port = allocate_port(api_pref, API_RANGE, strict=strict)
     return {
         "instance_name": name,
         "web_port": web_port,
@@ -125,6 +146,7 @@ def allocate(instance: str, preferred_web: int | None, preferred_api: int | None
         "preferred_web_port": web_pref,
         "preferred_api_port": api_pref,
         "collision": web_port != web_pref or api_port != api_pref,
+        "strict_preferred": strict,
     }
 
 

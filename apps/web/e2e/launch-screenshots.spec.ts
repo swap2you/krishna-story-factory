@@ -17,6 +17,7 @@ const VIEWPORTS = [
 
 const CAPTURES: Array<{ route: string; file: string; tab?: RegExp; section?: string }> = [
   { route: "/", file: "home" },
+  { route: "/rights", file: "rights" },
   { route: "/library", file: "library" },
   { route: "/library/krishna-book", file: "library-krishna-book" },
   { route: "/knowledge", file: "knowledge" },
@@ -32,6 +33,8 @@ const CAPTURES: Array<{ route: string; file: string; tab?: RegExp; section?: str
   { route: "/faq", file: "faq" },
   { route: "/stories/001", file: "story-001-listen", tab: /Listen/i, section: "Listen" },
   { route: "/stories/001", file: "story-001-read", tab: /Read/i, section: "Read" },
+  { route: "/stories/001", file: "story-001-activities", tab: /Activities/i, section: "Activities" },
+  { route: "/stories/001", file: "story-001-coloring", tab: /Coloring/i, section: "Coloring" },
   { route: "/stories/009", file: "story-009-listen", tab: /Listen/i, section: "Listen" },
   { route: "/stories/009", file: "story-009-read", tab: /Read/i, section: "Read" },
   { route: "/stories/009", file: "story-009-activities", tab: /Activities/i, section: "Activities" },
@@ -40,7 +43,6 @@ const CAPTURES: Array<{ route: string; file: string; tab?: RegExp; section?: str
   { route: "/stories/009", file: "story-009-notes", tab: /Notes/i, section: "Notes" },
   { route: "/stories/009", file: "story-009-shlokas", tab: /Ślok/i, section: "Ślokās" },
 ];
-
 const OUT_ROOT = path.resolve(__dirname, "../../../docs/product/launch/screenshots");
 
 test.describe("launch screenshots", () => {
