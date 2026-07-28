@@ -94,7 +94,7 @@ def test_retrofitted_packages_have_rights_and_exact_eight() -> None:
         folder = next((ROOT / "output").glob(f"{n:03d}_*"))
         assert validate_exact_eight_files(folder) == []
         manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
-        assert manifest.get("version") == "2.1.0-copyright"
+        assert manifest.get("version") == "2.1.1-copyright"
         rights = manifest.get("rights") or {}
         assert rights.get("copyright_owner") == "Svarna Gauranga Das"
         assert rights.get("publisher") == "Dauji Publication"
@@ -104,5 +104,6 @@ def test_retrofitted_packages_have_rights_and_exact_eight() -> None:
         assert "## Rights and Credits" in story
         caption = (folder / "whatsapp_caption.txt").read_text(encoding="utf-8")
         assert "Svarna Gauranga Das" in caption
-        archive = ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}" / "2.0"
+        archive = ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}" / "2.1.0-copyright"
         assert archive.is_dir()
+        assert (ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}" / "2.0").is_dir()

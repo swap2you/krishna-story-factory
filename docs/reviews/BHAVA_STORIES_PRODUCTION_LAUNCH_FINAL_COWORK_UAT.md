@@ -1,6 +1,6 @@
 # BHĀVA STORIES PRODUCTION LAUNCH — FINAL COWORK UAT
 
-Independent UAT for the completed production-launch baseline (copyright + single runtime).
+Independent UAT for the completed production-launch baseline (copyright + Unicode footers + single runtime).
 
 ## Authority
 
@@ -29,7 +29,7 @@ Exactly one instance:
 - Web: `http://127.0.0.1:3000` (open this only)
 - API: `http://127.0.0.1:8000` (via Next proxy)
 
-Confirm old Bhāva ports/tunnels are stopped and `.bhava/instances/bhava-final/runtime.json` matches.
+Confirm stale instance `runtime.json` files were removed and only `bhava-final` remains active.
 
 ## Checklist
 
@@ -43,51 +43,50 @@ Confirm old Bhāva ports/tunnels are stopped and `.bhava/instances/bhava-final/r
 
 - [ ] Owner spelling **Svarna** Gauranga Das (never Swarna)
 - [ ] Publisher imprint: Dauji Publication
-- [ ] Project: Bhāva
+- [ ] Project: **Bhāva** (real ā — no black box / tofu)
 - [ ] Email: svarnagaurangdas@gmail.com
 - [ ] No phone number
 - [ ] Central config: `config/publication_identity.yaml`
 
+### Unicode / printables
+
+- [ ] No black boxes in Bhāva, Kṛṣṇa, Pūtanā, or other diacritics on PDFs/images
+- [ ] Every activity PDF page has a compact footer
+- [ ] Final Rights and Credits page remains
+- [ ] Footer does not overlap titles, page numbers, answers, cut lines, or artwork
+- [ ] Poster/coloring credit strips use a Unicode font below artwork
+- [ ] Sacred imagery unobstructed
+- [ ] Version `2.1.0-copyright` archived; public version `2.1.1-copyright`
+- [ ] Story narrative before Rights and Credits unchanged vs 2.0 masters
+
 ### Website
 
-- [ ] Footer shows © 2026 Svarna Gauranga Das + Dauji Publication line
+- [ ] Footer © 2026 Svarna Gauranga Das + Dauji Publication line
 - [ ] `/rights` page live with limitations + registration disclaimer
-- [ ] Footer link **Copyright & Permissions**
-- [ ] Per-story Source tab rights pointer
 - [ ] Sitemap includes Stories 001–009 and `/rights`
 - [ ] Sitemap excludes Story 010 and Studio/dev mutation routes
 
 ### Stories 001–009
 
-- [ ] Public packages version `2.1.0-copyright`
 - [ ] Exact eight files each
 - [ ] `manifest.json` contains `rights` sidecar
-- [ ] Pre-copyright archives under `output/_archive/pre-copyright/<n>/2.0/`
-- [ ] story.md Rights and Credits section
-- [ ] Caption © line; PNG credit strip; PDF rights page; MP3 ID3 only
-- [ ] No first-publication year inventing; status publicly_available_unreviewed
-- [ ] Sound-recording claim needs_manual_review (no unsupported ℗)
-- [ ] Drive not mutated; manual update noted
+- [ ] Archives under `output/_archive/pre-copyright/<n>/2.0/` and `.../2.1.0-copyright/`
+- [ ] Sound-recording claim `needs_manual_review`
+- [ ] Drive not mutated
 
 ### Safety
 
-- [ ] No Story 010 output
-- [ ] Queue unchanged
-- [ ] Scheduler not triggered
-- [ ] Providers not called
-- [ ] Sensitive files uncommitted
+- [ ] No Story 010 output (`story_010_output_absent: true`)
+- [ ] Queue 009 done / 010 pending
+- [ ] Scheduler not triggered; providers not called
 
-### Accessibility / security / screenshots
+### Accessibility / security / Playwright
 
 - [ ] Production npm audit zero
 - [ ] Zero critical/serious axe findings (documented WebKit-mobile skips only)
-- [ ] Screenshot archive includes home footer, rights page, Story 001/009 rights-facing views
-
-### MyPilotDropbox
-
-- [ ] Private key preserved
-- [ ] Duplicates cleaned only after archival copy verified
-- [ ] Nothing from MyPilotDropbox committed
+- [ ] Full Playwright matrix zero-failure on product SHA
+- [ ] Raw WebKit notes rerun exists and passes
+- [ ] Screenshot/render evidence includes rights pages and PDF page renders
 
 ## Verdict
 

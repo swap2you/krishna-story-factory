@@ -27,16 +27,28 @@ MARGIN = 0.55 * inch
 
 
 def _register_fonts() -> tuple[str, str]:
-    candidates = [
-        (Path("C:/Windows/Fonts/arial.ttf"), Path("C:/Windows/Fonts/arialbd.ttf")),
-        (Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"), Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")),
-    ]
-    for regular, bold in candidates:
-        if regular.exists() and bold.exists():
-            pdfmetrics.registerFont(TTFont("KSF-Regular", str(regular)))
-            pdfmetrics.registerFont(TTFont("KSF-Bold", str(bold)))
-            return "KSF-Regular", "KSF-Bold"
-    return "Helvetica", "Helvetica-Bold"
+    """Prefer the centralized Unicode resolver; fail closed for rights-capable fonts."""
+    try:
+        from ..publication.fonts import get_reportlab_font_names, resolve_unicode_fonts
+
+        resolve_unicode_fonts()
+        return get_reportlab_font_names()
+    except Exception:
+        # Legacy activity generation path: keep prior candidate scan, but never pretend
+        # Helvetica is Unicode-complete for rights overlays (those use fonts.py directly).
+        candidates = [
+            (Path("C:/Windows/Fonts/arial.ttf"), Path("C:/Windows/Fonts/arialbd.ttf")),
+            (
+                Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+                Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
+            ),
+        ]
+        for regular, bold in candidates:
+            if regular.exists() and bold.exists():
+                pdfmetrics.registerFont(TTFont("KSF-Regular", str(regular)))
+                pdfmetrics.registerFont(TTFont("KSF-Bold", str(bold)))
+                return "KSF-Regular", "KSF-Bold"
+        raise RuntimeError("No Unicode TrueType font available for activity PDF generation")
 
 
 FONT_REGULAR, FONT_BOLD = _register_fonts()
