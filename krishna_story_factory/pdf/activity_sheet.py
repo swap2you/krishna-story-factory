@@ -56,7 +56,8 @@ class ActivitySheetGenerator:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         canvas = Canvas(str(output_path), pagesize=letter, pageCompression=1)
         _apply_pdf_identity_metadata(canvas, activity.activity_title or "Activity Sheet")
-        # Prefer rich deterministic layouts for known packs; otherwise render each page.        if activity.activity_type == "PRAYER_OR_GRATITUDE_CRAFT" and any(
+        # Prefer rich deterministic layouts for known packs; otherwise render each page.
+        if activity.activity_type == "PRAYER_OR_GRATITUDE_CRAFT" and any(
             p.page_type == "PRAYER_WHEEL" for p in activity.pages
         ):
             _render_prayer_wheel(canvas, plan, activity)
