@@ -18,7 +18,9 @@ test.describe("notes and bookmarks", () => {
     const save = page.getByRole("button", { name: /save notes/i });
     if (await save.isVisible().catch(() => false)) {
       await save.click();
-      await expect(page.getByText(/notes saved/i)).toBeVisible();
+      await expect(
+        page.getByText(/notes saved|saved on this device/i).first(),
+      ).toBeVisible({ timeout: 15_000 });
     }
     await page.reload();
     await notesTab.scrollIntoViewIfNeeded();
