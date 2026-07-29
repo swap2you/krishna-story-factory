@@ -72,17 +72,17 @@ def test_stories_001_007_file_hashes_match_baseline(baseline: dict) -> None:
             )
 
 
-def test_queue_010_pending_after_009_release(baseline: dict) -> None:
-    """V1.7 released Story 009 — assert 010 is next pending and 009 is done."""
+def test_queue_011_pending_after_010_release(baseline: dict) -> None:
+    """Story 010 is published — assert 011 is next pending and 010 is done."""
     if not QUEUE.is_file():
         pytest.skip("Runtime queue_state.csv not present in this environment.")
     rows = list(csv.DictReader(QUEUE.open(encoding="utf-8")))
     by_chapter = {str(row["chapter_no"]).zfill(3): row["status"] for row in rows}
-    assert by_chapter.get("009") == "done", (
-        f"Story 009 must be done after V1.7 release; found status={by_chapter.get('009')!r}"
+    assert by_chapter.get("010") == "done", (
+        f"Story 010 must be done after publication; found status={by_chapter.get('010')!r}"
     )
-    assert by_chapter.get("010") == "pending", (
-        f"Story 010 must remain pending; found status={by_chapter.get('010')!r}"
+    assert by_chapter.get("011") == "pending", (
+        f"Story 011 must be next pending; found status={by_chapter.get('011')!r}"
     )
 
 

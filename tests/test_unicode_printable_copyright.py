@@ -126,14 +126,16 @@ def test_image_credit_strip_unicode_and_no_duplicate() -> None:
         assert bbox and (bbox[2] - bbox[0]) > 0
 
 
-def test_story_010_absent_and_queue_pending() -> None:
-    assert not list((ROOT / "output").glob("010_*"))
+def test_story_010_published_and_queue_advances_to_011() -> None:
+    packages = list((ROOT / "output").glob("010_*"))
+    assert len(packages) == 1
+    assert {path.name for path in packages[0].iterdir() if path.is_file()} == set(REQUIRED)
     queue = ROOT / "tracking" / "queue_state.csv"
     if not queue.is_file():
         pytest.skip("queue_state.csv absent")
     rows = {str(r["chapter_no"]).zfill(3): r["status"] for r in csv.DictReader(queue.open(encoding="utf-8"))}
-    assert rows.get("009") == "done"
-    assert rows.get("010") == "pending"
+    assert rows.get("010") == "done"
+    assert rows.get("011") == "pending"
 
 
 def test_public_pdf_has_footer_on_all_activity_pages() -> None:

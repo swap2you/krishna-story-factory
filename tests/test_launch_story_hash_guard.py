@@ -56,5 +56,18 @@ def test_prior_2_1_0_archive_preserved(chapter: str) -> None:
         assert actual == expected.lower(), f"2.1.0 archive drift {chapter}/{name}"
 
 
-def test_story_010_absent_from_output() -> None:
-    assert not list((ROOT / "output").glob("010_*"))
+def test_story_010_is_a_complete_exact_eight_package() -> None:
+    packages = list((ROOT / "output").glob("010_*"))
+    assert len(packages) == 1
+    expected = {
+        "story.md",
+        "narration.mp3",
+        "story_poster.png",
+        "coloring_page.png",
+        "simple_coloring_page.png",
+        "activity_sheet.pdf",
+        "whatsapp_caption.txt",
+        "manifest.json",
+    }
+    actual = {path.name for path in packages[0].iterdir() if path.is_file()}
+    assert actual == expected

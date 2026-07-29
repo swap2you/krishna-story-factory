@@ -275,11 +275,13 @@ def test_one_universal_story_cannot_cover_both_chapters() -> None:
     assert any("universal" in e.lower() for e in result.errors)
 
 
-def test_next_pending_is_cart_breaking() -> None:
+def test_next_pending_is_trinavarta_after_cart_breaking() -> None:
     nxt = read_next_pending(ROOT)
     assert nxt is not None
-    assert nxt.chapter_no == "010"
-    assert "cart" in nxt.slug
+    assert nxt.chapter_no == "011"
+    assert "trinavarta" in nxt.slug
+    # Keep the queue-order unit case proving Story 010 is selected when only
+    # Stories 001–009 are complete.
     queue = {f"{n:03d}": ("done" if n <= 9 else "pending") for n in range(1, 20)}
     assert earliest_pending_major_story(queue) == "010"
     ok = evaluate_queue_advancement("010", queue)

@@ -19,14 +19,14 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest().upper()
 
 
-def test_queue_001_009_done_and_010_pending() -> None:
+def test_queue_001_010_done_and_011_pending() -> None:
     if not QUEUE.is_file():
         pytest.skip("Runtime queue_state.csv not present in this environment.")
     rows = list(csv.DictReader(QUEUE.open(encoding="utf-8")))
     by_chapter = {str(row["chapter_no"]).zfill(3): row["status"] for row in rows}
-    for chapter in ("001", "002", "003", "004", "005", "006", "007", "008", "009"):
+    for chapter in ("001", "002", "003", "004", "005", "006", "007", "008", "009", "010"):
         assert by_chapter.get(chapter) == "done", chapter
-    assert by_chapter.get("010") == "pending"
+    assert by_chapter.get("011") == "pending"
 
 
 def test_v15_baseline_records_008_complete() -> None:
