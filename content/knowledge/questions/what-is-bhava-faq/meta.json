@@ -1,0 +1,17 @@
+{
+  "id": "kl-q-what-is-bhava",
+  "slug": "what-is-bhava-faq",
+  "title": "What is Bh\u0101va?",
+  "summary": "Independent curated portal for Krishna Book learning.",
+  "content_type": "question",
+  "pathway": "questions-answers",
+  "visibility": "public",
+  "review_state": "published",
+  "answer_md": "Bh\u0101va is an independent curated portal presenting child-friendly Krishna Book bedtime stories with listening, reading, coloring, and teaching tools.",
+  "sources": [
+    {
+      "label": "FAQ",
+      "tier": "editorial"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-07-29T17:15:26+00:00",
+  "009": "done",
+  "010": "pending",
+  "010_attempts": 2,
+  "010_completed_at": null,
+  "story_010_output_absent": true,
+  "output_010_dirs": [],
+  "queue_fingerprint_sha256": "6c07eccc5dacd193841c67d93155c02d4939b14a13359793b94a860b9e7aa5df",
+  "work_010_partial_present": true,
+  "work_010_note": "Partial morning worktree exists under work/stories/010 (not a released package). No output/010_* package."
+}

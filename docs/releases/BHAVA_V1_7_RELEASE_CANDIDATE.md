@@ -1,0 +1,19 @@
+# Bhāva Portal V1.7 — Release Candidate
+
+| Field | Value |
+|-------|-------|
+| Branch | `feature/bhava-portal-v1` |
+| Incident | 2026-07-27 10:00 `LastTaskResult=3221225786` (`0xC000013A`) |
+| Story 009 | published exact-eight |
+| Story 010 | pending |
+| Registered no-op | LastTaskResult 0 |
+| PR | none |
+
+## Gates
+
+Scheduler process isolation · ownership locks · PT4H task · validate/simulate · temp task · Story 009 · registered no-op · 001–008 unchanged.
+
+## Matrix tip
+
+`72a3ff19daa3a506015222c7c316dd6294fc8b6d` — Playwright 415 passed / 10 skipped / 0 failed.
+

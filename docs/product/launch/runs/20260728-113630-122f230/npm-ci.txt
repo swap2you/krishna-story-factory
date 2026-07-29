@@ -1,0 +1,4 @@
+npm ci could not unlink @next/swc while a prior node process held the native binary (EPERM).
+After stopping portal processes and renaming the locked folder, npm install --no-audit --no-fund restored the workspace to the committed package-lock at product SHA 122f230.
+postinstall ensure_native_optionals installed @next/swc-win32-x64-msvc@15.5.22.
+eslint/next/vitest binaries verified present.

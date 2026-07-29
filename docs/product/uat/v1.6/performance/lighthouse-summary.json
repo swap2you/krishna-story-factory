@@ -1,0 +1,102 @@
+[
+  {
+    "route": "/",
+    "performance": 69.0,
+    "accessibility": 100.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 8983.0,
+    "cls": 0.031,
+    "tbt_ms": 100.0
+  },
+  {
+    "route": "/library",
+    "performance": 69.0,
+    "accessibility": 98.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 39357.0,
+    "cls": 0.0,
+    "tbt_ms": 85.0
+  },
+  {
+    "route": "/stories/001",
+    "performance": 68.0,
+    "accessibility": 97.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 34487.0,
+    "cls": 0.0,
+    "tbt_ms": 236.0
+  },
+  {
+    "route": "/stories/008",
+    "performance": 70.0,
+    "accessibility": 97.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 42135.0,
+    "cls": 0.0,
+    "tbt_ms": 146.0
+  },
+  {
+    "route": "/knowledge",
+    "performance": 83.0,
+    "accessibility": 100.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 4169.0,
+    "cls": 0.0,
+    "tbt_ms": 67.0
+  },
+  {
+    "route": "/knowledge/search?q=Krishna",
+    "performance": 89.0,
+    "accessibility": 100.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 3469.0,
+    "cls": 0.002,
+    "tbt_ms": 84.0
+  },
+  {
+    "route": "/learning/children-youth",
+    "performance": 90.0,
+    "accessibility": 100.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 3395.0,
+    "cls": 0.0,
+    "tbt_ms": 70.0
+  },
+  {
+    "route": "/teachers",
+    "performance": 90.0,
+    "accessibility": 100.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 3341.0,
+    "cls": 0.0,
+    "tbt_ms": 84.0
+  },
+  {
+    "route": "/printables",
+    "performance": 85.0,
+    "accessibility": 100.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 3704.0,
+    "cls": 0.0,
+    "tbt_ms": 123.0
+  },
+  {
+    "route": "/contact",
+    "performance": 84.0,
+    "accessibility": 100.0,
+    "best_practices": 100.0,
+    "seo": 100.0,
+    "lcp_ms": 4073.0,
+    "cls": 0.0,
+    "tbt_ms": 78.0
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "title": "Bh\u0101va Knowledge Library",
+  "published_slugs": [
+    "what-is-bhava",
+    "source-and-permissions",
+    "printing-and-classroom-use"
+  ],
+  "question_slugs": [
+    "what-is-bhava-faq",
+    "is-bhava-official-bbt",
+    "does-bhava-collect-child-data"
+  ]
+}

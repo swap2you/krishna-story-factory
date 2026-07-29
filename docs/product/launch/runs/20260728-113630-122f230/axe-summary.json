@@ -1,0 +1,24 @@
+{
+  "routes_scanned": [
+    "/",
+    "/library",
+    "/library/krishna-book",
+    "/knowledge",
+    "/knowledge/search",
+    "/learning/children-youth",
+    "/sunday-school",
+    "/teachers",
+    "/preachers",
+    "/prabhupada-vani",
+    "/printables",
+    "/about",
+    "/contact",
+    "/faq",
+    "/stories/001",
+    "/stories/009",
+    "/studio"
+  ],
+  "critical": 0,
+  "serious": 0,
+  "note": "Playwright axe suite (critical/serious) passed across chromium/firefox/webkit desktop and mobile projects; player select contrast assertion included on Story 009."
+}

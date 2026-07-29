@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Bhva icon">
+  <rect width="192" height="192" rx="42" fill="#061628"/>
+  <path d="M36 126c24-21 42-24 60-24s36 3 60 24v6c-24-18-42-21-60-21s-36 3-60 21v-6z" fill="#f0d48a"/>
+  <path d="M96 102v36" stroke="#f0d48a" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#e8b4c0" transform="translate(96 66)">
+    <ellipse cx="0" cy="6" rx="9.6" ry="21" transform="rotate(-35)"/>
+    <ellipse cx="0" cy="6" rx="9.6" ry="21" transform="rotate(35)"/>
+    <ellipse cx="0" cy="3" rx="9" ry="22.5"/>
+    <ellipse cx="0" cy="9" rx="7.2" ry="16.5" transform="rotate(-70)" fill="#c97b90"/>
+    <ellipse cx="0" cy="9" rx="7.2" ry="16.5" transform="rotate(70)" fill="#c97b90"/>
+    <circle cx="0" cy="12" r="4.8" fill="#f0d48a"/>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+
+> bhava-portal@1.0.0 typecheck:web
+> npm run typecheck -w @bhava/web
+
+
+> @bhava/web@0.1.0 typecheck
+> tsc --noEmit
+

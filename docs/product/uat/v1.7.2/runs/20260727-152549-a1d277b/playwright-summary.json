@@ -1,0 +1,6 @@
+{
+  "passed": 415,
+  "skipped": 10,
+  "failed": 0,
+  "command": "npx playwright test --reporter=list (all projects)"
+}

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import csv
+import json
+import os
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -197,14 +199,53 @@ def reset_tracking_logs(project_root: Path) -> None:
         with path.open("w", newline="", encoding="utf-8") as handle: csv.DictWriter(handle, fieldnames=fields).writeheader()
 
 
-def acquire_pipeline_lock(project_root: Path) -> Path:
-    lock = project_root / ".pipeline.lock"
-    if lock.exists(): raise RuntimeError("Another pipeline run appears to be in progress (.pipeline.lock exists).")
-    lock.write_text(datetime.now().isoformat(), encoding="utf-8"); return lock
+def _lock_meta(lock: Path) -> dict:
+    from .pipeline_lock import read_lock_meta
+
+    return read_lock_meta(lock)
 
 
-def release_pipeline_lock(lock_path: Path) -> None:
-    lock_path.unlink(missing_ok=True)
+def _pid_alive(pid: int) -> bool:
+    from .pipeline_lock import _pid_alive as alive
+
+    return alive(pid)
+
+
+def _lock_is_stale(meta: dict, *, stale_after_sec: float) -> bool:
+    from .pipeline_lock import lock_is_stale
+
+    return lock_is_stale(meta, stale_after_sec=stale_after_sec)
+
+
+def acquire_pipeline_lock(project_root: Path, *, stale_after_sec: float = 7200.0, **kwargs) -> Path:
+    """Acquire exclusive pipeline lock; reclaim stale/dead-PID locks safely."""
+    from .pipeline_lock import acquire_pipeline_lock as _acquire
+
+    return _acquire(project_root, stale_after_sec=stale_after_sec, **kwargs)
+
+
+def release_pipeline_lock(lock_path: Path, **kwargs) -> None:
+    from .pipeline_lock import release_pipeline_lock as _release
+
+    # CLI/pipeline callers historically delete unconditionally; ownership checks are opt-in.
+    force = bool(kwargs.pop("force", True))
+    _release(lock_path, force=force, **kwargs)
+
+
+def reclaim_stale_processing(project_root: Path) -> int:
+    """Reset processing rows to pending when no live lock is held."""
+    from .pipeline_lock import lock_is_stale, lock_path_for, read_lock_meta
+
+    lock = lock_path_for(project_root)
+    if lock.exists():
+        meta = read_lock_meta(lock)
+        if not lock_is_stale(meta, stale_after_sec=7200.0):
+            return 0
+        lock.unlink(missing_ok=True)
+    before = [r for r in read_queue_state(project_root) if (r.get("status") or "").lower() == "processing"]
+    if before:
+        reset_processing_to_pending(project_root)
+    return len(before)
 
 
 def _append(project_root: Path, name: str, fields: list[str], row: dict[str, str]) -> None:
@@ -261,6 +302,15 @@ def already_completed_production_today(project_root: Path, timezone_name: str) -
                 if "skipped_already_completed_today" in detail:
                     continue
                 if "test_preview" in detail:
+                    continue
+                # Scheduler validate/simulate successes must not block production.
+                if "simulate" in detail or "validate-scheduler" in detail or "mode=simulate" in detail:
+                    continue
+                if "scheduler-simulate" in detail or "simulate-production" in detail:
+                    continue
+                # Require a real chapter marker from a production package run.
+                chapter = (row.get("chapter_no") or "").strip()
+                if not chapter:
                     continue
                 return True
     return False

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BhavaBlogArticle",
+  "description": "A Bhakti Blog article with taxonomy, audience, and editorial status.",
+  "type": "object",
+  "required": ["id", "title", "status"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "URL-safe slug for the article."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display title."
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Short summary for listing and meta tags."
+    },
+    "author": {
+      "type": ["string", "null"],
+      "description": "Author name."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "family-practice",
+          "teaching-notes",
+          "festival-reflections",
+          "behind-the-stories",
+          "shloka-study"
+        ]
+      },
+      "description": "Taxonomy tags from the blog's fixed category set."
+    },
+    "audience": {
+      "type": ["string", "null"],
+      "description": "Target audience descriptor."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "draft", "review", "published"],
+      "description": "Editorial status."
+    },
+    "published_at": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "ISO date of publication. Null until published."
+    },
+    "source_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "text": { "type": "string" },
+          "uri": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      },
+      "description": "Any scripture or text references cited."
+    }
+  },
+  "additionalProperties": false
+}

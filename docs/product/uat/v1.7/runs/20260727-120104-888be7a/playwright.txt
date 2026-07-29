@@ -1,0 +1,675 @@
+
+Running 425 tests using 6 workers
+
+[1/425] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[2/425] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[3/425] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[4/425] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[5/425] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[6/425] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[7/425] [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[8/425] [chromium-desktop] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[9/425] [chromium-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[10/425] [chromium-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[11/425] [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844
+[12/425] [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024
+[13/425] [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900
+[14/425] [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080
+[15/425] [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures
+[16/425] [chromium-desktop] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[17/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[18/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[19/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[20/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[21/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[22/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[23/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[24/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[25/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[26/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[27/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[28/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[29/425] [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[30/425] [chromium-desktop] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[31/425] [chromium-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[32/425] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[33/425] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[34/425] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[35/425] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[36/425] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[37/425] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[38/425] [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[39/425] [chromium-desktop] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[40/425] [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls
+[41/425] [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers
+[42/425] [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF
+[43/425] [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets
+[44/425] [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state
+[45/425] [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text
+[46/425] [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending
+[47/425] [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation
+[48/425] [chromium-desktop] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[49/425] [chromium-desktop] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[50/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[51/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[52/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[53/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[54/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[55/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[56/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[57/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[58/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[59/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[60/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+[61/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+[62/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[63/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[64/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[65/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[66/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[67/425] [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[68/425] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[69/425] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[70/425] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[71/425] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+[72/425] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[73/425] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[74/425] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[75/425] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[76/425] [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[77/425] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[78/425] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[79/425] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[80/425] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+  1) [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('link', { name: /Story 009/i })
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for getByRole('link', { name: /Story 009/i })
+        13 ├ù locator resolved to 1 element
+           - unexpected value "1"
+
+
+      79 |
+      80 |   test("Story 009 is not linked from Story 008 navigation", async ({ page }) => {
+    > 81 |     await expect(page.getByRole("link", { name: /Story 009/i })).toHaveCount(0);
+         |                                                                  ^
+      82 |   });
+      83 | });
+      84 |
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\story-008-tabs.spec.ts:81:66
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-chromium-desktop\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-chromium-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-chromium-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-chromium-desktop\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+[81/425] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[82/425] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[83/425] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[84/425] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[85/425] [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:102:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+[86/425] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[87/425] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[88/425] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[89/425] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[90/425] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[91/425] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[92/425] [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[93/425] [firefox-desktop] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[94/425] [firefox-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[95/425] [firefox-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[96/425] [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844
+[97/425] [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024
+[98/425] [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900
+[99/425] [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080
+[100/425] [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures
+[101/425] [firefox-desktop] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[102/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[103/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[104/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[105/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[106/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[107/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[108/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[109/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[110/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[111/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[112/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[113/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[114/425] [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[115/425] [firefox-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[116/425] [firefox-desktop] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[117/425] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[118/425] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[119/425] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[120/425] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[121/425] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[122/425] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[123/425] [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[124/425] [firefox-desktop] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[125/425] [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls
+[126/425] [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers
+[127/425] [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF
+[128/425] [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets
+[129/425] [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state
+[130/425] [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text
+[131/425] [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending
+[132/425] [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation
+[133/425] [firefox-desktop] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[134/425] [firefox-desktop] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[135/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[136/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[137/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[138/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[139/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[140/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[141/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[142/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[143/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[144/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[145/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+[146/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+[147/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[148/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[149/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[150/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[151/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[152/425] [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[153/425] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[154/425] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[155/425] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[156/425] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+  2) [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('link', { name: /Story 009/i })
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for getByRole('link', { name: /Story 009/i })
+        12 ├ù locator resolved to 1 element
+           - unexpected value "1"
+
+
+      79 |
+      80 |   test("Story 009 is not linked from Story 008 navigation", async ({ page }) => {
+    > 81 |     await expect(page.getByRole("link", { name: /Story 009/i })).toHaveCount(0);
+         |                                                                  ^
+      82 |   });
+      83 | });
+      84 |
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\story-008-tabs.spec.ts:81:66
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-firefox-desktop\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-firefox-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-firefox-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-firefox-desktop\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+[157/425] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[158/425] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[159/425] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[160/425] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[161/425] [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[162/425] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[163/425] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[164/425] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[165/425] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+[166/425] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[167/425] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[168/425] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[169/425] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[170/425] [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:102:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+[171/425] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[172/425] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[173/425] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[174/425] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[175/425] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[176/425] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[177/425] [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[178/425] [webkit-desktop] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[179/425] [webkit-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[180/425] [webkit-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[181/425] [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844
+[182/425] [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024
+[183/425] [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900
+[184/425] [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080
+[185/425] [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures
+[186/425] [webkit-desktop] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[187/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[188/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[189/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[190/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[191/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[192/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[193/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[194/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[195/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[196/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[197/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[198/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[199/425] [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[200/425] [webkit-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[201/425] [webkit-desktop] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[202/425] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[203/425] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[204/425] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[205/425] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[206/425] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[207/425] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[208/425] [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[209/425] [webkit-desktop] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[210/425] [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls
+[211/425] [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers
+[212/425] [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF
+[213/425] [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets
+[214/425] [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state
+[215/425] [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text
+[216/425] [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending
+  3) [webkit-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText(/notes saved/i)
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByText(/notes saved/i)
+
+
+      12 |     await page.locator("textarea.notes").fill(note);
+      13 |     await page.getByRole("button", { name: /save notes/i }).click();
+    > 14 |     await expect(page.getByText(/notes saved/i)).toBeVisible();
+         |                                                  ^
+      15 |     await page.reload();
+      16 |     await page.getByRole("tab", { name: "Notes" }).click();
+      17 |     await expect(page.locator("textarea.notes")).toHaveValue(note);
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\notes-bookmarks.spec.ts:14:50
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\notes-bookmarks-notes-and--385a6--saves-story-isolated-notes-webkit-desktop\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\notes-bookmarks-notes-and--385a6--saves-story-isolated-notes-webkit-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\notes-bookmarks-notes-and--385a6--saves-story-isolated-notes-webkit-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\notes-bookmarks-notes-and--385a6--saves-story-isolated-notes-webkit-desktop\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+[217/425] [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation
+[218/425] [webkit-desktop] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[219/425] [webkit-desktop] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[220/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[221/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[222/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[223/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[224/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[225/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[226/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[227/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[228/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[229/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[230/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+[231/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+  4) [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('link', { name: /Story 009/i })
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for getByRole('link', { name: /Story 009/i })
+        11 ├ù locator resolved to 1 element
+           - unexpected value "1"
+
+
+      79 |
+      80 |   test("Story 009 is not linked from Story 008 navigation", async ({ page }) => {
+    > 81 |     await expect(page.getByRole("link", { name: /Story 009/i })).toHaveCount(0);
+         |                                                                  ^
+      82 |   });
+      83 | });
+      84 |
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\story-008-tabs.spec.ts:81:66
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-webkit-desktop\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-webkit-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-webkit-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-webkit-desktop\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+[232/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[233/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[234/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[235/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[236/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[237/425] [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[238/425] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[239/425] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[240/425] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[241/425] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+[242/425] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[243/425] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[244/425] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[245/425] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[246/425] [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[247/425] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[248/425] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[249/425] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[250/425] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+[251/425] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[252/425] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[253/425] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[254/425] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[255/425] [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:102:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+[256/425] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[257/425] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[258/425] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[259/425] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[260/425] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[261/425] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[262/425] [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[263/425] [chromium-mobile] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[264/425] [chromium-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[265/425] [chromium-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[266/425] [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844
+[267/425] [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024
+[268/425] [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900
+[269/425] [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080
+[270/425] [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures
+[271/425] [chromium-mobile] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[272/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[273/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[274/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[275/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[276/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[277/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[278/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[279/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[280/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[281/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[282/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[283/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[284/425] [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[285/425] [chromium-mobile] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[286/425] [chromium-mobile] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[287/425] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[288/425] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[289/425] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[290/425] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[291/425] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[292/425] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[293/425] [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[294/425] [chromium-mobile] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[295/425] [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls
+[296/425] [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers
+[297/425] [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF
+[298/425] [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets
+[299/425] [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state
+[300/425] [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text
+[301/425] [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending
+[302/425] [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation
+[303/425] [chromium-mobile] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[304/425] [chromium-mobile] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[305/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[306/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[307/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[308/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[309/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[310/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[311/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[312/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[313/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[314/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[315/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+[316/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+[317/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[318/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[319/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[320/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[321/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[322/425] [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[323/425] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[324/425] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[325/425] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[326/425] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+  5) [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('link', { name: /Story 009/i })
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for getByRole('link', { name: /Story 009/i })
+        12 ├ù locator resolved to 1 element
+           - unexpected value "1"
+
+
+      79 |
+      80 |   test("Story 009 is not linked from Story 008 navigation", async ({ page }) => {
+    > 81 |     await expect(page.getByRole("link", { name: /Story 009/i })).toHaveCount(0);
+         |                                                                  ^
+      82 |   });
+      83 | });
+      84 |
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\story-008-tabs.spec.ts:81:66
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-chromium-mobile\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-chromium-mobile\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-chromium-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-chromium-mobile\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+[327/425] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[328/425] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[329/425] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[330/425] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[331/425] [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[332/425] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[333/425] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[334/425] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[335/425] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+[336/425] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[337/425] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[338/425] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[339/425] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[340/425] [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:102:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+[341/425] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /
+[342/425] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book
+[343/425] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers
+[344/425] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani
+[345/425] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact
+[346/425] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio
+[347/425] [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:8:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about
+[348/425] [webkit-mobile] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story
+[349/425] [webkit-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA
+[350/425] [webkit-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani
+[351/425] [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844
+[352/425] [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024
+[353/425] [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900
+[354/425] [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080
+[355/425] [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures
+[356/425] [webkit-mobile] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages
+[357/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /
+[358/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library
+[359/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book
+[360/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers
+[361/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani
+[362/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge
+[363/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about
+[364/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact
+[365/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy
+[366/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility
+[367/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions
+[368/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio
+[369/425] [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination
+[370/425] [webkit-mobile] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes
+[371/425] [webkit-mobile] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work
+[372/425] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow
+[373/425] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow
+[374/425] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow
+[375/425] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow
+[376/425] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow
+[377/425] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow
+[378/425] [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow
+[379/425] [webkit-mobile] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page
+[380/425] [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls
+[381/425] [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers
+[382/425] [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF
+[383/425] [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets
+[384/425] [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state
+[385/425] [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text
+[386/425] [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending
+[387/425] [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation
+[388/425] [webkit-mobile] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled
+[389/425] [webkit-mobile] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview
+[390/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage
+[391/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage
+[392/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage
+[393/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage
+[394/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage
+[395/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage
+[396/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage
+[397/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage
+[398/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage
+[399/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage
+[400/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage
+  6) [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByRole('link', { name: /Story 009/i })
+    Expected: 0
+    Received: 1
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for getByRole('link', { name: /Story 009/i })
+        10 ├ù locator resolved to 1 element
+           - unexpected value "1"
+
+
+      79 |
+      80 |   test("Story 009 is not linked from Story 008 navigation", async ({ page }) => {
+    > 81 |     await expect(page.getByRole("link", { name: /Story 009/i })).toHaveCount(0);
+         |                                                                  ^
+      82 |   });
+      83 | });
+      84 |
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\story-008-tabs.spec.ts:81:66
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-webkit-mobile\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-webkit-mobile\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-webkit-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\story-008-tabs-Story-008-f-8f0bf-d-from-Story-008-navigation-webkit-mobile\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+
+[401/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage
+[402/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage
+[403/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage
+[404/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto
+[405/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers
+[406/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage
+[407/425] [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state
+[408/425] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+[409/425] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+[410/425] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq
+[411/425] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables
+[412/425] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras
+[413/425] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers
+[414/425] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact
+[415/425] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection
+[416/425] [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto
+[417/425] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 001 play advances currentTime
+[418/425] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 002 play advances currentTime
+[419/425] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 003 play advances currentTime
+[420/425] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 004 play advances currentTime
+[421/425] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 005 play advances currentTime
+[422/425] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime
+[423/425] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime
+[424/425] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime
+[425/425] [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:102:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008
+  6 failed
+    [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+    [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+    [webkit-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes 
+    [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+    [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+    [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is not linked from Story 008 navigation 
+  10 skipped
+  409 passed (8.3m)

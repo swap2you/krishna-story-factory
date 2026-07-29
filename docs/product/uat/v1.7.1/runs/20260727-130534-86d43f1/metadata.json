@@ -1,0 +1,63 @@
+{
+  "release": "v1.7.1",
+  "product_sha": "86d43f1d64e2ac738e68b5d1c7f0182b8b5c41d5",
+  "short_sha": "86d43f1",
+  "clean_tree_at_test_start": true,
+  "note": "Only untracked docs/operations V1.7.1 evidence existed during matrix; no source/test code changes after product SHA.",
+  "started_at": "2026-07-27T17:05:34Z",
+  "completed_at": "2026-07-27T17:25:55.2148730+00:00",
+  "commands": {
+    "pytest": ".\\.venv\\Scripts\\python.exe -m pytest -q -m \"not slow\"",
+    "npm_ci": "npm ci",
+    "lint": "npm run lint:web",
+    "typecheck": "npm run typecheck:web",
+    "unit": "npm run test:web",
+    "build": "npm run build:web",
+    "e2e": "npx playwright test --reporter=list (all 5 projects)"
+  },
+  "exit_codes": {
+    "pytest": 0,
+    "npm_ci": 0,
+    "lint": 0,
+    "typecheck": 0,
+    "unit": 0,
+    "build": 0,
+    "playwright": 0
+  },
+  "counts": {
+    "pytest_passed": 417,
+    "pytest_deselected": 5,
+    "playwright_passed": 415,
+    "playwright_skipped": 10,
+    "playwright_failed": 0
+  },
+  "tool_versions": {
+    "node": "v20.11.1",
+    "npm": "10.2.4",
+    "python": "Python 3.13.5",
+    "playwright": "Version 1.61.1"
+  },
+  "portal": {
+    "instance": "cursor-v171",
+    "web_url": "http://127.0.0.1:3003",
+    "api_url": "http://127.0.0.1:8000",
+    "mode": "production"
+  },
+  "evidence_file_sha256": {
+    "deselected-tests.json": "40883d624b14962ae4b438fca6f3a964a48f1e62d57a85c26d96a433bd464105",
+    "npm-ci.txt": "018974c7c9ab0b1d84db583302cd663314a3fb034d6d340b11a81934ffb195be",
+    "safety-hashes.json": "5a08cf702e6613ac2deec1f779bbff6b1e449fb4b80ec4856cf6eefbd8928b4a",
+    "pytest-summary.json": "0e09df78d3081b63e5b6419fd64b850e8848a5959931ac6a849a0a2507dde03c",
+    "registered-task-final.xml": "54f12a27178bdfef5dc347cc83635f20581492138ffd3e01bce88c6cc4987b92",
+    "playwright-full.txt": "1269ab9f99d8d96cef19087d1aeed5e7663ac75a0bb3cd6e5be1c8712fabfc36",
+    "pytest-full.txt": "bd0a1cdea6ebce8ba650dc762ff7b306c6ba2d5e90d6d522287f153d005ccb5d",
+    "registered-task-info.txt": "225d7e411f47035ce9515f644a8d5d978046a6e5eb269a2acd388fc049330024",
+    "playwright-summary.json": "022635bfc638167fc1aaa99ed55680cafcbcdb815e44b623b2e2f9a3a9107e10",
+    "lint.txt": "9c24d8009d118f38cf7fcc02bc8da92343539a7e45fbb213419589a6eb48d6d3",
+    "unit.txt": "48b735e3537c85a01d249493186d93cfd969c782d3dfa1959f68b4b7510dad6a",
+    "skipped-tests.json": "7d3be6d894d6270367e21717affa969e18cbd3cbbd52e3b32361ad3cc2763601",
+    "scheduler-validation.txt": "6ebc696f2a5aaca2e10a943037a5aafc117b1874f10ec49fdef41ddaa319477d",
+    "typecheck.txt": "e96625f4a5d44f4660a28347195d3af508549164449e12d89f7281cca69e296c",
+    "build.txt": "2203dea3c96f3027db751a04db2dcf4a7cf6720e77aef13bc2eba082c4565422"
+  }
+}

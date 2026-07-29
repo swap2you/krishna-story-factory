@@ -1,0 +1,27 @@
+{
+  "projects": [
+    "chromium-desktop",
+    "firefox-desktop",
+    "webkit-desktop",
+    "chromium-mobile",
+    "webkit-mobile"
+  ],
+  "raw_tail": [
+    "  -  422 [webkit-mobile] ΓÇ║ e2e\\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 006 play advances currentTime\r",
+    "  ok 416 [webkit-mobile] ΓÇ║ e2e\\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto (5.0s)\r",
+    "  -  424 [webkit-mobile] ΓÇ║ e2e\\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 008 play advances currentTime\r",
+    "  -  423 [webkit-mobile] ΓÇ║ e2e\\v14-audio-all-stories.spec.ts:7:9 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 play advances currentTime\r",
+    "  ok 415 [webkit-mobile] ΓÇ║ e2e\\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection (5.8s)\r",
+    "  ok 425 [webkit-mobile] ΓÇ║ e2e\\v14-audio-all-stories.spec.ts:102:7 ΓÇ║ v1.5 audio ΓÇö all released stories ΓÇ║ story 007 links to published 008 (2.7s)\r",
+    "\r",
+    "  10 skipped\r",
+    "  415 passed (7.9m)\r",
+    ""
+  ],
+  "exit_code": 0,
+  "command": "npx playwright test --reporter=list",
+  "duration": "7.9m",
+  "passed": 415,
+  "skipped": 10,
+  "failed": 0
+}

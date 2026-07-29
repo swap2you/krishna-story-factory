@@ -18,7 +18,8 @@ $Action = New-ScheduledTaskAction -Execute $PowerShell `
     -WorkingDirectory $ProjectRoot
 
 # Six weekly triggers: Mon/Wed/Fri at primary (10:00) and noon backup (12:00).
-# StartWhenAvailable remains False so a missed day does not fire on next boot.
+# StartWhenAvailable=true so a missed window can catch up when the machine returns.
+# WakeToRun=false: do not wake the PC for generation (accepted V1.7.1 policy).
 $Triggers = @(
     (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At $PrimaryTime),
     (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At $BackupTime),
@@ -29,10 +30,13 @@ $Triggers = @(
 )
 
 $Settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew `
-    -ExecutionTimeLimit (New-TimeSpan -Minutes 60) -RestartCount 2 -RestartInterval (New-TimeSpan -Minutes 30) `
-    -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
-$Settings.StartWhenAvailable = $false
+    -ExecutionTimeLimit (New-TimeSpan -Hours 4) -RestartCount 2 -RestartInterval (New-TimeSpan -Minutes 30) `
+    -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -DontStopOnIdleEnd
+$Settings.StartWhenAvailable = $true
 $Settings.WakeToRun = $false
+if ($null -ne $Settings.IdleSettings) {
+    $Settings.IdleSettings.StopOnIdleEnd = $false
+}
 
 $Principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
 Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Triggers -Settings $Settings `
@@ -57,4 +61,4 @@ if ($RemoveLegacyDaily -or $Enable) {
 }
 
 & (Join-Path $ProjectRoot "scripts\test_mwf_story_task.ps1") -TaskName $TaskName
-Write-Output "Installed $TaskName (Enabled=$Enable; Primary=$PrimaryTime; Backup=$BackupTime; triggers=6)"
+Write-Output "Installed $TaskName (Enabled=$Enable; Primary=$PrimaryTime; Backup=$BackupTime; triggers=6; ExecutionTimeLimit=PT4H; StartWhenAvailable=true)"

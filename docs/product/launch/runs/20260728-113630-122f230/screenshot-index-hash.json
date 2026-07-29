@@ -1,0 +1,1110 @@
+{
+  "count": 138,
+  "all_pass": true,
+  "files": [
+    {
+      "path": "docs/product/launch/screenshots/1024x768/about.png",
+      "viewport": "1024x768",
+      "file": "about",
+      "bytes": 592288,
+      "sha256": "fa6adc2fd51d76dbaa072b267308c834f13a027ebd2644f0bde8c8f8280a0cd5",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/children-youth.png",
+      "viewport": "1024x768",
+      "file": "children-youth",
+      "bytes": 393338,
+      "sha256": "be975dcb4536be32e2158a5ea571cc709d457c98af02730f0493e0640f6673cc",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/contact.png",
+      "viewport": "1024x768",
+      "file": "contact",
+      "bytes": 796306,
+      "sha256": "efba0abad45b92df047f8b554ffd185a621d753a1ce8aaac1a164673d5641f49",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/faq.png",
+      "viewport": "1024x768",
+      "file": "faq",
+      "bytes": 1335015,
+      "sha256": "bcf26ea90aa76e20529b9c3754cfdb9d49d7534a081f8d7f851a0f77f7addcaf",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/home.png",
+      "viewport": "1024x768",
+      "file": "home",
+      "bytes": 3145959,
+      "sha256": "6b78f96e2a9c2994c17c503dd1baa373d3f82366b5125bc79461659421242b52",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/knowledge-search.png",
+      "viewport": "1024x768",
+      "file": "knowledge-search",
+      "bytes": 555981,
+      "sha256": "77aa25164ce46a8562a6a9786438a8cfcb03e46e26f08ba3488dfedf4e6c1b98",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/knowledge.png",
+      "viewport": "1024x768",
+      "file": "knowledge",
+      "bytes": 1426698,
+      "sha256": "f054c0168566baff089af94dca63b0b03116ced25a83b46e31f62260938a2d1c",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/library-krishna-book.png",
+      "viewport": "1024x768",
+      "file": "library-krishna-book",
+      "bytes": 1725820,
+      "sha256": "318ef182274f768f3a704f3bfa8bbe7520927637fa8ffaab103023dc7e3b9bbe",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/library.png",
+      "viewport": "1024x768",
+      "file": "library",
+      "bytes": 3038696,
+      "sha256": "f91eada66bb640629a18f65ac4dd71a733fb628de963ad61523dff0c1833a837",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/prabhupada-vani.png",
+      "viewport": "1024x768",
+      "file": "prabhupada-vani",
+      "bytes": 1062831,
+      "sha256": "27e38a14c9c41feb2fca91634ec2946c5482c18362614b1c7624531d399bf8b5",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/preachers.png",
+      "viewport": "1024x768",
+      "file": "preachers",
+      "bytes": 631499,
+      "sha256": "c3ec0b36b16672e53d4cb47e2c8172e03291ae4ce06aa7a466fe4ab9986663a2",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/printables.png",
+      "viewport": "1024x768",
+      "file": "printables",
+      "bytes": 1042400,
+      "sha256": "d93014e20a1e376223a9f2b0809235717eea68b27afb6e255dfaa12841b08815",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/story-001-listen.png",
+      "viewport": "1024x768",
+      "file": "story-001-listen",
+      "bytes": 1967706,
+      "sha256": "b10364be0715a86e5dc0ce28d99f305af2feb2a0a21215fc467b7c02b01f09c2",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/story-001-read.png",
+      "viewport": "1024x768",
+      "file": "story-001-read",
+      "bytes": 1991804,
+      "sha256": "78dc5cdf261f0c24a42b8af0cf2e39cd022d6ebb34d406cf8a63feb6f1023f6f",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/story-009-activities.png",
+      "viewport": "1024x768",
+      "file": "story-009-activities",
+      "bytes": 675145,
+      "sha256": "4ffc39382004e31175cf8fd37242202a12d908c50f1054b066738975dbaf4b16",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/story-009-coloring.png",
+      "viewport": "1024x768",
+      "file": "story-009-coloring",
+      "bytes": 890867,
+      "sha256": "4c525f8bf247b78ae9079471b15dc67ba390249025e3d67742d87a83dfe2a0d3",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/story-009-listen.png",
+      "viewport": "1024x768",
+      "file": "story-009-listen",
+      "bytes": 2045035,
+      "sha256": "dab7575972a4d39c6f3d0a31af3ef7614c8ceb164d6aec3fd72a8907715aafeb",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/story-009-notes.png",
+      "viewport": "1024x768",
+      "file": "story-009-notes",
+      "bytes": 800419,
+      "sha256": "41703ba1bbf3832ae8a9965ed7e59d17114e208f0a9cb66120a359b66b097065",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/story-009-read.png",
+      "viewport": "1024x768",
+      "file": "story-009-read",
+      "bytes": 2061834,
+      "sha256": "8d559af2a1c0900b2eca6b58e8342ffbef0a67121dc75397d972703d4384c4f2",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/story-009-shlokas.png",
+      "viewport": "1024x768",
+      "file": "story-009-shlokas",
+      "bytes": 657622,
+      "sha256": "b3824127b34f6fae97be52e101d30a8bdc2ee3cabf9a3b377074e9551371f0d1",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/story-009-source.png",
+      "viewport": "1024x768",
+      "file": "story-009-source",
+      "bytes": 896452,
+      "sha256": "2ab3dd9a6046770395ad0861c054d8622eb4cc51a9c501fdfcf6f3639d7eb1d9",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/sunday-school.png",
+      "viewport": "1024x768",
+      "file": "sunday-school",
+      "bytes": 900639,
+      "sha256": "aad2eb4f18ae52e4f25b68ddeae92f71d227e99f4dedfa53ba5cdb90fb67b161",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1024x768/teachers.png",
+      "viewport": "1024x768",
+      "file": "teachers",
+      "bytes": 848522,
+      "sha256": "bb014a636c9346cb14c22da184dc4da9215fd337598ec0c1c9717b81c2bae2a8",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/about.png",
+      "viewport": "1440x900",
+      "file": "about",
+      "bytes": 781140,
+      "sha256": "c4eaa0b9d726f2c3ff012325c61b2412aa66adfea5e28b523dc73fdfd1b8a383",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/children-youth.png",
+      "viewport": "1440x900",
+      "file": "children-youth",
+      "bytes": 448684,
+      "sha256": "bfdf1ea79805159bc418ee5b55feaa060fc9dd8c3ee056fd885b02a14c7ebc69",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/contact.png",
+      "viewport": "1440x900",
+      "file": "contact",
+      "bytes": 1017587,
+      "sha256": "0d4fc75d0cb6a2b770b48a6ae1706b7dead1c9c8b28afc2e1251b5d44f61d053",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/faq.png",
+      "viewport": "1440x900",
+      "file": "faq",
+      "bytes": 1742297,
+      "sha256": "137f78869d23091c398322fcb15dfdacee614c3120475e7eb68a3204e8917bc6",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/home.png",
+      "viewport": "1440x900",
+      "file": "home",
+      "bytes": 3922456,
+      "sha256": "72bf292ba57b906d4bf3e76c47dbc307f18afe2b46a0e68b4aafa0ed91394bf1",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/knowledge-search.png",
+      "viewport": "1440x900",
+      "file": "knowledge-search",
+      "bytes": 624412,
+      "sha256": "a71dfd256cd2f600a5935817502d0071b156d9b53e643f84e226eda97177b557",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/knowledge.png",
+      "viewport": "1440x900",
+      "file": "knowledge",
+      "bytes": 1539549,
+      "sha256": "b6a36742052469d657af1969a661c8c2f5293e9b18208b00c061acd6baa37f6d",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/library-krishna-book.png",
+      "viewport": "1440x900",
+      "file": "library-krishna-book",
+      "bytes": 1925337,
+      "sha256": "100d2a7b16e133e348fde1a7c38edda3489826bc1d420cacc69ce0444f01716a",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/library.png",
+      "viewport": "1440x900",
+      "file": "library",
+      "bytes": 3355864,
+      "sha256": "342252256c6bb62cd47b5c872a946ac9e075382d20f40538f3a4d036a60c9eb6",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/prabhupada-vani.png",
+      "viewport": "1440x900",
+      "file": "prabhupada-vani",
+      "bytes": 1383932,
+      "sha256": "d3b32532968595e8824596fa6bb13a7e610c64c1fa0af44d2f1d8a1ef78c33a9",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/preachers.png",
+      "viewport": "1440x900",
+      "file": "preachers",
+      "bytes": 786307,
+      "sha256": "314bb98ea2f10795d5e266778f166f5ea9159f899f3fc60128e8c704951914ba",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/printables.png",
+      "viewport": "1440x900",
+      "file": "printables",
+      "bytes": 1279400,
+      "sha256": "f2af6ef07cd8fcd2091210292b19cc10073ec3bee723d4ee2109c5c3355ac834",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/story-001-listen.png",
+      "viewport": "1440x900",
+      "file": "story-001-listen",
+      "bytes": 2035257,
+      "sha256": "4271677df87ef705720d36a5655e7e52f611a5de71affc46f850a32a6e80e74a",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/story-001-read.png",
+      "viewport": "1440x900",
+      "file": "story-001-read",
+      "bytes": 2045267,
+      "sha256": "1e4b27000ac9273531d30af60e222a1288bb6cb6c7096bd4003faca07ecbc57e",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/story-009-activities.png",
+      "viewport": "1440x900",
+      "file": "story-009-activities",
+      "bytes": 689067,
+      "sha256": "7960d99f345252d91bfb97d82424f53c1f1ba3f04f296fda560da6df139c9924",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/story-009-coloring.png",
+      "viewport": "1440x900",
+      "file": "story-009-coloring",
+      "bytes": 865494,
+      "sha256": "b17874c7a2ce803af999f65891a60e85f679b1fedbfa2d330797e06f2c98442f",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/story-009-listen.png",
+      "viewport": "1440x900",
+      "file": "story-009-listen",
+      "bytes": 1806563,
+      "sha256": "5f415fb85e9c85d2836d187368f4380dfda04e362929b29cde13e9da8e889cdb",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/story-009-notes.png",
+      "viewport": "1440x900",
+      "file": "story-009-notes",
+      "bytes": 755214,
+      "sha256": "b7be4f59f43639cc3fbf50543f291d5d07b5f58d120bf98b94b31ed685715301",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/story-009-read.png",
+      "viewport": "1440x900",
+      "file": "story-009-read",
+      "bytes": 2120687,
+      "sha256": "6685595d704028d38342d141852b2732dbec1fbf696df2e4ce8335e16305b23b",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/story-009-shlokas.png",
+      "viewport": "1440x900",
+      "file": "story-009-shlokas",
+      "bytes": 697323,
+      "sha256": "2976e89f3bd93e20e9ba5b098dafb492176655bbe5bcfc6eeb6484d0eccaf6b6",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/story-009-source.png",
+      "viewport": "1440x900",
+      "file": "story-009-source",
+      "bytes": 794281,
+      "sha256": "da74858918be197f3974b73d7edbae9b9732319cc5a6f545124097936ee56568",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/sunday-school.png",
+      "viewport": "1440x900",
+      "file": "sunday-school",
+      "bytes": 1153473,
+      "sha256": "c13943ea8649055f10647c83f4f338f4463a0ccbbb28b96230dda3045f11a121",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1440x900/teachers.png",
+      "viewport": "1440x900",
+      "file": "teachers",
+      "bytes": 1121440,
+      "sha256": "a7598644dc3cbc5afd78b66547a335443c0f1cc72084e5569eff46949e6f2417",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/about.png",
+      "viewport": "1920x1080",
+      "file": "about",
+      "bytes": 964906,
+      "sha256": "b78c0dbec7a759b4b178ed8e165ba20ad6482e250174f79bb674438af55670a1",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/children-youth.png",
+      "viewport": "1920x1080",
+      "file": "children-youth",
+      "bytes": 506582,
+      "sha256": "8891b92b21108534fd385b9a560c34e259cc23869caacc8eb247521125df6e50",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/contact.png",
+      "viewport": "1920x1080",
+      "file": "contact",
+      "bytes": 1274998,
+      "sha256": "633dafb6ddbbf582b8481e766258216f92bdd636f094ffe615583b0fc2f03ea0",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/faq.png",
+      "viewport": "1920x1080",
+      "file": "faq",
+      "bytes": 2510805,
+      "sha256": "f8ba23c02a4fb1eed90c6b32ea914ebc927c8adcdc97869baaa1f098b8ddea39",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/home.png",
+      "viewport": "1920x1080",
+      "file": "home",
+      "bytes": 4882476,
+      "sha256": "7f30163fa5227851f0d3ae6ee04b86f231425450f251f459ae11f5af68613f0c",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/knowledge-search.png",
+      "viewport": "1920x1080",
+      "file": "knowledge-search",
+      "bytes": 722524,
+      "sha256": "d0d5ffb68399d76e80e4dea677dfdce7c5560424a4151c674a17ad7f208faffb",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/knowledge.png",
+      "viewport": "1920x1080",
+      "file": "knowledge",
+      "bytes": 1786474,
+      "sha256": "a752661882a1186f65c260d433783b237d4faeaa809980c57df887be46db3c41",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/library-krishna-book.png",
+      "viewport": "1920x1080",
+      "file": "library-krishna-book",
+      "bytes": 2099582,
+      "sha256": "b3885037646c1ae2013f2671cd45b29b17663b4454809ec5ef802b1469ad18d6",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/library.png",
+      "viewport": "1920x1080",
+      "file": "library",
+      "bytes": 3696750,
+      "sha256": "b79e123cf86f0eacc59c3ff86347af437a02d9b734c14888aac4deab2eccf1d8",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/prabhupada-vani.png",
+      "viewport": "1920x1080",
+      "file": "prabhupada-vani",
+      "bytes": 1895080,
+      "sha256": "81669df353fae18f775234562084f0fc8235c9ed7b13123f920f465b123ffd8c",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/preachers.png",
+      "viewport": "1920x1080",
+      "file": "preachers",
+      "bytes": 938815,
+      "sha256": "0135a0d428dd186ae880a318770838fb4b15dfac40744b39c4736568a54c58da",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/printables.png",
+      "viewport": "1920x1080",
+      "file": "printables",
+      "bytes": 1478689,
+      "sha256": "183d66be1e300ff322c4a1d9f6006568ea90b6ce2b7fd19a12d67ad029373713",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/story-001-listen.png",
+      "viewport": "1920x1080",
+      "file": "story-001-listen",
+      "bytes": 2083604,
+      "sha256": "226cf9a786e6fda92a55c6ef1a431670003c279204c553efdb6c98ba27183f1d",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/story-001-read.png",
+      "viewport": "1920x1080",
+      "file": "story-001-read",
+      "bytes": 1780073,
+      "sha256": "ed2c902982ffc11d986b506b53071b21fd9a9af34d8937c6e6665a4e75043a43",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/story-009-activities.png",
+      "viewport": "1920x1080",
+      "file": "story-009-activities",
+      "bytes": 763442,
+      "sha256": "a9bc2ce52feab5185da1b7480f3516d1f93cc4ef036251372b2e5cfd044076cb",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/story-009-coloring.png",
+      "viewport": "1920x1080",
+      "file": "story-009-coloring",
+      "bytes": 939778,
+      "sha256": "48c5985ddedbcb92c5e9117aad135c115b50fbb70ce52bb175ae8d53c249778e",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/story-009-listen.png",
+      "viewport": "1920x1080",
+      "file": "story-009-listen",
+      "bytes": 1844394,
+      "sha256": "7d94b9e0afc0e089df3f64d8f4444e0fdc80d9d5d1fefcf6fa68e1802fadb23a",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/story-009-notes.png",
+      "viewport": "1920x1080",
+      "file": "story-009-notes",
+      "bytes": 798352,
+      "sha256": "fdf642d10caa2bb6cf7cdefaa494878398920631526c6d2b657325ce23e84851",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/story-009-read.png",
+      "viewport": "1920x1080",
+      "file": "story-009-read",
+      "bytes": 2132459,
+      "sha256": "aeddc38b1d1bd6e06bff6dd11c15eb5b9acbcc480d25843acb013d75534d2a24",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/story-009-shlokas.png",
+      "viewport": "1920x1080",
+      "file": "story-009-shlokas",
+      "bytes": 819464,
+      "sha256": "3b24350c57aee4616a1d76cbbde5b5e1be99bae58e590bc916a2272eb445808b",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/story-009-source.png",
+      "viewport": "1920x1080",
+      "file": "story-009-source",
+      "bytes": 826899,
+      "sha256": "8ae34b9e737c6a1e05491d215982cde5b4c61325a2d1cede1cf0161402ccef70",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/sunday-school.png",
+      "viewport": "1920x1080",
+      "file": "sunday-school",
+      "bytes": 1426504,
+      "sha256": "6fce4184426b49b99e7cc3a9c50015ab83e8057f1257bac2618ab2449250b2fe",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/1920x1080/teachers.png",
+      "viewport": "1920x1080",
+      "file": "teachers",
+      "bytes": 1640603,
+      "sha256": "a9cd20151582e6bf5ab14fb34e73b81bde6ee080605aaeb81c8565d3aad9adfb",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/about.png",
+      "viewport": "390x844",
+      "file": "about",
+      "bytes": 330904,
+      "sha256": "08865b9f0290a03276937ce3486c39055d7d5f68a229ae09ed60259bf70cec32",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/children-youth.png",
+      "viewport": "390x844",
+      "file": "children-youth",
+      "bytes": 337109,
+      "sha256": "675f66ddd228e9bc22057919121943b072b5cfe334618c39c6aafd34994b9daf",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/contact.png",
+      "viewport": "390x844",
+      "file": "contact",
+      "bytes": 424960,
+      "sha256": "55e4f011eb3cb7a6c43db184ef24cdef459550ebca258e664ad82c3ec45a2da5",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/faq.png",
+      "viewport": "390x844",
+      "file": "faq",
+      "bytes": 800525,
+      "sha256": "c8ed31ca140660d51106cd15e305dc9979e553d5b956f48bd1dd020cc7ed45c4",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/home.png",
+      "viewport": "390x844",
+      "file": "home",
+      "bytes": 2322455,
+      "sha256": "ae27a33d2b856c38e9a1a4cdde0fd61493149cac05a64d7b4adbc26363f91365",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/knowledge-search.png",
+      "viewport": "390x844",
+      "file": "knowledge-search",
+      "bytes": 365884,
+      "sha256": "3e833ad35d143e45d7ac5a787bed813f7e65c42538a5cd6bfc5da8f048912909",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/knowledge.png",
+      "viewport": "390x844",
+      "file": "knowledge",
+      "bytes": 1127212,
+      "sha256": "1b67ffe652ff81f9fd2e15ce981fba20a35f32ab4f79dce57dc386fa04efecc6",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/library-krishna-book.png",
+      "viewport": "390x844",
+      "file": "library-krishna-book",
+      "bytes": 1652772,
+      "sha256": "803b534abfee611442a0cdc29fe1bb0f7834c934c48673f44faa4779b3f54d95",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/library.png",
+      "viewport": "390x844",
+      "file": "library",
+      "bytes": 2880399,
+      "sha256": "ca74c68eabef702b6cbe635e0b156044e88ca9c7ad1aa616f20ae2cadcac97e0",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/prabhupada-vani.png",
+      "viewport": "390x844",
+      "file": "prabhupada-vani",
+      "bytes": 731396,
+      "sha256": "200215c60b55770962c0099cbb84779fdd0fe348be425ab5e4ce9cf1cbe05baa",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/preachers.png",
+      "viewport": "390x844",
+      "file": "preachers",
+      "bytes": 424640,
+      "sha256": "c858f1e2b3a483d4134fb9e6844f3fb832fa343a841c9e07210318dd3434c538",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/printables.png",
+      "viewport": "390x844",
+      "file": "printables",
+      "bytes": 811379,
+      "sha256": "fa5a9d37799597b3905b8b9833d32946393878b8094ed4abdd75300ad138cb2e",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/story-001-listen.png",
+      "viewport": "390x844",
+      "file": "story-001-listen",
+      "bytes": 1580577,
+      "sha256": "d6ba3b29ce2b7dd9163c74173ccdc63b293d63ee5ba5e8f426204554b13f4cc7",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/story-001-read.png",
+      "viewport": "390x844",
+      "file": "story-001-read",
+      "bytes": 1564717,
+      "sha256": "ece29d2a8e37d2e6a0f8d6f4fa0c05338af6355a7a4ecadd2630909be6861260",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/story-009-activities.png",
+      "viewport": "390x844",
+      "file": "story-009-activities",
+      "bytes": 493103,
+      "sha256": "54858557d5ccd26da6ddde6d0c2d33f713494c2e04ca165d458307b06726bcf3",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/story-009-coloring.png",
+      "viewport": "390x844",
+      "file": "story-009-coloring",
+      "bytes": 710012,
+      "sha256": "85a2dabed3f562493b9258deabaff347c8de0ed394d6bf3ab01d8eb8cd4def76",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/story-009-listen.png",
+      "viewport": "390x844",
+      "file": "story-009-listen",
+      "bytes": 1645554,
+      "sha256": "2bccea7a3447c13b6041f85d7bbbf5df202d6d627dca7204825c9339376d3b3f",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/story-009-notes.png",
+      "viewport": "390x844",
+      "file": "story-009-notes",
+      "bytes": 613763,
+      "sha256": "df846d4d989aa5e55b6cf52851d6b6471a1f550dc9656e4bf8aab40f6a25b1ff",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/story-009-read.png",
+      "viewport": "390x844",
+      "file": "story-009-read",
+      "bytes": 1623558,
+      "sha256": "0a4d20c75a86c665f2eeb7b7b17c86e0efdf5d885e2e4df43a2ea2e7350d42a6",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/story-009-shlokas.png",
+      "viewport": "390x844",
+      "file": "story-009-shlokas",
+      "bytes": 510427,
+      "sha256": "3ccf68a5e07ffae4a2e63c1577a163705291cece642535e686736f26b65f7b75",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/story-009-source.png",
+      "viewport": "390x844",
+      "file": "story-009-source",
+      "bytes": 627173,
+      "sha256": "e4de2ddda7cb1c0172d301c43bfe732be3061e3d91a1057197e3a3e402958dee",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/sunday-school.png",
+      "viewport": "390x844",
+      "file": "sunday-school",
+      "bytes": 705019,
+      "sha256": "cf395affa7d4a2de486402accf813516f501207e8af07127c7eb3ba2d553d4f1",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/390x844/teachers.png",
+      "viewport": "390x844",
+      "file": "teachers",
+      "bytes": 575946,
+      "sha256": "abafa5768cae1fb3e7a52046675f526911f5ca36caf719da33b5b65c55feb0a6",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/about.png",
+      "viewport": "430x932",
+      "file": "about",
+      "bytes": 343986,
+      "sha256": "e8a8204e486e142df75a8693550852a393eebaa240d64a4c624bca988b14a07b",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/children-youth.png",
+      "viewport": "430x932",
+      "file": "children-youth",
+      "bytes": 346437,
+      "sha256": "6b5d2644b4260e567d57dfc400aaec6b18ca0333280176e88b75ba16f1497fbd",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/contact.png",
+      "viewport": "430x932",
+      "file": "contact",
+      "bytes": 443320,
+      "sha256": "f7735ff28b912fcf0d1a7401cb0f9c1221781298e82db20ce1c0df6f816c21c2",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/faq.png",
+      "viewport": "430x932",
+      "file": "faq",
+      "bytes": 766644,
+      "sha256": "4399c037d55b9450af259ebeb38cb19b52ce2b01e101614b1a766c42d7beaed1",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/home.png",
+      "viewport": "430x932",
+      "file": "home",
+      "bytes": 2465647,
+      "sha256": "3e7ba3efacfc142ce6870ebf86a142dddc19ae27d1509aeb6b20e8c5f041bf41",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/knowledge-search.png",
+      "viewport": "430x932",
+      "file": "knowledge-search",
+      "bytes": 384638,
+      "sha256": "a8a9f106eaa6e2bddb61000fe650b9a4d5a3108484223505e12446457f5a2e57",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/knowledge.png",
+      "viewport": "430x932",
+      "file": "knowledge",
+      "bytes": 1175523,
+      "sha256": "b975c62536024d6dbc566eae3344ee0423bc8af8e650937f4608be8dc3732d0f",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/library-krishna-book.png",
+      "viewport": "430x932",
+      "file": "library-krishna-book",
+      "bytes": 1745599,
+      "sha256": "61123be816c9cd6a7e972078df14ca7ad233333f3f15448e0d19de23285b2496",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/library.png",
+      "viewport": "430x932",
+      "file": "library",
+      "bytes": 3091934,
+      "sha256": "6c3061207ab20888f6e26d94d3e1c7772406f0519bfb8713e9bc1669708d2a13",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/prabhupada-vani.png",
+      "viewport": "430x932",
+      "file": "prabhupada-vani",
+      "bytes": 756653,
+      "sha256": "16d5218de673f1b7588bc4a12b7429905b7d58981c6f322cd865caac88ddacca",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/preachers.png",
+      "viewport": "430x932",
+      "file": "preachers",
+      "bytes": 419289,
+      "sha256": "07d655b58d1e4856484bec163cdaf0c590154576532a9995916724765c661ba6",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/printables.png",
+      "viewport": "430x932",
+      "file": "printables",
+      "bytes": 841125,
+      "sha256": "f23e758210ada00b3e44cc8210e31ae3428d248440b40558abbbc4504137a8ac",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/story-001-listen.png",
+      "viewport": "430x932",
+      "file": "story-001-listen",
+      "bytes": 1594191,
+      "sha256": "9cab84f1c10b39586e2538ed0da98a64fec60fb3b8b14f42cbd1bb3f6f308306",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/story-001-read.png",
+      "viewport": "430x932",
+      "file": "story-001-read",
+      "bytes": 1602045,
+      "sha256": "e0b49df0977f38b4ef5c7f8eee78c5e16b27c8783ddaeec174501454e82a3487",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/story-009-activities.png",
+      "viewport": "430x932",
+      "file": "story-009-activities",
+      "bytes": 540315,
+      "sha256": "da8289ef009d71560de9b2d103ebcd21f727f6abd2202893e6e3440755bffe33",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/story-009-coloring.png",
+      "viewport": "430x932",
+      "file": "story-009-coloring",
+      "bytes": 746631,
+      "sha256": "fa8ce4d6ab8f00b8abd9f8752929ab2b717f6aeb5ff3010ba12eba3795f6c0ba",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/story-009-listen.png",
+      "viewport": "430x932",
+      "file": "story-009-listen",
+      "bytes": 1631193,
+      "sha256": "f2ca041632a5b81b44509d4fdf8f25186fb796aafcd85edc815afc37071718e2",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/story-009-notes.png",
+      "viewport": "430x932",
+      "file": "story-009-notes",
+      "bytes": 639599,
+      "sha256": "659a400270d7b57d9f74f32f15377355a41e8f08d2f44fb682dc7f034e6f246c",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/story-009-read.png",
+      "viewport": "430x932",
+      "file": "story-009-read",
+      "bytes": 1632797,
+      "sha256": "81f1f4a8993bdf50469c316ba31913763918872db2ee8e78a76b523a4c20098e",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/story-009-shlokas.png",
+      "viewport": "430x932",
+      "file": "story-009-shlokas",
+      "bytes": 566073,
+      "sha256": "769a41aa910a251cd46030d2c789150770b0fcae470a9000cfe8101039dac42b",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/story-009-source.png",
+      "viewport": "430x932",
+      "file": "story-009-source",
+      "bytes": 666471,
+      "sha256": "1615923d881c5551aa9b26995306e208d9b6f1d79c23c5d405691671888e5863",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/sunday-school.png",
+      "viewport": "430x932",
+      "file": "sunday-school",
+      "bytes": 698512,
+      "sha256": "d5d04e520c3c81f81f4ab9ac36bb6fdb59da67efc38457570c9c12054b03c446",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/430x932/teachers.png",
+      "viewport": "430x932",
+      "file": "teachers",
+      "bytes": 552626,
+      "sha256": "a8a6e23a27fa974e2b64c623df72dd23c9925900ec0b306308759e6c1381afc3",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/about.png",
+      "viewport": "768x1024",
+      "file": "about",
+      "bytes": 463473,
+      "sha256": "12b045efafb606d12a445a1248c29db7a5f06d141cf80e535b75b9f6324a703f",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/children-youth.png",
+      "viewport": "768x1024",
+      "file": "children-youth",
+      "bytes": 539588,
+      "sha256": "62a870675c58e66d5bc6f049dbccd1c8d86407ead22e7cbf0c78d781911f6b35",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/contact.png",
+      "viewport": "768x1024",
+      "file": "contact",
+      "bytes": 608430,
+      "sha256": "8c3f3f3061c4413bb8727879e4a7f85a6ed08c6474bee0b4d660f894fda00318",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/faq.png",
+      "viewport": "768x1024",
+      "file": "faq",
+      "bytes": 960726,
+      "sha256": "c6d4cce47f16c62a14c2d8bf76f12f962b59160025fe5a7f2e16a1a96ae445d2",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/home.png",
+      "viewport": "768x1024",
+      "file": "home",
+      "bytes": 3770047,
+      "sha256": "2fb3d50b29b1222fbb0273277afed2577a952b091414d2bd519c6b3359ccaeab",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/knowledge-search.png",
+      "viewport": "768x1024",
+      "file": "knowledge-search",
+      "bytes": 477030,
+      "sha256": "25f98190ae978d616adbd921bc5cd3ef4b592de7732ba75988746fdbae370a56",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/knowledge.png",
+      "viewport": "768x1024",
+      "file": "knowledge",
+      "bytes": 1342226,
+      "sha256": "bd75e0e6d3527138827b1d975691554d49d778d96a46e01332304260afe44741",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/library-krishna-book.png",
+      "viewport": "768x1024",
+      "file": "library-krishna-book",
+      "bytes": 1811759,
+      "sha256": "58e9b08d4b123807aadd11174bc2989ac7c27555257ddb29c55125695426f38f",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/library.png",
+      "viewport": "768x1024",
+      "file": "library",
+      "bytes": 3134301,
+      "sha256": "8ece34d28d029fa2233ef9e0428182783de414c81d140b6b594cf51fe0559aca",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/prabhupada-vani.png",
+      "viewport": "768x1024",
+      "file": "prabhupada-vani",
+      "bytes": 829374,
+      "sha256": "0bb27a415361e48b7684664febc9d9b622966f8c8d950cda1e804f20c2b8eb36",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/preachers.png",
+      "viewport": "768x1024",
+      "file": "preachers",
+      "bytes": 525521,
+      "sha256": "0255376e94d0a33205bd06fd5f4e5ae02b9fc19a3538812e79a4d4e65b4d6b9e",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/printables.png",
+      "viewport": "768x1024",
+      "file": "printables",
+      "bytes": 1045559,
+      "sha256": "39af5414f0de982768aa37e558c218b210a97bb0cd4e0021e41349097c1192ca",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/story-001-listen.png",
+      "viewport": "768x1024",
+      "file": "story-001-listen",
+      "bytes": 1981775,
+      "sha256": "21ed11684269df9c7799d8b1ec85e4cb28827468c2caa7d7d0d8e897362f92a4",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/story-001-read.png",
+      "viewport": "768x1024",
+      "file": "story-001-read",
+      "bytes": 1987849,
+      "sha256": "ba9f373ba385675554d62cc83eabf12e9dad27b909042dfeb92e976e8feb4ed1",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/story-009-activities.png",
+      "viewport": "768x1024",
+      "file": "story-009-activities",
+      "bytes": 1122647,
+      "sha256": "54db88eaa55e78e1a9b8c09c563a2ca272995d511ebfeddfe6bbec603d273675",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/story-009-coloring.png",
+      "viewport": "768x1024",
+      "file": "story-009-coloring",
+      "bytes": 1300164,
+      "sha256": "c8726bb2031beffcc25e6d75afbabd0c55657f8ac7ba1287ade212cafec3d53e",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/story-009-listen.png",
+      "viewport": "768x1024",
+      "file": "story-009-listen",
+      "bytes": 2079791,
+      "sha256": "1814a3179ba2660bba10bbccc09fbddf0dbb821577005780df6db0598e691c84",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/story-009-notes.png",
+      "viewport": "768x1024",
+      "file": "story-009-notes",
+      "bytes": 1232861,
+      "sha256": "c8def4e4744058b7434cc914d4fcc20b94294efe8e2a29f1c9cbffa73210345b",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/story-009-read.png",
+      "viewport": "768x1024",
+      "file": "story-009-read",
+      "bytes": 2050194,
+      "sha256": "4a44d8e49a142d2cd41ff694aa9ab9bf8f3a5bb31a453bea3990458cf4d8d688",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/story-009-shlokas.png",
+      "viewport": "768x1024",
+      "file": "story-009-shlokas",
+      "bytes": 1161428,
+      "sha256": "755432543250bb0474a3165682d4a77c83e8b4e2e02bd95cee1cc18996e62b80",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/story-009-source.png",
+      "viewport": "768x1024",
+      "file": "story-009-source",
+      "bytes": 1243116,
+      "sha256": "3b20fc01d47ac96eced64646b6aacc0fddf6b85d9b9bd08728a6819c94a36cd3",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/sunday-school.png",
+      "viewport": "768x1024",
+      "file": "sunday-school",
+      "bytes": 807412,
+      "sha256": "2def57ceb765a0dc29fef9691b646dd8a65dc7717961d13ca0d6621c6ce4576a",
+      "pass": true
+    },
+    {
+      "path": "docs/product/launch/screenshots/768x1024/teachers.png",
+      "viewport": "768x1024",
+      "file": "teachers",
+      "bytes": 662871,
+      "sha256": "19dd8b6709090bdfd22d381c8af818a675173fd76991b3dc7c8cc4b70e073737",
+      "pass": true
+    }
+  ]
+}

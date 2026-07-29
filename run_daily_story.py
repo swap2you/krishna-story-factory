@@ -33,6 +33,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--no-upload", action="store_true")
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--clean-reset", action="store_true", help="Reset output, queue 001-010 pending, and tracking logs.")
+    parser.add_argument(
+        "--resume-from",
+        help="Resume from a governed recovery workspace, e.g. work/stories/008/20260724-100002",
+    )
+    parser.add_argument(
+        "--enable-production-recovery",
+        action="store_true",
+        help="Explicitly allow generating only missing Story artifacts while reusing locked story/narration.",
+    )
+    parser.add_argument(
+        "--scheduler-simulate",
+        action="store_true",
+        help="Safe scheduled-task simulation: lock, queue probe, stage_state, permissions; no providers/Drive/queue writes.",
+    )
     return parser.parse_args()
 
 
@@ -40,6 +54,12 @@ def main() -> int:
     args = parse_args()
     project_root = Path(__file__).resolve().parent
     ensure_csv_files(project_root)
+    if args.scheduler_simulate:
+        from krishna_story_factory.scheduler_simulate import run_scheduler_simulate
+
+        result = run_scheduler_simulate(project_root)
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        return 0 if result.get("status") == "SUCCESS" else 1
     settings = load_settings(project_root)
     if args.rebuild_range:
         result = rebuild_story_range(
@@ -66,6 +86,8 @@ def main() -> int:
         debug=args.debug,
         clean_reset=args.clean_reset,
         rebuild_components=rebuild_components,
+        resume_from=args.resume_from,
+        enable_production_recovery=bool(args.enable_production_recovery),
     )
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 0 if result.get("status") in {

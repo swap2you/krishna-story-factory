@@ -1,0 +1,61 @@
+{
+  "release": "v1.7.2",
+  "product_sha": "a1d277b0a55ab85b28c6e8a8a8f330a966b1b085",
+  "short_sha": "a1d277b",
+  "started_at": "2026-07-27T19:25:49.5015039Z",
+  "completed_at": "2026-07-27T19:45:23.368259+00:00",
+  "clean_tree_at_test_start": true,
+  "note": "Product SHA: Putana coverage gates, preferred activity pack, reviewed-sources 001-009. Story 009 published before matrix.",
+  "commands": {
+    "pytest": ".\\.venv\\Scripts\\python.exe -m pytest -q -m \"not slow\"",
+    "npm_ci": "npm ci",
+    "lint": "npm run lint:web",
+    "typecheck": "npm run typecheck:web",
+    "unit": "npm run test:web",
+    "build": "npm run build:web",
+    "e2e": "npx playwright test --reporter=list (all 5 projects)"
+  },
+  "exit_codes": {
+    "pytest": 0,
+    "npm_ci": 0,
+    "lint": 0,
+    "typecheck": 0,
+    "unit": 0,
+    "build": 0,
+    "playwright": 0
+  },
+  "counts": {
+    "pytest_passed": 424,
+    "pytest_deselected": 5,
+    "playwright_passed": 415,
+    "playwright_skipped": 10,
+    "playwright_failed": 0
+  },
+  "tool_versions": {
+    "node": "v20.11.1",
+    "npm": "10.2.4",
+    "python": "Python 3.13.5",
+    "playwright": "Version 1.61.1"
+  },
+  "portal": {
+    "instance": "cursor-v172",
+    "web_url": "http://127.0.0.1:3003",
+    "api_url": "http://127.0.0.1:8000",
+    "mode": "production"
+  },
+  "evidence_file_sha256": {
+    "build.txt": "2203dea3c96f3027db751a04db2dcf4a7cf6720e77aef13bc2eba082c4565422",
+    "deselected-tests.json": "b0ced75896136404d44d798c13b86e98a506489805b6edaea4cdf3f6055e93f8",
+    "lint.txt": "9c24d8009d118f38cf7fcc02bc8da92343539a7e45fbb213419589a6eb48d6d3",
+    "npm-ci.txt": "ec969389aaa40324e2f24e0b28b005b21f8f173a1cacad9c7d3b7b93228a7424",
+    "playwright-full.txt": "c24d709c95682fe9e7b6a706360e04207406fe475bc34d2e83a35bad25424282",
+    "playwright-summary.json": "0f5d603a235ece4e5e4bfe9f1e9270465ef0f991789046c4674085f4701b5d7a",
+    "pytest-full.txt": "adc28d3770216db5917aeeb8b7c96821ed4d7d02f8d2821485bbd3e6db03a7bf",
+    "pytest-summary.json": "0b33ffcac05f48f7e544db8fbb7372d77a65efdf169095a6ee38cc0779c04c27",
+    "safety-hashes.json": "783304673e357623e0414070d06dd5f454e5992d693718c8f4a92db3c9203d33",
+    "skipped-tests.json": "911e59866aaf4ac2ec1601557f951697bf9a474f796d930285e39c2fd5a9659b",
+    "typecheck.txt": "e96625f4a5d44f4660a28347195d3af508549164449e12d89f7281cca69e296c",
+    "unit.txt": "d0f910dac43c3314425b7230a549fa9819ca2d3de0a05ff12e58f28e580583c4",
+    "versions-pre.txt": "bc32b0a19c1c62e2ddd0a38be547125ca3bd17f7b31c3af0183d27531025408f"
+  }
+}

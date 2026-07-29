@@ -1,0 +1,41 @@
+{
+  "tested_sha": "fe57b4661712845b12bf313ea46321d71723c1bb",
+  "short_sha": "fe57b46",
+  "captured_at_utc": "2026-07-24T18:17:01.6238968Z",
+  "dirty_tree_at_capture": false,
+  "os": "Microsoft Windows NT 10.0.26200.0",
+  "node": "v20.11.1",
+  "python": "3.13.5",
+  "playwright": {
+    "skipped": 10,
+    "failed": 0,
+    "exit_code": 0,
+    "passed": 350,
+    "log": "docs/product/uat/v1.5/playwright-full-latest.log",
+    "duration": "6.6m"
+  },
+  "pytest": {
+    "log": "docs/product/uat/v1.5/pytest-latest.log",
+    "deselected": 5,
+    "exit_code": 0,
+    "passed": 392
+  },
+  "stories_001_007_hash_match": true,
+  "instance": {
+    "instance_name": "cursor-v15",
+    "web_port": 3005,
+    "api_port": 8003,
+    "web_url": "http://127.0.0.1:3005",
+    "api_url": "http://127.0.0.1:8003",
+    "web_pid": 3352,
+    "api_pid": 123980,
+    "mode": "production",
+    "started_at": "2026-07-24T18:03:09.6435817Z",
+    "preferred_web_port": 3000,
+    "preferred_api_port": 8000,
+    "collision": true,
+    "catalog_db": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\.bhava\\instances\\cursor-v15\\bhava.sqlite"
+  },
+  "notes": "Full Playwright matrix green against production build of tested_sha. Audio: blob-first + native MP3 fallback (WebKit). Evidence commit documents results; product code unchanged after tested_sha.",
+  "evidence_commit_sha": "ef63e4715adbb67a4902a96d5fdfe165d98302ae"
+}

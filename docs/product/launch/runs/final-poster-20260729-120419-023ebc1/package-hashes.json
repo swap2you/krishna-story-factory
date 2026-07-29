@@ -1,0 +1,205 @@
+{
+  "product_sha": "023ebc10effe9719e2b5f5a64e3ed8edd77c3b3f",
+  "recorded_at": "2026-07-29T17:15:26+00:00",
+  "stories": {
+    "007": {
+      "folder": "007_kamsa-begins-his-persecutions",
+      "version": "2.1.2-copyright",
+      "file_sha256": {
+        "story.md": "b1f414711617c1ab3ab563499398cdfb21e69e17d863e130705ff0d4112a39f1",
+        "narration.mp3": "85437f1b000351b105ce695c06aa5eeee0f4b2b12c81a2d04747710d5fb184ed",
+        "story_poster.png": "7149ebade086e86e9bc0d1322dbb7ee6192c499691bec2e064ea72bf2dde8656",
+        "coloring_page.png": "9edb974ba00b74bd74be18c6ac9473ef789a36c0afc7eb88df612868bec0af87",
+        "simple_coloring_page.png": "41dcea3190f13412fb516bf6adb6fd4df946315d3fbd3da8d880e9944089e060",
+        "activity_sheet.pdf": "d841e0e275973c93cd59eb286aec3fb03332aef6b22360cddb138a1e49d1043e",
+        "whatsapp_caption.txt": "2c6a1337659df51b93f18461670007ce98b95de01b82867a2ba3295bcaa539fb"
+      },
+      "manifest_rights_sha256": {
+        "story.md": "b1f414711617c1ab3ab563499398cdfb21e69e17d863e130705ff0d4112a39f1",
+        "narration.mp3": "85437f1b000351b105ce695c06aa5eeee0f4b2b12c81a2d04747710d5fb184ed",
+        "story_poster.png": "7149ebade086e86e9bc0d1322dbb7ee6192c499691bec2e064ea72bf2dde8656",
+        "coloring_page.png": "9edb974ba00b74bd74be18c6ac9473ef789a36c0afc7eb88df612868bec0af87",
+        "simple_coloring_page.png": "41dcea3190f13412fb516bf6adb6fd4df946315d3fbd3da8d880e9944089e060",
+        "activity_sheet.pdf": "d841e0e275973c93cd59eb286aec3fb03332aef6b22360cddb138a1e49d1043e",
+        "whatsapp_caption.txt": "2c6a1337659df51b93f18461670007ce98b95de01b82867a2ba3295bcaa539fb",
+        "manifest.json": "b329f1990724263649cb303d7050074eab1f509edf2a86a468deb476d171628f"
+      },
+      "poster_note": {
+        "title_text": "Kamsa Begins His Persecutions",
+        "caption_text": "Yoga-māyā warns Kaṁsa; soft hearts need good association.",
+        "title_font": "C:\\Windows\\Fonts\\arialbd.ttf",
+        "caption_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_line": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+        "strip_height_px": 58,
+        "placement": "bottom_canvas_extension",
+        "sacred_subject_overlay": false,
+        "artwork_source": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\output\\_archive\\pre-copyright\\007\\2.0\\story_poster.png",
+        "artwork_region": [
+          0,
+          81,
+          1024,
+          1105
+        ],
+        "artwork_pixels_redrawn": false,
+        "composed_size": [
+          1024,
+          1224
+        ],
+        "text_layers_rebuilt": [
+          "title_band",
+          "caption_band",
+          "credit_strip"
+        ],
+        "wording_preserved_vs_previous_version": {
+          "title_preserved": true,
+          "caption_preserved": true
+        },
+        "missing_glyph_boxes": {
+          "title": 0,
+          "caption": 0,
+          "credit": 0
+        }
+      },
+      "glyph_validation": {
+        "title_band": {
+          "text": "Kamsa Begins His Persecutions",
+          "font": "C:\\Windows\\Fonts\\arialbd.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": []
+        },
+        "caption_band": {
+          "text": "Yoga-māyā warns Kaṁsa; soft hearts need good association.",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ā",
+            "ā",
+            "ṁ"
+          ]
+        },
+        "credit_strip": {
+          "text": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ā",
+            "©",
+            "·"
+          ]
+        },
+        "ok": true
+      },
+      "exact_eight": true,
+      "archive_2_1_1": "output/_archive/pre-copyright/007/2.1.1-copyright",
+      "master_2_0": "output/_archive/pre-copyright/007/2.0"
+    },
+    "009": {
+      "folder": "009_putana-krishnas-astonishing-mercy",
+      "version": "2.1.2-copyright",
+      "file_sha256": {
+        "story.md": "896e5f36297e47623bc66f5f9e3e886bb0e37657281e3906b785b6b714d70f19",
+        "narration.mp3": "7d8b6367b5a280dd0813b6414b444aa6c7aa9afe54dec773f92b0e346234dee1",
+        "story_poster.png": "b319bef128ae613654b2545846b338c76153716cf6faa1c0293199e027f43cfb",
+        "coloring_page.png": "34dba08239c7d16c8ece191a77fc9b13616dea4b57058004e3cb67a2f30f0358",
+        "simple_coloring_page.png": "2aaf8f10f1e7c4ab19d10682e6be89f39a0cd314419749b4fa9dd8e58e4ae57a",
+        "activity_sheet.pdf": "6f65fd6011e19a7d1dab750667e50feac52b9d761bb5596f38f5aa60cadba78e",
+        "whatsapp_caption.txt": "acf80a8798c5dbd67ceadcf10aa69d103606d102a0d8ba25d0b401b81ff88e7c"
+      },
+      "manifest_rights_sha256": {
+        "story.md": "896e5f36297e47623bc66f5f9e3e886bb0e37657281e3906b785b6b714d70f19",
+        "narration.mp3": "7d8b6367b5a280dd0813b6414b444aa6c7aa9afe54dec773f92b0e346234dee1",
+        "story_poster.png": "b319bef128ae613654b2545846b338c76153716cf6faa1c0293199e027f43cfb",
+        "coloring_page.png": "34dba08239c7d16c8ece191a77fc9b13616dea4b57058004e3cb67a2f30f0358",
+        "simple_coloring_page.png": "2aaf8f10f1e7c4ab19d10682e6be89f39a0cd314419749b4fa9dd8e58e4ae57a",
+        "activity_sheet.pdf": "6f65fd6011e19a7d1dab750667e50feac52b9d761bb5596f38f5aa60cadba78e",
+        "whatsapp_caption.txt": "acf80a8798c5dbd67ceadcf10aa69d103606d102a0d8ba25d0b401b81ff88e7c",
+        "manifest.json": "cfa1f6ccd8ad8502af0cafa86c1d2bdab9017a2933c5053d31e886b01cf1eb1e"
+      },
+      "poster_note": {
+        "title_text": "Pūtanā — Kṛṣṇa’s Astonishing Mercy",
+        "caption_text": "Kṛṣṇa’s mercy is greater than anyone's faults.",
+        "title_font": "C:\\Windows\\Fonts\\arialbd.ttf",
+        "caption_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_line": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+        "strip_height_px": 58,
+        "placement": "bottom_canvas_extension",
+        "sacred_subject_overlay": false,
+        "artwork_source": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\output\\_archive\\pre-copyright\\009\\2.0\\story_poster.png",
+        "artwork_region": [
+          0,
+          81,
+          1024,
+          1105
+        ],
+        "artwork_pixels_redrawn": false,
+        "composed_size": [
+          1024,
+          1224
+        ],
+        "text_layers_rebuilt": [
+          "title_band",
+          "caption_band",
+          "credit_strip"
+        ],
+        "wording_preserved_vs_previous_version": {
+          "title_preserved": true,
+          "caption_preserved": true
+        },
+        "missing_glyph_boxes": {
+          "title": 0,
+          "caption": 0,
+          "credit": 0
+        }
+      },
+      "glyph_validation": {
+        "title_band": {
+          "text": "Pūtanā — Kṛṣṇa’s Astonishing Mercy",
+          "font": "C:\\Windows\\Fonts\\arialbd.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ū",
+            "ā",
+            "—",
+            "ṛ",
+            "ṣ",
+            "ṇ",
+            "’"
+          ]
+        },
+        "caption_band": {
+          "text": "Kṛṣṇa’s mercy is greater than anyone's faults.",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ṛ",
+            "ṣ",
+            "ṇ",
+            "’"
+          ]
+        },
+        "credit_strip": {
+          "text": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ā",
+            "©",
+            "·"
+          ]
+        },
+        "ok": true
+      },
+      "exact_eight": true,
+      "archive_2_1_1": "output/_archive/pre-copyright/009/2.1.1-copyright",
+      "master_2_0": "output/_archive/pre-copyright/009/2.0"
+    }
+  }
+}

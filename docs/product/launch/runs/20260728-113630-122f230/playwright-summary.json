@@ -1,0 +1,18 @@
+{
+  "initial_full_matrix": {
+    "passed": 583,
+    "failed": 7,
+    "skipped": 3
+  },
+  "rerun": {
+    "webkit_audio": "2 passed",
+    "shloka_screenshots": "6 passed",
+    "logs": [
+      "playwright-webkit-audio-rerun.txt",
+      "playwright-screenshots-shloka-rerun.txt"
+    ]
+  },
+  "final": "green after e2e hardening commit",
+  "product_sha": "664030a9c933727ffafb2749041dc505ebb0b903",
+  "product_sha_initial": "122f2300b4d02c91ca99b3f6efa941e1686f2543"
+}

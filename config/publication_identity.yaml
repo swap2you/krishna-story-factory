@@ -1,0 +1,103 @@
+# Authoritative public identity and rights configuration for Bhāva.
+# All generators and website surfaces must load from this file (or the
+# typed Python loader that mirrors it). Do not hard-code identity strings elsewhere.
+
+schema_version: "1.0"
+
+copyright_owner: "Svarna Gauranga Das"
+public_author_name: "Svarna Gauranga Das"
+publisher: "Dauji Publication"
+publisher_role: "publishing imprint"
+project: "Bhāva"
+location: "Harrisburg, Pennsylvania, USA"
+contact_email: "svarnagaurangdas@gmail.com"
+phone: null
+
+# Website copyright year for the portal itself (not a story first-publication date).
+website_copyright_year: 2026
+
+rights_page_path: "/rights"
+rights_page_label: "Copyright & Permissions"
+
+# Classroom license is optional and off by default; enable per-work via manifest.
+classroom_license_enabled_default: false
+classroom_license_line: >-
+  Classroom use: teachers may print one copy per student for non-commercial
+  classroom use when the work is marked classroom_license_enabled.
+
+rights_limitation: >-
+  The copyright claim applies only to the original writing, adaptation,
+  selection, arrangement, educational activities, human-authored design,
+  editing, narration, and production components created for this publication.
+  Scriptural quotations, traditional texts, trademarks, licensed materials,
+  third-party works, and other preexisting materials remain the property of
+  their respective rights holders and are credited separately.
+
+registration_disclaimer: >-
+  A copyright notice and evidence record are not the same as formal
+  U.S. Copyright Office registration.
+
+# Elements Bhāva may claim when human authorship is supported.
+claimable_elements:
+  - original writing
+  - child-friendly adaptation
+  - selection and arrangement
+  - educational activities
+  - human-authored illustration or modification
+  - graphic design and layout
+  - editing
+  - narration performed by a human
+  - protectable human sound-production elements
+  - website authorship
+  - compilation
+  - production
+
+# Never claim ownership of these categories.
+excluded_categories:
+  - Bhagavad-gītā
+  - Śrīmad-Bhāgavatam
+  - Krishna Book
+  - Caitanya-caritāmṛta
+  - Śrīla Prabhupāda's books, purports, letters, lectures, recordings
+  - scriptural verses
+  - traditional prayers and songs
+  - third-party translations
+  - third-party artwork, photos, fonts, music, recordings
+  - Ministry resources
+  - reference documents
+  - public-domain facts
+  - purely AI-generated expressive material without sufficient human authorship
+
+# Allowed publication statuses (operational, not legal advice).
+publication_statuses:
+  - draft
+  - review
+  - privately_shared
+  - publicly_available_unreviewed
+  - published
+  - withdrawn
+  - superseded
+
+registration_statuses:
+  - not_reviewed
+  - registration_planned
+  - application_prepared
+  - submitted
+  - registered
+  - refused
+  - supplementary_registration_needed
+
+sound_recording_claim_statuses:
+  - not_applicable
+  - needs_manual_review
+  - approved
+  - declined
+
+# Exact spelling guards (tests assert these).
+spelling:
+  owner_token: "Svarna"
+  owner_letters: "S-V-A-R-N-A"
+  forbidden_owner_spellings:
+    - "Swarna"
+  publisher: "Dauji Publication"
+  project: "Bhāva"

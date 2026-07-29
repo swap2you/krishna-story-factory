@@ -1,0 +1,43 @@
+{
+  "recorded_at": "2026-07-29T17:15:26+00:00",
+  "task_name": "Krishna Story Factory MWF",
+  "scheduled_task_state": "Disabled",
+  "disabled_during_closeout": true,
+  "disable_reason": "Prevent Story 010 generation during final poster closeout; mission forbids Story 010.",
+  "morning_10am": {
+    "started_at": "2026-07-29T10:00:04-04:00",
+    "completed_at": "2026-07-29T10:15:11-04:00",
+    "status": "FAILED",
+    "chapter_no": "010",
+    "error": "[Errno 22] Invalid argument",
+    "exit_code": 1,
+    "queue_advanced": false,
+    "output_010_created": false,
+    "provider_calls": "partial — work/stories/010 contains story.md and narration.mp3 from the failed morning attempt; no Drive upload, no released package",
+    "scheduler_log": null,
+    "evidence": "tracking/run_history.csv + tracking/story_log.csv + work/stories/010/20260729-100014-a9f445/"
+  },
+  "noon_12pm": {
+    "started_at": "2026-07-29T12:00:04-04:00",
+    "completed_at": "2026-07-29T12:00:14-04:00",
+    "status": "FAILED",
+    "chapter_no": "010",
+    "error": "Resumable Story artifacts found, but production recovery is not enabled.",
+    "exit_code": 1,
+    "last_task_result": 1,
+    "queue_advanced": false,
+    "output_010_created": false,
+    "provider_calls": "none for generation — failed before recovery/generation gate",
+    "drive_actions": "none",
+    "git_sha_at_run": "023ebc10effe9719e2b5f5a64e3ed8edd77c3b3f",
+    "scheduler_log": "logs/scheduler/daily_20260729_120003.log",
+    "scheduler_health": "tracking/scheduler_health.json"
+  },
+  "latest_scheduler_log_paths": [
+    "logs/scheduler/daily_20260729_120003.log",
+    "logs/latest_run_summary.txt",
+    "tracking/latest_run_summary.json",
+    "tracking/scheduler_health.json"
+  ],
+  "story_010_generation_attempted_again_during_closeout": false
+}

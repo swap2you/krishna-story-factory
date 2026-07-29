@@ -8,26 +8,14 @@ from reportlab.lib.pagesizes import A4, letter
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 
+from ..publication.fonts import assert_text_renderable, resolve_unicode_fonts
 from .models import PosterCopy, VisualBrief
 
 
 def _load_fonts() -> tuple:
-    title_candidates = ("Segoe UI Bold", "Arial Bold", "DejaVuSans-Bold.ttf")
-    body_candidates = ("Segoe UI", "Arial", "DejaVuSans.ttf")
-    title_font = body_font = ImageFont.load_default()
-    for name in title_candidates:
-        try:
-            title_font = ImageFont.truetype(name, 40)
-            break
-        except OSError:
-            continue
-    for name in body_candidates:
-        try:
-            body_font = ImageFont.truetype(name, 24)
-            break
-        except OSError:
-            continue
-    return title_font, body_font
+    """Validated Unicode fonts only; coloring-page titles carry diacritics."""
+    pair = resolve_unicode_fonts()
+    return pair.pillow_bold(40), pair.pillow_regular(24)
 
 
 def clean_line_art(raw_path: Path, output_path: Path) -> None:
@@ -56,6 +44,8 @@ def compose_line_art_portrait(
 
     draw = ImageDraw.Draw(canvas)
     title_font, quote_font = _load_fonts()
+    assert_text_renderable(title_font, [title], context="line-art title band")
+    assert_text_renderable(quote_font, [quote], context="line-art quote band")
     margin = int(width * 0.05)
     draw.rectangle((margin, 16, width - margin, top_pad - 16), outline="#222222", width=2)
     title_lines = textwrap.wrap(title, width=34)[:2]

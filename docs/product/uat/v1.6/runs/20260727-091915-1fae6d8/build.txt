@@ -1,0 +1,98 @@
+
+> bhava-portal@1.0.0 build:web
+> npm run build -w @bhava/web
+
+
+> @bhava/web@0.1.0 build
+> next build
+
+   Γû▓ Next.js 15.3.5
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully in 10.0s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/60) ...
+   Generating static pages (15/60) 
+   Generating static pages (30/60) 
+   Generating static pages (45/60) 
+ Γ£ô Generating static pages (60/60)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                  Size  First Load JS
+Γöî ╞Æ /                                                       682 B         105 kB
+Γö£ Γùï /_not-found                                             981 B         102 kB
+Γö£ Γùï /about                                                  188 B         101 kB
+Γö£ Γùï /accessibility                                          188 B         101 kB
+Γö£ ╞Æ /api/studio/session                                     188 B         101 kB
+Γö£ ╞Æ /api/v1/stories/[storyNo]/assets/[filename]             188 B         101 kB
+Γö£ ╞Æ /api/v1/stories/[storyNo]/waveform                      188 B         101 kB
+Γö£ Γùï /blog                                                   188 B         101 kB
+Γö£ Γùï /contact                                              12.3 kB         117 kB
+Γö£ Γùï /dev/audio-lab                                        1.44 kB         103 kB
+Γö£ Γùï /dev/logo-sheet                                         953 B         102 kB
+Γö£ Γùï /faq                                                    239 B         105 kB
+Γö£ Γùï /knowledge                                              239 B         105 kB
+Γö£ ΓùÅ /knowledge/[slug]                                       524 B         105 kB
+Γö£   Γö£ /knowledge/printing-and-classroom-use
+Γö£   Γö£ /knowledge/source-and-permissions
+Γö£   Γöö /knowledge/what-is-bhava
+Γö£ Γùï /knowledge/ask                                        1.71 kB         106 kB
+Γö£ Γùï /knowledge/corrections                                1.64 kB         106 kB
+Γö£ Γùï /knowledge/index                                        239 B         105 kB
+Γö£ Γùï /knowledge/learning-paths                               239 B         105 kB
+Γö£ ╞Æ /knowledge/pathways/[slug]                              239 B         105 kB
+Γö£ Γùï /knowledge/prayers                                      239 B         105 kB
+Γö£ Γùï /knowledge/questions                                    239 B         105 kB
+Γö£ ΓùÅ /knowledge/questions/[slug]                             239 B         105 kB
+Γö£   Γö£ /knowledge/questions/does-bhava-collect-child-data
+Γö£   Γö£ /knowledge/questions/is-bhava-official-bbt
+Γö£   Γöö /knowledge/questions/what-is-bhava-faq
+Γö£ Γùï /knowledge/recent                                       239 B         105 kB
+Γö£ Γùï /knowledge/report-link                                  239 B         105 kB
+Γö£ Γùï /knowledge/scriptures                                   239 B         105 kB
+Γö£ ╞Æ /knowledge/search                                       239 B         105 kB
+Γö£ Γùï /knowledge/slokas                                       239 B         105 kB
+Γö£ Γùï /knowledge/standards                                    188 B         101 kB
+Γö£ Γùï /knowledge/topics                                       239 B         105 kB
+Γö£ Γùï /learning/children-youth                                239 B         105 kB
+Γö£ ╞Æ /library                                                682 B         105 kB
+Γö£ Γùï /library/bhagavad-gita                                  188 B         101 kB
+Γö£ Γùï /library/caitanya-bhagavata                             188 B         101 kB
+Γö£ Γùï /library/caitanya-caritamrta                            188 B         101 kB
+Γö£ Γùï /library/dasavatara                                     188 B         101 kB
+Γö£ ╞Æ /library/krishna-book                                   679 B         105 kB
+Γö£ Γùï /library/prayers-mantras                                239 B         105 kB
+Γö£ Γùï /library/rama-katha                                     188 B         101 kB
+Γö£ Γùï /library/ramacaritamanasa                               188 B         101 kB
+Γö£ Γùï /library/ramayana                                       188 B         101 kB
+Γö£ Γùï /library/srimad-bhagavatam                              239 B         105 kB
+Γö£ ΓùÅ /library/srimad-bhagavatam/canto/[canto]                239 B         105 kB
+Γö£   Γö£ /library/srimad-bhagavatam/canto/1
+Γö£   Γö£ /library/srimad-bhagavatam/canto/2
+Γö£   Γö£ /library/srimad-bhagavatam/canto/3
+Γö£   Γöö [+9 more paths]
+Γö£ Γùï /library/teacher-resources                              239 B         105 kB
+Γö£ Γùï /prabhupada-vani                                        188 B         101 kB
+Γö£ ╞Æ /preachers                                            1.86 kB         106 kB
+Γö£ ╞Æ /printables                                             239 B         105 kB
+Γö£ Γùï /privacy                                                188 B         101 kB
+Γö£ Γùï /sitemap.xml                                            188 B         101 kB
+Γö£ Γùï /source-permissions                                     239 B         105 kB
+Γö£ ╞Æ /stories/[storyNo]                                    10.2 kB         115 kB
+Γö£ Γùï /studio                                                2.6 kB         104 kB
+Γö£ ╞Æ /studio/knowledge                                     1.28 kB         106 kB
+Γö£ Γùï /sunday-school                                        2.88 kB         104 kB
+Γöö Γùï /teachers                                             3.37 kB         105 kB
++ First Load JS shared by all                              101 kB
+  Γö£ chunks/1684-68ed89c12eec196c.js                         46 kB
+  Γö£ chunks/4bd1b696-08c9b867469db0ef.js                   53.2 kB
+  Γöö other shared chunks (total)                           1.99 kB
+
+
+Γùï  (Static)   prerendered as static content
+ΓùÅ  (SSG)      prerendered as static HTML (uses generateStaticParams)
+╞Æ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,8 @@
+{
+  "api_url": "http://127.0.0.1:8003",
+  "keep_running": true,
+  "playwright_exit_notes": "Audio Play re-verified final_audio=0 on chromium-desktop after rebuild",
+  "instance_name": "cursor-v13",
+  "web_url": "http://127.0.0.1:3007",
+  "completed_at": "2026-07-24T01:58:56.7161784Z"
+}

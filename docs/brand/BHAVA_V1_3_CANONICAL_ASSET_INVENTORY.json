@@ -1,0 +1,18 @@
+{
+  "version": "v1.3",
+  "approved_total": 122,
+  "imported_total": 122,
+  "canto_covers": 12,
+  "categories": {
+    "logo_system": 12,
+    "platform_icons": 11,
+    "homepage_heroes": 10,
+    "collection_covers": 15,
+    "canto_covers": 12,
+    "section_banners": 12,
+    "social_sharing": 10,
+    "learning_icons": 22,
+    "empty_states": 11,
+    "contact_faq": 7
+  }
+}

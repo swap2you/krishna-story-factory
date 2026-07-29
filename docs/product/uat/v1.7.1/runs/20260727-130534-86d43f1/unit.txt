@@ -1,0 +1,19 @@
+
+> bhava-portal@1.0.0 test:web
+> npm run test -w @bhava/web
+
+
+> @bhava/web@0.1.0 test
+> vitest run
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+
+ RUN  v3.2.7 C:/Development/Workspace/DevotionalRepo/krishna-story-factory/apps/web
+
+ Γ£ô components/story-grid.test.tsx (2 tests) 159ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  13:10:23
+   Duration  6.11s (transform 154ms, setup 758ms, collect 716ms, tests 159ms, environment 3.69s, prepare 276ms)
+

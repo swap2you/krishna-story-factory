@@ -1,0 +1,878 @@
+
+Running 593 tests using 6 workers
+
+(node:43484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:16736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:8224) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:53000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   5 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge/search (6.3s)
+  ok   6 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /learning/children-youth (6.3s)
+  ok   1 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge (8.7s)
+  ok   3 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book (8.7s)
+  ok   2 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on / (9.3s)
+  ok   8 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers (4.2s)
+  ok   7 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /sunday-school (4.4s)
+  ok   4 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library (11.2s)
+  ok  10 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani (4.6s)
+  ok   9 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /preachers (4.7s)
+  ok  12 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about (3.7s)
+  ok  13 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact (3.9s)
+  ok  11 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /printables (5.7s)
+  ok  14 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /faq (4.4s)
+  ok  18 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:32:7 ΓÇ║ accessibility ΓÇ║ story player selects keep readable contrast (2.7s)
+  ok  19 [chromium-desktop] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story (3.2s)
+  ok  16 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/009 (5.1s)
+  ok  20 [chromium-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA (2.9s)
+  ok  15 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/001 (5.6s)
+  ok  21 [chromium-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani (2.0s)
+  ok  17 [chromium-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio (6.5s)
+  ok  27 [chromium-desktop] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages (317ms)
+  ok  23 [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024 (4.2s)
+  ok  24 [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900 (4.6s)
+  ok  22 [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844 (5.3s)
+  ok  25 [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080 (5.2s)
+  ok  28 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads / (3.3s)
+  ok  29 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library (3.6s)
+  ok  26 [chromium-desktop] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures (7.2s)
+  ok  31 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers (3.5s)
+  ok  32 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani (3.5s)
+  ok  33 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge (3.2s)
+  ok  30 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book (4.5s)
+  ok  34 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about (2.4s)
+  ok  36 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy (1.8s)
+  ok  35 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact (2.1s)
+  ok  37 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility (2.4s)
+  ok  39 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio (2.7s)
+  ok  38 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions (2.8s)
+  ok  40 [chromium-desktop] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination (2.6s)
+  ok  42 [chromium-desktop] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work (4.8s)
+  ok  43 [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow (4.6s)
+  ok  44 [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow (4.4s)
+  ok  45 [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow (4.4s)
+  ok  46 [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow (5.0s)
+  ok  41 [chromium-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes (7.7s)
+  ok  47 [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow (3.1s)
+  ok  48 [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow (4.9s)
+  ok  51 [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls (3.9s)
+  ok  52 [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers (3.9s)
+  ok  49 [chromium-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow (5.9s)
+  ok  53 [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF (4.5s)
+  ok  54 [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets (4.3s)
+  ok  55 [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state (4.8s)
+  ok  57 [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending (5.0s)
+  ok  56 [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text (5.9s)
+  ok  58 [chromium-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is linked from Story 008 navigation after V1.7 release (5.5s)
+  ok  60 [chromium-desktop] ΓÇ║ e2e\story-009-next-preview.spec.ts:15:7 ΓÇ║ story sequence preview ΓÇ║ Story 010 remains unpublished placeholder (3.8s)
+  ok  59 [chromium-desktop] ΓÇ║ e2e\story-009-next-preview.spec.ts:4:7 ΓÇ║ story sequence preview ΓÇ║ Story 009 Read tab preview resolves to cart-breaking Story 010 (6.0s)
+  ok  61 [chromium-desktop] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled (5.4s)
+  ok  62 [chromium-desktop] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview (4.7s)
+  ok  63 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage (5.2s)
+  ok  67 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage (3.8s)
+  ok  65 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage (5.8s)
+  ok  64 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage (7.0s)
+  ok  68 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage (4.3s)
+  ok  66 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage (5.5s)
+  ok  70 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage (1.8s)
+  ok  69 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage (2.9s)
+  ok  71 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage (2.4s)
+  ok  72 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage (2.2s)
+  ok  73 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage (2.2s)
+  ok  76 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage (1.9s)
+  ok  50 [chromium-desktop] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page (26.3s)
+  ok  75 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage (3.2s)
+  ok  77 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage (2.8s)
+  ok  78 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto (2.8s)
+  ok  74 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage (4.1s)
+  ok  79 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers (2.8s)
+  ok  80 [chromium-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state (2.1s)
+  ok  83 [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq (3.3s)
+  ok  84 [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables (3.2s)
+  ok  86 [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers (2.8s)
+  ok  85 [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras (3.4s)
+  ok  81 [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001 (5.8s)
+  ok  88 [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection (2.1s)
+  ok  87 [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact (2.3s)
+  ok  82 [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time (6.4s)
+  ok  89 [chromium-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto (2.5s)
+  ok  91 [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:106:7 ΓÇ║ published-story audio advancement ΓÇ║ penultimate published story links to the latest published story (1.8s)
+(node:5676) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:111040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:56272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:4852) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  90 [chromium-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:5:7 ΓÇ║ published-story audio advancement ΓÇ║ catalog-driven play advances currentTime for every published story (22.6s)
+  ok  96 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge (15.4s)
+  ok  94 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge/search (14.4s)
+  ok  95 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book (16.1s)
+(node:24848) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  93 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on / (15.2s)
+  ok  92 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library (16.5s)
+  ok  98 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers (8.0s)
+  ok  97 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /sunday-school (10.4s)
+  ok  99 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /preachers (7.4s)
+  ok 101 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani (6.9s)
+  ok 103 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about (5.6s)
+  ok 102 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /printables (8.4s)
+  ok 104 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact (7.0s)
+  ok 105 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /faq (10.3s)
+  ok 100 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /learning/children-youth (12.7s)
+  ok 106 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/001 (9.2s)
+  ok 109 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:32:7 ΓÇ║ accessibility ΓÇ║ story player selects keep readable contrast (5.2s)
+  ok 112 [firefox-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani (2.3s)
+  ok 111 [firefox-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA (3.8s)
+  ok 108 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio (11.6s)
+  ok 110 [firefox-desktop] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story (5.9s)
+  ok 113 [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844 (4.8s)
+  ok 118 [firefox-desktop] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages (286ms)
+  ok 107 [firefox-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/009 (14.1s)
+  ok 114 [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024 (4.4s)
+  ok 116 [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080 (5.6s)
+  ok 119 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads / (5.2s)
+  ok 120 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library (5.2s)
+  ok 115 [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900 (8.7s)
+  ok 122 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers (3.8s)
+  ok 123 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani (4.3s)
+  ok 124 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge (4.3s)
+  ok 121 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book (8.7s)
+  ok 125 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about (5.7s)
+  ok 126 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact (4.5s)
+  ok 127 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy (3.3s)
+  ok 117 [firefox-desktop] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures (13.7s)
+  ok 129 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions (3.4s)
+  ok 128 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility (3.8s)
+  ok 130 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio (2.4s)
+  ok 133 [firefox-desktop] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work (5.6s)
+  ok 131 [firefox-desktop] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination (6.4s)
+  ok 134 [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow (6.0s)
+  ok 135 [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow (6.4s)
+  ok 132 [firefox-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes (10.4s)
+  ok 136 [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow (10.4s)
+  ok 138 [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow (7.0s)
+  ok 139 [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow (8.0s)
+  ok 137 [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow (8.9s)
+  ok 140 [firefox-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow (7.9s)
+  ok 142 [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls (5.6s)
+  ok 143 [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers (5.1s)
+  ok 145 [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets (8.4s)
+  ok 144 [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF (11.3s)
+  ok 146 [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state (10.7s)
+  ok 148 [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending (8.5s)
+  ok 147 [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text (12.8s)
+  ok 149 [firefox-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is linked from Story 008 navigation after V1.7 release (8.1s)
+  ok 152 [firefox-desktop] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled (4.6s)
+  ok 151 [firefox-desktop] ΓÇ║ e2e\story-009-next-preview.spec.ts:15:7 ΓÇ║ story sequence preview ΓÇ║ Story 010 remains unpublished placeholder (5.5s)
+  ok 150 [firefox-desktop] ΓÇ║ e2e\story-009-next-preview.spec.ts:4:7 ΓÇ║ story sequence preview ΓÇ║ Story 009 Read tab preview resolves to cart-breaking Story 010 (6.0s)
+  ok 156 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage (4.5s)
+  ok 157 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage (5.9s)
+  ok 155 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage (6.3s)
+  ok 153 [firefox-desktop] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview (7.9s)
+  ok 154 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage (7.9s)
+  ok 158 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage (4.7s)
+  ok 160 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage (2.9s)
+  ok 159 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage (3.1s)
+  ok 141 [firefox-desktop] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page (32.3s)
+  ok 162 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage (3.6s)
+  ok 165 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage (2.3s)
+  ok 161 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage (7.1s)
+  ok 163 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage (5.0s)
+  ok 164 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage (4.9s)
+  ok 166 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage (3.4s)
+  ok 168 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage (2.9s)
+  ok 167 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage (3.3s)
+  ok 174 [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq (4.5s)
+  ok 170 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers (5.8s)
+  ok 171 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state (6.6s)
+  ok 169 [firefox-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto (6.9s)
+  ok 172 [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001 (9.6s)
+  ok 176 [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras (4.0s)
+  ok 175 [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables (4.8s)
+  ok 177 [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers (3.3s)
+  ok 178 [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact (3.3s)
+  ok 173 [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time (12.9s)
+  ok 179 [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection (3.8s)
+  ok 182 [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:106:7 ΓÇ║ published-story audio advancement ΓÇ║ penultimate published story links to the latest published story (3.9s)
+  ok 180 [firefox-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto (4.3s)
+(node:27276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:40024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:58648) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 186 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge/search (16.2s)
+  ok 184 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book (17.0s)
+  ok 183 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on / (17.3s)
+  ok 187 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge (18.5s)
+  ok 185 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library (18.8s)
+  ok 181 [firefox-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:5:7 ΓÇ║ published-story audio advancement ΓÇ║ catalog-driven play advances currentTime for every published story (29.3s)
+(node:56104) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 188 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /learning/children-youth (10.9s)
+  ok 190 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers (12.4s)
+  ok 189 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /sunday-school (13.4s)
+  ok 192 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani (12.9s)
+  ok 191 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /preachers (13.2s)
+  ok 194 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about (11.2s)
+  ok 193 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /printables (13.3s)
+  ok 195 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact (12.5s)
+  ok 196 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /faq (12.7s)
+  ok 197 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/001 (13.6s)
+  ok 198 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/009 (14.8s)
+  ok 200 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:32:7 ΓÇ║ accessibility ΓÇ║ story player selects keep readable contrast (7.7s)
+  ok 202 [webkit-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA (5.9s)
+  ok 203 [webkit-desktop] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani (4.8s)
+  ok 201 [webkit-desktop] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story (8.0s)
+  ok 204 [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844 (4.4s)
+  ok 209 [webkit-desktop] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages (151ms)
+  ok 199 [webkit-desktop] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio (13.3s)
+  ok 205 [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024 (6.7s)
+  ok 210 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads / (5.6s)
+  ok 211 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library (6.5s)
+  ok 206 [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900 (9.8s)
+  ok 212 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book (5.5s)
+  ok 213 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers (3.9s)
+  ok 214 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani (4.6s)
+  ok 207 [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080 (12.9s)
+  ok 216 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about (4.8s)
+  ok 208 [webkit-desktop] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures (13.7s)
+  ok 215 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge (5.4s)
+  ok 217 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact (5.4s)
+  ok 218 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy (3.7s)
+  ok 219 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility (5.2s)
+  ok 220 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions (4.9s)
+  ok 221 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio (4.7s)
+  ok 222 [webkit-desktop] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination (6.1s)
+  ok 225 [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow (5.0s)
+  ok 226 [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow (5.3s)
+  ok 227 [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow (6.3s)
+  ok 228 [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow (5.6s)
+  ok 224 [webkit-desktop] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work (12.7s)
+  ok 229 [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow (6.9s)
+  ok 230 [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow (8.0s)
+  ok 231 [webkit-desktop] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow (11.4s)
+  ok 223 [webkit-desktop] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes (22.1s)
+  ok 234 [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers (9.0s)
+  ok 233 [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls (10.2s)
+  ok 235 [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF (8.8s)
+  ok 236 [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets (9.7s)
+  ok 240 [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is linked from Story 008 navigation after V1.7 release (7.0s)
+  ok 237 [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state (11.0s)
+  ok 239 [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending (10.5s)
+  ok 232 [webkit-desktop] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page (25.5s)
+  ok 242 [webkit-desktop] ΓÇ║ e2e\story-009-next-preview.spec.ts:15:7 ΓÇ║ story sequence preview ΓÇ║ Story 010 remains unpublished placeholder (6.3s)
+  ok 241 [webkit-desktop] ΓÇ║ e2e\story-009-next-preview.spec.ts:4:7 ΓÇ║ story sequence preview ΓÇ║ Story 009 Read tab preview resolves to cart-breaking Story 010 (8.1s)
+  ok 238 [webkit-desktop] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text (16.9s)
+  ok 245 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage (5.0s)
+  ok 243 [webkit-desktop] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled (7.6s)
+  ok 244 [webkit-desktop] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview (7.8s)
+  ok 246 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage (5.4s)
+  ok 247 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage (5.4s)
+  ok 249 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage (4.8s)
+  ok 248 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage (5.5s)
+  ok 250 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage (4.7s)
+  ok 251 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage (4.4s)
+  ok 252 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage (4.2s)
+  ok 253 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage (5.1s)
+  ok 254 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage (5.3s)
+  ok 257 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage (4.5s)
+  ok 255 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage (6.1s)
+  ok 256 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage (6.1s)
+  ok 258 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage (4.9s)
+  ok 259 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage (4.5s)
+  ok 260 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto (6.2s)
+  ok 261 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers (7.6s)
+  ok 265 [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq (5.9s)
+  ok 266 [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables (3.6s)
+  ok 262 [webkit-desktop] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state (9.0s)
+  ok 263 [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001 (10.3s)
+  ok 267 [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras (4.1s)
+  ok 268 [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers (3.4s)
+  ok 269 [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact (5.9s)
+(node:57508) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 270 [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection (8.1s)
+  ok 273 [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:106:7 ΓÇ║ published-story audio advancement ΓÇ║ penultimate published story links to the latest published story (5.6s)
+  ok 271 [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto (7.4s)
+(node:3032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:60532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 264 [webkit-desktop] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time (22.2s)
+  ok 274 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on / (5.7s)
+(node:43136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 275 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book (6.1s)
+  ok 278 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /learning/children-youth (3.2s)
+  ok 276 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library (6.7s)
+  ok 277 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge (6.7s)
+  ok 279 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge/search (4.7s)
+  ok 281 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers (4.6s)
+  ok 280 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /sunday-school (5.3s)
+  ok 282 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /preachers (5.1s)
+  ok 283 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani (4.8s)
+  ok 285 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about (4.7s)
+  ok 286 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact (5.1s)
+  ok 284 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /printables (6.3s)
+  ok 287 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /faq (6.8s)
+  ok 288 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/001 (6.4s)
+  ok 291 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:32:7 ΓÇ║ accessibility ΓÇ║ story player selects keep readable contrast (3.0s)
+  ok 293 [chromium-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA (2.2s)
+  ok 289 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/009 (6.0s)
+  ok 290 [chromium-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio (5.5s)
+  ok 294 [chromium-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani (2.0s)
+  ok 292 [chromium-mobile] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story (3.3s)
+  ok 295 [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844 (3.8s)
+  ok 300 [chromium-mobile] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages (187ms)
+  ok 296 [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024 (5.8s)
+  ok 301 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads / (2.7s)
+  ok 297 [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900 (6.6s)
+  ok 299 [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures (7.6s)
+  ok 302 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library (3.4s)
+  ok 304 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers (2.6s)
+  ok 298 [chromium-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080 (9.4s)
+  ok 305 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani (2.2s)
+  ok 303 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book (4.0s)
+  ok 307 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about (2.1s)
+  ok 308 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact (2.6s)
+  ok 306 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge (3.3s)
+  ok 309 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy (2.1s)
+  ok 310 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility (2.5s)
+  ok 311 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions (1.9s)
+  ok 312 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio (2.8s)
+  ok 313 [chromium-mobile] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination (4.0s)
+  ok 315 [chromium-mobile] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work (5.9s)
+  ok 316 [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow (5.8s)
+  ok 317 [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow (5.5s)
+  ok 314 [chromium-mobile] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes (8.0s)
+  ok 318 [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow (5.1s)
+  ok 320 [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow (6.6s)
+  ok 319 [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow (8.0s)
+  ok 321 [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow (6.8s)
+  ok 324 [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls (2.7s)
+  ok 322 [chromium-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow (9.4s)
+  ok 325 [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers (4.2s)
+  ok 326 [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF (5.2s)
+  ok 327 [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets (3.9s)
+  ok 329 [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text (3.6s)
+  ok 328 [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state (5.0s)
+  ok 330 [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending (4.8s)
+  ok 331 [chromium-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is linked from Story 008 navigation after V1.7 release (4.6s)
+  ok 333 [chromium-mobile] ΓÇ║ e2e\story-009-next-preview.spec.ts:15:7 ΓÇ║ story sequence preview ΓÇ║ Story 010 remains unpublished placeholder (3.9s)
+  ok 323 [chromium-mobile] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page (18.2s)
+  ok 335 [chromium-mobile] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview (2.7s)
+  ok 332 [chromium-mobile] ΓÇ║ e2e\story-009-next-preview.spec.ts:4:7 ΓÇ║ story sequence preview ΓÇ║ Story 009 Read tab preview resolves to cart-breaking Story 010 (5.4s)
+  ok 334 [chromium-mobile] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled (3.6s)
+  ok 336 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage (3.2s)
+  ok 337 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage (3.4s)
+  ok 339 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage (3.9s)
+  ok 338 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage (4.3s)
+  ok 342 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage (2.6s)
+  ok 341 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage (3.9s)
+  ok 343 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage (2.0s)
+  ok 340 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage (5.4s)
+  ok 345 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage (1.9s)
+  ok 344 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage (3.9s)
+  ok 346 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage (2.4s)
+  ok 348 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage (2.5s)
+  ok 347 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage (2.8s)
+  ok 349 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage (2.1s)
+  ok 350 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage (1.8s)
+  ok 351 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto (2.1s)
+  ok 353 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state (3.2s)
+  ok 352 [chromium-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers (3.2s)
+  ok 354 [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001 (4.6s)
+  ok 358 [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras (2.3s)
+  ok 356 [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq (3.8s)
+  ok 357 [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables (2.3s)
+  ok 362 [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto (2.2s)
+  ok 355 [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time (6.7s)
+  ok 360 [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact (2.5s)
+  ok 361 [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection (2.6s)
+  ok 359 [chromium-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers (2.9s)
+  ok 364 [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:106:7 ΓÇ║ published-story audio advancement ΓÇ║ penultimate published story links to the latest published story (2.9s)
+(node:13612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:56844) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:57556) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44496) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  272 [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:5:7 ΓÇ║ published-story audio advancement ΓÇ║ catalog-driven play advances currentTime for every published story (1.4m)
+(node:35764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 365 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on / (10.9s)
+  ok 367 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library/krishna-book (11.6s)
+  ok 366 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /library (12.8s)
+  ok 368 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge (11.4s)
+  ok 363 [chromium-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:5:7 ΓÇ║ published-story audio advancement ΓÇ║ catalog-driven play advances currentTime for every published story (21.8s)
+  ok 370 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /learning/children-youth (9.7s)
+(node:47060) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 369 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /knowledge/search (10.6s)
+  ok 371 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /sunday-school (11.5s)
+  ok 372 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /teachers (11.6s)
+  ok 373 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /preachers (10.2s)
+  ok 374 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /printables (9.9s)
+  ok 376 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /about (9.0s)
+  ok 375 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /prabhupada-vani (9.1s)
+  ok 377 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /contact (8.9s)
+  ok 378 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /faq (10.0s)
+  ok 379 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/001 (9.8s)
+  ok 385 [webkit-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:10:7 ΓÇ║ contact and static ΓÇ║ vanani redirects to prabhupada-vani (3.7s)
+  ok 382 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:32:7 ΓÇ║ accessibility ΓÇ║ story player selects keep readable contrast (7.8s)
+  ok 383 [webkit-mobile] ΓÇ║ e2e\audio-player.spec.ts:5:7 ΓÇ║ audio player ΓÇ║ exposes playback controls per story (6.7s)
+  ok 384 [webkit-mobile] ΓÇ║ e2e\contact-and-static.spec.ts:4:7 ΓÇ║ contact and static ΓÇ║ contact shows steward name and mailto CTA (4.9s)
+  ok 381 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /studio (11.0s)
+  ok 380 [webkit-mobile] ΓÇ║ e2e\accessibility.spec.ts:26:9 ΓÇ║ accessibility ΓÇ║ axe critical/serious clean on /stories/009 (11.2s)
+  ok 391 [webkit-mobile] ΓÇ║ e2e\dynamic-catalog.spec.ts:5:7 ΓÇ║ dynamic catalog ΓÇ║ API stories endpoint returns ordered publishable packages (307ms)
+  ok 386 [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 390x844 (6.5s)
+  ok 392 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads / (4.2s)
+  ok 393 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library (4.4s)
+  ok 387 [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 768x1024 (11.8s)
+  ok 394 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /library/krishna-book (3.9s)
+  ok 390 [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:89:7 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ homepage axe has no critical/serious contrast failures (10.1s)
+  ok 388 [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1440x900 (14.7s)
+  ok 395 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /teachers (4.8s)
+  ok 396 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /prabhupada-vani (4.1s)
+  ok 397 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /knowledge (5.2s)
+  ok 398 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /about (4.3s)
+  ok 399 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /contact (4.2s)
+  ok 401 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /accessibility (3.8s)
+  ok 400 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /privacy (4.6s)
+  ok 389 [webkit-mobile] ΓÇ║ e2e\contrast-home.spec.ts:38:9 ΓÇ║ DEF-CONTRAST-01 home core areas ΓÇ║ core area cards stay dark behind white text @ 1920x1080 (19.9s)
+  ok 402 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /source-permissions (4.0s)
+  ok 403 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:20:9 ΓÇ║ navigation ΓÇ║ loads /studio (4.0s)
+  ok 404 [webkit-mobile] ΓÇ║ e2e\navigation.spec.ts:27:7 ΓÇ║ navigation ΓÇ║ primary nav includes Prabhup─üda V─üß╣ç─½ destination (5.4s)
+  ok 407 [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 390x844 home has no horizontal overflow (6.7s)
+  ok 408 [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 430x932 home has no horizontal overflow (6.6s)
+  ok 409 [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 768x1024 home has no horizontal overflow (9.5s)
+  ok 406 [webkit-mobile] ΓÇ║ e2e\pdf-and-images.spec.ts:5:7 ΓÇ║ pdf and images ΓÇ║ activity PDF and coloring lightbox work (11.3s)
+  ok 410 [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1024x768 home has no horizontal overflow (8.1s)
+  ok 411 [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1366x768 home has no horizontal overflow (9.7s)
+  ok 405 [webkit-mobile] ΓÇ║ e2e\notes-bookmarks.spec.ts:5:7 ΓÇ║ notes and bookmarks ΓÇ║ saves story-isolated notes (17.4s)
+  ok 412 [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1440x900 home has no horizontal overflow (12.1s)
+  ok 415 [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:19:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Listen tab exposes player controls (9.4s)
+  ok 413 [webkit-mobile] ΓÇ║ e2e\responsive.spec.ts:15:9 ΓÇ║ responsive ΓÇ║ 1920x1080 home has no horizontal overflow (12.5s)
+  ok 417 [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:27:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Read tab shows story body without internal markers (7.7s)
+  ok 416 [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:37:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Activities tab embeds or offers activity PDF (8.5s)
+  ok 418 [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:44:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Coloring tab opens lightbox assets (9.8s)
+  ok 414 [webkit-mobile] ΓÇ║ e2e\stories.spec.ts:5:7 ΓÇ║ stories ΓÇ║ lists every discovered story and opens each detail page (18.3s)
+  ok 422 [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:80:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Story 009 is linked from Story 008 navigation after V1.7 release (5.8s)
+  ok 419 [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:52:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Source tab is honest about review state (9.4s)
+  ok 421 [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:72:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ ┼Ülokas tab is reviewed-only or honest pending (8.5s)
+  ok 424 [webkit-mobile] ΓÇ║ e2e\story-009-next-preview.spec.ts:15:7 ΓÇ║ story sequence preview ΓÇ║ Story 010 remains unpublished placeholder (4.1s)
+  ok 423 [webkit-mobile] ΓÇ║ e2e\story-009-next-preview.spec.ts:4:7 ΓÇ║ story sequence preview ΓÇ║ Story 009 Read tab preview resolves to cart-breaking Story 010 (7.3s)
+  ok 427 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route / has no civil identity leakage (4.5s)
+  ok 426 [webkit-mobile] ΓÇ║ e2e\teachers.spec.ts:4:7 ΓÇ║ teachers toolkit ΓÇ║ playlist save and class-pack preview (7.4s)
+  ok 425 [webkit-mobile] ΓÇ║ e2e\studio-safety.spec.ts:4:7 ΓÇ║ studio safety ΓÇ║ factory actions stay disabled (7.7s)
+  ok 420 [webkit-mobile] ΓÇ║ e2e\story-008-tabs.spec.ts:61:7 ΓÇ║ Story 008 full-tab UAT ΓÇ║ Notes tab persists local reflection text (16.1s)
+  ok 428 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library has no civil identity leakage (5.7s)
+  ok 429 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/krishna-book has no civil identity leakage (4.9s)
+  ok 430 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /library/srimad-bhagavatam has no civil identity leakage (4.6s)
+  ok 431 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /sunday-school has no civil identity leakage (4.2s)
+  ok 434 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /prabhupada-vani has no civil identity leakage (3.6s)
+  ok 432 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /preachers has no civil identity leakage (4.6s)
+  ok 433 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /teachers has no civil identity leakage (4.2s)
+  ok 435 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /knowledge has no civil identity leakage (4.5s)
+  ok 436 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /about has no civil identity leakage (4.3s)
+  ok 439 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /printables has no civil identity leakage (3.8s)
+  ok 437 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /contact has no civil identity leakage (4.3s)
+  ok 440 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /privacy has no civil identity leakage (3.8s)
+  ok 438 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /faq has no civil identity leakage (4.8s)
+  -  445 [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:4:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ play advances currentTime on story 001
+  -  446 [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:56:7 ΓÇ║ v1.2 audio and keyboard ΓÇ║ modal arrows do not change audio time
+  ok 441 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:32:9 ΓÇ║ v1.1 identity and route smoke ΓÇ║ public route /source-permissions has no civil identity leakage (3.7s)
+  ok 442 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:42:7 ΓÇ║ v1.1 identity and route smoke ΓÇ║ contact uses only steward mailto (5.0s)
+  ok 443 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:50:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ story read panel excludes production metadata markers (6.6s)
+  ok 447 [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /faq (5.1s)
+  ok 449 [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /library/prayers-mantras (4.3s)
+  ok 448 [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /printables (5.4s)
+  ok 450 [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /preachers (3.9s)
+  -  454 [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:5:7 ΓÇ║ published-story audio advancement ΓÇ║ catalog-driven play advances currentTime for every published story
+  ok 444 [webkit-mobile] ΓÇ║ e2e\v11-identity-leak.spec.ts:63:7 ΓÇ║ v1.1 reader leak regression ΓÇ║ source tab shows reviewed Vedabase or honest pending state (8.6s)
+  ok 451 [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:79:9 ΓÇ║ v1.2 routes ΓÇ║ loads /contact (4.2s)
+(node:17820) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 453 [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:98:7 ΓÇ║ v1.2 routes ΓÇ║ contact form builds mailto (4.7s)
+  ok 455 [webkit-mobile] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:106:7 ΓÇ║ published-story audio advancement ΓÇ║ penultimate published story links to the latest published story (3.8s)
+  ok 452 [webkit-mobile] ΓÇ║ e2e\v12-audio-routes.spec.ts:85:7 ΓÇ║ v1.2 routes ΓÇ║ preacher outline updates on selection (6.3s)
+(node:34024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:20188) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 456 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ home (3.9s)
+(node:56684) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 457 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ library (4.4s)
+  ok 458 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ library-krishna-book (3.4s)
+  ok 461 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ sunday-school (2.6s)
+  ok 459 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ knowledge-search (2.4s)
+  ok 463 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ teachers (2.4s)
+  ok 462 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ children-youth (2.3s)
+  ok 460 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ knowledge (3.4s)
+  ok 464 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ preachers (2.2s)
+  ok 467 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ about (2.0s)
+  ok 466 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ prabhupada-vani (2.7s)
+  ok 465 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ printables (2.8s)
+  ok 468 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ contact (2.1s)
+  ok 469 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ faq (2.5s)
+  ok 470 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-001-listen (19.3s)
+  ok 471 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-001-read (20.3s)
+  ok 475 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-coloring (19.8s)
+  ok 474 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-activities (21.1s)
+  ok 473 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-read (21.1s)
+  ok 472 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-listen (21.4s)
+  ok 481 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ library-krishna-book (3.8s)
+  ok 479 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ home (4.8s)
+  ok 480 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ library (5.2s)
+  ok 482 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ knowledge (2.4s)
+  ok 483 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ knowledge-search (1.7s)
+  ok 484 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ children-youth (1.6s)
+  ok 486 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ teachers (1.8s)
+  ok 485 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ sunday-school (1.9s)
+  ok 487 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ preachers (1.7s)
+  ok 490 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ about (1.7s)
+  ok 489 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ printables (2.1s)
+  ok 488 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ prabhupada-vani (2.2s)
+  ok 491 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ contact (1.8s)
+  ok 492 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ faq (2.0s)
+  ok 476 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-source (17.7s)
+  ok 477 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-notes (18.0s)
+  ok 493 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-001-listen (18.2s)
+  ok 495 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-listen (18.0s)
+  ok 494 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-001-read (18.7s)
+  ok 496 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-read (18.0s)
+  ok 497 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-activities (17.5s)
+  ok 502 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ home (3.0s)
+  ok 503 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ library (3.4s)
+  ok 504 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ library-krishna-book (2.9s)
+  ok 505 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ knowledge (2.4s)
+  ok 498 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-coloring (17.5s)
+  ok 506 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ knowledge-search (1.7s)
+  ok 499 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-source (17.7s)
+  ok 507 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ children-youth (2.0s)
+  ok 500 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-notes (18.1s)
+  ok 508 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ sunday-school (2.1s)
+  ok 510 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ preachers (2.2s)
+  ok 509 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ teachers (2.4s)
+  ok 511 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ prabhupada-vani (2.3s)
+  ok 512 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ printables (2.4s)
+  ok 513 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ about (2.0s)
+  ok 514 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ contact (2.2s)
+  ok 515 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ faq (2.4s)
+  x  478 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-shlokas (1.0m)
+(node:55492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 517 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-001-read (19.0s)
+  ok 516 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-001-listen (19.2s)
+  ok 518 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-listen (19.7s)
+  ok 519 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-read (19.8s)
+  ok 520 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-activities (18.0s)
+  ok 525 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ home (3.4s)
+  ok 526 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ library (3.1s)
+  ok 527 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ library-krishna-book (2.6s)
+  ok 522 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-source (18.4s)
+  ok 521 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-coloring (18.9s)
+  ok 523 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-notes (19.1s)
+  ok 528 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ knowledge (2.9s)
+  ok 529 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ knowledge-search (2.3s)
+  ok 530 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ children-youth (1.9s)
+  ok 531 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ sunday-school (2.3s)
+  ok 534 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ preachers (2.5s)
+  ok 532 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ teachers (2.8s)
+  ok 533 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ prabhupada-vani (2.9s)
+  x  501 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-shlokas (1.0m)
+  ok 535 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ printables (3.1s)
+  ok 536 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ about (2.6s)
+  ok 537 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ contact (2.9s)
+  ok 538 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ faq (3.2s)
+(node:28964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 539 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-001-read (19.3s)
+  ok 540 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-listen (19.4s)
+  ok 541 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-read (19.3s)
+  ok 542 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-activities (19.8s)
+  ok 543 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-001-listen (19.7s)
+  ok 548 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ home (3.5s)
+  ok 549 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ library (3.6s)
+  ok 550 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ library-krishna-book (2.9s)
+  ok 551 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ knowledge (2.5s)
+  ok 552 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ knowledge-search (2.1s)
+  ok 544 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-coloring (18.6s)
+  ok 545 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-source (18.6s)
+  x  524 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-shlokas (1.0m)
+  ok 546 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-notes (19.0s)
+  ok 553 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ children-youth (2.1s)
+(node:47404) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 554 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ sunday-school (3.0s)
+  ok 555 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ teachers (3.3s)
+  ok 557 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ printables (3.2s)
+  ok 556 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ prabhupada-vani (3.8s)
+  ok 559 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ about (2.7s)
+  ok 558 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ preachers (3.2s)
+  ok 560 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ contact (3.3s)
+  ok 561 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ faq (4.5s)
+  ok 562 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-001-listen (20.4s)
+  ok 563 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-001-read (20.5s)
+  ok 564 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-listen (20.9s)
+  ok 565 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-read (20.7s)
+  ok 566 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-activities (19.0s)
+  ok 571 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ home (5.2s)
+  ok 572 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ library (3.9s)
+  ok 573 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ library-krishna-book (3.3s)
+  ok 574 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ knowledge (2.9s)
+  ok 567 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-coloring (18.6s)
+  ok 568 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-source (18.6s)
+  ok 575 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ knowledge-search (2.5s)
+  ok 569 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-notes (18.6s)
+  x  547 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-shlokas (1.0m)
+  ok 576 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ children-youth (2.6s)
+(node:7828) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 577 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ sunday-school (3.5s)
+  ok 579 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ preachers (3.0s)
+  ok 578 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ teachers (4.1s)
+  ok 580 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ printables (3.8s)
+  ok 582 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ about (3.3s)
+  ok 583 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ contact (3.7s)
+  ok 581 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ prabhupada-vani (4.9s)
+  ok 584 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ faq (5.5s)
+  ok 585 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-001-listen (20.0s)
+  ok 586 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-001-read (20.3s)
+  ok 587 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-listen (19.8s)
+  ok 588 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-read (20.9s)
+  ok 589 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-activities (19.4s)
+  ok 590 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-coloring (18.4s)
+  x  570 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-shlokas (1.0m)
+  ok 591 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-source (18.6s)
+  ok 592 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-notes (18.8s)
+  x  593 [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-shlokas (1.0m)
+
+
+  1) [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:5:7 ΓÇ║ published-story audio advancement ΓÇ║ catalog-driven play advances currentTime for every published story 
+
+    Test timeout of 60000ms exceeded.
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\v14-audio-all-stories-publ-848fa-e-for-every-published-story-webkit-desktop\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\v14-audio-all-stories-publ-848fa-e-for-every-published-story-webkit-desktop\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\v14-audio-all-stories-publ-848fa-e-for-every-published-story-webkit-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\v14-audio-all-stories-publ-848fa-e-for-every-published-story-webkit-desktop\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  2) [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-shlokas 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.waitForTimeout: Target page, context or browser has been closed
+
+      58 |           if (capture.tab) {
+      59 |             await page.getByRole("tab", { name: capture.tab }).click().catch(() => undefined);
+    > 60 |             await page.waitForTimeout(400);
+         |                        ^
+      61 |           }
+      62 |           const filePath = path.join(dir, `${capture.file}.png`);
+      63 |           await page.screenshot({ path: filePath, fullPage: true });
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\launch-screenshots.spec.ts:60:24
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--77d20-s-390x844-story-009-shlokas-screenshots\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\launch-screenshots-launch--77d20-s-390x844-story-009-shlokas-screenshots\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--77d20-s-390x844-story-009-shlokas-screenshots\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\launch-screenshots-launch--77d20-s-390x844-story-009-shlokas-screenshots\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  3) [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-shlokas 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.waitForTimeout: Target page, context or browser has been closed
+
+      58 |           if (capture.tab) {
+      59 |             await page.getByRole("tab", { name: capture.tab }).click().catch(() => undefined);
+    > 60 |             await page.waitForTimeout(400);
+         |                        ^
+      61 |           }
+      62 |           const filePath = path.join(dir, `${capture.file}.png`);
+      63 |           await page.screenshot({ path: filePath, fullPage: true });
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\launch-screenshots.spec.ts:60:24
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--36b2c-s-430x932-story-009-shlokas-screenshots\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\launch-screenshots-launch--36b2c-s-430x932-story-009-shlokas-screenshots\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--36b2c-s-430x932-story-009-shlokas-screenshots\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\launch-screenshots-launch--36b2c-s-430x932-story-009-shlokas-screenshots\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  4) [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-shlokas 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.waitForTimeout: Target page, context or browser has been closed
+
+      58 |           if (capture.tab) {
+      59 |             await page.getByRole("tab", { name: capture.tab }).click().catch(() => undefined);
+    > 60 |             await page.waitForTimeout(400);
+         |                        ^
+      61 |           }
+      62 |           const filePath = path.join(dir, `${capture.file}.png`);
+      63 |           await page.screenshot({ path: filePath, fullPage: true });
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\launch-screenshots.spec.ts:60:24
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--8f561--768x1024-story-009-shlokas-screenshots\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\launch-screenshots-launch--8f561--768x1024-story-009-shlokas-screenshots\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--8f561--768x1024-story-009-shlokas-screenshots\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\launch-screenshots-launch--8f561--768x1024-story-009-shlokas-screenshots\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  5) [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-shlokas 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.waitForTimeout: Target page, context or browser has been closed
+
+      58 |           if (capture.tab) {
+      59 |             await page.getByRole("tab", { name: capture.tab }).click().catch(() => undefined);
+    > 60 |             await page.waitForTimeout(400);
+         |                        ^
+      61 |           }
+      62 |           const filePath = path.join(dir, `${capture.file}.png`);
+      63 |           await page.screenshot({ path: filePath, fullPage: true });
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\launch-screenshots.spec.ts:60:24
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--4a496--1024x768-story-009-shlokas-screenshots\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\launch-screenshots-launch--4a496--1024x768-story-009-shlokas-screenshots\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--4a496--1024x768-story-009-shlokas-screenshots\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\launch-screenshots-launch--4a496--1024x768-story-009-shlokas-screenshots\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  6) [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-shlokas 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.waitForTimeout: Target page, context or browser has been closed
+
+      58 |           if (capture.tab) {
+      59 |             await page.getByRole("tab", { name: capture.tab }).click().catch(() => undefined);
+    > 60 |             await page.waitForTimeout(400);
+         |                        ^
+      61 |           }
+      62 |           const filePath = path.join(dir, `${capture.file}.png`);
+      63 |           await page.screenshot({ path: filePath, fullPage: true });
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\launch-screenshots.spec.ts:60:24
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--a9446--1440x900-story-009-shlokas-screenshots\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\launch-screenshots-launch--a9446--1440x900-story-009-shlokas-screenshots\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--a9446--1440x900-story-009-shlokas-screenshots\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\launch-screenshots-launch--a9446--1440x900-story-009-shlokas-screenshots\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  7) [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-shlokas 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.waitForTimeout: Target page, context or browser has been closed
+
+      58 |           if (capture.tab) {
+      59 |             await page.getByRole("tab", { name: capture.tab }).click().catch(() => undefined);
+    > 60 |             await page.waitForTimeout(400);
+         |                        ^
+      61 |           }
+      62 |           const filePath = path.join(dir, `${capture.file}.png`);
+      63 |           await page.screenshot({ path: filePath, fullPage: true });
+        at C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\e2e\launch-screenshots.spec.ts:60:24
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--09d63-1920x1080-story-009-shlokas-screenshots\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\launch-screenshots-launch--09d63-1920x1080-story-009-shlokas-screenshots\error-context.md
+
+    attachment #3: trace (application/zip) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\launch-screenshots-launch--09d63-1920x1080-story-009-shlokas-screenshots\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\launch-screenshots-launch--09d63-1920x1080-story-009-shlokas-screenshots\trace.zip
+
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  7 failed
+    [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:5:7 ΓÇ║ published-story audio advancement ΓÇ║ catalog-driven play advances currentTime for every published story 
+    [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 390x844 ΓÇ║ story-009-shlokas 
+    [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 430x932 ΓÇ║ story-009-shlokas 
+    [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 768x1024 ΓÇ║ story-009-shlokas 
+    [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1024x768 ΓÇ║ story-009-shlokas 
+    [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1440x900 ΓÇ║ story-009-shlokas 
+    [screenshots] ΓÇ║ e2e\launch-screenshots.spec.ts:52:13 ΓÇ║ launch screenshots ΓÇ║ 1920x1080 ΓÇ║ story-009-shlokas 
+  3 skipped
+  583 passed (14.0m)

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bhva mark">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#061628"/>
+      <stop offset="100%" stop-color="#1a406c"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- Open book -->
+  <path d="M12 40c8-7 14-8 20-8s12 1 20 8v2c-8-6-14-7-20-7s-12 1-20 7v-2z" fill="#f0d48a" opacity="0.95"/>
+  <path d="M32 32v12" stroke="#f0d48a" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M14 38.5c6-4 11-5 18-5" fill="none" stroke="#d4a84b" stroke-width="1" opacity="0.7"/>
+  <path d="M50 38.5c-6-4-11-5-18-5" fill="none" stroke="#d4a84b" stroke-width="1" opacity="0.7"/>
+  <!-- Lotus above book -->
+  <g fill="#e8b4c0" transform="translate(32 22)">
+    <ellipse cx="0" cy="2" rx="3.2" ry="7" transform="rotate(-35)"/>
+    <ellipse cx="0" cy="2" rx="3.2" ry="7" transform="rotate(35)"/>
+    <ellipse cx="0" cy="1" rx="3" ry="7.5"/>
+    <ellipse cx="0" cy="3" rx="2.4" ry="5.5" transform="rotate(-70)" fill="#c97b90"/>
+    <ellipse cx="0" cy="3" rx="2.4" ry="5.5" transform="rotate(70)" fill="#c97b90"/>
+    <circle cx="0" cy="4" r="1.6" fill="#f0d48a"/>
+  </g>
+</svg>

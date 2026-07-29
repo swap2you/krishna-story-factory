@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0",
+  "pathways": [
+    {
+      "id": 1,
+      "slug": "new-to-bhakti",
+      "title": "New to Bhakti",
+      "status": "published"
+    },
+    {
+      "id": 2,
+      "slug": "daily-practice",
+      "title": "Daily Practice",
+      "status": "proposed"
+    },
+    {
+      "id": 3,
+      "slug": "brahminical-life",
+      "title": "Brahminical Life & Service",
+      "status": "proposed"
+    },
+    {
+      "id": 4,
+      "slug": "vaisnava-etiquette",
+      "title": "Vai\u1e63\u1e47ava Etiquette",
+      "status": "proposed"
+    },
+    {
+      "id": 5,
+      "slug": "deity-worship",
+      "title": "Deity Worship",
+      "status": "proposed"
+    },
+    {
+      "id": 6,
+      "slug": "prayers-aratis",
+      "title": "Prayers & \u0100ratis",
+      "status": "proposed"
+    },
+    {
+      "id": 7,
+      "slug": "slokas-stutis",
+      "title": "\u015alokas & Stutis",
+      "status": "proposed"
+    },
+    {
+      "id": 8,
+      "slug": "bhagavad-gita",
+      "title": "Bhagavad-g\u012bt\u0101",
+      "status": "proposed"
+    },
+    {
+      "id": 9,
+      "slug": "srimad-bhagavatam",
+      "title": "\u015ar\u012bmad-Bh\u0101gavatam",
+      "status": "proposed"
+    },
+    {
+      "id": 10,
+      "slug": "caitanya-literature",
+      "title": "Caitanya literature",
+      "status": "proposed"
+    },
+    {
+      "id": 11,
+      "slug": "prabhupada-vani",
+      "title": "\u015ar\u012bla Prabhup\u0101da V\u0101\u1e47\u012b",
+      "status": "proposed"
+    },
+    {
+      "id": 12,
+      "slug": "families-children",
+      "title": "Families & Children",
+      "status": "published"
+    },
+    {
+      "id": 13,
+      "slug": "teachers",
+      "title": "Teachers",
+      "status": "published"
+    },
+    {
+      "id": 14,
+      "slug": "preachers",
+      "title": "Preachers",
+      "status": "proposed"
+    },
+    {
+      "id": 15,
+      "slug": "festivals",
+      "title": "Festivals",
+      "status": "proposed"
+    },
+    {
+      "id": 16,
+      "slug": "questions-answers",
+      "title": "Questions & Answers",
+      "status": "published"
+    }
+  ]
+}

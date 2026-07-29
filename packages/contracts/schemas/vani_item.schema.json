@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BhavaVaniItem",
+  "description": "A curated Prabhupāda Vāṇī item with source attribution and editorial status.",
+  "type": "object",
+  "required": ["id", "category", "source_type", "status"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "URL-safe identifier for the vāṇī item."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "lectures",
+        "morning_walks",
+        "conversations",
+        "letters",
+        "interviews",
+        "pastimes_remembrances",
+        "for_children",
+        "for_teenagers"
+      ],
+      "description": "Vāṇī category."
+    },
+    "title": {
+      "type": ["string", "null"],
+      "description": "Display title for the item."
+    },
+    "source_type": {
+      "type": "string",
+      "enum": ["lecture", "morning_walk", "conversation", "letter", "interview", "remembrance"],
+      "description": "Type of original source material."
+    },
+    "source_date": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Date of the original source, if known."
+    },
+    "source_location": {
+      "type": ["string", "null"],
+      "description": "Location where the source was recorded or written."
+    },
+    "source_reference": {
+      "type": ["string", "null"],
+      "description": "Full citation, e.g. 'Lecture on BG 2.13, Los Angeles, November 29, 1968'."
+    },
+    "participants": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Named participants (for conversations and morning walks)."
+    },
+    "audience": {
+      "type": ["string", "null"],
+      "description": "Target audience for this curated presentation."
+    },
+    "permissions_status": {
+      "type": "string",
+      "enum": ["pending", "approved", "not_required"],
+      "description": "Permission status from rights holders."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "curating", "review", "published"],
+      "description": "Editorial status."
+    }
+  },
+  "additionalProperties": false
+}

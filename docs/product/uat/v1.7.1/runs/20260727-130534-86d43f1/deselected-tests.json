@@ -1,0 +1,12 @@
+{
+  "marker": "slow",
+  "justification": "Deselected via -m 'not slow' to avoid paid-provider / long pipeline tests in the release matrix.",
+  "tests": [
+    "tests/test_daily_idempotency.py::test_test_preview_does_not_count_as_production_completion",
+    "tests/test_daily_idempotency.py::test_normal_prod_skips_second_same_day_run",
+    "tests/test_daily_idempotency.py::test_noon_backup_noop_after_morning_success",
+    "tests/test_daily_idempotency.py::test_noon_eligible_when_morning_did_not_run",
+    "tests/test_daily_idempotency.py::test_force_overrides_same_day_guard"
+  ],
+  "count": 5
+}

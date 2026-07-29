@@ -1,0 +1,148 @@
+{
+  "unicode_font": "C:\\Windows\\Fonts\\arial.ttf",
+  "stories": {
+    "001": {
+      "pages": 3,
+      "activity_pages_with_owner": 2,
+      "rights_contains_bhava": true,
+      "renders": [
+        {
+          "page": 1,
+          "png": "docs/product/launch/runs/_unicode_render_scratch/story-001-pdf/page-01.png",
+          "width": 1224,
+          "height": 1584,
+          "footer_band_mean_luma": 250.73,
+          "footer_band_has_ink": false
+        },
+        {
+          "page": 2,
+          "png": "docs/product/launch/runs/_unicode_render_scratch/story-001-pdf/page-02.png",
+          "width": 1224,
+          "height": 1584,
+          "footer_band_mean_luma": 248.39,
+          "footer_band_has_ink": false
+        },
+        {
+          "page": 3,
+          "png": "docs/product/launch/runs/_unicode_render_scratch/story-001-pdf/page-03.png",
+          "width": 1224,
+          "height": 1584,
+          "footer_band_mean_luma": 255.0,
+          "footer_band_has_ink": false
+        }
+      ]
+    },
+    "009": {
+      "pages": 4,
+      "activity_pages_with_owner": 3,
+      "rights_contains_bhava": true,
+      "renders": [
+        {
+          "page": 1,
+          "png": "docs/product/launch/runs/_unicode_render_scratch/story-009-pdf/page-01.png",
+          "width": 1224,
+          "height": 1584,
+          "footer_band_mean_luma": 250.66,
+          "footer_band_has_ink": false
+        },
+        {
+          "page": 2,
+          "png": "docs/product/launch/runs/_unicode_render_scratch/story-009-pdf/page-02.png",
+          "width": 1224,
+          "height": 1584,
+          "footer_band_mean_luma": 250.63,
+          "footer_band_has_ink": false
+        },
+        {
+          "page": 3,
+          "png": "docs/product/launch/runs/_unicode_render_scratch/story-009-pdf/page-03.png",
+          "width": 1224,
+          "height": 1584,
+          "footer_band_mean_luma": 247.91,
+          "footer_band_has_ink": true
+        },
+        {
+          "page": 4,
+          "png": "docs/product/launch/runs/_unicode_render_scratch/story-009-pdf/page-04.png",
+          "width": 1224,
+          "height": 1584,
+          "footer_band_mean_luma": 255.0,
+          "footer_band_has_ink": false
+        }
+      ]
+    }
+  },
+  "rights_pages": {
+    "001": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/rights-pages/001-rights.png",
+      "contains_bhava": true,
+      "contains_dauji": true
+    },
+    "002": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/rights-pages/002-rights.png",
+      "contains_bhava": true,
+      "contains_dauji": true
+    },
+    "003": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/rights-pages/003-rights.png",
+      "contains_bhava": true,
+      "contains_dauji": true
+    },
+    "004": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/rights-pages/004-rights.png",
+      "contains_bhava": true,
+      "contains_dauji": true
+    },
+    "005": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/rights-pages/005-rights.png",
+      "contains_bhava": true,
+      "contains_dauji": true
+    },
+    "006": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/rights-pages/006-rights.png",
+      "contains_bhava": true,
+      "contains_dauji": true
+    },
+    "007": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/rights-pages/007-rights.png",
+      "contains_bhava": true,
+      "contains_dauji": true
+    },
+    "008": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/rights-pages/008-rights.png",
+      "contains_bhava": true,
+      "contains_dauji": true
+    },
+    "009": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/rights-pages/009-rights.png",
+      "contains_bhava": true,
+      "contains_dauji": true
+    }
+  },
+  "image_strips": {
+    "001:story_poster.png": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/image-strips/001-story_poster.png",
+      "strip_band_saved": true,
+      "size": [
+        1024,
+        1224
+      ]
+    },
+    "009:story_poster.png": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/image-strips/009-story_poster.png",
+      "strip_band_saved": true,
+      "size": [
+        1024,
+        1224
+      ]
+    },
+    "009:coloring_page.png": {
+      "png": "docs/product/launch/runs/_unicode_render_scratch/image-strips/009-coloring_page.png",
+      "strip_band_saved": true,
+      "size": [
+        1024,
+        1612
+      ]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+  ok   6 [chromium-desktop] › e2e\accessibility.spec.ts:26:9 › accessibility › axe critical/serious clean on /knowledge/search (6.5s)
+  ok   5 [chromium-desktop] › e2e\accessibility.spec.ts:26:9 › accessibility › axe critical/serious clean on /learning/children-youth (7.0s)
+  ok   1 [chromium-desktop] › e2e\accessibility.spec.ts:26:9 › accessibility › axe critical/serious clean on / (8.3s)
+  ok   4 [chromium-desktop] › e2e\accessibility.spec.ts:26:9 › accessibility › axe critical/serious clean on /library/krishna-book (8.4s)
+  ok   3 [chromium-desktop] › e2e\accessibility.spec.ts:26:9 › accessibility › axe critical/serious clean on /knowledge (8.7s)

@@ -1,0 +1,4 @@
+{
+  "skipped_count": 10,
+  "reason": "Intentional webkit-mobile audio autoplay policy skips (Safari/iOS hardware limitation)."
+}

@@ -1,0 +1,18 @@
+
+> bhava-portal@1.0.0 test:web
+> npm run test -w @bhava/web
+
+
+> @bhava/web@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Development/Workspace/DevotionalRepo/krishna-story-factory/apps/web
+
+ Γ£ô components/story-grid.test.tsx (2 tests) 180ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  14:54:35
+   Duration  8.13s (transform 151ms, setup 793ms, collect 1.05s, tests 180ms, environment 4.77s, prepare 595ms)
+

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Bhva icon">
+  <rect width="32" height="32" rx="7" fill="#061628"/>
+  <path d="M6 21c4-3.5 7-4 10-4s6 .5 10 4v1c-4-3-7-3.5-10-3.5S10 19 6 22v-1z" fill="#f0d48a"/>
+  <path d="M16 17v6" stroke="#f0d48a" stroke-width="1" stroke-linecap="round"/>
+  <g fill="#e8b4c0" transform="translate(16 11)">
+    <ellipse cx="0" cy="1" rx="1.6" ry="3.5" transform="rotate(-35)"/>
+    <ellipse cx="0" cy="1" rx="1.6" ry="3.5" transform="rotate(35)"/>
+    <ellipse cx="0" cy=".5" rx="1.5" ry="3.8"/>
+    <circle cx="0" cy="2" r=".8" fill="#f0d48a"/>
+  </g>
+</svg>

@@ -1,0 +1,32 @@
+[
+  {
+    "story": "001",
+    "currentSrc": "http://127.0.0.1:3000/api/v1/stories/001/assets/narration.mp3",
+    "readyState": 4,
+    "currentTime": 0.167553,
+    "paused": false,
+    "requests": [
+      "http://127.0.0.1:3000/api/v1/stories/001/assets/narration.mp3"
+    ]
+  },
+  {
+    "story": "006",
+    "currentSrc": "http://127.0.0.1:3000/api/v1/stories/006/assets/narration.mp3",
+    "readyState": 4,
+    "currentTime": 0.158275,
+    "paused": false,
+    "requests": [
+      "http://127.0.0.1:3000/api/v1/stories/006/assets/narration.mp3"
+    ]
+  },
+  {
+    "story": "007",
+    "currentSrc": "http://127.0.0.1:3000/api/v1/stories/007/assets/narration.mp3",
+    "readyState": 4,
+    "currentTime": 0.164723,
+    "paused": false,
+    "requests": [
+      "http://127.0.0.1:3000/api/v1/stories/007/assets/narration.mp3"
+    ]
+  }
+]

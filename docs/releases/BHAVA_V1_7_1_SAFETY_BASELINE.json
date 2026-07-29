@@ -1,0 +1,41 @@
+{
+  "release": "v1.7.1",
+  "captured_at": "2026-07-27T16:55:05.7740888+00:00",
+  "starting_head_sha": "df1dcf029dd57b6c46c0662661a9125edbcaaa7d",
+  "origin_feature_sha": "df1dcf029dd57b6c46c0662661a9125edbcaaa7d",
+  "prior_v1_7_evidence_sha": "223d29fee82061b53095cd8fb1fafb4df46310fc",
+  "prior_v1_7_product_matrix_sha": "72a3ff19daa3a506015222c7c316dd6294fc8b6d",
+  "tip_differs_from_223d29f_because": "df1dcf0 tracks mutable tracking/scheduler_health.json plus SCHEDULER_20260727_EVENTS_RAW.json",
+  "main_sha": "3bae97850ef8b934bbec3a48f42f92fbe6de169f",
+  "tags": [
+    "backup/pr8-pre-squash-7a26e80",
+    "v1.0.0-pilot-stories-001-006",
+    "v1.1.0-stories-001-007-operational"
+  ],
+  "queue_state_sha256": "74f1a4fb782ddfcbf39e987dd31d1c363bf1f319ab26ae8ce01d50dd658132e1",
+  "queue_009": "done",
+  "queue_010": "pending",
+  "story_010_folder_present": false,
+  "task": {
+    "name": "Krishna Story Factory MWF",
+    "state": "Ready",
+    "last_run": "07/27/2026 12:00:00",
+    "last_result": 0,
+    "next_run": "07/29/2026 10:00:00",
+    "execution_time_limit": "PT4H",
+    "start_when_available": true,
+    "multiple_instances": "IgnoreNew",
+    "stop_on_idle_end": false
+  },
+  "stories_001_009_manifest_sha256": {
+    "003": "7cbf182eb5f69b19129f9e8cd6b50c5fa93583f4ffc0001d4b9a4992e683ad3a",
+    "008": "d04606e2bc368ee2661540719c7ad5f22a20328d0dc126b63f0a5380dd7ee760",
+    "007": "039ba500c98e4f9e47b5203f6e5be7ef08042e605b2c220852cf9c237385f681",
+    "001": "2087d0b0998a13bb359b157682520ccdedfba018a9da8d596232e05c4d775af0",
+    "004": "56bf9c007f98d118bca33ea64242822105cf545a14f9fd408a8792b48442096f",
+    "009": "88d575eb3428550c5b73aa8f3d899124e164d6d7c200124f3edf846682aeda32",
+    "006": "0770f101860e5dbf9f8bcf1d9da45207df9c1637f38b282c2b8b5b173f1fdce9",
+    "005": "d35b927381849b0e91e145a9ae291fbb0bdd8ea2fd77aefff1068b3371b9ed3a",
+    "002": "ae98dc23df7fbb32135ed422a58c6d464131e9291fea8f5c1ff08863536941ec"
+  }
+}

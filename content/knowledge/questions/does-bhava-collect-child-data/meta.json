@@ -1,0 +1,17 @@
+{
+  "id": "kl-q-child-data",
+  "slug": "does-bhava-collect-child-data",
+  "title": "Does the site collect child data?",
+  "summary": "No accounts; notes stay local; contact uses mailto.",
+  "content_type": "question",
+  "pathway": "families-children",
+  "visibility": "public",
+  "review_state": "published",
+  "answer_md": "Bh\u0101va does not create child accounts. Story notes stay in local browser storage. Contact uses your email app via mailto and does not store submissions on Bh\u0101va servers.",
+  "sources": [
+    {
+      "label": "Privacy / FAQ",
+      "tier": "editorial"
+    }
+  ]
+}

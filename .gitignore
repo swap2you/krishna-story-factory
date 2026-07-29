@@ -11,6 +11,8 @@ whatsapp_test_outbox/
 logs/
 tracking/*.csv
 tracking/latest_run_summary.json
+tracking/scheduler_health.json
+tracking/scheduler_health.*.json
 !tracking/templates/
 !tracking/templates/*.csv
 credentials/
@@ -25,4 +27,42 @@ krishna-story-factory-v1-buildpack/
 _local_regen_*/
 
 .local_release_archive/
+
+# Bhāva web workspace
+node_modules/
+.next/
+data/catalog/*.sqlite
+playwright-report/
+test-results/
+docs/product/uat/**/traces/
+
+
+# Bhava portal
+node_modules/
+apps/web/.next/
+apps/web/out/
+apps/web/test-results/
+apps/web/playwright-report/
+data/catalog/bhava.sqlite
+data/catalog/*.sqlite-*
+.bhava/
+bhava_portal_cursor_bootstrap_v1.zip
+
+portal-bootstrap/
+*.tsbuildinfo
+
+# Private source books and derived web assets (never commit)
+/KrishnaBook.pdf
+/bhava_v1_1_consolidated_release_prompts.zip
+/bhava_v1_1_consolidated_release_prompts/
+/data/web-assets/**
+!/data/web-assets/.gitkeep
+/.bhava/models/
+/.bhava/alignment-cache/
+
+/MyPilotDropbox/
+
+# Governed factory recovery workspaces (artifacts, not docs)
+work/stories/
+.pipeline.lock
 

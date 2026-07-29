@@ -1,0 +1,68 @@
+# Scheduler V1.7.1 — Safe validation
+
+Product SHA: `86d43f1d64e2ac738e68b5d1c7f0182b8b5c41d5`
+
+## Commands
+
+```powershell
+.\scripts\run_daily_story_scheduled.ps1 -ValidateScheduler
+.\scripts\run_daily_story_scheduled.ps1 -SimulateProduction
+```
+
+## Results
+
+| Mode | Exit | Queue unchanged | Provider calls | Drive | Notes |
+|------|------|-----------------|----------------|------|-------|
+| `-ValidateScheduler` | 0 | yes | 0 | none | process probe OK; never invokes `--mode prod` |
+| `-SimulateProduction` | 0 | yes | 0 | none | heartbeat → `tracking/scheduler_health.json` |
+
+## Runtime telemetry
+
+| Check | Result |
+|-------|--------|
+| `tracking/scheduler_health.json` written | yes |
+| Gitignored | yes (`.gitignore`) |
+| Tracked by Git | **no** |
+| Pipeline lock after run | absent |
+
+## Queue / stories
+
+| Check | Result |
+|-------|--------|
+| Queue SHA | `74f1a4fb782ddfcbf39e987dd31d1c363bf1f319ab26ae8ce01d50dd658132e1` (unchanged) |
+| Story 009 | unchanged |
+| Story 010 folder | absent |
+# Scheduler V1.7.1 — Registered same-day no-op proof
+
+Product SHA: `86d43f1d64e2ac738e68b5d1c7f0182b8b5c41d5`
+
+## Temporary Task Scheduler probe
+
+| Field | Value |
+|-------|-------|
+| Name | `Bhava V1.7.1 SimulateProduction Probe` |
+| Principal | Same InteractiveToken principal as `Krishna Story Factory MWF` |
+| WorkingDirectory | repository root |
+| Action | wrapper `-SimulateProduction` |
+| LastTaskResult | **0** |
+| Queue unchanged | True |
+| Deleted afterward | yes |
+
+## Real registered task (same-day no-op)
+
+Because Story 009 already completed today, `Start-ScheduledTask` on `Krishna Story Factory MWF` takes the production same-day skip path only.
+
+| Check | Result |
+|-------|--------|
+| LastTaskResult | **0** |
+| Status | `SKIPPED_ALREADY_COMPLETED_TODAY` |
+| Queue unchanged | True |
+| 009 | done |
+| 010 | pending (attempts 0) |
+| Story 010 folder | absent |
+| Provider generation | none |
+| Drive mutation | none |
+| Task remains | Ready / enabled |
+| NextRunTime | 2026-07-29 10:00:00 |
+
+Wrapper version: `v1.7.0-dotnet-process`.

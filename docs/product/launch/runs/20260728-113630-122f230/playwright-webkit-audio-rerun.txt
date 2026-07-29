@@ -1,0 +1,11 @@
+
+Running 2 tests using 2 workers
+
+(node:30496) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:111:7 ΓÇ║ published-story audio advancement ΓÇ║ penultimate published story links to the latest published story (2.9s)
+  ok 2 [webkit-desktop] ΓÇ║ e2e\v14-audio-all-stories.spec.ts:5:7 ΓÇ║ published-story audio advancement ΓÇ║ catalog-driven play advances currentTime for every published story (34.6s)
+
+  2 passed (36.3s)

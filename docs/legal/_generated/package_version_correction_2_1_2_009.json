@@ -1,0 +1,132 @@
+{
+  "new_version": "2.1.2-copyright",
+  "release": "BHAVA_STORIES_PRODUCTION_LAUNCH",
+  "correction_scope": "story_poster_text_glyphs",
+  "unicode_font": "C:\\Windows\\Fonts\\arial.ttf",
+  "unicode_font_bold": "C:\\Windows\\Fonts\\arialbd.ttf",
+  "stories": [
+    {
+      "story_no": "009",
+      "folder": "009_putana-krishnas-astonishing-mercy",
+      "prior_version": "2.1.1-copyright",
+      "new_version": "2.1.2-copyright",
+      "prior_sha256": {
+        "story.md": "dd89ef1fd47d801d322ab87af9c04eb029f34dfe9c0f94688b6f1a586821d24b",
+        "narration.mp3": "7d8b6367b5a280dd0813b6414b444aa6c7aa9afe54dec773f92b0e346234dee1",
+        "story_poster.png": "c8b81a7daf9d8a07c3c4d0fa9e3891c3e428424c38efe198b8776d353a8a2710",
+        "coloring_page.png": "34dba08239c7d16c8ece191a77fc9b13616dea4b57058004e3cb67a2f30f0358",
+        "simple_coloring_page.png": "2aaf8f10f1e7c4ab19d10682e6be89f39a0cd314419749b4fa9dd8e58e4ae57a",
+        "activity_sheet.pdf": "6f65fd6011e19a7d1dab750667e50feac52b9d761bb5596f38f5aa60cadba78e",
+        "whatsapp_caption.txt": "acf80a8798c5dbd67ceadcf10aa69d103606d102a0d8ba25d0b401b81ff88e7c",
+        "manifest.json": "10006478da7964980a70c88b70e7bf007a2ee495a67179e1885f5e69fe07ecf7"
+      },
+      "new_sha256": {
+        "story.md": "896e5f36297e47623bc66f5f9e3e886bb0e37657281e3906b785b6b714d70f19",
+        "narration.mp3": "7d8b6367b5a280dd0813b6414b444aa6c7aa9afe54dec773f92b0e346234dee1",
+        "story_poster.png": "b319bef128ae613654b2545846b338c76153716cf6faa1c0293199e027f43cfb",
+        "coloring_page.png": "34dba08239c7d16c8ece191a77fc9b13616dea4b57058004e3cb67a2f30f0358",
+        "simple_coloring_page.png": "2aaf8f10f1e7c4ab19d10682e6be89f39a0cd314419749b4fa9dd8e58e4ae57a",
+        "activity_sheet.pdf": "6f65fd6011e19a7d1dab750667e50feac52b9d761bb5596f38f5aa60cadba78e",
+        "whatsapp_caption.txt": "acf80a8798c5dbd67ceadcf10aa69d103606d102a0d8ba25d0b401b81ff88e7c",
+        "manifest.json": "9c1f19ccee5b9bbadf45f56b5c6082ae9a2cb881a66db51ee878a079c479c399"
+      },
+      "changed_files": [
+        "manifest.json",
+        "story.md",
+        "story_poster.png"
+      ],
+      "carried_unchanged": [
+        "narration.mp3",
+        "coloring_page.png",
+        "simple_coloring_page.png",
+        "activity_sheet.pdf",
+        "whatsapp_caption.txt"
+      ],
+      "poster_note": {
+        "title_text": "Pūtanā — Kṛṣṇa’s Astonishing Mercy",
+        "caption_text": "Kṛṣṇa’s mercy is greater than anyone's faults.",
+        "title_font": "C:\\Windows\\Fonts\\arialbd.ttf",
+        "caption_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_line": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+        "strip_height_px": 58,
+        "placement": "bottom_canvas_extension",
+        "sacred_subject_overlay": false,
+        "artwork_source": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\output\\_archive\\pre-copyright\\009\\2.0\\story_poster.png",
+        "artwork_region": [
+          0,
+          81,
+          1024,
+          1105
+        ],
+        "artwork_pixels_redrawn": false,
+        "composed_size": [
+          1024,
+          1224
+        ],
+        "text_layers_rebuilt": [
+          "title_band",
+          "caption_band",
+          "credit_strip"
+        ],
+        "wording_preserved_vs_previous_version": {
+          "title_preserved": true,
+          "caption_preserved": true
+        },
+        "missing_glyph_boxes": {
+          "title": 0,
+          "caption": 0,
+          "credit": 0
+        }
+      },
+      "poster_text_glyph_validation": {
+        "title_band": {
+          "text": "Pūtanā — Kṛṣṇa’s Astonishing Mercy",
+          "font": "C:\\Windows\\Fonts\\arialbd.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ū",
+            "ā",
+            "—",
+            "ṛ",
+            "ṣ",
+            "ṇ",
+            "’"
+          ]
+        },
+        "caption_band": {
+          "text": "Kṛṣṇa’s mercy is greater than anyone's faults.",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ṛ",
+            "ṣ",
+            "ṇ",
+            "’"
+          ]
+        },
+        "credit_strip": {
+          "text": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ā",
+            "©",
+            "·"
+          ]
+        },
+        "ok": true
+      },
+      "narrative_unchanged_vs_2_0": true,
+      "narration_unchanged": true,
+      "archive_path": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\output\\_archive\\pre-copyright\\009\\2.1.1-copyright",
+      "archive_label": "2.1.1-copyright",
+      "swap_backup_dir": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\output\\_archive\\copyright-swap-backups\\009_putana-krishnas-astonishing-mercy_pre_swap_20260729_112730",
+      "swap_backed_up_version": "2.1.1-copyright"
+    }
+  ],
+  "applied": true
+}

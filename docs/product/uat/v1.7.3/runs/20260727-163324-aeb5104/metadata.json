@@ -1,0 +1,44 @@
+{
+  "release": "v1.7.3",
+  "product_sha": "aeb5104b8780b5a7a267db609060bfd870228a62",
+  "short_sha": "aeb5104",
+  "completed_at": "2026-07-27T20:47:38.324821+00:00",
+  "counts": {
+    "pytest_passed": 434,
+    "pytest_deselected": 5,
+    "playwright_passed": 415,
+    "playwright_skipped": 10,
+    "playwright_failed": 0
+  },
+  "exit_codes": {
+    "pytest": 0,
+    "npm_ci": 0,
+    "lint": 0,
+    "typecheck": 0,
+    "unit": 0,
+    "build": 0,
+    "playwright": 0
+  },
+  "portal": {
+    "instance": "cursor-v173",
+    "web_url": "http://127.0.0.1:3003",
+    "api_url": "http://127.0.0.1:8000",
+    "mode": "production"
+  },
+  "note": "Ch7-8 sequence correction only; Stories 001-009 unchanged; Story 010 not generated.",
+  "evidence_file_sha256": {
+    "build.txt": "2203dea3c96f3027db751a04db2dcf4a7cf6720e77aef13bc2eba082c4565422",
+    "deselected-tests.json": "5c807413cb51d805c6f5b8ab8979a9cb6f8ed2a2fe961fd6334861027b4f0062",
+    "lint.txt": "9c24d8009d118f38cf7fcc02bc8da92343539a7e45fbb213419589a6eb48d6d3",
+    "npm-ci.txt": "7808486824c286bc87e5164e49765469b494d47acbcbeadfb23269b671db1612",
+    "playwright-full.txt": "c9296945d0c13427b1aa57941897e5e47eb371da655ce3edfe017fe186a8c5bf",
+    "playwright-summary.json": "3d6dc85cee05046c86dffa45e718e6ab28347383b7239de8634d2e3d73ed4bae",
+    "pytest-full.txt": "a4d8ef6b42235c0508bdbd954035b6aab528dabc8a96119e0f3e3bef0fe64dcd",
+    "pytest-summary.json": "9755f590da2e348cda5aa58084c0ad5c21f7cd5d63f657063a723d248858879a",
+    "safety-hashes.json": "321a68857a4433c387aae8357590024e87d376f6b7e2fb936df05aea67a35dbe",
+    "skipped-tests.json": "e810ca449087806841ce073b109763b2e07bff1f6f958751e7d3bc2720c84aed",
+    "typecheck.txt": "e96625f4a5d44f4660a28347195d3af508549164449e12d89f7281cca69e296c",
+    "unit.txt": "c5570e62f8aad199fe104211d775d8e4515a0b11c8ab14e076856ef7dda37b6b",
+    "versions-pre.txt": "dbf5d8f715a17cf3f72e4bec1d3349808d75038ab605faf016d9bb207a5079d1"
+  }
+}

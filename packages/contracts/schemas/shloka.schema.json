@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BhavaShloka",
+  "description": "A śloka (verse) entry with transliteration, translation, and source reference.",
+  "type": "object",
+  "required": ["id", "scripture", "reference", "status"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "URL-safe identifier, e.g. 'bg-2-47' for Bhagavad-gītā 2.47."
+    },
+    "scripture": {
+      "type": "string",
+      "description": "Name of the scripture, e.g. 'Bhagavad-gītā', 'Śrīmad-Bhāgavatam'."
+    },
+    "reference": {
+      "type": "string",
+      "description": "Chapter and verse reference, e.g. '2.47' or 'Canto 1, Chapter 2, Text 6'."
+    },
+    "devanagari": {
+      "type": ["string", "null"],
+      "description": "Original Devanāgarī text of the verse."
+    },
+    "transliteration": {
+      "type": ["string", "null"],
+      "description": "IAST romanized transliteration."
+    },
+    "translation": {
+      "type": ["string", "null"],
+      "description": "English translation. Must cite translator/edition."
+    },
+    "translation_source": {
+      "type": ["string", "null"],
+      "description": "Edition or translator credited, e.g. 'Bhaktivedanta Swami Prabhupāda, BBT'."
+    },
+    "word_meanings": {
+      "type": ["string", "null"],
+      "description": "Word-by-word meaning (synonyms section)."
+    },
+    "context_note": {
+      "type": ["string", "null"],
+      "description": "Age-appropriate context note for children or families."
+    },
+    "age_range": {
+      "type": ["string", "null"],
+      "description": "Suggested age range for this presentation."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "draft", "review", "published"],
+      "description": "Editorial status."
+    }
+  },
+  "additionalProperties": false
+}
