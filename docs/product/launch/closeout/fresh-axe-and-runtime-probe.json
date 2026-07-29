@@ -1,0 +1,19 @@
+{
+  "captured_at": "2026-07-28T20:20:00-04:00",
+  "note": "Fresh, independent, this-session axe-core 4.9.1 (wcag2a+wcag2aa) run live via injected script; frontend code proven byte-identical to the prior fully-audited 14-route cycle via git diff (apps/web/ untouched between ad30cd6 and HEAD), so this is a confirmatory spot-check rather than a blind full re-sweep.",
+  "axe_results": [
+    {"url": "http://127.0.0.1:3000/stories/009", "violations": []},
+    {"url": "http://127.0.0.1:3000/rights", "violations": []}
+  ],
+  "port_liveness_probe": {
+    "3000": "ALIVE", "3001": "dead", "3002": "dead", "3003": "dead", "3004": "dead", "3005": "dead",
+    "8000": "ALIVE", "8001": "dead", "8002": "dead", "8003": "dead"
+  },
+  "story_010_route_check": {
+    "url": "http://127.0.0.1:3000/stories/010",
+    "title": "Story 010 — in preparation | Bhāva",
+    "body_excerpt": "Story 010 / A story in preparation / This chapter is not published yet. / Unpublished / End of the currently published stories",
+    "title_leak": false,
+    "narrative_leak": false
+  }
+}
