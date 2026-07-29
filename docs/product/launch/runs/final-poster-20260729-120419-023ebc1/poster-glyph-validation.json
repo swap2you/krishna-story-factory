@@ -1,0 +1,299 @@
+{
+  "closeout_id": "CLOSEOUT-B1",
+  "generated_at": "2026-07-29T15:38:02+00:00",
+  "resolved_font_regular": "C:\\Windows\\Fonts\\arial.ttf",
+  "resolved_font_bold": "C:\\Windows\\Fonts\\arialbd.ttf",
+  "stories": {
+    "007": {
+      "package": "007_kamsa-begins-his-persecutions",
+      "version": "2.1.2-copyright",
+      "supersedes": "2.1.1-copyright",
+      "archive_relative": "_archive/pre-copyright/007/2.1.1-copyright",
+      "masters_relative": "_archive/pre-copyright/007/2.0",
+      "poster_sha256": "7149ebade086e86e9bc0d1322dbb7ee6192c499691bec2e064ea72bf2dde8656",
+      "superseded_poster_sha256": "13b47d93075e2c174bb4790739fe35d85e26f45b4c3a82fa70a6b481ca8991fe",
+      "master_poster_sha256": "510060bf3a62493336023b79c5f6ca996e4eea084f89f512c1f8cb8c12e4382d",
+      "artwork_region_identical_to_master": true,
+      "glyph_validation": {
+        "title_band": {
+          "text": "Kamsa Begins His Persecutions",
+          "font": "C:\\Windows\\Fonts\\arialbd.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": []
+        },
+        "caption_band": {
+          "text": "Yoga-māyā warns Kaṁsa; soft hearts need good association.",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ā",
+            "ā",
+            "ṁ"
+          ]
+        },
+        "credit_strip": {
+          "text": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ā",
+            "©",
+            "·"
+          ]
+        },
+        "ok": true
+      },
+      "artifact_note": {
+        "title_text": "Kamsa Begins His Persecutions",
+        "caption_text": "Yoga-māyā warns Kaṁsa; soft hearts need good association.",
+        "title_font": "C:\\Windows\\Fonts\\arialbd.ttf",
+        "caption_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_line": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+        "strip_height_px": 58,
+        "placement": "bottom_canvas_extension",
+        "sacred_subject_overlay": false,
+        "artwork_source": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\output\\_archive\\pre-copyright\\007\\2.0\\story_poster.png",
+        "artwork_region": [
+          0,
+          81,
+          1024,
+          1105
+        ],
+        "artwork_pixels_redrawn": false,
+        "composed_size": [
+          1024,
+          1224
+        ],
+        "text_layers_rebuilt": [
+          "title_band",
+          "caption_band",
+          "credit_strip"
+        ],
+        "wording_preserved_vs_previous_version": {
+          "title_preserved": true,
+          "caption_preserved": true
+        },
+        "missing_glyph_boxes": {
+          "title": 0,
+          "caption": 0,
+          "credit": 0
+        }
+      },
+      "corrected": {
+        "title": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 0
+          }
+        },
+        "caption": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 0
+          }
+        },
+        "credit": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 0
+          }
+        }
+      },
+      "superseded": {
+        "title": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 0
+          }
+        },
+        "caption": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 3
+          }
+        },
+        "credit": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 0
+          }
+        }
+      },
+      "crops": {
+        "full": "docs/product/launch/final-poster-closeout/007-poster-full.png",
+        "title": "docs/product/launch/final-poster-closeout/007-poster-title.png",
+        "caption": "docs/product/launch/final-poster-closeout/007-poster-caption.png",
+        "credit": "docs/product/launch/final-poster-closeout/007-poster-credit.png"
+      },
+      "superseded_crops": {
+        "full": "docs/product/launch/final-poster-closeout/007-poster-superseded-full.png",
+        "title": "docs/product/launch/final-poster-closeout/007-poster-superseded-title.png",
+        "caption": "docs/product/launch/final-poster-closeout/007-poster-superseded-caption.png",
+        "credit": "docs/product/launch/final-poster-closeout/007-poster-superseded-credit.png"
+      }
+    },
+    "009": {
+      "package": "009_putana-krishnas-astonishing-mercy",
+      "version": "2.1.2-copyright",
+      "supersedes": "2.1.1-copyright",
+      "archive_relative": "_archive/pre-copyright/009/2.1.1-copyright",
+      "masters_relative": "_archive/pre-copyright/009/2.0",
+      "poster_sha256": "b319bef128ae613654b2545846b338c76153716cf6faa1c0293199e027f43cfb",
+      "superseded_poster_sha256": "c8b81a7daf9d8a07c3c4d0fa9e3891c3e428424c38efe198b8776d353a8a2710",
+      "master_poster_sha256": "44fa4b0a21fc1ba06977371d3e084010f14fa0090b4a49abc4fe78b348ce6ec7",
+      "artwork_region_identical_to_master": true,
+      "glyph_validation": {
+        "title_band": {
+          "text": "Pūtanā — Kṛṣṇa’s Astonishing Mercy",
+          "font": "C:\\Windows\\Fonts\\arialbd.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ū",
+            "ā",
+            "—",
+            "ṛ",
+            "ṣ",
+            "ṇ",
+            "’"
+          ]
+        },
+        "caption_band": {
+          "text": "Kṛṣṇa’s mercy is greater than anyone's faults.",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ṛ",
+            "ṣ",
+            "ṇ",
+            "’"
+          ]
+        },
+        "credit_strip": {
+          "text": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+          "font": "C:\\Windows\\Fonts\\arial.ttf",
+          "missing_glyphs": [],
+          "contains_tofu_codepoint": [],
+          "non_ascii": [
+            "ā",
+            "©",
+            "·"
+          ]
+        },
+        "ok": true
+      },
+      "artifact_note": {
+        "title_text": "Pūtanā — Kṛṣṇa’s Astonishing Mercy",
+        "caption_text": "Kṛṣṇa’s mercy is greater than anyone's faults.",
+        "title_font": "C:\\Windows\\Fonts\\arialbd.ttf",
+        "caption_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_font": "C:\\Windows\\Fonts\\arial.ttf",
+        "credit_line": "Bhāva design and publication © Svarna Gauranga Das · Dauji Publication",
+        "strip_height_px": 58,
+        "placement": "bottom_canvas_extension",
+        "sacred_subject_overlay": false,
+        "artwork_source": "C:\\Development\\Workspace\\DevotionalRepo\\krishna-story-factory\\output\\_archive\\pre-copyright\\009\\2.0\\story_poster.png",
+        "artwork_region": [
+          0,
+          81,
+          1024,
+          1105
+        ],
+        "artwork_pixels_redrawn": false,
+        "composed_size": [
+          1024,
+          1224
+        ],
+        "text_layers_rebuilt": [
+          "title_band",
+          "caption_band",
+          "credit_strip"
+        ],
+        "wording_preserved_vs_previous_version": {
+          "title_preserved": true,
+          "caption_preserved": true
+        },
+        "missing_glyph_boxes": {
+          "title": 0,
+          "caption": 0,
+          "credit": 0
+        }
+      },
+      "corrected": {
+        "title": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 0
+          }
+        },
+        "caption": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 0
+          }
+        },
+        "credit": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 0
+          }
+        }
+      },
+      "superseded": {
+        "title": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 6
+          }
+        },
+        "caption": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 3
+          }
+        },
+        "credit": {
+          "missing_glyph_boxes": {
+            "resolved_bold_42": 0,
+            "resolved_regular_24": 0,
+            "pillow_default": 0
+          }
+        }
+      },
+      "crops": {
+        "full": "docs/product/launch/final-poster-closeout/009-poster-full.png",
+        "title": "docs/product/launch/final-poster-closeout/009-poster-title.png",
+        "caption": "docs/product/launch/final-poster-closeout/009-poster-caption.png",
+        "credit": "docs/product/launch/final-poster-closeout/009-poster-credit.png"
+      },
+      "superseded_crops": {
+        "full": "docs/product/launch/final-poster-closeout/009-poster-superseded-full.png",
+        "title": "docs/product/launch/final-poster-closeout/009-poster-superseded-title.png",
+        "caption": "docs/product/launch/final-poster-closeout/009-poster-superseded-caption.png",
+        "credit": "docs/product/launch/final-poster-closeout/009-poster-superseded-credit.png"
+      }
+    }
+  },
+  "result": {
+    "corrected_posters_free_of_missing_glyph_boxes": true,
+    "superseded_posters_reproduce_the_defect": true,
+    "artwork_preserved": true,
+    "ok": true
+  }
+}

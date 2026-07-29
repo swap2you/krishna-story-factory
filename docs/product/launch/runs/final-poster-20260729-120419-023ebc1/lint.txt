@@ -1,0 +1,21 @@
+
+> bhava-portal@1.0.0 lint:web
+> npm run lint -w @bhava/web
+
+
+> @bhava/web@0.1.0 lint
+> eslint .
+
+
+C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\app\dev\audio-lab\page.tsx
+  110:10  warning  Unused eslint-disable directive (no problems were reported from 'jsx-a11y/media-has-caption')
+
+C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\app\studio\page.tsx
+  99:6  warning  React Hook useEffect has a missing dependency: 'refresh'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Development\Workspace\DevotionalRepo\krishna-story-factory\apps\web\postcss.config.mjs
+  1:1  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+
+Γ£û 3 problems (0 errors, 3 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

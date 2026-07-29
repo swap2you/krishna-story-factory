@@ -4,5 +4,33 @@
   "note": "Evidence for CLOSEOUT-B1 poster text Unicode fix (Stories 007 and 009 -> 2.1.2-copyright)",
   "started_at": "2026-07-29T12:04:19.2919604-04:00",
   "run_dir": "docs\\product\\launch\\runs\\final-poster-20260729-120419-023ebc1",
-  "product_sha_short": "023ebc1"
+  "product_sha_short": "023ebc1",
+  "release_name": "BHAVA STORIES PRODUCTION LAUNCH",
+  "correction": "CLOSEOUT-B1 poster title/caption Unicode glyphs (Stories 007 and 009 -> 2.1.2-copyright)",
+  "unicode_font_regular": "C:\\Windows\\Fonts\\arial.ttf",
+  "unicode_font_bold": "C:\\Windows\\Fonts\\arialbd.ttf",
+  "scheduler_disabled": true,
+  "completed_at_phase": "final_closeout_complete",
+  "completed_at": "2026-07-29T17:37:45+00:00",
+  "python": {
+    "passed": 540,
+    "failed": 0,
+    "deselected": 5
+  },
+  "poster_glyph_tests": {
+    "passed": 61,
+    "failed": 0
+  },
+  "playwright": {
+    "passed": 608,
+    "failed": 0,
+    "skipped": 3
+  },
+  "npm_audit_prod_total": 0,
+  "story_010_absent": true,
+  "queue": {
+    "009": "done",
+    "010": "pending"
+  },
+  "freeze_status": "RELEASE_FROZEN"
 }

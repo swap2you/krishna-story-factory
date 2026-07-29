@@ -1,0 +1,31 @@
+{
+  "passed": 608,
+  "failed": 0,
+  "skipped": 3,
+  "flaky": 0,
+  "exit_code": 0,
+  "duration": "18.3m",
+  "notes_webkit": "passed",
+  "skipped_tests": [
+    {
+      "id": 445,
+      "project": "webkit-mobile",
+      "title": "v1.2 audio and keyboard › play advances currentTime on story 001",
+      "reason": "iOS WebKit autoplay policy"
+    },
+    {
+      "id": 446,
+      "project": "webkit-mobile",
+      "title": "v1.2 audio and keyboard › modal arrows do not change audio time",
+      "reason": "iOS WebKit autoplay policy"
+    },
+    {
+      "id": 454,
+      "project": "webkit-mobile",
+      "title": "published-story audio advancement › catalog-driven play advances currentTime for every published story",
+      "reason": "iOS WebKit autoplay policy"
+    }
+  ],
+  "requirement": "only documented WebKit-mobile autoplay skips",
+  "requirement_met": true
+}
