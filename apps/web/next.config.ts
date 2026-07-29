@@ -1,7 +1,10 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 function apiOrigin(): string {
-  if (process.env.BHAVA_API_ORIGIN?.trim()) return process.env.BHAVA_API_ORIGIN.trim().replace(/\/$/, "");
+  if (process.env.BHAVA_API_ORIGIN?.trim()) {
+    return process.env.BHAVA_API_ORIGIN.trim().replace(/\/$/, "");
+  }
   const url = process.env.BHAVA_API_URL?.trim();
   if (url) return url.replace(/\/api\/v1\/?$/, "").replace(/\/$/, "");
   return "http://127.0.0.1:8000";
@@ -10,6 +13,10 @@ function apiOrigin(): string {
 const API = apiOrigin();
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  outputFileTracingRoot: path.resolve(process.cwd(), "../.."),
+  poweredByHeader: false,
+  productionBrowserSourceMaps: false,
   transpilePackages: ["@bhava/ui"],
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: false },
