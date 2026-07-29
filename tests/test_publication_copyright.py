@@ -90,11 +90,18 @@ def test_website_footer_and_rights_page_exist() -> None:
 def test_retrofitted_packages_have_rights_and_exact_eight() -> None:
     from krishna_story_factory.package_swap import validate_exact_eight_files
 
+    baseline = json.loads(
+        (ROOT / "docs" / "releases" / "BHAVA_STORIES_LAUNCH_SAFETY_BASELINE.json").read_text(
+            encoding="utf-8"
+        )
+    )
     for n in range(1, 10):
         folder = next((ROOT / "output").glob(f"{n:03d}_*"))
         assert validate_exact_eight_files(folder) == []
         manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
-        assert manifest.get("version") == "2.1.1-copyright"
+        # The launch safety baseline is the source of truth for released versions;
+        # artifact corrections advance individual stories past 2.1.1-copyright.
+        assert manifest.get("version") == baseline["stories"][f"{n:03d}"]["version"]
         rights = manifest.get("rights") or {}
         assert rights.get("copyright_owner") == "Svarna Gauranga Das"
         assert rights.get("publisher") == "Dauji Publication"

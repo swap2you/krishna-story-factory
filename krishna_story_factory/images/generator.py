@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 from ..config import Settings
 from ..models import StoryContent
 from ..prompts_loader import load_master_section
+from ..publication.fonts import assert_text_renderable, resolve_unicode_fonts
 from .client import ImageClient
 from .vision_qa import COLORING_RUBRIC, POSTER_RUBRIC, review_image, save_review
 
@@ -315,8 +316,10 @@ def compose_poster(raw_path: Path, output_path: Path, title: str, one_liner: str
     canvas = Image.new("RGB", (width, height + title_band + footer_band), "#120c06")
     canvas.paste(base, (0, title_band))
     draw = ImageDraw.Draw(canvas)
-    title_font = _font(42)
-    body_font = _font(24)
+    title_font = _font(42, bold=True)
+    body_font = _font(24, bold=False)
+    assert_text_renderable(title_font, [title], context="poster title band")
+    assert_text_renderable(body_font, [one_liner], context="poster caption band")
     margin = int(width * 0.06)
     max_w = width - margin * 2
     y = 16
@@ -339,13 +342,15 @@ def _clean_line_art(src: Path, dest: Path) -> None:
     bw.save(dest, "PNG")
 
 
-def _font(size: int):
-    for name in ("Segoe UI Bold", "Arial Bold", "DejaVuSans-Bold.ttf"):
-        try:
-            return ImageFont.truetype(name, size)
-        except OSError:
-            continue
-    return ImageFont.load_default()
+def _font(size: int, *, bold: bool = True) -> ImageFont.FreeTypeFont:
+    """Resolve a validated Unicode font; never fall back to load_default().
+
+    Poster title and caption text carries Sanskrit diacritics (Pūtanā, Kṛṣṇa)
+    and an em dash, which the Pillow default bitmap font renders as
+    missing-glyph boxes.
+    """
+    pair = resolve_unicode_fonts()
+    return pair.pillow_bold(size) if bold else pair.pillow_regular(size)
 
 
 def _wrap(draw: ImageDraw.ImageDraw, text: str, font, max_width: int) -> list[str]:
@@ -368,12 +373,12 @@ def _wrap(draw: ImageDraw.ImageDraw, text: str, font, max_width: int) -> list[st
 
 
 def _placeholder_poster(output_path: Path, title: str, one_liner: str) -> None:
-    from PIL import Image, ImageDraw, ImageFont
+    from PIL import Image, ImageDraw
 
     raw = output_path.with_suffix(".raw.png")
     img = Image.new("RGB", (1024, 1536), "#1a1208")
     draw = ImageDraw.Draw(img)
-    font = ImageFont.load_default()
+    font = _font(28, bold=False)
     draw.text((512, 700), title[:50], fill="#f6e7b8", anchor="ma", font=font)
     img.save(raw)
     compose_poster(raw, output_path, title, one_liner)
@@ -381,11 +386,11 @@ def _placeholder_poster(output_path: Path, title: str, one_liner: str) -> None:
 
 
 def _placeholder_coloring(output_path: Path, title: str) -> None:
-    from PIL import Image, ImageDraw, ImageFont
+    from PIL import Image, ImageDraw
 
     img = Image.new("RGB", (1024, 1536), "white")
     draw = ImageDraw.Draw(img)
     draw.rounded_rectangle((80, 160, 944, 1380), radius=24, outline="black", width=4)
-    font = ImageFont.load_default()
+    font = _font(28, bold=False)
     draw.text((512, 760), title[:40], fill="black", anchor="ma", font=font)
     img.save(output_path, "PNG")

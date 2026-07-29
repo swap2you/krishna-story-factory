@@ -351,6 +351,12 @@ def atomic_replace_package_dir(
     }
     after_hashes = {name: sha256_file(staging_dir / name) for name in FINAL_OUTPUT_FILES}
 
+    # Capture version labels from live production BEFORE the swap, so the backup
+    # records its own true predecessor version even when a retrofit re-run has
+    # already stamped the new version into the live package.
+    backed_up_version = _package_version(production_dir)
+    incoming_version = _package_version(staging_dir)
+
     tx_id = f"{stamp}_{uuid.uuid4().hex[:8]}"
     journal_path = journal_root(output_root) / f"swap_{tx_id}.json"
     journal = {
@@ -370,6 +376,13 @@ def atomic_replace_package_dir(
     try:
         if production_existed:
             _retry_rename(production_dir, backup_dir, attempts=attempts)
+            _write_backup_version_note(
+                backup_dir,
+                backed_up_version=backed_up_version,
+                superseded_by=incoming_version,
+                transaction_id=tx_id,
+                stamp=stamp,
+            )
             journal["phase"] = PHASE_PRODUCTION_BACKED_UP
             _write_journal(journal_path, journal)
         parent = production_dir.parent
@@ -416,7 +429,59 @@ def atomic_replace_package_dir(
         "before_hashes": before_hashes,
         "after_hashes": after_hashes,
         "transaction_id": tx_id,
+        "backed_up_version": backed_up_version,
+        "incoming_version": incoming_version,
     }
+
+
+def _package_version(package_dir: Path) -> str:
+    manifest = package_dir / "manifest.json"
+    if not manifest.is_file():
+        return ""
+    try:
+        return str(json.loads(manifest.read_text(encoding="utf-8")).get("version") or "")
+    except (OSError, json.JSONDecodeError):
+        return ""
+
+
+def _write_backup_version_note(
+    backup_dir: Path,
+    *,
+    backed_up_version: str,
+    superseded_by: str,
+    transaction_id: str,
+    stamp: str,
+) -> None:
+    """Label a swap backup with the version it actually contains.
+
+    Version stamping happens in staging, so a forced re-run can leave the live
+    package already carrying the new version. Recording the label observed at
+    swap time keeps the supersession chain readable without hash-chasing.
+
+    The label is a sibling of the backup directory, never a file inside it, so
+    the backup keeps satisfying the exact-eight contract if it is ever restored.
+    """
+    payload = {
+        "backed_up_version": backed_up_version,
+        "superseded_by": superseded_by,
+        "is_same_version_rebuild": bool(
+            backed_up_version and backed_up_version == superseded_by
+        ),
+        "backup_dir": backup_dir.name,
+        "swap_stamp": stamp,
+        "transaction_id": transaction_id,
+        "note": (
+            "Version label captured from the live package immediately before the "
+            "swap rename, not derived from the incoming staged version."
+        ),
+    }
+    try:
+        sidecar = backup_dir.with_name(f"{backup_dir.name}_PREVIOUS_VERSION.json")
+        sidecar.write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
+    except OSError:
+        pass
 
 
 def _retry_rename(src: Path, dest: Path, *, attempts: int = 8) -> None:

@@ -68,11 +68,18 @@ def test_pdf_rights_page_preserves_bhava_and_footer_every_page() -> None:
 def test_public_packages_version_and_exact_eight() -> None:
     from krishna_story_factory.package_swap import validate_exact_eight_files
 
+    baseline = json.loads(
+        (ROOT / "docs" / "releases" / "BHAVA_STORIES_LAUNCH_SAFETY_BASELINE.json").read_text(
+            encoding="utf-8"
+        )
+    )
     for n in range(1, 10):
         folder = _story_dir(n)
         assert validate_exact_eight_files(folder) == []
         manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
-        assert manifest.get("version") == "2.1.1-copyright"
+        # The launch safety baseline is the source of truth for released versions;
+        # artifact corrections advance individual stories past 2.1.1-copyright.
+        assert manifest.get("version") == baseline["stories"][f"{n:03d}"]["version"]
         assert (ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}" / "2.1.0-copyright").is_dir()
         assert (ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}" / "2.0").is_dir()
 

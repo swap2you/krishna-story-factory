@@ -103,21 +103,21 @@
     "007": {
       "package_folder": "007_kamsa-begins-his-persecutions",
       "files": {
-        "story.md": "bf70e18b7fc26228bdde01bd6494b5510fb3741bba42a2ff823e347d6b57ec98",
+        "story.md": "b1f414711617c1ab3ab563499398cdfb21e69e17d863e130705ff0d4112a39f1",
         "narration.mp3": "85437f1b000351b105ce695c06aa5eeee0f4b2b12c81a2d04747710d5fb184ed",
-        "story_poster.png": "13b47d93075e2c174bb4790739fe35d85e26f45b4c3a82fa70a6b481ca8991fe",
+        "story_poster.png": "7149ebade086e86e9bc0d1322dbb7ee6192c499691bec2e064ea72bf2dde8656",
         "coloring_page.png": "9edb974ba00b74bd74be18c6ac9473ef789a36c0afc7eb88df612868bec0af87",
         "simple_coloring_page.png": "41dcea3190f13412fb516bf6adb6fd4df946315d3fbd3da8d880e9944089e060",
         "activity_sheet.pdf": "d841e0e275973c93cd59eb286aec3fb03332aef6b22360cddb138a1e49d1043e",
         "whatsapp_caption.txt": "2c6a1337659df51b93f18461670007ce98b95de01b82867a2ba3295bcaa539fb",
-        "manifest.json": "53ac86da6a366d669835fb91f575fd65a0b1c789784670f56568bf28f6046c24"
+        "manifest.json": "ac42b42e6be4140233f21c2d819e35182b43a43c4d1bc8e533485503fc81f043"
       },
-      "version": "2.1.1-copyright",
-      "note": "Updated after versioned copyright retrofit; prior hashes in launch baseline pre_copyright_sha256."
+      "version": "2.1.2-copyright",
+      "note": "Poster title/caption bands rebuilt with the validated Unicode font."
     }
   },
   "scheduler_note": "not triggered / not modified",
   "drive_note": "not modified",
   "paid_apis_note": "none called",
-  "updated_for": "unicode_footer_2.1.1-copyright"
+  "updated_for": "poster_text_unicode_2.1.2-copyright"
 }

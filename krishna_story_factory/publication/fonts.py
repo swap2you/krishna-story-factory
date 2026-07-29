@@ -6,6 +6,7 @@ public copyright/rights text.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -25,6 +26,10 @@ REQUIRED_GLYPH_SAMPLES = (
     "Śrīla Prabhupāda",
     "©",
     "·",
+    # Poster titles use an em dash and a typographic apostrophe; the Pillow
+    # default font renders both as missing-glyph boxes.
+    "—",
+    "’",
 )
 
 _FONT_CANDIDATES: tuple[tuple[Path, Path], ...] = (
@@ -61,13 +66,35 @@ class UnicodeFontPair:
         return ImageFont.truetype(str(self.bold_path), size)
 
 
+def _raster(font: ImageFont.FreeTypeFont, text: str) -> tuple[tuple[int, int], bytes] | None:
+    try:
+        mask = font.getmask(text, mode="L")
+    except Exception:
+        return None
+    return (mask.size, bytes(mask))
+
+
+def _notdef_raster(font: ImageFont.FreeTypeFont) -> tuple[tuple[int, int], bytes] | None:
+    """Raster of the font's missing-glyph box, via a permanently unassigned codepoint."""
+    raster = _raster(font, "\uffff")
+    if raster is None or not any(raster[1]):
+        return None
+    return raster
+
+
 def _glyph_missing(font: ImageFont.FreeTypeFont, text: str) -> list[str]:
+    """Characters the font cannot really render.
+
+    A zero advance width is the obvious case, but a font may instead substitute a
+    ``.notdef`` box, which has positive width and a bounding box and therefore
+    passes naive checks. That substitution is exactly what burned missing-glyph
+    boxes into a released poster, so compare each glyph against the box raster.
+    """
+    notdef = _notdef_raster(font)
     missing: list[str] = []
     for ch in text:
         if ch.isspace():
             continue
-        # Pillow: getmask1 / getbbox returning empty width indicates unsupported glyph
-        # on many builds; also check font.getlength when available.
         try:
             length = float(font.getlength(ch))  # type: ignore[attr-defined]
             if length <= 0:
@@ -77,6 +104,9 @@ def _glyph_missing(font: ImageFont.FreeTypeFont, text: str) -> list[str]:
             pass
         bbox = font.getbbox(ch)
         if bbox is None or (bbox[2] - bbox[0]) <= 0:
+            missing.append(ch)
+            continue
+        if notdef is not None and _raster(font, ch) == notdef:
             missing.append(ch)
     return missing
 
@@ -90,6 +120,40 @@ def validate_font_glyph_coverage(font_path: Path, samples: tuple[str, ...] = REQ
         if missing:
             failed.append(f"{sample!r} missing={''.join(missing)!r}")
     return failed
+
+
+def missing_glyphs(font: ImageFont.FreeTypeFont, text: str) -> list[str]:
+    """Public wrapper: characters of ``text`` the font cannot render."""
+    return _glyph_missing(font, text)
+
+
+def assert_text_renderable(
+    font: ImageFont.FreeTypeFont,
+    texts: Iterable[str],
+    *,
+    context: str,
+) -> None:
+    """Fail closed before drawing public text the selected font cannot render.
+
+    Also rejects text that already carries the Unicode replacement character,
+    which would otherwise be silently burned into a customer-facing asset.
+    """
+    problems: list[str] = []
+    for text in texts:
+        if not text:
+            continue
+        if "\ufffd" in text:
+            problems.append(f"{text!r} contains U+FFFD replacement character")
+            continue
+        missing = _glyph_missing(font, text)
+        if missing:
+            problems.append(f"{text!r} missing={''.join(missing)!r}")
+    if problems:
+        raise UnicodeFontError(
+            f"Refusing to render {context}: selected font "
+            f"{getattr(font, 'path', '<unknown>')} lacks required glyphs. "
+            + " | ".join(problems)
+        )
 
 
 def _register_reportlab(pair: UnicodeFontPair) -> None:

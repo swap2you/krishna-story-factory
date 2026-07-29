@@ -86,8 +86,15 @@ def build_replacement(
     staging_root: Path,
     archive_root: Path,
     identity,
+    prior_version: str | None = None,
 ) -> tuple[Path, dict]:
+    """Stage a NEW_VERSION package.
+
+    ``prior_version`` must be the version observed in the live package before any
+    new stamp is applied, so supersession labels stay truthful on forced re-runs.
+    """
     story_no = package.name.split("_", 1)[0]
+    observed_prior = prior_version or PRIOR_VERSION
     staging = staging_root / package.name
     if staging.exists():
         shutil.rmtree(staging)
@@ -186,7 +193,7 @@ def build_replacement(
         story_no=story_no,
         title=str(current.get("title")),
         version=NEW_VERSION,
-        supersedes=PRIOR_VERSION,
+        supersedes=observed_prior,
         source_reference=current.get("source_reference"),
         scripture_reference=current.get("scripture_reference"),
         file_sha256=new_hashes,
@@ -201,7 +208,7 @@ def build_replacement(
     rights["correction_history"] = list(rights.get("correction_history") or []) + [
         {
             "change": "unicode_font_and_per_page_pdf_footer",
-            "from_version": PRIOR_VERSION,
+            "from_version": observed_prior,
             "to_version": NEW_VERSION,
             "note": "Unicode-complete font for rights/PDF/PNG; per-page compact footer; strips rebuilt from 2.0 masters.",
         }
@@ -220,8 +227,8 @@ def build_replacement(
         "contact_email": identity.contact_email,
         "location": identity.location,
         "phone": None,
-        "supersedes": PRIOR_VERSION,
-        "archive_relative": f"_archive/pre-copyright/{story_no}/{PRIOR_VERSION}",
+        "supersedes": observed_prior,
+        "archive_relative": f"_archive/pre-copyright/{story_no}/{observed_prior}",
         "masters_relative": f"_archive/pre-copyright/{story_no}/{MASTER_VERSION}",
         "artifact_notes": {"images": image_notes, "pdf": pdf_note, "audio": audio_note},
         "unicode_font": str(resolve_unicode_fonts().regular_path),
@@ -250,7 +257,7 @@ def build_replacement(
     report = {
         "story_no": story_no,
         "folder": package.name,
-        "prior_version": PRIOR_VERSION,
+        "prior_version": observed_prior,
         "new_version": NEW_VERSION,
         "prior_sha256": prior_hashes,
         "new_sha256": new_hashes,
@@ -289,12 +296,18 @@ def main() -> int:
         if str(manifest.get("version")) == NEW_VERSION and not args.force:
             print(f"SKIP {package.name}: already {NEW_VERSION}")
             continue
-        archive_version = str(manifest.get("version") or PRIOR_VERSION)
+        # Version observed in the live package before any new stamp is applied.
+        live_version = str(manifest.get("version") or PRIOR_VERSION)
+        archive_version = live_version
         if archive_version == NEW_VERSION:
             archive_version = f"{NEW_VERSION}-pre-rebuild"
         archive_path = archive_package(package, archive_root, archive_version)
-        staging, report = build_replacement(package, staging_root, archive_root, identity)
+        staging, report = build_replacement(
+            package, staging_root, archive_root, identity, prior_version=live_version
+        )
         report["archive_path"] = str(archive_path)
+        report["live_version_before_swap"] = live_version
+        report["archive_label"] = archive_version
         reports.append(report)
         staging_dirs.append((package, staging, report))
         print(f"STAGED {report['story_no']}")
@@ -303,14 +316,19 @@ def main() -> int:
         swap_archive = output_root / "_archive" / "copyright-swap-backups"
         swap_archive.mkdir(parents=True, exist_ok=True)
         for production, staging, report in staging_dirs:
-            atomic_replace_package_dir(
+            result = atomic_replace_package_dir(
                 production_dir=production,
                 staging_dir=staging,
                 archive_root=swap_archive,
                 output_root=output_root,
                 project_root=ROOT,
             )
-            print(f"SWAPPED {report['story_no']}")
+            report["swap_backup_dir"] = result.get("backup_dir", "")
+            report["swap_backed_up_version"] = result.get("backed_up_version", "")
+            print(
+                f"SWAPPED {report['story_no']} "
+                f"(backup holds {result.get('backed_up_version') or 'unknown'})"
+            )
     else:
         print("Dry-run only. Re-run with --apply to swap.")
 

@@ -5,32 +5,17 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
+from ..publication.fonts import assert_text_renderable, resolve_unicode_fonts
 from .models import PosterCopy
 
 
-def _load_fonts() -> tuple[ImageFont.FreeTypeFont | ImageFont.ImageFont, ...]:
-    candidates = [
-        ("Segoe UI Bold", 52),
-        ("Segoe UI", 34),
-        ("Arial Bold", 52),
-        ("Arial", 34),
-        ("DejaVuSans-Bold.ttf", 52),
-        ("DejaVuSans.ttf", 30),
-    ]
-    title_font = body_font = small_font = caption_font = ImageFont.load_default()
-    for name, size in candidates:
-        try:
-            font = ImageFont.truetype(name, size)
-            if size >= 50:
-                title_font = font
-            elif size >= 32:
-                body_font = font
-            else:
-                small_font = font
-        except OSError:
-            continue
-    caption_font = small_font
-    return title_font, body_font, small_font, caption_font
+def _load_fonts() -> tuple[ImageFont.FreeTypeFont, ...]:
+    """Validated Unicode fonts only; never load_default() for public poster text."""
+    pair = resolve_unicode_fonts()
+    title_font = pair.pillow_bold(52)
+    body_font = pair.pillow_regular(34)
+    small_font = pair.pillow_regular(30)
+    return title_font, body_font, small_font, small_font
 
 
 def _wrap(draw: ImageDraw.ImageDraw, text: str, font, max_width: int) -> list[str]:
@@ -60,6 +45,18 @@ def compose_poster(raw_path: Path, output_path: Path, copy: PosterCopy, whatsapp
 
     draw = ImageDraw.Draw(canvas)
     title_font, body_font, small_font, caption_font = _load_fonts()
+    assert_text_renderable(title_font, [copy.title], context="poster title band")
+    assert_text_renderable(
+        body_font,
+        [copy.one_liner, copy.heavenly_quote or ""],
+        context="poster caption and quote bands",
+    )
+    assert_text_renderable(
+        small_font,
+        [copy.subtitle or ""]
+        + [f"{c.label}: {c.text}" for c in copy.supporting_captions[:3]],
+        context="poster subtitle and supporting captions",
+    )
 
     margin = int(width * 0.06)
     max_text = width - margin * 2
