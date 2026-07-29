@@ -65,6 +65,14 @@ def _package(chapter: str) -> Path:
     return matches[0]
 
 
+def _available_chapters() -> list[str]:
+    return [
+        chapter
+        for chapter in CHAPTERS
+        if any((path / "manifest.json").is_file() for path in OUTPUT.glob(f"{chapter}_*"))
+    ]
+
+
 def _manifest(chapter: str) -> dict:
     return json.loads((_package(chapter) / "manifest.json").read_text(encoding="utf-8"))
 
@@ -89,7 +97,9 @@ def _poster_note(chapter: str) -> dict:
 
 #: Posters that actually carry title/caption bands. Stories 004 and 005 are bare
 #: artwork plus a credit strip, so they have no title or caption text to inspect.
-BAND_CHAPTERS = [c for c in CHAPTERS if has_text_bands(_poster(c))]
+# Skip collection when local output packages are absent (CI / clean checkout).
+_AVAILABLE = _available_chapters()
+BAND_CHAPTERS = [c for c in _AVAILABLE if has_text_bands(_poster(c))] if _AVAILABLE else []
 
 #: Posters whose recorded title or caption contains non-ASCII characters. These get
 #: the strict typeface and box-glyph gates.
@@ -105,6 +115,11 @@ CORRECTED_CHAPTERS = [
         for ch in text
     )
 ]
+
+pytestmark = pytest.mark.skipif(
+    not _AVAILABLE,
+    reason="Released poster packages under output/ are required for glyph regression",
+)
 
 
 def _ink_bbox(band: Image.Image) -> tuple[int, int, int, int] | None:
