@@ -1,4 +1,12 @@
 import { PageIntro } from "@/components/page-intro";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Privacy",
+  description:
+    "Bhāva keeps family notes and classroom preferences on your device. No child profiling or behavioral tracking.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (
