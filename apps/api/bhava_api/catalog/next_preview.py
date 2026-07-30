@@ -4,7 +4,6 @@ from __future__ import annotations
 import csv
 import re
 from functools import lru_cache
-from pathlib import Path
 
 from ..config import get_settings
 
@@ -37,6 +36,7 @@ def _series_plan_rows() -> dict[str, dict[str, str]]:
 
 
 def next_plan_story(story_no: str) -> dict[str, str] | None:
+    """Return the next row in series_plan.csv, without applying the public ceiling."""
     padded = "".join(ch for ch in str(story_no) if ch.isdigit()).zfill(3)
     try:
         nxt = f"{int(padded) + 1:03d}"
@@ -45,9 +45,20 @@ def next_plan_story(story_no: str) -> dict[str, str] | None:
     return _series_plan_rows().get(nxt)
 
 
+def _public_next_allowed(chapter_no: str) -> bool:
+    """On the public site, never advertise a story past the governed ceiling."""
+    settings = get_settings()
+    if not settings.public_site:
+        return True
+    try:
+        return int(chapter_no) <= int(settings.public_story_max)
+    except ValueError:
+        return False
+
+
 def next_story_preview_markdown(story_no: str) -> str:
     nxt = next_plan_story(story_no)
-    if nxt is None or not nxt.get("title"):
+    if nxt is None or not nxt.get("title") or not _public_next_allowed(nxt["chapter_no"]):
         return (
             "## Next Story Preview\n\n"
             "You have reached a beautiful milestone in Krishna Book Bedtime. "
@@ -66,3 +77,7 @@ def apply_dynamic_next_preview(reader_md: str, story_no: str) -> str:
     if _NEXT_PREVIEW_RE.search(reader_md):
         return _NEXT_PREVIEW_RE.sub(lambda m: f"{m.group(1)}{replacement.rstrip()}", reader_md, count=1)
     return reader_md.rstrip() + "\n\n" + replacement
+
+
+def clear_next_preview_caches() -> None:
+    _series_plan_rows.cache_clear()

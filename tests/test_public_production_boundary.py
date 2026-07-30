@@ -112,3 +112,21 @@ def test_public_site_refuses_to_start_above_story_ceiling(monkeypatch, tmp_path)
     with pytest.raises(RuntimeError, match="Public content boundary violation"):
         with TestClient(bhava_api.main.create_app()):
             pass
+
+
+def test_public_reader_does_not_tease_story_010(monkeypatch, tmp_path):
+    """Story 009's Next Story Preview must not advertise the unreleased cart story."""
+    from bhava_api.catalog.next_preview import apply_dynamic_next_preview, clear_next_preview_caches
+
+    monkeypatch.setenv("BHAVA_PUBLIC_SITE", "1")
+    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "9")
+    clear_next_preview_caches()
+
+    rendered = apply_dynamic_next_preview(
+        "# Pūtanā\n\nMercy.\n\n## Next Story Preview\nNext time: The Salvation of Trinavarta.\n",
+        "009",
+    )
+    assert "Breaks the Cart" not in rendered
+    assert "Story 010" not in rendered
+    assert "Trinavarta" not in rendered
+    assert "beautiful milestone" in rendered
