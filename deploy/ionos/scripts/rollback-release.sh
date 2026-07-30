@@ -36,10 +36,17 @@ path = Path(sys.argv[1])
 key = sys.argv[2]
 value = sys.argv[3]
 rows = path.read_text(encoding="utf-8").splitlines()
-path.write_text(
-    "\n".join(f"{key}={value}" if row.startswith(f"{key}=") else row for row in rows) + "\n",
-    encoding="utf-8",
-)
+result = []
+seen = False
+for row in rows:
+    if row.startswith(f"{key}="):
+        result.append(f"{key}={value}")
+        seen = True
+    else:
+        result.append(row)
+if not seen:
+    result.append(f"{key}={value}")
+path.write_text("\n".join(result) + "\n", encoding="utf-8")
 PY
 
 cd "${CONFIG_ROOT}"
