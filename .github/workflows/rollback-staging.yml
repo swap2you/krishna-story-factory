@@ -45,8 +45,12 @@ jobs:
           USER: ${{ secrets.VPS_USER }}
         run: |
           if [[ -n "${TARGET_SHA}" ]]; then
+            if [[ ! "${TARGET_SHA}" =~ ^[0-9a-fA-F]{7,40}$ ]]; then
+              echo "Invalid target_sha; expected 7-40 hex characters." >&2
+              exit 1
+            fi
             ssh -p "$PORT" "$USER@$HOST" \
-              "bash /opt/bhava/config/scripts/rollback-release.sh staging ${TARGET_SHA}"
+              "bash /opt/bhava/config/scripts/rollback-release.sh staging $(printf '%q' "${TARGET_SHA}")"
             echo "sha=${TARGET_SHA}" >> "$GITHUB_OUTPUT"
           else
             rolled="$(ssh -p "$PORT" "$USER@$HOST" \

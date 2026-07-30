@@ -44,9 +44,9 @@ fi
 
 # Staging must remain noindex + core security headers.
 home_headers="$(curl -fsSI "${AUTH_ARGS[@]}" "${BASE_URL}/")"
-echo "${home_headers}" | grep -Eiq 'x-robots-tag:[[:space:]]*noindex'
-echo "${home_headers}" | grep -Eiq 'x-content-type-options:[[:space:]]*nosniff'
-echo "${home_headers}" | grep -Eiq 'x-frame-options:[[:space:]]*deny'
+echo "${home_headers}" | grep -Eiq '^x-robots-tag:[[:space:]]*noindex'
+echo "${home_headers}" | grep -Eiq '^x-content-type-options:[[:space:]]*nosniff'
+echo "${home_headers}" | grep -Eiq '^x-frame-options:[[:space:]]*deny'
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/robots.txt" >/dev/null
 
 # Asset downloads for story 009
