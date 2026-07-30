@@ -51,8 +51,9 @@ PY
 
 cd "${CONFIG_ROOT}"
 docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml up -d --no-build "${SERVICES[@]}"
+mkdir -p /opt/bhava/backups
 echo "${TARGET_SHA}" >"/opt/bhava/releases/${ENVIRONMENT}/current"
 printf '%s\t%s\t%s\trollback\n' "$(date -u +%FT%TZ)" "${ENVIRONMENT}" "${TARGET_SHA}" \
-  >>/opt/bhava/releases/deployments.tsv
+  >>/opt/bhava/backups/deployments.tsv
 
 echo "Rolled back ${ENVIRONMENT} to ${TARGET_SHA}"

@@ -84,8 +84,8 @@ services:
       BHAVA_ALLOWED_HOSTS: bhava.me,www.bhava.me,api-production,localhost,127.0.0.1
       BHAVA_WEB_ORIGINS: https://bhava.me
     volumes:
-      - ${BHAVA_CONTENT_ROOT}/current/output:/app/output:ro
-      - ${BHAVA_CONTENT_ROOT}/current/web-assets:/app/data/web-assets:ro
+      - ${BHAVA_CONTENT_ROOT}/releases/current/output:/app/output:ro
+      - ${BHAVA_CONTENT_ROOT}/releases/current/web-assets:/app/data/web-assets:ro
       - api_prod_catalog:/app/data/catalog
 
   web-staging:
@@ -126,8 +126,8 @@ services:
       BHAVA_ALLOWED_HOSTS: staging.bhava.me,api-staging,localhost,127.0.0.1
       BHAVA_WEB_ORIGINS: https://staging.bhava.me
     volumes:
-      - ${BHAVA_CONTENT_ROOT}/current/output:/app/output:ro
-      - ${BHAVA_CONTENT_ROOT}/current/web-assets:/app/data/web-assets:ro
+      - ${BHAVA_CONTENT_ROOT}/releases/current/output:/app/output:ro
+      - ${BHAVA_CONTENT_ROOT}/releases/current/web-assets:/app/data/web-assets:ro
       - api_staging_catalog:/app/data/catalog
 
 networks:

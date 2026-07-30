@@ -12,6 +12,7 @@ if [[ "${actual_sha}" != "${EXPECTED_SHA}" ]]; then
   exit 1
 fi
 
+mkdir -p "${CONTENT_ROOT}/releases"
 target="${CONTENT_ROOT}/releases/${RELEASE}"
 staging="${target}.staging"
 
@@ -25,7 +26,15 @@ python3 /opt/bhava/config/scripts/validate_public_content.py \
 
 rm -rf "${target}"
 mv "${staging}" "${target}"
-ln -sfn "${target}" "${CONTENT_ROOT}/current"
 
-echo "${RELEASE}" >"${CONTENT_ROOT}/CURRENT_RELEASE"
+# Active pointer lives under releases/ so it remains writable when an intermediate
+# /opt/bhava/content directory was left root-owned by older bootstrap installs.
+ln -sfn "${target}" "${CONTENT_ROOT}/releases/current"
+echo "${RELEASE}" >"${CONTENT_ROOT}/releases/CURRENT_RELEASE"
+
+if [[ -w "${CONTENT_ROOT}" ]]; then
+  ln -sfn "${CONTENT_ROOT}/releases/current" "${CONTENT_ROOT}/current"
+  echo "${RELEASE}" >"${CONTENT_ROOT}/CURRENT_RELEASE"
+fi
+
 echo "Installed content release ${RELEASE}"

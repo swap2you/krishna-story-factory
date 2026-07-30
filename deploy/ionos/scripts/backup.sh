@@ -10,7 +10,9 @@ mkdir -p "${BACKUP_ROOT}"
 tar -czf "${TARGET}" \
   /opt/bhava/config \
   /opt/bhava/releases \
+  /opt/bhava/backups/deployments.tsv \
   /opt/bhava/content/CURRENT_RELEASE \
+  /opt/bhava/content/releases/CURRENT_RELEASE \
   /opt/bhava/content/releases/*/BHAVA_DEPLOYMENT_CONTENT_MANIFEST.json \
   2>/dev/null || true
 
