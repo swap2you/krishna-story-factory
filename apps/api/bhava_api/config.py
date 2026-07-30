@@ -10,25 +10,22 @@ def _as_bool(name: str, default: bool) -> bool:
     return os.getenv(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _csv(name: str, default: str = "") -> tuple[str, ...]:
+    raw = os.getenv(name, default).strip()
+    return tuple(item.strip() for item in raw.split(",") if item.strip())
+
+
 def _cors_origins() -> tuple[str, ...]:
-    raw = os.getenv("BHAVA_WEB_ORIGINS", "").strip()
-    if raw:
-        return tuple(origin.strip() for origin in raw.split(",") if origin.strip())
+    configured = _csv("BHAVA_WEB_ORIGINS")
+    if configured:
+        return configured
     web_url = os.getenv("BHAVA_WEB_URL", "").strip().rstrip("/")
     if web_url:
-        origins = {web_url}
-        if "127.0.0.1" in web_url:
-            origins.add(web_url.replace("127.0.0.1", "localhost"))
-        elif "localhost" in web_url:
-            origins.add(web_url.replace("localhost", "127.0.0.1"))
-        return tuple(sorted(origins))
-    # Safe local defaults spanning the dynamic web range preferences.
-    ports = (3000, 3001, 3002, 3003)
-    origins: list[str] = []
-    for port in ports:
-        origins.append(f"http://127.0.0.1:{port}")
-        origins.append(f"http://localhost:{port}")
-    return tuple(origins)
+        return (web_url,)
+    return (
+        "http://127.0.0.1:3000",
+        "http://localhost:3000",
+    )
 
 
 @dataclass(frozen=True)
@@ -39,10 +36,13 @@ class Settings:
     factory_actions_enabled: bool
     enforce_loopback: bool
     cors_origins: tuple[str, ...]
+    allowed_hosts: tuple[str, ...]
     catalog_refresh_sec: float
-    # When true, catalog index also builds data/web-assets for newly indexed stories.
-    # Default false — operators should run scripts/build_bhava_web_assets.py explicitly.
     auto_web_assets: bool
+    public_site: bool
+    public_story_max: int
+    release_sha: str
+    environment: str
 
 
 def get_settings() -> Settings:
@@ -51,6 +51,10 @@ def get_settings() -> Settings:
         os.getenv("BHAVA_CATALOG_DB", str(root / "data" / "catalog" / "bhava.sqlite"))
     )
     refresh = float(os.getenv("BHAVA_CATALOG_REFRESH_SEC", "20"))
+    story_max = int(os.getenv("BHAVA_PUBLIC_STORY_MAX", "9"))
+    release_sha = os.getenv("BHAVA_RELEASE_SHA", "development").strip() or "development"
+    environment = os.getenv("BHAVA_ENVIRONMENT", "development").strip().lower()
+
     return Settings(
         repository_root=root,
         output_root=Path(os.getenv("BHAVA_OUTPUT_ROOT", str(root / "output"))),
@@ -58,6 +62,14 @@ def get_settings() -> Settings:
         factory_actions_enabled=_as_bool("BHAVA_FACTORY_ACTIONS_ENABLED", False),
         enforce_loopback=_as_bool("BHAVA_ENFORCE_LOOPBACK", True),
         cors_origins=_cors_origins(),
+        allowed_hosts=_csv(
+            "BHAVA_ALLOWED_HOSTS",
+            "bhava.me,www.bhava.me,staging.bhava.me,localhost,127.0.0.1",
+        ),
         catalog_refresh_sec=max(15.0, min(refresh, 30.0)),
         auto_web_assets=_as_bool("BHAVA_AUTO_WEB_ASSETS", False),
+        public_site=_as_bool("BHAVA_PUBLIC_SITE", False),
+        public_story_max=max(1, min(story_max, 999)),
+        release_sha=release_sha[:64],
+        environment=environment,
     )

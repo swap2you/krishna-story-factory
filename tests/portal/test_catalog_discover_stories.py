@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from bhava_api.catalog.filesystem import REQUIRED_PACKAGE_FILES, Package, _chapter_sort_key, discover_packages
 from bhava_api.catalog.indexer import _normalize_story_no
 
 
+@pytest.mark.content_release
 def test_catalog_discovers_released_stories_including_008() -> None:
     packages = discover_packages()
     chapters = {str(package.manifest["chapter_no"]).zfill(3) for package in packages}

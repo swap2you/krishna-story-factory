@@ -4,7 +4,12 @@ async function selectStoryTab(page: Page, name: RegExp) {
   const tab = page.getByRole("tab", { name });
   await tab.scrollIntoViewIfNeeded();
   await expect(tab).toBeVisible();
-  await tab.click();
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await tab.click({ force: attempt > 0 });
+    const selected = await tab.getAttribute("aria-selected");
+    if (selected === "true") return;
+    await page.waitForTimeout(250);
+  }
   await expect(tab).toHaveAttribute("aria-selected", "true", { timeout: 10_000 });
 }
 

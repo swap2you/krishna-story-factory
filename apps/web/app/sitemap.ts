@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
+import { CANONICAL_ORIGIN } from "@/lib/seo";
 
 const PUBLIC_STORY_COUNT = 9;
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.BHAVA_CANONICAL_ORIGIN?.replace(/\/$/, "") || "https://bhava.me";
   const staticRoutes = [
     "",
     "/library",
@@ -37,18 +37,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/source-permissions",
     "/rights",
   ];
-  const cantos = Array.from({ length: 12 }, (_, i) => `/library/srimad-bhagavatam/canto/${i + 1}`);
-  // Governed published catalog for launch: Stories 001–009 only. Story 010 stays excluded.
+  const cantos = Array.from(
+    { length: 12 },
+    (_, index) => `/library/srimad-bhagavatam/canto/${index + 1}`,
+  );
   const stories = Array.from(
     { length: PUBLIC_STORY_COUNT },
     (_, index) => `/stories/${String(index + 1).padStart(3, "0")}`,
   );
-  const privatePrefixes = ["/studio", "/dev", "/api/studio"];
-  const paths = [...staticRoutes, ...cantos, ...stories].filter(
-    (path) => !privatePrefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`)),
-  );
-  return paths.map((path) => ({
-    url: `${base}${path}`,
-    lastModified: new Date(),
+
+  const now = new Date();
+  return [...staticRoutes, ...cantos, ...stories].map((path) => ({
+    url: `${CANONICAL_ORIGIN}${path}`,
+    lastModified: now,
+    changeFrequency: path.startsWith("/stories/") ? "monthly" : "weekly",
+    priority: path === "" ? 1 : path.startsWith("/stories/") ? 0.8 : 0.6,
   }));
 }

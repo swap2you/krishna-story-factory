@@ -1,0 +1,98 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      content_release_tag:
+        description: Public content release tag
+        required: true
+        default: bhava-content-001-009-v1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bhava-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: staging
+      url: https://staging.bhava.me
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build images
+        run: |
+          docker build -f deploy/ionos/Dockerfile.web -t bhava-web:${GITHUB_SHA} .
+          docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${GITHUB_SHA} .
+          docker save bhava-web:${GITHUB_SHA} bhava-api:${GITHUB_SHA} \
+            | gzip -9 > bhava-images-${GITHUB_SHA}.tar.gz
+
+      - name: Package deployment configuration
+        run: |
+          tar -czf bhava-config-${GITHUB_SHA}.tar.gz \
+            -C deploy/ionos \
+            docker-compose.yml Caddyfile runtime.env.example scripts
+
+      - name: Download approved public content
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTENT_TAG: ${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}
+        run: |
+          gh release download "$CONTENT_TAG" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "${CONTENT_TAG}.tar.gz" \
+            --pattern "${CONTENT_TAG}.tar.gz.sha256"
+          sha256sum --check "${CONTENT_TAG}.tar.gz.sha256"
+
+      - name: Configure pinned SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 0700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 0600 ~/.ssh/known_hosts
+
+      - name: Transfer release
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          scp -P "$PORT" \
+            bhava-images-${GITHUB_SHA}.tar.gz \
+            bhava-config-${GITHUB_SHA}.tar.gz \
+            "${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}.tar.gz" \
+            "${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}.tar.gz.sha256" \
+            "$USER@$HOST:/opt/bhava/incoming/"
+
+      - name: Deploy and smoke
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+          STAGING_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
+          STAGING_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+        run: |
+          CONTENT_TAG="${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}"
+          CONTENT_SHA="$(awk '{print $1}' "${CONTENT_TAG}.tar.gz.sha256")"
+          ssh -p "$PORT" "$USER@$HOST" \
+            "mkdir -p /opt/bhava/config && \
+             tar -xzf /opt/bhava/incoming/bhava-config-${GITHUB_SHA}.tar.gz -C /opt/bhava/config && \
+             bash /opt/bhava/config/scripts/install-content-bundle.sh \
+               /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
+             bash /opt/bhava/config/scripts/deploy-release.sh staging ${GITHUB_SHA} \
+               /opt/bhava/incoming/bhava-images-${GITHUB_SHA}.tar.gz \
+               /opt/bhava/incoming/bhava-config-${GITHUB_SHA}.tar.gz"
+          STAGING_BASIC_AUTH_USER="$STAGING_USER" \
+          STAGING_BASIC_AUTH_PASSWORD="$STAGING_PASSWORD" \
+            bash deploy/ionos/scripts/smoke-test.sh https://staging.bhava.me "${GITHUB_SHA}"

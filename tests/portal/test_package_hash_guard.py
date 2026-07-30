@@ -19,6 +19,7 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest().upper()
 
 
+@pytest.mark.content_release
 def test_locked_story_packages_match_recorded_hashes() -> None:
     if not LOCK_FILE.exists():
         pytest.skip("No portal lock hash record has been created.")

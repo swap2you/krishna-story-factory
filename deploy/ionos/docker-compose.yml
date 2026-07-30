@@ -1,0 +1,142 @@
+name: bhava
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-common-security: &common-security
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  logging: *default-logging
+  networks:
+    - bhava-internal
+
+services:
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL}
+      STAGING_BASIC_AUTH_USER: ${STAGING_BASIC_AUTH_USER}
+      STAGING_BASIC_AUTH_HASH: ${STAGING_BASIC_AUTH_HASH}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - caddy_logs:/var/log/caddy
+    networks:
+      - bhava-internal
+    mem_limit: 128m
+    logging: *default-logging
+
+  web-production:
+    <<: *common-security
+    image: bhava-web:${BHAVA_PROD_RELEASE_SHA}
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    pids_limit: 160
+    mem_limit: 512m
+    environment:
+      NODE_ENV: production
+      BHAVA_PUBLIC_SITE: "1"
+      BHAVA_ENVIRONMENT: production
+      BHAVA_RELEASE_SHA: ${BHAVA_PROD_RELEASE_SHA}
+      BHAVA_CANONICAL_ORIGIN: https://bhava.me
+      BHAVA_API_URL: http://api-production:8000/api/v1
+      GOOGLE_SITE_VERIFICATION: ${GOOGLE_SITE_VERIFICATION:-}
+      BING_SITE_VERIFICATION: ${BING_SITE_VERIFICATION:-}
+
+  api-production:
+    <<: *common-security
+    image: bhava-api:${BHAVA_PROD_RELEASE_SHA}
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    pids_limit: 128
+    mem_limit: 320m
+    environment:
+      BHAVA_PUBLIC_SITE: "1"
+      BHAVA_ENVIRONMENT: production
+      BHAVA_RELEASE_SHA: ${BHAVA_PROD_RELEASE_SHA}
+      BHAVA_PUBLIC_STORY_MAX: "9"
+      BHAVA_REPOSITORY_ROOT: /app
+      BHAVA_OUTPUT_ROOT: /app/output
+      BHAVA_CATALOG_DB: /app/data/catalog/bhava.sqlite
+      BHAVA_FACTORY_ACTIONS_ENABLED: "0"
+      BHAVA_ENABLE_PRODUCTION_RECOVERY: "0"
+      BHAVA_AUTO_WEB_ASSETS: "0"
+      BHAVA_ALLOWED_HOSTS: bhava.me,www.bhava.me,api-production,localhost,127.0.0.1
+      BHAVA_WEB_ORIGINS: https://bhava.me
+    volumes:
+      - ${BHAVA_CONTENT_ROOT}/current/output:/app/output:ro
+      - ${BHAVA_CONTENT_ROOT}/current/web-assets:/app/data/web-assets:ro
+      - api_prod_catalog:/app/data/catalog
+
+  web-staging:
+    <<: *common-security
+    image: bhava-web:${BHAVA_STAGING_RELEASE_SHA}
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    pids_limit: 160
+    mem_limit: 384m
+    environment:
+      NODE_ENV: production
+      BHAVA_PUBLIC_SITE: "1"
+      BHAVA_ENVIRONMENT: staging
+      BHAVA_RELEASE_SHA: ${BHAVA_STAGING_RELEASE_SHA}
+      BHAVA_CANONICAL_ORIGIN: https://bhava.me
+      BHAVA_API_URL: http://api-staging:8000/api/v1
+
+  api-staging:
+    <<: *common-security
+    image: bhava-api:${BHAVA_STAGING_RELEASE_SHA}
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    pids_limit: 128
+    mem_limit: 256m
+    environment:
+      BHAVA_PUBLIC_SITE: "1"
+      BHAVA_ENVIRONMENT: staging
+      BHAVA_RELEASE_SHA: ${BHAVA_STAGING_RELEASE_SHA}
+      BHAVA_PUBLIC_STORY_MAX: "9"
+      BHAVA_REPOSITORY_ROOT: /app
+      BHAVA_OUTPUT_ROOT: /app/output
+      BHAVA_CATALOG_DB: /app/data/catalog/bhava.sqlite
+      BHAVA_FACTORY_ACTIONS_ENABLED: "0"
+      BHAVA_ENABLE_PRODUCTION_RECOVERY: "0"
+      BHAVA_AUTO_WEB_ASSETS: "0"
+      BHAVA_ALLOWED_HOSTS: staging.bhava.me,api-staging,localhost,127.0.0.1
+      BHAVA_WEB_ORIGINS: https://staging.bhava.me
+    volumes:
+      - ${BHAVA_CONTENT_ROOT}/current/output:/app/output:ro
+      - ${BHAVA_CONTENT_ROOT}/current/web-assets:/app/data/web-assets:ro
+      - api_staging_catalog:/app/data/catalog
+
+networks:
+  bhava-internal:
+    internal: false
+
+volumes:
+  caddy_data:
+  caddy_config:
+  caddy_logs:
+  api_prod_catalog:
+  api_staging_catalog:

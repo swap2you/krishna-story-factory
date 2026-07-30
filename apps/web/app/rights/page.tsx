@@ -1,11 +1,13 @@
 import { PageIntro } from "@/components/page-intro";
 import contact from "@/config/contact.json";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Copyright & Permissions · Bhāva",
+export const metadata = pageMetadata({
+  title: "Copyright & Permissions",
   description:
     "Copyright, publisher imprint, rights limitations, and permissions contact for Bhāva publications.",
-};
+  path: "/rights",
+});
 
 export default function RightsPage() {
   const year = contact.website_copyright_year;

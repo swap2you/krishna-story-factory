@@ -57,6 +57,7 @@ portal-bootstrap/
 /bhava_v1_1_consolidated_release_prompts/
 /data/web-assets/**
 !/data/web-assets/.gitkeep
+/web-assets/
 /.bhava/models/
 /.bhava/alignment-cache/
 

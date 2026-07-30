@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -70,8 +71,11 @@ def test_sitemap_includes_nine_stories_rights_excludes_010() -> None:
     text = (ROOT / "apps" / "web" / "app" / "sitemap.ts").read_text(encoding="utf-8")
     assert "PUBLIC_STORY_COUNT = 9" in text
     assert '"/rights"' in text
-    assert "010" not in text or "Story 010 stays excluded" in text
-    assert "/studio" in text  # private prefix exclusion list
+    # The sitemap enumerates an explicit public allow-list, so private surfaces
+    # cannot leak by omission from a deny-list.
+    for private in ("/studio", "/dev", "/api/studio", "/api/v1/factory"):
+        assert private not in text, f"Private route {private} must never be listed in the sitemap"
+    assert not re.search(r"/stories/0*(1[0-9]|[1-9]\d\d)", text), "Sitemap must stop at Story 009"
 
 
 def test_website_footer_and_rights_page_exist() -> None:
@@ -87,6 +91,7 @@ def test_website_footer_and_rights_page_exist() -> None:
     assert "Dauji Publication" in body or "contact.publisher" in body
 
 
+@pytest.mark.content_release
 def test_retrofitted_packages_have_rights_and_exact_eight() -> None:
     from krishna_story_factory.package_swap import validate_exact_eight_files
 
@@ -111,6 +116,11 @@ def test_retrofitted_packages_have_rights_and_exact_eight() -> None:
         assert "## Rights and Credits" in story
         caption = (folder / "whatsapp_caption.txt").read_text(encoding="utf-8")
         assert "Svarna Gauranga Das" in caption
-        archive = ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}" / "2.1.0-copyright"
-        assert archive.is_dir()
-        assert (ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}" / "2.0").is_dir()
+
+
+@pytest.mark.local_archive
+def test_retrofit_preserved_superseded_archives() -> None:
+    for n in range(1, 10):
+        base = ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}"
+        assert (base / "2.1.0-copyright").is_dir()
+        assert (base / "2.0").is_dir()

@@ -1,0 +1,91 @@
+{
+	email {$ACME_EMAIL}
+	admin off
+}
+
+(common_security) {
+	encode zstd gzip
+
+	header {
+		-Server
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		Permissions-Policy "accelerometer=(), autoplay=(self), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Resource-Policy "same-origin"
+		Strict-Transport-Security "max-age=86400"
+	}
+
+	@immutable path /_next/static/* /brand/* /heroes/* /icons/* /collections/* /empty-states/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	@private path /studio* /dev* /api/studio* /api/v1/factory* /api/v1/scheduler* /api/v1/queue* /stories/010*
+	respond @private 404
+
+	@mutation {
+		path /api/*
+		not method GET HEAD OPTIONS
+	}
+	respond @mutation 405
+}
+
+bhava.me {
+	import common_security
+
+	handle /healthz {
+		reverse_proxy api-production:8000
+	}
+	handle /readyz {
+		reverse_proxy api-production:8000
+	}
+	handle /api/* {
+		reverse_proxy api-production:8000
+	}
+	handle {
+		reverse_proxy web-production:3000
+	}
+
+	log {
+		output file /var/log/caddy/bhava-access.log {
+			roll_size 10MiB
+			roll_keep 7
+			roll_keep_for 168h
+		}
+		format json
+	}
+}
+
+www.bhava.me {
+	redir https://bhava.me{uri} permanent
+}
+
+staging.bhava.me {
+	import common_security
+	basic_auth {
+		{$STAGING_BASIC_AUTH_USER} {$STAGING_BASIC_AUTH_HASH}
+	}
+	header X-Robots-Tag "noindex, nofollow, noarchive"
+
+	handle /healthz {
+		reverse_proxy api-staging:8000
+	}
+	handle /readyz {
+		reverse_proxy api-staging:8000
+	}
+	handle /api/* {
+		reverse_proxy api-staging:8000
+	}
+	handle {
+		reverse_proxy web-staging:3000
+	}
+
+	log {
+		output file /var/log/caddy/bhava-staging-access.log {
+			roll_size 10MiB
+			roll_keep 5
+			roll_keep_for 120h
+		}
+		format json
+	}
+}

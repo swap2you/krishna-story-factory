@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /studio
-
-Sitemap: https://bhava.me/sitemap.xml
