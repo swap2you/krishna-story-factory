@@ -154,11 +154,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [web-checks]
     timeout-minutes: 45
-    # Chromium is the release gate. WebKit on Linux CI still has engine-level
-    # flakes against real MP3s and computed-style checks that Chromium and
-    # Production CI do not reproduce; keep running it for signal without
-    # blocking the governed public boundary we just repaired.
-    continue-on-error: ${{ matrix.advisory }}
+    # Chromium + Firefox are the hard public browser gates. WebKit on Linux CI
+    # remains advisory (see matrix.advisory) so flakes do not block merge while
+    # still uploading failure artifacts for investigation.
     strategy:
       fail-fast: false
       matrix:
@@ -229,6 +227,8 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/studio)" = "404"
 
       - name: Playwright ${{ matrix.project }}
+        id: playwright
+        continue-on-error: ${{ matrix.advisory }}
         env:
           BHAVA_WEB_URL: http://127.0.0.1:3000
           BHAVA_API_URL: http://127.0.0.1:8000/api/v1
@@ -236,8 +236,13 @@ jobs:
         working-directory: apps/web
         run: npx playwright test --project=${{ matrix.project }}
 
+      - name: Annotate advisory WebKit outcome
+        if: ${{ matrix.advisory && steps.playwright.outcome == 'failure' }}
+        run: |
+          echo "::warning::Advisory ${{ matrix.project }} failed on Linux WebKit. Chromium and Firefox remain the public release gate."
+
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: ${{ steps.playwright.outcome == 'failure' }}
         with:
           name: browser-public-${{ matrix.project }}-report
           path: apps/web/test-results
