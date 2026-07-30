@@ -76,7 +76,8 @@ fi
 docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml up -d --no-build "${SERVICES[@]}"
 
 echo "${RELEASE_SHA}" >"${CURRENT_FILE}"
+mkdir -p /opt/bhava/backups
 printf '%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "${ENVIRONMENT}" "${RELEASE_SHA}" \
-  >>/opt/bhava/releases/deployments.tsv
+  >>/opt/bhava/backups/deployments.tsv
 
 echo "Deployed ${ENVIRONMENT} ${RELEASE_SHA}"

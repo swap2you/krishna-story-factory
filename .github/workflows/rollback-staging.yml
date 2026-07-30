@@ -1,0 +1,63 @@
+name: Rollback Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Previously deployed staging SHA (defaults to previous pointer on server when empty)
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bhava-staging
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: staging
+      url: https://staging.bhava.me
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure pinned SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 0700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 0600 ~/.ssh/known_hosts
+
+      - name: Roll back
+        id: rollback
+        env:
+          TARGET_SHA: ${{ inputs.target_sha }}
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          if [[ -n "${TARGET_SHA}" ]]; then
+            ssh -p "$PORT" "$USER@$HOST" \
+              "bash /opt/bhava/config/scripts/rollback-release.sh staging ${TARGET_SHA}"
+            echo "sha=${TARGET_SHA}" >> "$GITHUB_OUTPUT"
+          else
+            rolled="$(ssh -p "$PORT" "$USER@$HOST" \
+              "bash /opt/bhava/config/scripts/rollback-release.sh staging; cat /opt/bhava/releases/staging/current")"
+            echo "sha=${rolled##*$'\n'}" >> "$GITHUB_OUTPUT"
+            echo "Rolled back to ${rolled}"
+          fi
+
+      - name: Verify rollback
+        env:
+          STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
+          STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+          TARGET_SHA: ${{ steps.rollback.outputs.sha }}
+        run: bash deploy/ionos/scripts/smoke-test.sh https://staging.bhava.me "${TARGET_SHA}"
