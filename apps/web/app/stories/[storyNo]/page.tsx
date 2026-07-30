@@ -18,8 +18,9 @@ export async function generateMetadata({
   params: Promise<{ storyNo: string }>;
 }): Promise<Metadata> {
   const { storyNo } = await params;
-  const padded = storyNo.replace(/\D/g, "").padStart(3, "0");
-  if (!padded || Number(padded) > 9) {
+  const digits = storyNo.replace(/\D/g, "");
+  const numeric = Number.parseInt(digits, 10);
+  if (!digits || !Number.isFinite(numeric) || numeric < 1 || numeric > 9) {
     return pageMetadata({
       title: `Story ${storyNo} — unpublished`,
       description: "This Bhāva story is not publicly released.",
@@ -28,6 +29,7 @@ export async function generateMetadata({
     });
   }
 
+  const padded = String(numeric).padStart(3, "0");
   const story = await getStory(padded).catch(() => null);
   if (!story) {
     return pageMetadata({
