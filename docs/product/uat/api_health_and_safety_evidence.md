@@ -38,7 +38,7 @@ POST /api/v1/local/generate-next   (no CSRF header)
 GET /api/v1/local/queue -> 200, read-only JSON (no mutation endpoint exists)
 ```
 
-`tests/portal/test_api_read_only.py::test_public_catalog_endpoints_and_disabled_factory` also
+`tests/portal/test_api_read_only.py::test_catalog_endpoints_and_disabled_factory` also
 confirms that even a **valid** CSRF-authenticated call to `POST /api/v1/local/generate-next`
 returns `{"status": "disabled"}` while `BHAVA_FACTORY_ACTIONS_ENABLED` is unset — Story 008
 cannot be produced through this API under any request observed in this session.

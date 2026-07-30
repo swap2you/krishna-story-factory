@@ -6,7 +6,8 @@ from pathlib import Path
 
 from krishna_story_factory.config import load_settings
 from krishna_story_factory.csv_store import (
-    bootstrap_queue_state, ensure_csv_files, read_queue_state, reset_series_status,
+    bootstrap_queue_state, ensure_csv_files, read_next_pending, read_plan_by_chapter,
+    read_queue_state, reset_series_status,
 )
 from krishna_story_factory.pipeline import run_daily_story
 from tests.project_fixture import copy_project_fixture
@@ -30,6 +31,37 @@ def test_legacy_status_migrates_to_runtime_queue(tmp_path: Path) -> None:
     state = read_queue_state(tmp_path)
     assert [row["status"] for row in state] == ["done", "pending"]
     assert _sha256(plan) == before
+
+
+def test_queue_readers_never_create_runtime_state(tmp_path: Path) -> None:
+    """Reading must not fabricate tracking/queue_state.csv.
+
+    These readers used to bootstrap the file as a side effect, so merely
+    inspecting a plan wrote invented scheduler state into whichever checkout
+    happened to be the project root.
+    """
+    (tmp_path / "input").mkdir()
+    (tmp_path / "input" / "series_plan.csv").write_text(
+        "chapter_no,slug,title,source_reference,summary_seed\n"
+        "001,one,One,Krishna Book Chapter 1,Seed one\n"
+        "002,two,Two,Krishna Book Chapter 1,Seed two\n"
+        "003,three,Three,Krishna Book Chapter 2,Seed three\n",
+        encoding="utf-8",
+    )
+    queue = tmp_path / "tracking" / "queue_state.csv"
+
+    assert [row["chapter_no"] for row in read_queue_state(tmp_path)] == ["001", "002", "003"]
+    assert read_plan_by_chapter(tmp_path, "003").chapter_no == "003"
+    assert read_next_pending(tmp_path).chapter_no == "003"
+    assert not queue.exists()
+    assert not (tmp_path / "tracking").exists()
+
+    bootstrap_queue_state(tmp_path)
+    assert queue.exists()
+    before = _sha256(queue)
+    read_queue_state(tmp_path)
+    read_next_pending(tmp_path)
+    assert _sha256(queue) == before
 
 
 def test_normal_test_run_never_mutates_static_plan(tmp_path: Path) -> None:

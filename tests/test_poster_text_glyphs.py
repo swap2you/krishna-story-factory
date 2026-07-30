@@ -65,14 +65,6 @@ def _package(chapter: str) -> Path:
     return matches[0]
 
 
-def _available_chapters() -> list[str]:
-    return [
-        chapter
-        for chapter in CHAPTERS
-        if any((path / "manifest.json").is_file() for path in OUTPUT.glob(f"{chapter}_*"))
-    ]
-
-
 def _manifest(chapter: str) -> dict:
     return json.loads((_package(chapter) / "manifest.json").read_text(encoding="utf-8"))
 
@@ -97,29 +89,32 @@ def _poster_note(chapter: str) -> dict:
 
 #: Posters that actually carry title/caption bands. Stories 004 and 005 are bare
 #: artwork plus a credit strip, so they have no title or caption text to inspect.
-# Skip collection when local output packages are absent (CI / clean checkout).
-_AVAILABLE = _available_chapters()
-BAND_CHAPTERS = [c for c in _AVAILABLE if has_text_bands(_poster(c))] if _AVAILABLE else []
+#: Declared as constants so collection never depends on provisioned content;
+#: test_band_and_corrected_chapters_are_discovered checks them against reality.
+BAND_CHAPTERS = ["001", "002", "003", "006", "007", "008", "009"]
 
 #: Posters whose recorded title or caption contains non-ASCII characters. These get
 #: the strict typeface and box-glyph gates.
-CORRECTED_CHAPTERS = [
-    c
-    for c in BAND_CHAPTERS
-    if any(
-        ord(ch) > 127
-        for text in (
-            str(_poster_note(c).get("title_text") or ""),
-            str(_poster_note(c).get("caption_text") or ""),
-        )
-        for ch in text
-    )
-]
+CORRECTED_CHAPTERS = ["007", "009"]
 
-pytestmark = pytest.mark.skipif(
-    not _AVAILABLE,
-    reason="Released poster packages under output/ are required for glyph regression",
-)
+
+def _discover_band_chapters() -> list[str]:
+    return [chapter for chapter in CHAPTERS if has_text_bands(_poster(chapter))]
+
+
+def _discover_corrected_chapters() -> list[str]:
+    return [
+        chapter
+        for chapter in _discover_band_chapters()
+        if any(
+            ord(char) > 127
+            for text in (
+                str(_poster_note(chapter).get("title_text") or ""),
+                str(_poster_note(chapter).get("caption_text") or ""),
+            )
+            for char in text
+        )
+    ]
 
 
 def _ink_bbox(band: Image.Image) -> tuple[int, int, int, int] | None:
@@ -188,11 +183,13 @@ def test_alternate_compositors_never_use_default_font() -> None:
 # --------------------------------------------------------------------------
 
 
+@pytest.mark.content_release
 def test_band_and_corrected_chapters_are_discovered() -> None:
     assert BAND_CHAPTERS == ["001", "002", "003", "006", "007", "008", "009"], BAND_CHAPTERS
     assert CORRECTED_CHAPTERS == ["007", "009"], CORRECTED_CHAPTERS
 
 
+@pytest.mark.local_archive
 @pytest.mark.parametrize("chapter", CHAPTERS)
 def test_poster_has_exactly_one_credit_strip(chapter: str) -> None:
     with Image.open(_master(chapter)) as master, Image.open(_poster(chapter)) as live:
@@ -206,6 +203,7 @@ def test_poster_has_exactly_one_credit_strip(chapter: str) -> None:
             )
 
 
+@pytest.mark.local_archive
 @pytest.mark.parametrize("chapter", CHAPTERS)
 def test_credit_strip_does_not_obstruct_sacred_artwork(chapter: str) -> None:
     """Artwork pixels must be byte-identical to the clean 2.0 master.
@@ -225,6 +223,7 @@ def test_credit_strip_does_not_obstruct_sacred_artwork(chapter: str) -> None:
     assert live_art == master_art, f"{chapter}: artwork region was altered"
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", BAND_CHAPTERS)
 def test_poster_text_bands_contain_no_missing_glyph_boxes(chapter: str, tmp_path: Path) -> None:
     """Pixel-level tofu scan of the title, caption and credit bands.
@@ -254,6 +253,7 @@ def test_poster_text_bands_contain_no_missing_glyph_boxes(chapter: str, tmp_path
 # --------------------------------------------------------------------------
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_unicode_poster_text_glyphs_are_covered(chapter: str) -> None:
     note = _poster_note(chapter)
@@ -266,6 +266,7 @@ def test_unicode_poster_text_glyphs_are_covered(chapter: str) -> None:
         assert report[layer]["contains_tofu_codepoint"] == [], (chapter, layer)
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_unicode_poster_text_has_no_replacement_or_box_characters(chapter: str) -> None:
     note = _poster_note(chapter)
@@ -275,6 +276,7 @@ def test_unicode_poster_text_has_no_replacement_or_box_characters(chapter: str) 
             assert bad not in text, f"{chapter}: {bad!r} in {key}"
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_unicode_poster_title_band_uses_a_real_typeface(chapter: str, tmp_path: Path) -> None:
     crops = poster_band_crops(_poster(chapter))
@@ -290,6 +292,7 @@ def test_unicode_poster_title_band_uses_a_real_typeface(chapter: str, tmp_path: 
     )
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_unicode_poster_caption_band_uses_a_real_typeface(chapter: str, tmp_path: Path) -> None:
     crops = poster_band_crops(_poster(chapter))
@@ -302,6 +305,7 @@ def test_unicode_poster_caption_band_uses_a_real_typeface(chapter: str, tmp_path
     )
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_unicode_poster_text_is_not_transliterated(chapter: str) -> None:
     note = _poster_note(chapter)
@@ -313,6 +317,7 @@ def test_unicode_poster_text_is_not_transliterated(chapter: str) -> None:
         assert text != folded, f"{chapter}: {key} was ASCII-transliterated"
 
 
+@pytest.mark.content_release
 def test_story_009_poster_shows_the_expected_devanagari_transliteration() -> None:
     note = _poster_note("009")
     assert "Pūtanā" in note["title_text"]
@@ -322,12 +327,14 @@ def test_story_009_poster_shows_the_expected_devanagari_transliteration() -> Non
     assert "Bhāva" in note["credit_line"]
 
 
+@pytest.mark.content_release
 def test_story_007_poster_caption_keeps_its_diacritics() -> None:
     note = _poster_note("007")
     assert "Yoga-māyā" in note["caption_text"]
     assert "Kaṁsa" in note["caption_text"]
 
 
+@pytest.mark.local_archive
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_superseded_poster_with_box_glyphs_is_rejected(chapter: str, tmp_path: Path) -> None:
     """The archived pre-correction poster must fail the same gates."""
@@ -353,6 +360,7 @@ def test_superseded_poster_with_box_glyphs_is_rejected(chapter: str, tmp_path: P
     assert _sha(archived) != _sha(_poster(chapter))
 
 
+@pytest.mark.local_archive
 def test_old_story_009_poster_specifically_fails() -> None:
     """Named guard for CLOSEOUT-B1's exact artefact."""
     archived = MASTERS / "009" / "2.1.1-copyright" / "story_poster.png"
@@ -370,6 +378,7 @@ def test_old_story_009_poster_specifically_fails() -> None:
     )
 
 
+@pytest.mark.local_archive
 def test_old_story_007_poster_caption_specifically_fails() -> None:
     """Named guard for the second instance found during this correction pass."""
     archived = MASTERS / "007" / "2.1.1-copyright" / "story_poster.png"
@@ -386,6 +395,7 @@ def test_old_story_007_poster_caption_specifically_fails() -> None:
 # --------------------------------------------------------------------------
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_manifest_records_poster_text_rebuild(chapter: str) -> None:
     publication = _manifest(chapter).get("publication") or {}
@@ -401,6 +411,7 @@ def test_manifest_records_poster_text_rebuild(chapter: str) -> None:
     assert preserved.get("caption_preserved") is True, note
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_correction_history_records_poster_fix(chapter: str) -> None:
     history = (_manifest(chapter).get("rights") or {}).get("correction_history") or []
@@ -411,6 +422,7 @@ def test_correction_history_records_poster_fix(chapter: str) -> None:
     )
 
 
+@pytest.mark.local_archive
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_superseded_archive_is_intact_and_correctly_labelled(chapter: str) -> None:
     manifest = _manifest(chapter)
@@ -430,6 +442,7 @@ def test_superseded_archive_is_intact_and_correctly_labelled(chapter: str) -> No
         assert _sha(path) == expected.lower(), f"Supersession hash drift {chapter}/{name}"
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_narration_and_narrative_survive_the_correction(chapter: str) -> None:
     rights = _manifest(chapter).get("rights") or {}
@@ -447,6 +460,7 @@ def test_narration_and_narrative_survive_the_correction(chapter: str) -> None:
         assert current.get(name) == prior.get(name), f"{chapter}: {name} changed unexpectedly"
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
 def test_only_poster_story_and_manifest_changed(chapter: str) -> None:
     rights = _manifest(chapter).get("rights") or {}
@@ -456,6 +470,7 @@ def test_only_poster_story_and_manifest_changed(chapter: str) -> None:
     assert changed == {"story_poster.png", "story.md", "manifest.json"}, changed
 
 
+@pytest.mark.local_archive
 def test_swap_backup_records_its_true_version() -> None:
     """A swap backup must be labelled with the version it actually contains."""
     backups = OUTPUT / "_archive" / "copyright-swap-backups"
@@ -473,12 +488,14 @@ def test_swap_backup_records_its_true_version() -> None:
         )
 
 
+@pytest.mark.content_release
 def test_text_less_posters_are_not_misdecomposed() -> None:
     """Stories 004 and 005 are bare artwork; band geometry must not be inferred."""
     for chapter in ("004", "005"):
         assert not has_text_bands(_poster(chapter)), chapter
 
 
+@pytest.mark.content_release
 def test_already_credited_poster_is_not_accepted_as_a_master() -> None:
     """Guard against stacking a second credit strip by passing a live poster."""
     with Image.open(_poster("009")) as live:

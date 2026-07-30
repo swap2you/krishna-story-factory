@@ -18,7 +18,6 @@ const routes = [
   "/faq",
   "/stories/001",
   "/stories/009",
-  "/studio",
 ];
 
 test.describe("accessibility", () => {

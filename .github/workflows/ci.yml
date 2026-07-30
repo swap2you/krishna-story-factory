@@ -1,41 +1,147 @@
 name: CI
 
+# Responsibilities are split so that a job only depends on data it provisions:
+#   source-unit         ordinary source/unit tests on a bare checkout
+#   portal-fixture      portal API contracts against deterministic fixtures
+#   production-security the public production boundary
+#   content-release     real Stories 001-009 bytes from the approved release
+#   web-checks          lint, types, web unit tests, production build
+#   browser-public      Playwright against the public production stack
+#   browser-local       Playwright against an operator workstation stack
+#
+# Tests needing unshippable data carry a tier marker (see pytest.ini) and are
+# gated by tests/conftest.py. Jobs that provision a tier set BHAVA_REQUIRE_* so a
+# failed download errors instead of degrading into skips.
+
 on:
   pull_request:
   push:
-    branches: [main, "feature/**"]
+    branches: [main, develop, "feature/**"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "20"
+
 jobs:
-  test-python:
+  source-unit:
+    name: source-unit (${{ matrix.os }})
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-      - run: python -m pip install -r requirements.txt
-      - name: Install API deps
-        run: python -m pip install fastapi uvicorn pydantic sqlalchemy alembic httpx python-multipart bleach pytest
-      - name: Portal + factory pytest
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install fastapi uvicorn pydantic sqlalchemy alembic httpx python-multipart bleach pytest
+      - name: Ordinary source and unit tests
         env:
           PYTHONPATH: apps/api
-        run: python -m pytest -q -m "not slow"
+        run: >-
+          python -m pytest -q --ignore=tests/portal
+          -m "not slow and not content_release and not local_archive and not local_runtime and not production_security"
+      - name: Fail if tests mutated tracked or ignored runtime state
+        shell: bash
+        run: |
+          if [ -e tracking/queue_state.csv ]; then
+            echo "A test wrote tracking/queue_state.csv; tests must use an isolated project root." >&2
+            exit 1
+          fi
+          git diff --exit-code
 
-  test-web:
+  portal-fixture:
+    name: portal-fixture (${{ matrix.os }})
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install fastapi uvicorn pydantic sqlalchemy alembic httpx python-multipart bleach pytest
+      - name: Fixture-backed portal tests
+        env:
+          PYTHONPATH: apps/api
+        run: >-
+          python -m pytest -q tests/portal
+          -m "not slow and not content_release and not local_archive and not local_runtime"
+
+  production-security:
+    name: production-security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install fastapi uvicorn pydantic sqlalchemy httpx python-multipart bleach pytest
+      - name: Public production boundary tests
+        env:
+          PYTHONPATH: apps/api
+        run: python -m pytest -q -m production_security
+
+  content-release:
+    name: content-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install fastapi uvicorn pydantic sqlalchemy httpx python-multipart bleach pytest
+      - uses: ./.github/actions/provision-content
+      - name: Immutable content-release validation
+        env:
+          PYTHONPATH: apps/api
+          BHAVA_REQUIRE_CONTENT: "1"
+        run: python -m pytest -q -m content_release
+
+  web-checks:
+    name: web-checks (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
       - run: npm run lint:web
@@ -43,83 +149,17 @@ jobs:
       - run: npm run test:web
       - run: npm run build:web
 
-  playwright-chromium:
+  browser-public:
+    name: browser-public (${{ matrix.project }})
     runs-on: ubuntu-latest
-    needs: [test-web]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: npm
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: python -m pip install fastapi uvicorn pydantic sqlalchemy httpx python-multipart bleach
-      - name: Start API with fixture catalog
-        env:
-          BHAVA_OUTPUT_ROOT: ${{ github.workspace }}/apps/web/e2e/fixtures/output
-          BHAVA_CATALOG_DB: ${{ github.workspace }}/apps/web/e2e/fixtures/bhava.sqlite
-          BHAVA_ENFORCE_LOOPBACK: "0"
-          BHAVA_FACTORY_ACTIONS_ENABLED: "0"
-          BHAVA_WEB_ORIGINS: http://127.0.0.1:3000,http://localhost:3000
-          PYTHONPATH: apps/api
-        run: |
-          mkdir -p apps/web/e2e/fixtures/output
-          python - <<'PY'
-          import json, pathlib
-          root = pathlib.Path("apps/web/e2e/fixtures/output")
-          required = ["story.md","narration.mp3","story_poster.png","coloring_page.png","simple_coloring_page.png","activity_sheet.pdf","whatsapp_caption.txt","manifest.json"]
-          for i in range(1, 3):
-              chapter = f"{i:03d}"
-              folder = root / f"{chapter}_fixture"
-              folder.mkdir(parents=True, exist_ok=True)
-              for name in required:
-                  if name == "manifest.json":
-                      continue
-                  if name == "story.md":
-                      (folder / name).write_text(
-                          "# Fixture story\n\nClean reader body only.\n\n<!--\nAudio Narration\nPoster Visual Brief\n-->\n",
-                          encoding="utf-8",
-                      )
-                      continue
-                  (folder / name).write_bytes(b"fixture")
-              (folder / "manifest.json").write_text(json.dumps({
-                  "chapter_no": chapter,
-                  "slug": f"fixture-{chapter}",
-                  "title": f"Fixture {chapter}",
-                  "publishable": True,
-                  "quality": {"status": "PASS"},
-                  "audio": {"generation_verified": True, "audio_stale": False},
-              }))
-          PY
-          python -m uvicorn bhava_api.main:app --host 127.0.0.1 --port 8000 --app-dir apps/api &
-          sleep 3
-      - name: Build and start web
-        env:
-          BHAVA_API_ORIGIN: http://127.0.0.1:8000
-          BHAVA_API_URL: http://127.0.0.1:8000/api/v1
-          BHAVA_WEB_URL: http://127.0.0.1:3000
-        run: |
-          npm run build:web
-          npm run start -w @bhava/web -- -p 3000 -H 127.0.0.1 &
-          sleep 5
-      - name: Playwright Chromium
-        env:
-          BHAVA_WEB_URL: http://127.0.0.1:3000
-          BHAVA_API_URL: http://127.0.0.1:8000/api/v1
-        working-directory: apps/web
-        run: npx playwright test --project=chromium-desktop
-
-  playwright-browsers:
-    runs-on: ubuntu-latest
-    needs: [test-web]
+    needs: [web-checks]
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
         include:
+          - project: chromium-desktop
+            browser_pkg: chromium
           - project: firefox-desktop
             browser_pkg: firefox
           - project: webkit-desktop
@@ -132,65 +172,130 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
       - run: npm ci
       - run: npx playwright install --with-deps ${{ matrix.browser_pkg }}
-      - run: python -m pip install fastapi uvicorn pydantic sqlalchemy httpx python-multipart bleach
-      - name: Start API with fixture catalog
+      - name: Install API dependencies
+        run: python -m pip install fastapi uvicorn pydantic sqlalchemy httpx python-multipart bleach
+
+      - uses: ./.github/actions/provision-content
+
+      - name: Start public production API
         env:
-          BHAVA_OUTPUT_ROOT: ${{ github.workspace }}/apps/web/e2e/fixtures/output
-          BHAVA_CATALOG_DB: ${{ github.workspace }}/apps/web/e2e/fixtures/bhava.sqlite
+          BHAVA_OUTPUT_ROOT: ${{ github.workspace }}/output
+          BHAVA_CATALOG_DB: ${{ runner.temp }}/bhava-public.sqlite
+          BHAVA_PUBLIC_SITE: "1"
+          BHAVA_PUBLIC_STORY_MAX: "9"
           BHAVA_ENFORCE_LOOPBACK: "0"
           BHAVA_FACTORY_ACTIONS_ENABLED: "0"
+          BHAVA_ALLOWED_HOSTS: 127.0.0.1,localhost
           BHAVA_WEB_ORIGINS: http://127.0.0.1:3000,http://localhost:3000
           PYTHONPATH: apps/api
         run: |
-          mkdir -p apps/web/e2e/fixtures/output
-          python - <<'PY'
-          import json, pathlib
-          root = pathlib.Path("apps/web/e2e/fixtures/output")
-          required = ["story.md","narration.mp3","story_poster.png","coloring_page.png","simple_coloring_page.png","activity_sheet.pdf","whatsapp_caption.txt","manifest.json"]
-          for i in range(1, 3):
-              chapter = f"{i:03d}"
-              folder = root / f"{chapter}_fixture"
-              folder.mkdir(parents=True, exist_ok=True)
-              for name in required:
-                  if name == "manifest.json":
-                      continue
-                  if name == "story.md":
-                      (folder / name).write_text(
-                          "# Fixture story\n\nClean reader body only.\n\n<!--\nAudio Narration\nPoster Visual Brief\n-->\n",
-                          encoding="utf-8",
-                      )
-                      continue
-                  (folder / name).write_bytes(b"fixture")
-              (folder / "manifest.json").write_text(json.dumps({
-                  "chapter_no": chapter,
-                  "slug": f"fixture-{chapter}",
-                  "title": f"Fixture {chapter}",
-                  "publishable": True,
-                  "quality": {"status": "PASS"},
-                  "audio": {"generation_verified": True, "audio_stale": False},
-              }))
-          PY
           python -m uvicorn bhava_api.main:app --host 127.0.0.1 --port 8000 --app-dir apps/api &
-          sleep 3
-      - name: Build and start web
+          for _ in $(seq 1 40); do
+            curl -sf http://127.0.0.1:8000/healthz >/dev/null && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8000/api/v1/stories | python -c "import json,sys; assert [s['story_no'] for s in json.load(sys.stdin)] == [f'{n:03d}' for n in range(1,10)]"
+
+      - name: Build and start public production web
         env:
+          BHAVA_PUBLIC_SITE: "1"
           BHAVA_API_ORIGIN: http://127.0.0.1:8000
           BHAVA_API_URL: http://127.0.0.1:8000/api/v1
           BHAVA_WEB_URL: http://127.0.0.1:3000
         run: |
           npm run build:web
           npm run start -w @bhava/web -- -p 3000 -H 127.0.0.1 &
-          sleep 5
+          for _ in $(seq 1 60); do
+            curl -sf http://127.0.0.1:3000/ >/dev/null && break
+            sleep 1
+          done
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/studio)" = "404"
+
       - name: Playwright ${{ matrix.project }}
         env:
           BHAVA_WEB_URL: http://127.0.0.1:3000
           BHAVA_API_URL: http://127.0.0.1:8000/api/v1
+          BHAVA_E2E_MODE: public
         working-directory: apps/web
         run: npx playwright test --project=${{ matrix.project }}
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-public-${{ matrix.project }}-report
+          path: apps/web/test-results
+          retention-days: 7
+
+  browser-local:
+    name: browser-local (studio)
+    runs-on: ubuntu-latest
+    needs: [web-checks]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Install API dependencies
+        run: python -m pip install fastapi uvicorn pydantic sqlalchemy httpx python-multipart bleach
+
+      - uses: ./.github/actions/provision-content
+
+      - name: Start operator-workstation API
+        env:
+          BHAVA_OUTPUT_ROOT: ${{ github.workspace }}/output
+          BHAVA_CATALOG_DB: ${{ runner.temp }}/bhava-local.sqlite
+          BHAVA_PUBLIC_SITE: "0"
+          BHAVA_ENFORCE_LOOPBACK: "0"
+          BHAVA_FACTORY_ACTIONS_ENABLED: "0"
+          BHAVA_ALLOWED_HOSTS: 127.0.0.1,localhost
+          BHAVA_WEB_ORIGINS: http://127.0.0.1:3000,http://localhost:3000
+          PYTHONPATH: apps/api
+        run: |
+          python -m uvicorn bhava_api.main:app --host 127.0.0.1 --port 8000 --app-dir apps/api &
+          for _ in $(seq 1 40); do
+            curl -sf http://127.0.0.1:8000/healthz >/dev/null && break
+            sleep 1
+          done
+
+      - name: Start operator-workstation web
+        env:
+          BHAVA_PUBLIC_SITE: "0"
+          BHAVA_API_ORIGIN: http://127.0.0.1:8000
+          BHAVA_API_URL: http://127.0.0.1:8000/api/v1
+          BHAVA_WEB_URL: http://127.0.0.1:3000
+        run: |
+          npm run dev -w @bhava/web -- -p 3000 -H 127.0.0.1 &
+          for _ in $(seq 1 90); do
+            curl -sf http://127.0.0.1:3000/studio >/dev/null && break
+            sleep 2
+          done
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/studio)" = "200"
+
+      - name: Playwright studio and navigation (local mode)
+        env:
+          BHAVA_WEB_URL: http://127.0.0.1:3000
+          BHAVA_API_URL: http://127.0.0.1:8000/api/v1
+          BHAVA_E2E_MODE: local
+        working-directory: apps/web
+        run: npx playwright test --project=chromium-desktop e2e/studio-safety.spec.ts e2e/navigation.spec.ts
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-local-report
+          path: apps/web/test-results
+          retention-days: 7

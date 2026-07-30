@@ -1,0 +1,50 @@
+name: Provision public content
+description: >
+  Download the approved Stories 001-009 release, verify it against the committed
+  digest, validate its structure, and extract it into output/.
+
+runs:
+  using: composite
+  steps:
+    - name: Read committed content pin
+      id: pin
+      shell: bash
+      run: |
+        python - <<'PY' >> "$GITHUB_OUTPUT"
+        import json, pathlib
+        pin = json.loads(pathlib.Path("deploy/content/RELEASE_CONTENT.json").read_text(encoding="utf-8"))
+        for key in ("tag", "bundle", "sha256", "public_story_max"):
+            print(f"{key}={pin[key]}")
+        PY
+
+    - name: Download release bundle
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+      run: |
+        mkdir -p "$RUNNER_TEMP/bhava-content"
+        gh release download "${{ steps.pin.outputs.tag }}" \
+          --pattern "${{ steps.pin.outputs.bundle }}" \
+          --dir "$RUNNER_TEMP/bhava-content"
+
+    - name: Verify bundle against committed digest
+      shell: bash
+      run: |
+        cd "$RUNNER_TEMP/bhava-content"
+        echo "${{ steps.pin.outputs.sha256 }}  ${{ steps.pin.outputs.bundle }}" > expected.sha256
+        sha256sum -c expected.sha256
+
+    - name: Validate bundle structure and per-file hashes
+      shell: bash
+      run: |
+        python scripts/deployment/validate_public_content.py \
+          --bundle "$RUNNER_TEMP/bhava-content/${{ steps.pin.outputs.bundle }}" \
+          --max-story "${{ steps.pin.outputs.public_story_max }}"
+
+    - name: Extract into output/
+      shell: bash
+      run: |
+        tar -xzf "$RUNNER_TEMP/bhava-content/${{ steps.pin.outputs.bundle }}" -C "$GITHUB_WORKSPACE"
+        test -d output/009_putana-krishnas-astonishing-mercy
+        test ! -d output/010_baby-krishna-breaks-the-cart
