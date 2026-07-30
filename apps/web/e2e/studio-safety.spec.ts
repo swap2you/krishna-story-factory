@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { PRIVATE_PREFIXES, isLocalMode, isPublicMode } from "./mode";
+import { PRIVATE_API_PREFIXES, PRIVATE_PAGE_PREFIXES, isLocalMode, isPublicMode } from "./mode";
 import { apiURL, expectNoCriticalAxe } from "./helpers";
 
 test.describe("studio safety", () => {
@@ -25,11 +25,17 @@ test.describe("studio safety", () => {
     }
   });
 
-  test("public production blocks every private route", async ({ page }) => {
+  test("public production blocks every private route", async ({ page, request }) => {
     test.skip(!isPublicMode, "Blocking only applies to the public production build");
-    for (const prefix of PRIVATE_PREFIXES) {
-      const response = await page.goto(prefix);
+    // Firefox replaces HTTP 404 with an interstitial and never reaches "load".
+    // Assert status via the APIRequestContext (and commit-level navigation for pages).
+    for (const prefix of PRIVATE_PAGE_PREFIXES) {
+      const response = await page.goto(prefix, { waitUntil: "commit" });
       expect(response?.status(), `${prefix} must not be served`).toBe(404);
+    }
+    for (const prefix of PRIVATE_API_PREFIXES) {
+      const response = await request.get(prefix);
+      expect(response.status(), `${prefix} must not be served`).toBe(404);
     }
   });
 
