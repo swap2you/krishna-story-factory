@@ -9,6 +9,23 @@ if [[ -n "${STAGING_BASIC_AUTH_USER:-}" && -n "${STAGING_BASIC_AUTH_PASSWORD:-}"
   AUTH_ARGS=(-u "${STAGING_BASIC_AUTH_USER}:${STAGING_BASIC_AUTH_PASSWORD}")
 fi
 
+wait_for_ready() {
+  local i code
+  for i in $(seq 1 36); do
+    code="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/" || true)"
+    if [[ "${code}" == "200" ]]; then
+      echo "Endpoint ready after ${i} attempt(s)."
+      return 0
+    fi
+    echo "Waiting for ${BASE_URL}/ (HTTP ${code:-000}) attempt ${i}/36"
+    sleep 5
+  done
+  echo "Timed out waiting for ${BASE_URL}/ to become ready." >&2
+  return 1
+}
+
+wait_for_ready
+
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/" >/dev/null
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/rights" >/dev/null
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/001" >/dev/null
