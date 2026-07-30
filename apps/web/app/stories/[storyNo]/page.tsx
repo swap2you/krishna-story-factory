@@ -117,7 +117,7 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
     <div className="story-shell">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c") }}
       />
       <script
         type="application/ld+json"
