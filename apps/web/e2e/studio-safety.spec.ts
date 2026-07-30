@@ -25,15 +25,11 @@ test.describe("studio safety", () => {
     }
   });
 
-  test("public production blocks every private route", async ({ page, request }) => {
+  test("public production blocks every private route", async ({ request }) => {
     test.skip(!isPublicMode, "Blocking only applies to the public production build");
-    // Firefox replaces HTTP 404 with an interstitial and never reaches "load".
-    // Assert status via the APIRequestContext (and commit-level navigation for pages).
-    for (const prefix of PRIVATE_PAGE_PREFIXES) {
-      const response = await page.goto(prefix, { waitUntil: "commit" });
-      expect(response?.status(), `${prefix} must not be served`).toBe(404);
-    }
-    for (const prefix of PRIVATE_API_PREFIXES) {
+    // Assert over HTTP only. Firefox replaces document navigations to HTTP 404
+    // with an interstitial that can interrupt the next goto in the same page.
+    for (const prefix of [...PRIVATE_PAGE_PREFIXES, ...PRIVATE_API_PREFIXES]) {
       const response = await request.get(prefix);
       expect(response.status(), `${prefix} must not be served`).toBe(404);
     }

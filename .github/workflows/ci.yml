@@ -158,21 +158,26 @@ jobs:
     # flakes against real MP3s and computed-style checks that Chromium and
     # Production CI do not reproduce; keep running it for signal without
     # blocking the governed public boundary we just repaired.
-    continue-on-error: ${{ contains(matrix.project, 'webkit') }}
+    continue-on-error: ${{ matrix.advisory }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - project: chromium-desktop
             browser_pkg: chromium
+            advisory: false
           - project: firefox-desktop
             browser_pkg: firefox
+            advisory: false
           - project: webkit-desktop
             browser_pkg: webkit
+            advisory: true
           - project: chromium-mobile
             browser_pkg: chromium
+            advisory: false
           - project: webkit-mobile
             browser_pkg: webkit
+            advisory: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
