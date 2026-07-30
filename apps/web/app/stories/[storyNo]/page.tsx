@@ -121,7 +121,7 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c") }}
       />
       <aside className="story-sidebar">
         <Link
