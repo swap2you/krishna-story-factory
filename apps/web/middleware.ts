@@ -33,7 +33,11 @@ function isPrivate(pathname: string): boolean {
 }
 
 function applyHeaders(response: NextResponse): NextResponse {
-  response.headers.set("Content-Security-Policy", CSP);
+  const publicSite =
+    process.env.BHAVA_PUBLIC_SITE === "1" ||
+    process.env.BHAVA_PUBLIC_SITE === "true" ||
+    process.env.NODE_ENV === "production";
+  if (publicSite) response.headers.set("Content-Security-Policy", CSP);
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set("X-Frame-Options", "DENY");
