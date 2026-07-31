@@ -8,7 +8,7 @@
 
 | Component | Location | Pinned / declared | Executed (operator laptop) | Latest stable / LTS | Support | Security | Target | Decision | Justification |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Node.js (app) | `.nvmrc`, Docker `Dockerfile.web`, CI `NODE_VERSION` | **24** (LTS Krypton) | 22.23.1 local | 24.18.1 LTS | Active LTS | Prefer LTS security releases | **24** | **Upgrade required** | Align engines/CI/Docker; reject Node 26 Current |
+| Node.js (app) | `.nvmrc`, Docker `Dockerfile.web`, CI `NODE_VERSION` | **24** (Active LTS) | 22.23.1 local | 24.18.1 LTS | Active LTS | Prefer LTS security releases | **24** | **Upgrade required** | Align engines/CI/Docker; reject Node 26 Current |
 | npm | with Node | 10.x (Node 22 local) | 10.9.8 | ships with Node 24 | Active | — | Node 24 bundled npm | Follow Node | Do not chase npm major alone |
 | Next.js | `apps/web/package.json` | 15.5.22 | lock 15.5.22 | 15.5.x | Active | Monitor advisories | keep 15.5.22 | **Defer** | No forced bump without app regression budget |
 | React | root + web | 19.1.9 | lock | 19.x | Active | — | keep | **Defer** | Stable for portal |

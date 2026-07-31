@@ -24,6 +24,8 @@ case "${ENVIRONMENT}" in
     ;;
 esac
 
+mkdir -p "/opt/bhava/releases/${ENVIRONMENT}"
+
 if [[ -z "${TARGET_SHA}" ]]; then
   if [[ ! -f "${PREVIOUS_FILE}" ]]; then
     echo "ROLLBACK_UNAVAILABLE_FIRST_RELEASE"
