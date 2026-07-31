@@ -1,0 +1,24 @@
+# Composite: configure pinned SSH for VPS deploy (does not print secrets).
+name: Configure pinned SSH
+description: Write deploy key and known_hosts from secrets
+inputs:
+  ssh_key:
+    description: Private key PEM/OpenSSH contents
+    required: true
+  known_hosts:
+    description: Known hosts file contents
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Write SSH materials
+      shell: bash
+      env:
+        SSH_KEY: ${{ inputs.ssh_key }}
+        KNOWN_HOSTS: ${{ inputs.known_hosts }}
+      run: |
+        install -m 0700 -d ~/.ssh
+        printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+        chmod 0600 ~/.ssh/id_ed25519
+        printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+        chmod 0600 ~/.ssh/known_hosts

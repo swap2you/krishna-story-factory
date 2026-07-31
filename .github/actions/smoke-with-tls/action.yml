@@ -1,0 +1,31 @@
+name: Smoke with TLS readiness
+description: Environment-aware smoke after TLS/ACME readiness
+inputs:
+  base_url:
+    required: true
+  expected_sha:
+    required: true
+  environment:
+    description: staging or production
+    required: true
+  staging_basic_auth_user:
+    required: false
+    default: ""
+  staging_basic_auth_password:
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: TLS readiness then smoke
+      shell: bash
+      env:
+        STAGING_BASIC_AUTH_USER: ${{ inputs.staging_basic_auth_user }}
+        STAGING_BASIC_AUTH_PASSWORD: ${{ inputs.staging_basic_auth_password }}
+      run: |
+        set -Eeuo pipefail
+        bash deploy/ionos/scripts/tls-readiness.sh "${{ inputs.base_url }}"
+        SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh \
+          "${{ inputs.base_url }}" \
+          "${{ inputs.expected_sha }}" \
+          "${{ inputs.environment }}"

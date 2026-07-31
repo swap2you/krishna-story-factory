@@ -18,7 +18,7 @@
     "postinstall": "node scripts/ensure_native_optionals.cjs"
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=24 <25"
   },
   "optionalDependencies": {
     "@next/swc-win32-x64-msvc": "15.5.22",
