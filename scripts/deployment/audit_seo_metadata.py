@@ -36,8 +36,8 @@ if sitemap.is_file():
     sitemap_text = sitemap.read_text(encoding="utf-8")
     if "/stories/011" in sitemap_text or "PUBLIC_STORY_COUNT = 11" in sitemap_text:
         failures.append("P0 sitemap may expose Story 011")
-    if "PUBLIC_STORY_COUNT = 10" not in sitemap_text:
-        failures.append("P0 sitemap must pin Stories 001-010 only")
+    if "PUBLIC_STORY_COUNT = 20" not in sitemap_text:
+        failures.append("P0 sitemap must pin Stories 001-020 only")
 
 if robots.is_file():
     robots_text = robots.read_text(encoding="utf-8")

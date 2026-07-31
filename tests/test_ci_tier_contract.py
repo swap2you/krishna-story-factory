@@ -17,8 +17,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Needs public Stories 001-010 bytes; provisioned in CI from the approved
-# bhava-content-001-010-v1 GitHub Release.
+# Needs public Stories 001-020 bytes; provisioned in CI from the approved
+# bhava-content-001-020-v1 GitHub Release.
 BAND_CHAPTERS = ("001", "002", "003", "006", "007", "008", "009")
 CORRECTED_CHAPTERS = ("007", "009")
 

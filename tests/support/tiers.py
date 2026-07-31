@@ -95,7 +95,7 @@ TIERS = {
     "content_release": (
         missing_public_content,
         "BHAVA_REQUIRE_CONTENT",
-        "Public Stories 001-010 release content",
+        "Public Stories 001-020 release content",
     ),
     "local_archive": (
         missing_local_archives,
