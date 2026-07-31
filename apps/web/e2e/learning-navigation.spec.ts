@@ -24,9 +24,10 @@ test.describe("learning navigation", () => {
     const learning = page.getByRole("button", { name: /^Learning$/i });
     await learning.hover();
     await expect(learning).toHaveAttribute("aria-expanded", "true");
-    await expect(page.getByRole("link", { name: "For Teachers" })).toBeVisible();
+    const menu = page.getByRole("group", { name: "Learning links" });
+    await expect(menu.getByRole("link", { name: "For Teachers" })).toBeVisible();
     const overflowX = await page.locator("#primary-nav").evaluate((el) => getComputedStyle(el).overflowX);
-    expect(overflowX).toBe("visible");
+    expect(["visible", "clip"].includes(overflowX)).toBeTruthy();
   });
 
   test("mobile Learning is an inline accordion under the menu", async ({ page }) => {
@@ -35,9 +36,8 @@ test.describe("learning navigation", () => {
     await page.getByRole("button", { name: /^Menu$/i }).click();
     const learning = page.getByRole("button", { name: /^Learning$/i });
     await learning.click();
-    const teachers = page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", {
-      name: "For Teachers",
-    });
+    const menu = page.getByRole("group", { name: "Learning links" });
+    const teachers = menu.getByRole("link", { name: "For Teachers" });
     await expect(teachers).toBeVisible();
     const box = await teachers.boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);

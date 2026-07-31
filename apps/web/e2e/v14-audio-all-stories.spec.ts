@@ -16,7 +16,7 @@ test.describe("published-story audio advancement", () => {
     expect(stories.length).toBeGreaterThanOrEqual(9);
     const storyNos = stories.map((s) => String(s.story_no).padStart(3, "0"));
     expect(storyNos).toContain("009");
-    expect(storyNos).not.toContain("010");
+    expect(storyNos).not.toContain("011");
 
     for (const storyNo of storyNos) {
       await page.goto(`/stories/${storyNo}`);
