@@ -34,16 +34,18 @@ if layout.is_file():
 
 if sitemap.is_file():
     sitemap_text = sitemap.read_text(encoding="utf-8")
-    if "/stories/011" in sitemap_text or "PUBLIC_STORY_COUNT = 11" in sitemap_text:
-        failures.append("P0 sitemap may expose Story 011")
+    if "/stories/021" in sitemap_text or "PUBLIC_STORY_COUNT = 21" in sitemap_text:
+        failures.append("P0 sitemap may expose Story 021")
     if "PUBLIC_STORY_COUNT = 20" not in sitemap_text:
         failures.append("P0 sitemap must pin Stories 001-020 only")
 
 if robots.is_file():
     robots_text = robots.read_text(encoding="utf-8")
-    for private_path in ("/studio", "/dev", "/stories/011"):
+    for private_path in ("/studio", "/dev", "/stories/021"):
         if private_path not in robots_text:
             failures.append(f"P0 robots missing disallow for {private_path}")
+    if '"/stories/011"' in robots_text or "'/stories/011'" in robots_text:
+        failures.append("P0 robots still treats Story 011 as private")
 
 for relative, label in P0_PAGES.items():
     page = APP / Path(relative)

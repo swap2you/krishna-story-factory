@@ -47,9 +47,10 @@ curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/" >/dev/null
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/rights" >/dev/null
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/001" >/dev/null
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/010" >/dev/null
+curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/020" >/dev/null
 
-if curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/011" >/dev/null; then
-  echo "Story 011 is publicly reachable." >&2
+if curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/021" >/dev/null; then
+  echo "Story 021 is publicly reachable." >&2
   exit 1
 fi
 
@@ -70,9 +71,9 @@ echo "${headers}" | grep -Eiq '^HTTP/[0-9.]+ 206'
 echo "${headers}" | grep -Eiq '^content-range: bytes 0-1023/'
 echo "${headers}" | grep -Eiq '^accept-ranges: bytes'
 
-curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml" | grep -F '/stories/010' >/dev/null
-if curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml" | grep -F '/stories/011' >/dev/null; then
-  echo "Story 011 appears in sitemap." >&2
+curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml" | grep -F '/stories/020' >/dev/null
+if curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml" | grep -F '/stories/021' >/dev/null; then
+  echo "Story 021 appears in sitemap." >&2
   exit 1
 fi
 

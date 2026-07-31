@@ -25,5 +25,7 @@ def test_caddyfile_allows_same_origin_activity_pdf_embed_only() -> None:
 
 def test_caddyfile_keeps_private_story_boundary() -> None:
     text = CADDYFILE.read_text(encoding="utf-8")
-    assert "/stories/011*" in text
+    assert "private_story" in text
+    assert "2[1-9]" in text
     assert "respond @private 404" in text
+    assert "/stories/011*" not in text
