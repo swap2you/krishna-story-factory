@@ -67,15 +67,15 @@ def test_work_manifest_validation_and_sound_recording_gate() -> None:
     assert not any(line.startswith("Sound recording ℗ 20") for line in lines)
 
 
-def test_sitemap_includes_ten_stories_rights_excludes_011() -> None:
+def test_sitemap_includes_twenty_stories_rights_excludes_021() -> None:
     text = (ROOT / "apps" / "web" / "app" / "sitemap.ts").read_text(encoding="utf-8")
-    assert "PUBLIC_STORY_COUNT = 10" in text
+    assert "PUBLIC_STORY_COUNT = 20" in text
     assert '"/rights"' in text
     # The sitemap enumerates an explicit public allow-list, so private surfaces
     # cannot leak by omission from a deny-list.
     for private in ("/studio", "/dev", "/api/studio", "/api/v1/factory"):
         assert private not in text, f"Private route {private} must never be listed in the sitemap"
-    assert not re.search(r"/stories/0*(1[1-9]|[2-9]\d|\d{3,})", text), "Sitemap must stop at Story 010"
+    assert not re.search(r"/stories/0*(2[1-9]|[3-9]\d|\d{3,})", text), "Sitemap must stop at Story 020"
 
 
 def test_website_footer_and_rights_page_exist() -> None:
