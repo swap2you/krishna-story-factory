@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 
 const primary = [
   { label: "Home", href: "/" },
@@ -104,7 +104,7 @@ export function SiteHeader() {
     setLearningOpen((value) => !value);
   };
 
-  const onLearningKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+  const onLearningKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       onLearningClick();

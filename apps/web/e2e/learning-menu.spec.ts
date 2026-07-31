@@ -105,9 +105,8 @@ test.describe("Learning menu", () => {
 });
 
 test.describe("Learning menu desktop hover", () => {
-  test.skip(({ project }) => !/desktop/i.test(project.name), "Hover enhancement is desktop-only");
-
-  test("hover opens and leaving closes after delay", async ({ page }) => {
+  test("hover opens and leaving closes after delay", async ({ page }, testInfo) => {
+    test.skip(!/desktop/i.test(testInfo.project.name), "Hover enhancement is desktop-only");
     await page.goto("/");
     const fineHover = await page.evaluate(
       () => window.matchMedia("(hover: hover) and (pointer: fine)").matches,
@@ -123,9 +122,8 @@ test.describe("Learning menu desktop hover", () => {
 });
 
 test.describe("Learning menu mobile accordion", () => {
-  test.skip(({ project }) => !/mobile/i.test(project.name), "Accordion layout is mobile viewport");
-
-  test("opens as inline accordion under Learning", async ({ page }) => {
+  test("opens as inline accordion under Learning", async ({ page }, testInfo) => {
+    test.skip(!/mobile/i.test(testInfo.project.name), "Accordion layout is mobile viewport");
     await page.goto("/");
     await openPrimaryNavIfNeeded(page);
     await learningButton(page).click();
