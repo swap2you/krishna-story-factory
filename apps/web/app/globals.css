@@ -95,7 +95,7 @@ a { color: inherit; }
 }
 .footer-brand { display: flex; flex-direction: column; gap: .55rem; max-width: 28rem; }
 .brand-logo-footer { display: block; height: 48px; width: auto; object-fit: contain; border-radius: 8px; }
-.nav { display: flex; align-items: center; gap: .2rem; overflow-x: auto; scrollbar-width: none; }
+.nav { display: flex; align-items: center; gap: .2rem; overflow-x: visible; scrollbar-width: none; }
 .nav::-webkit-scrollbar { display: none; }
 .nav a {
   min-height: 44px; display: flex; align-items: center; padding: 0 .75rem; border-radius: 999px;
@@ -601,13 +601,26 @@ main { flex: 1; }
   min-height: 44px; display: flex; align-items: center; padding: 0 .75rem; border-radius: 999px;
   border: 0; background: transparent; color: var(--bhava-ink); font: inherit; font-size: .9rem; font-weight: 650; cursor: pointer;
 }
-.nav-learning__button:hover, .nav a[aria-current="page"] { background: rgba(212, 168, 75, 0.16); color: var(--bhava-midnight); }
+.nav-learning__button:hover,
+.nav-learning__button:focus-visible,
+.nav a[aria-current="page"],
+.nav-learning__menu a[aria-current="page"] {
+  background: rgba(212, 168, 75, 0.16); color: var(--bhava-midnight);
+}
+.nav-learning__button:focus-visible,
+.nav-learning__menu a:focus-visible {
+  outline: 2px solid var(--bhava-gold-soft);
+  outline-offset: 2px;
+}
 .nav-learning__menu {
   position: absolute; top: calc(100% + .35rem); left: 0; min-width: 220px; display: grid; gap: .15rem;
   padding: .55rem; border-radius: 1rem; background: rgba(255,252,246,.98);
-  border: 1px solid rgba(20,40,70,.1); box-shadow: var(--bhava-shadow-soft); z-index: 50;
+  border: 1px solid rgba(20,40,70,.1); box-shadow: var(--bhava-shadow-soft); z-index: 80;
 }
-.nav-learning__menu a { border-radius: .75rem; }
+.nav-learning__menu a {
+  border-radius: .75rem;
+  min-height: 44px;
+}
 .hero--platform {
   display: grid; align-items: end; min-height: min(82vh, 760px); padding: 5rem 0 4rem;
 }
@@ -642,7 +655,31 @@ main { flex: 1; }
 }
 @media (max-width: 720px) {
   .nav-toggle { display: inline-flex; align-items: center; }
-  .nav-learning__menu { position: static; box-shadow: none; border: 0; padding: .25rem 0 .25rem .75rem; }
+  .nav {
+    overflow-x: visible;
+    overflow-y: auto;
+    max-height: min(70vh, 32rem);
+  }
+  .nav-learning {
+    width: 100%;
+    display: grid;
+  }
+  .nav-learning__button {
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: .85rem;
+  }
+  .nav-learning__menu {
+    position: static;
+    box-shadow: none;
+    border: 0;
+    padding: .15rem 0 .35rem .85rem;
+    background: transparent;
+    min-width: 0;
+  }
+  .nav-learning__menu a {
+    width: 100%;
+  }
   .footer-grid { grid-template-columns: 1fr; }
 }
 

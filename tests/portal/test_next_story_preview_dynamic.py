@@ -37,30 +37,29 @@ def test_story_010_next_is_trinavarta() -> None:
 
 def test_public_site_hides_unreleased_next_preview(monkeypatch) -> None:
     monkeypatch.setenv("BHAVA_PUBLIC_SITE", "1")
-    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "9")
+    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "10")
     clear_next_preview_caches()
 
     stale = (
-        "# Putana\n\n"
+        "# Cart\n\n"
         "Body.\n\n"
         "## Next Story Preview\n"
         "Next time: The Salvation of Trinavarta. Wrong.\n\n"
         "## Parent/Teacher Note\n"
         "Keep gentle.\n"
     )
-    out = apply_dynamic_next_preview(stale, "009")
-    assert "Breaks the Cart" not in out
-    assert "Story 010" not in out
+    out = apply_dynamic_next_preview(stale, "010")
     assert "Trinavarta" not in out
     assert "Tṛṇāvarta" not in out
+    assert "Story 011" not in out
     assert "beautiful milestone" in out
     assert "## Parent/Teacher Note" in out
 
 
-def test_local_mode_may_preview_story_010(monkeypatch) -> None:
+def test_local_mode_may_preview_story_011(monkeypatch) -> None:
     monkeypatch.setenv("BHAVA_PUBLIC_SITE", "0")
     clear_next_preview_caches()
 
-    out = next_story_preview_markdown("009")
-    assert "Baby Kṛṣṇa Breaks the Cart" in out or "Breaks the Cart" in out
-    assert "Story 010" in out
+    out = next_story_preview_markdown("010")
+    assert "Tṛṇāvarta" in out or "Trinavarta" in out
+    assert "Story 011" in out

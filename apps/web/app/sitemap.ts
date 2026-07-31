@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { CANONICAL_ORIGIN } from "@/lib/seo";
 
-const PUBLIC_STORY_COUNT = 9;
+const PUBLIC_STORY_COUNT = 10;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [

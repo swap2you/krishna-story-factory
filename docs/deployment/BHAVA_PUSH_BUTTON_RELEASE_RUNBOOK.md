@@ -5,8 +5,8 @@
 ```powershell
 cd C:\Development\Workspace\DevotionalRepo\krishna-story-factory
 .\scripts\release-bhava.ps1 -Status
-.\scripts\release-bhava.ps1 -ContentReleaseTag bhava-content-001-009-v1 -DryRun
-.\scripts\release-bhava.ps1 -ContentReleaseTag bhava-content-001-009-v1
+.\scripts\release-bhava.ps1 -ContentReleaseTag bhava-content-001-010-v1 -DryRun
+.\scripts\release-bhava.ps1 -ContentReleaseTag bhava-content-001-010-v1
 ```
 
 Bash companion (status/dry-run only):
@@ -48,3 +48,16 @@ Bash companion (status/dry-run only):
 ## TLS readiness
 
 `deploy/ionos/scripts/tls-readiness.sh` waits with backoff for DNS, TCP 443, HTTPS, and certificate hostname match. Exit code **3** = ACME/TLS provisioning problem — do not treat as automatic application rollback.
+
+## Operator command library (Stories release)
+
+| Alias | Mapped command |
+| --- | --- |
+| BHAVA STATUS | `.\scripts\release-bhava.ps1 -Status` |
+| BHAVA COST FORECAST 011-020 MAX_USD=5 | Read `MyPilotDropbox/bhava-production-ops/reports/BHAVA_STORIES_011_020_COST_FORECAST.md` (paid gate; no API spend) |
+| BHAVA GENERATE 011-020 MAX_USD=5 | Blocked until cost approval; do not run paid batch |
+| BHAVA RELEASE `<CONTENT_TAG>` | `.\scripts\release-bhava.ps1 -ContentReleaseTag <CONTENT_TAG> -PublicStoryMax <N>` |
+| BHAVA UAT HANDOFF | Update `MyPilotDropbox/bhava-production-ops/reports/BHAVA_PRODUCTION_COWORK_UAT_HANDOFF.md` after smoke PASS |
+| BHAVA ROLLBACK STAGING | `.\scripts\release-bhava.ps1 -Rollback -Environment staging -ConfirmRollback` |
+| BHAVA ROLLBACK PRODUCTION | `.\scripts\release-bhava.ps1 -Rollback -Environment production -ConfirmRollback` |
+

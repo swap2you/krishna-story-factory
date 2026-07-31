@@ -109,7 +109,7 @@ class Settings:
     audio_provider_fallback: str = "openai"
     audio_required: bool = True
     openai_tts_enabled: bool = False
-    openai_tts_model: str = "gpt-4o-mini-tts-2025-12-15"
+    openai_tts_model: str = "gpt-4o-mini-tts"
     openai_tts_voice: str = "marin"
     openai_tts_speed: float = 0.92
     openai_tts_response_format: str = "mp3"
@@ -225,8 +225,7 @@ def load_settings(project_root: Path) -> Settings:
         audio_provider_fallback=os.getenv("AUDIO_PROVIDER_FALLBACK", "openai").strip().lower() or "openai",
         audio_required=str_to_bool(os.getenv("AUDIO_REQUIRED"), True),
         openai_tts_enabled=str_to_bool(os.getenv("OPENAI_TTS_ENABLED"), False),
-        openai_tts_model=os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts-2025-12-15").strip()
-        or "gpt-4o-mini-tts-2025-12-15",
+        openai_tts_model=os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts").strip() or "gpt-4o-mini-tts",
         openai_tts_voice=os.getenv("OPENAI_TTS_VOICE", "marin").strip() or "marin",
         openai_tts_speed=float(os.getenv("OPENAI_TTS_SPEED", "0.92") or "0.92"),
         openai_tts_response_format=os.getenv("OPENAI_TTS_RESPONSE_FORMAT", "mp3").strip() or "mp3",

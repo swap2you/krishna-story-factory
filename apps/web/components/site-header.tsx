@@ -29,12 +29,34 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function learningPathActive(pathname: string) {
+  return learningLinks.some((item) => isActive(pathname, item.href));
+}
+
 export function SiteHeader() {
   const pathname = usePathname() || "/";
   const [open, setOpen] = useState(false);
   const [learningOpen, setLearningOpen] = useState(false);
   const learningId = useId();
   const learningRef = useRef<HTMLDivElement | null>(null);
+  const hoverCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearHoverClose = () => {
+    if (hoverCloseTimer.current) {
+      clearTimeout(hoverCloseTimer.current);
+      hoverCloseTimer.current = null;
+    }
+  };
+
+  const openLearning = () => {
+    clearHoverClose();
+    setLearningOpen(true);
+  };
+
+  const scheduleCloseLearning = () => {
+    clearHoverClose();
+    hoverCloseTimer.current = setTimeout(() => setLearningOpen(false), 180);
+  };
 
   useEffect(() => {
     setOpen(false);
@@ -46,16 +68,18 @@ export function SiteHeader() {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setLearningOpen(false);
     };
-    const onClick = (event: MouseEvent) => {
+    const onPointerDown = (event: PointerEvent) => {
       if (!learningRef.current?.contains(event.target as Node)) setLearningOpen(false);
     };
     window.addEventListener("keydown", onKey);
-    window.addEventListener("mousedown", onClick);
+    window.addEventListener("pointerdown", onPointerDown);
     return () => {
       window.removeEventListener("keydown", onKey);
-      window.removeEventListener("mousedown", onClick);
+      window.removeEventListener("pointerdown", onPointerDown);
     };
   }, [learningOpen]);
+
+  useEffect(() => () => clearHoverClose(), []);
 
   return (
     <header className="site-header">
@@ -93,23 +117,49 @@ export function SiteHeader() {
             </Link>
           ))}
 
-          <div className="nav-learning" ref={learningRef}>
+          <div
+            className={`nav-learning ${learningOpen ? "is-open" : ""}`}
+            ref={learningRef}
+            onMouseEnter={openLearning}
+            onMouseLeave={scheduleCloseLearning}
+            onFocusCapture={openLearning}
+            onBlurCapture={(event) => {
+              const next = event.relatedTarget as Node | null;
+              if (!learningRef.current?.contains(next)) setLearningOpen(false);
+            }}
+          >
             <button
               type="button"
               className="nav-learning__button"
               aria-expanded={learningOpen}
               aria-controls={learningId}
+              aria-haspopup="true"
               onClick={() => setLearningOpen((value) => !value)}
             >
               Learning
             </button>
-            <div id={learningId} className={`nav-learning__menu ${learningOpen ? "is-open" : ""}`} hidden={!learningOpen}>
+            <div
+              id={learningId}
+              className={`nav-learning__menu ${learningOpen ? "is-open" : ""}`}
+              hidden={!learningOpen}
+              role="group"
+              aria-label="Learning links"
+            >
               {learningLinks.map((item) => (
-                <Link key={item.href} href={item.href} onClick={() => setLearningOpen(false)}>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive(pathname, item.href) ? "page" : undefined}
+                  onClick={() => {
+                    setLearningOpen(false);
+                    setOpen(false);
+                  }}
+                >
                   {item.label}
                 </Link>
               ))}
             </div>
+            {learningPathActive(pathname) ? <span className="sr-only">Learning section active</span> : null}
           </div>
 
           {trailing.map((item) => (
