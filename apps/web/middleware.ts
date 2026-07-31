@@ -32,11 +32,16 @@ function isPrivate(pathname: string): boolean {
   );
 }
 
+function isPublicSite(): boolean {
+  const flag = (process.env.BHAVA_PUBLIC_SITE || "").trim().toLowerCase();
+  if (flag === "0" || flag === "false" || flag === "off") return false;
+  if (flag === "1" || flag === "true" || flag === "on") return true;
+  // Default public for production containers; operators can force local mode with BHAVA_PUBLIC_SITE=0.
+  return process.env.NODE_ENV === "production";
+}
+
 function applyHeaders(response: NextResponse): NextResponse {
-  const publicSite =
-    process.env.BHAVA_PUBLIC_SITE === "1" ||
-    process.env.BHAVA_PUBLIC_SITE === "true" ||
-    process.env.NODE_ENV === "production";
+  const publicSite = isPublicSite();
   if (publicSite) response.headers.set("Content-Security-Policy", CSP);
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -51,10 +56,7 @@ function applyHeaders(response: NextResponse): NextResponse {
 }
 
 export function middleware(request: NextRequest) {
-  const publicSite =
-    process.env.BHAVA_PUBLIC_SITE === "1" ||
-    process.env.BHAVA_PUBLIC_SITE === "true" ||
-    process.env.NODE_ENV === "production";
+  const publicSite = isPublicSite();
 
   if (publicSite && isPrivate(request.nextUrl.pathname)) {
     return applyHeaders(new NextResponse(null, { status: 404 }));

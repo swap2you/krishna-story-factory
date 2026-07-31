@@ -1,8 +1,7 @@
-"""Availability probes for the four Bhāva test tiers.
+"""Availability probes for Bhāva test tiers.
 
-Story packages are large devotional media and private drafts. They are never
-committed, so tests that must verify real bytes depend on data provisioned into
-``output/`` by whoever runs them:
+``production_security`` needs no data and always runs. The three data-dependent
+tiers below are probed by this module:
 
 ``content_release``
     Public Stories 001-009 (exact-eight files each), provisioned in CI by
