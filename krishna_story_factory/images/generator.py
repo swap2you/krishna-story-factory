@@ -172,6 +172,9 @@ def _child_safe_divergent_title(title: str) -> bool:
             "aghasura",
             "bakasura",
             "vatsasura",
+            "binds",
+            "damodara",
+            "dāmodara",
         )
     )
 
