@@ -9,6 +9,8 @@ RUNTIME_ENV="${CONFIG_ROOT}/runtime.env"
 PREVIOUS_FILE="/opt/bhava/releases/${ENVIRONMENT}/previous"
 CURRENT_FILE="/opt/bhava/releases/${ENVIRONMENT}/current"
 
+mkdir -p "/opt/bhava/releases/${ENVIRONMENT}"
+
 case "${ENVIRONMENT}" in
   production)
     ENV_KEY="BHAVA_PROD_RELEASE_SHA"

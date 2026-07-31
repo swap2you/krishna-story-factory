@@ -90,7 +90,7 @@ function Show-Status {
   Write-Host "scheduler=must remain Disabled"
   Write-Host "story_010=not part of this release path"
   try {
-    $ver = curl.exe -sS --max-time 20 "https://bhava.me/api/v1/version"
+    $ver = (Invoke-RestMethod -Uri "https://bhava.me/api/v1/version" -TimeoutSec 20 | ConvertTo-Json -Compress)
     Assert-NoSecretsInOutput $ver
     Write-Host "production_version=$ver"
   } catch {
