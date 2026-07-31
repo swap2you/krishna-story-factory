@@ -22,7 +22,7 @@ tar -xzf "${BUNDLE}" -C "${staging}"
 
 python3 /opt/bhava/config/scripts/validate_public_content.py \
   --directory "${staging}" \
-  --max-story 9
+  --max-story 10
 
 rm -rf "${target}"
 mv "${staging}" "${target}"
