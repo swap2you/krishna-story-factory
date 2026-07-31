@@ -60,10 +60,14 @@ def _read_static_rows(project_root: Path) -> tuple[list[str], list[dict[str, str
         return list(reader.fieldnames or []), list(reader)
 
 
-def _derive_queue_rows(project_root: Path) -> list[dict[str, str]]:
-    """Queue rows implied by the static plan, without touching the filesystem."""
+def _derive_queue_rows(project_root: Path, *, stamp: bool = True) -> list[dict[str, str]]:
+    """Queue rows implied by the static plan, without touching the filesystem.
+
+    When ``stamp`` is false (read-only callers with no queue file), leave
+    ``updated_at`` / ``completed_at`` empty so pure reads stay deterministic.
+    """
     _, plan_rows = _read_static_rows(project_root)
-    now = datetime.now().isoformat(timespec="seconds")
+    now = datetime.now().isoformat(timespec="seconds") if stamp else ""
     rows: list[dict[str, str]] = []
     for row in plan_rows:
         chapter = row.get("chapter_no", "").strip().zfill(3)
@@ -71,7 +75,7 @@ def _derive_queue_rows(project_root: Path) -> list[dict[str, str]]:
         status = legacy if legacy in {"pending", "processing", "done", "disabled"} else ("done" if chapter in {"001", "002"} else "pending")
         rows.append({
             "chapter_no": chapter, "slug": row.get("slug", "").strip(), "status": status,
-            "attempts": "0", "last_error": "", "completed_at": now if status == "done" else "",
+            "attempts": "0", "last_error": "", "completed_at": now if status == "done" and stamp else "",
             "drive_folder_id": "", "updated_at": now,
         })
     return rows
@@ -116,7 +120,7 @@ def read_queue_state(project_root: Path) -> list[dict[str, str]]:
     """Read runtime queue state. Never writes; callers that mutate must bootstrap first."""
     path = project_root / "tracking" / "queue_state.csv"
     if not path.exists():
-        return _derive_queue_rows(project_root)
+        return _derive_queue_rows(project_root, stamp=False)
     with path.open("r", newline="", encoding="utf-8-sig") as handle:
         queue_rows = list(csv.DictReader(handle))
     return _reconcile_queue_rows(project_root, queue_rows)[0]
