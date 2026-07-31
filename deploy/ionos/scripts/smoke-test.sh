@@ -3,10 +3,27 @@ set -Eeuo pipefail
 
 BASE_URL="${1:?base URL required}"
 EXPECTED_SHA="${2:?expected SHA required}"
+# Optional third arg: staging|production — inferred from URL when omitted.
+ENVIRONMENT="${3:-}"
 AUTH_ARGS=()
+
+if [[ -z "${ENVIRONMENT}" ]]; then
+  case "${BASE_URL}" in
+    *staging*) ENVIRONMENT="staging" ;;
+    *) ENVIRONMENT="production" ;;
+  esac
+fi
 
 if [[ -n "${STAGING_BASIC_AUTH_USER:-}" && -n "${STAGING_BASIC_AUTH_PASSWORD:-}" ]]; then
   AUTH_ARGS=(-u "${STAGING_BASIC_AUTH_USER}:${STAGING_BASIC_AUTH_PASSWORD}")
+fi
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# TLS/ACME must be ready before application assertions. Failure here is exit 3
+# from tls-readiness.sh and must not be treated as an app rollback trigger.
+if [[ "${SKIP_TLS_READINESS:-0}" != "1" ]]; then
+  bash "${SCRIPT_DIR}/tls-readiness.sh" "${BASE_URL}"
 fi
 
 wait_for_ready() {
@@ -59,14 +76,24 @@ if curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml" | grep -F '/stories/010
   exit 1
 fi
 
-# Staging must remain noindex + core security headers.
 home_headers="$(curl -fsSI "${AUTH_ARGS[@]}" "${BASE_URL}/")"
-echo "${home_headers}" | grep -Eiq '^x-robots-tag:[[:space:]]*noindex'
 echo "${home_headers}" | grep -Eiq '^x-content-type-options:[[:space:]]*nosniff'
 echo "${home_headers}" | grep -Eiq '^x-frame-options:[[:space:]]*deny'
+
+# Environment-aware indexing policy:
+# - staging must stay noindex
+# - production must NOT be globally noindex
+if [[ "${ENVIRONMENT}" == "staging" ]]; then
+  echo "${home_headers}" | grep -Eiq '^x-robots-tag:[[:space:]]*noindex'
+else
+  if echo "${home_headers}" | grep -Eiq '^x-robots-tag:[[:space:]]*noindex'; then
+    echo "Production unexpectedly sends X-Robots-Tag: noindex." >&2
+    exit 1
+  fi
+fi
+
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/robots.txt" >/dev/null
 
-# Asset downloads for story 009
 for asset in narration.mp3 activity_sheet.pdf story_poster.png; do
   code="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" \
     "${BASE_URL}/api/v1/stories/009/assets/${asset}")"
@@ -76,9 +103,8 @@ for asset in narration.mp3 activity_sheet.pdf story_poster.png; do
   fi
 done
 
-# Stories 001-009 must load
 for n in 001 002 003 004 005 006 007 008 009; do
   curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${n}" >/dev/null
 done
 
-echo "Smoke test passed for ${BASE_URL} at ${EXPECTED_SHA}"
+echo "Smoke test passed for ${BASE_URL} (${ENVIRONMENT}) at ${EXPECTED_SHA}"

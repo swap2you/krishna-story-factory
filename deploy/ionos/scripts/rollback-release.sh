@@ -6,6 +6,8 @@ TARGET_SHA="${2:-}"
 
 CONFIG_ROOT="/opt/bhava/config"
 RUNTIME_ENV="${CONFIG_ROOT}/runtime.env"
+PREVIOUS_FILE="/opt/bhava/releases/${ENVIRONMENT}/previous"
+CURRENT_FILE="/opt/bhava/releases/${ENVIRONMENT}/current"
 
 case "${ENVIRONMENT}" in
   production)
@@ -22,12 +24,33 @@ case "${ENVIRONMENT}" in
     ;;
 esac
 
+mkdir -p "/opt/bhava/releases/${ENVIRONMENT}"
+
 if [[ -z "${TARGET_SHA}" ]]; then
-  TARGET_SHA="$(cat "/opt/bhava/releases/${ENVIRONMENT}/previous")"
+  if [[ ! -f "${PREVIOUS_FILE}" ]]; then
+    echo "ROLLBACK_UNAVAILABLE_FIRST_RELEASE"
+    echo "No previous release pointer at ${PREVIOUS_FILE}." >&2
+    if [[ -f "${CURRENT_FILE}" ]]; then
+      echo "Original release still recorded as current: $(cat "${CURRENT_FILE}")" >&2
+      echo "ORIGINAL_RELEASE_STILL_CURRENT"
+    fi
+    exit 4
+  fi
+  TARGET_SHA="$(cat "${PREVIOUS_FILE}")"
+  if [[ -z "${TARGET_SHA}" ]]; then
+    echo "ROLLBACK_UNAVAILABLE_EMPTY_PREVIOUS" >&2
+    exit 4
+  fi
 fi
 
-docker image inspect "bhava-web:${TARGET_SHA}" >/dev/null
-docker image inspect "bhava-api:${TARGET_SHA}" >/dev/null
+if ! docker image inspect "bhava-web:${TARGET_SHA}" >/dev/null 2>&1; then
+  echo "ROLLBACK_FAILED: missing image bhava-web:${TARGET_SHA}" >&2
+  exit 5
+fi
+if ! docker image inspect "bhava-api:${TARGET_SHA}" >/dev/null 2>&1; then
+  echo "ROLLBACK_FAILED: missing image bhava-api:${TARGET_SHA}" >&2
+  exit 5
+fi
 
 python3 - "${RUNTIME_ENV}" "${ENV_KEY}" "${TARGET_SHA}" <<'PY'
 from pathlib import Path
@@ -50,10 +73,12 @@ path.write_text("\n".join(result) + "\n", encoding="utf-8")
 PY
 
 cd "${CONFIG_ROOT}"
+chmod +x "${CONFIG_ROOT}/scripts/"*.sh 2>/dev/null || true
 docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml up -d --no-build "${SERVICES[@]}"
 mkdir -p /opt/bhava/backups
-echo "${TARGET_SHA}" >"/opt/bhava/releases/${ENVIRONMENT}/current"
+echo "${TARGET_SHA}" >"${CURRENT_FILE}"
 printf '%s\t%s\t%s\trollback\n' "$(date -u +%FT%TZ)" "${ENVIRONMENT}" "${TARGET_SHA}" \
   >>/opt/bhava/backups/deployments.tsv
 
+echo "ROLLBACK_PERFORMED"
 echo "Rolled back ${ENVIRONMENT} to ${TARGET_SHA}"

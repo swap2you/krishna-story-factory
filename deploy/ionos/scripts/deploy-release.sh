@@ -65,6 +65,7 @@ path.write_text("\n".join(result) + "\n", encoding="utf-8")
 PY
 
 cd "${CONFIG_ROOT}"
+chmod +x "${CONFIG_ROOT}/scripts/"*.sh 2>/dev/null || true
 docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml config >/dev/null
 
 # On a 2 GB VPS, staging is temporary. Stop it before a production cutover
@@ -79,5 +80,11 @@ mkdir -p /opt/bhava/backups
 echo "${RELEASE_SHA}" >"${CURRENT_FILE}"
 printf '%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "${ENVIRONMENT}" "${RELEASE_SHA}" \
   >>/opt/bhava/backups/deployments.tsv
+
+if [[ -f "${PREVIOUS_FILE}" ]]; then
+  echo "rollback_pointer_ready=1 previous=$(cat "${PREVIOUS_FILE}")"
+else
+  echo "rollback_pointer_ready=0 first_release_for_${ENVIRONMENT}"
+fi
 
 echo "Deployed ${ENVIRONMENT} ${RELEASE_SHA}"

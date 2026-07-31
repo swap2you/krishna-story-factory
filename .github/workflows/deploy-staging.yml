@@ -20,12 +20,12 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 50
     environment:
       name: staging
       url: https://staging.bhava.me
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build images
         run: |
@@ -52,15 +52,10 @@ jobs:
           sha256sum --check "${CONTENT_TAG}.tar.gz.sha256"
 
       - name: Configure pinned SSH
-        env:
-          SSH_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
-        run: |
-          install -m 0700 -d ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 0600 ~/.ssh/id_ed25519
-          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 0600 ~/.ssh/known_hosts
+        uses: ./.github/actions/configure-pinned-ssh
+        with:
+          ssh_key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
 
       - name: Transfer release
         env:
@@ -75,24 +70,34 @@ jobs:
             "${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}.tar.gz.sha256" \
             "$USER@$HOST:/opt/bhava/incoming/"
 
-      - name: Deploy and smoke
+      - name: Deploy release
         env:
           HOST: ${{ secrets.VPS_HOST }}
           PORT: ${{ secrets.VPS_PORT }}
           USER: ${{ secrets.VPS_USER }}
-          STAGING_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
-          STAGING_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
         run: |
           CONTENT_TAG="${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}"
           CONTENT_SHA="$(awk '{print $1}' "${CONTENT_TAG}.tar.gz.sha256")"
           ssh -p "$PORT" "$USER@$HOST" \
             "mkdir -p /opt/bhava/config && \
              tar -xzf /opt/bhava/incoming/bhava-config-${GITHUB_SHA}.tar.gz -C /opt/bhava/config && \
+             chmod +x /opt/bhava/config/scripts/*.sh && \
              bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
              bash /opt/bhava/config/scripts/deploy-release.sh staging ${GITHUB_SHA} \
                /opt/bhava/incoming/bhava-images-${GITHUB_SHA}.tar.gz \
                /opt/bhava/incoming/bhava-config-${GITHUB_SHA}.tar.gz"
-          STAGING_BASIC_AUTH_USER="$STAGING_USER" \
-          STAGING_BASIC_AUTH_PASSWORD="$STAGING_PASSWORD" \
-            bash deploy/ionos/scripts/smoke-test.sh https://staging.bhava.me "${GITHUB_SHA}"
+
+      - name: Staging TLS readiness
+        env:
+          STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
+          STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+        run: bash deploy/ionos/scripts/tls-readiness.sh https://staging.bhava.me
+
+      - name: Staging application smoke
+        env:
+          STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
+          STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+        run: |
+          SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh \
+            https://staging.bhava.me "${GITHUB_SHA}" staging

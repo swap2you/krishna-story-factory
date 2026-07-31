@@ -24,7 +24,7 @@ jobs:
     outputs:
       sha: ${{ steps.release.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - id: release
@@ -40,12 +40,12 @@ jobs:
   deploy:
     needs: resolve
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 60
     environment:
       name: production
       url: https://bhava.me
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ needs.resolve.outputs.sha }}
 
@@ -73,15 +73,10 @@ jobs:
           sha256sum --check "${CONTENT_TAG}.tar.gz.sha256"
 
       - name: Configure pinned SSH
-        env:
-          SSH_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
-        run: |
-          install -m 0700 -d ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 0600 ~/.ssh/id_ed25519
-          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 0600 ~/.ssh/known_hosts
+        uses: ./.github/actions/configure-pinned-ssh
+        with:
+          ssh_key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
 
       - name: Transfer and deploy
         env:
@@ -101,23 +96,63 @@ jobs:
           ssh -p "$PORT" "$USER@$HOST" \
             "mkdir -p /opt/bhava/config && \
              tar -xzf /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz -C /opt/bhava/config && \
+             chmod +x /opt/bhava/config/scripts/*.sh && \
              bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
              bash /opt/bhava/config/scripts/deploy-release.sh production ${RELEASE_SHA} \
                /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz \
                /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz"
 
-      - name: Production smoke
+      - name: TLS / ACME readiness
+        id: tls
         env:
           RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
-        run: bash deploy/ionos/scripts/smoke-test.sh https://bhava.me "${RELEASE_SHA}"
+        run: bash deploy/ionos/scripts/tls-readiness.sh https://bhava.me
 
-      - name: Roll back automatically on failed smoke
-        if: failure()
+      - name: Production application smoke
+        id: smoke
+        if: steps.tls.outcome == 'success'
+        env:
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+        run: |
+          SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh \
+            https://bhava.me "${RELEASE_SHA}" production
+
+      - name: Confirm rollback pointer
+        if: success()
         env:
           HOST: ${{ secrets.VPS_HOST }}
           PORT: ${{ secrets.VPS_PORT }}
           USER: ${{ secrets.VPS_USER }}
         run: |
           ssh -p "$PORT" "$USER@$HOST" \
-            "bash /opt/bhava/config/scripts/rollback-release.sh production"
+            'echo current=$(cat /opt/bhava/releases/production/current);
+             if [ -f /opt/bhava/releases/production/previous ]; then
+               echo previous=$(cat /opt/bhava/releases/production/previous);
+               echo rollback_pointer_ready=1;
+             else
+               echo rollback_pointer_ready=0 first_or_same_release;
+             fi'
+
+      - name: Roll back on application smoke failure only
+        if: failure() && steps.smoke.outcome == 'failure'
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          set +e
+          out="$(ssh -p "$PORT" "$USER@$HOST" \
+            "bash /opt/bhava/config/scripts/rollback-release.sh production" 2>&1)"
+          rc=$?
+          echo "$out"
+          if echo "$out" | grep -q ROLLBACK_PERFORMED; then
+            echo "Rollback performed."
+            exit 0
+          fi
+          if echo "$out" | grep -q ROLLBACK_UNAVAILABLE_FIRST_RELEASE; then
+            echo "Rollback unavailable (first production release). Leaving current release in place."
+            exit 1
+          fi
+          echo "Rollback failed (exit $rc)."
+          exit 1
