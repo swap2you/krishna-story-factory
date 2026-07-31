@@ -41,6 +41,7 @@ def test_unicode_font_resolver_supports_required_glyphs() -> None:
     assert validate_font_glyph_coverage(fonts.regular_path) == []
 
 
+@pytest.mark.local_archive
 def test_pdf_rights_page_preserves_bhava_and_footer_every_page() -> None:
     from krishna_story_factory.publication.artifacts import stamp_pdf_footer
     from krishna_story_factory.publication.identity import load_identity
@@ -65,6 +66,7 @@ def test_pdf_rights_page_preserves_bhava_and_footer_every_page() -> None:
     assert "Helvetica" not in str(note.get("reportlab_font"))
 
 
+@pytest.mark.content_release
 def test_public_packages_version_and_exact_eight() -> None:
     from krishna_story_factory.package_swap import validate_exact_eight_files
 
@@ -80,10 +82,9 @@ def test_public_packages_version_and_exact_eight() -> None:
         # The launch safety baseline is the source of truth for released versions;
         # artifact corrections advance individual stories past 2.1.1-copyright.
         assert manifest.get("version") == baseline["stories"][f"{n:03d}"]["version"]
-        assert (ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}" / "2.1.0-copyright").is_dir()
-        assert (ROOT / "output" / "_archive" / "pre-copyright" / f"{n:03d}" / "2.0").is_dir()
 
 
+@pytest.mark.local_archive
 def test_narrative_unchanged_before_rights() -> None:
     for n in range(1, 10):
         public = (_story_dir(n) / "story.md").read_text(encoding="utf-8")
@@ -97,6 +98,7 @@ def test_narrative_unchanged_before_rights() -> None:
         assert public[:pub_idx].rstrip() == master[:mas_idx].rstrip()
 
 
+@pytest.mark.local_archive
 def test_image_credit_strip_unicode_and_no_duplicate() -> None:
     from krishna_story_factory.publication.artifacts import append_image_credit_strip
     from krishna_story_factory.publication.fonts import resolve_unicode_fonts
@@ -126,16 +128,20 @@ def test_image_credit_strip_unicode_and_no_duplicate() -> None:
         assert bbox and (bbox[2] - bbox[0]) > 0
 
 
-def test_story_010_absent_and_queue_pending() -> None:
+@pytest.mark.content_release
+def test_story_010_absent_from_public_content() -> None:
     assert not list((ROOT / "output").glob("010_*"))
+
+
+@pytest.mark.local_runtime
+def test_queue_pending_holds_at_story_010() -> None:
     queue = ROOT / "tracking" / "queue_state.csv"
-    if not queue.is_file():
-        pytest.skip("queue_state.csv absent")
     rows = {str(r["chapter_no"]).zfill(3): r["status"] for r in csv.DictReader(queue.open(encoding="utf-8"))}
     assert rows.get("009") == "done"
     assert rows.get("010") == "pending"
 
 
+@pytest.mark.content_release
 def test_public_pdf_has_footer_on_all_activity_pages() -> None:
     for n in (1, 9):
         pdf = _story_dir(n) / "activity_sheet.pdf"

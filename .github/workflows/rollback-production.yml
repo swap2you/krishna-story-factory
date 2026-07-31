@@ -1,0 +1,51 @@
+name: Rollback Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Previously deployed production SHA
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bhava-production
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://bhava.me
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure pinned SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 0700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 0600 ~/.ssh/known_hosts
+
+      - name: Roll back
+        env:
+          TARGET_SHA: ${{ inputs.target_sha }}
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -p "$PORT" "$USER@$HOST" \
+            "bash /opt/bhava/config/scripts/rollback-release.sh production ${TARGET_SHA}"
+
+      - name: Verify rollback
+        env:
+          TARGET_SHA: ${{ inputs.target_sha }}
+        run: bash deploy/ionos/scripts/smoke-test.sh https://bhava.me "${TARGET_SHA}"

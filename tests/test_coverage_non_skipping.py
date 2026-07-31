@@ -1,8 +1,12 @@
 """Regression tests for Krishna Book non-skipping / coverage gates."""
 from __future__ import annotations
 
+import csv
+import shutil
 from copy import deepcopy
 from pathlib import Path
+
+import pytest
 
 from krishna_story_factory.coverage import (
     clear_coverage_cache,
@@ -13,7 +17,7 @@ from krishna_story_factory.coverage import (
     evaluate_story_coverage,
     load_coverage_ledger,
 )
-from krishna_story_factory.csv_store import read_next_pending
+from krishna_story_factory.csv_store import bootstrap_queue_state, read_next_pending
 from krishna_story_factory.models import PlanRow, StoryContent
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -275,8 +279,31 @@ def test_one_universal_story_cannot_cover_both_chapters() -> None:
     assert any("universal" in e.lower() for e in result.errors)
 
 
-def test_next_pending_is_cart_breaking() -> None:
-    nxt = read_next_pending(ROOT)
+def _released_project(tmp_path: Path, *, done_through: int = 9) -> Path:
+    """Isolated project root: committed plan plus the governed released queue.
+
+    read_next_pending() bootstraps tracking/queue_state.csv on demand, so tests
+    must never point it at the repository working tree.
+    """
+    shutil.copytree(ROOT / "input", tmp_path / "input")
+    bootstrap_queue_state(tmp_path)
+    path = tmp_path / "tracking" / "queue_state.csv"
+    with path.open(newline="", encoding="utf-8-sig") as handle:
+        reader = csv.DictReader(handle)
+        fields = list(reader.fieldnames or [])
+        rows = list(reader)
+    for row in rows:
+        chapter = int(str(row["chapter_no"]).strip() or 0)
+        row["status"] = "done" if 1 <= chapter <= done_through else "pending"
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    return tmp_path
+
+
+def test_next_pending_is_cart_breaking(tmp_path: Path) -> None:
+    nxt = read_next_pending(_released_project(tmp_path))
     assert nxt is not None
     assert nxt.chapter_no == "010"
     assert "cart" in nxt.slug
@@ -286,3 +313,11 @@ def test_next_pending_is_cart_breaking() -> None:
     assert ok.ok, ok.errors
     bad = evaluate_queue_advancement("011", queue)
     assert not bad.ok
+
+
+@pytest.mark.local_runtime
+def test_live_queue_next_pending_is_cart_breaking() -> None:
+    nxt = read_next_pending(ROOT)
+    assert nxt is not None
+    assert nxt.chapter_no == "010"
+    assert "cart" in nxt.slug

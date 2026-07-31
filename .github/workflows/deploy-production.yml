@@ -1,0 +1,123 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: Exact main commit SHA to deploy; leave blank for current main
+        required: false
+      content_release_tag:
+        description: Approved public content release
+        required: true
+        default: bhava-content-001-009-v1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bhava-production
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.release.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: release
+        env:
+          REQUESTED: ${{ inputs.commit_sha }}
+        run: |
+          git fetch origin main
+          SHA="${REQUESTED:-$(git rev-parse origin/main)}"
+          git cat-file -e "${SHA}^{commit}"
+          git merge-base --is-ancestor "$SHA" origin/main
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: resolve
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    environment:
+      name: production
+      url: https://bhava.me
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.sha }}
+
+      - name: Build exact revision
+        env:
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+        run: |
+          docker build -f deploy/ionos/Dockerfile.web -t bhava-web:${RELEASE_SHA} .
+          docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${RELEASE_SHA} .
+          docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} \
+            | gzip -9 > bhava-images-${RELEASE_SHA}.tar.gz
+          tar -czf bhava-config-${RELEASE_SHA}.tar.gz \
+            -C deploy/ionos \
+            docker-compose.yml Caddyfile runtime.env.example scripts
+
+      - name: Download approved public content
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTENT_TAG: ${{ inputs.content_release_tag }}
+        run: |
+          gh release download "$CONTENT_TAG" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "${CONTENT_TAG}.tar.gz" \
+            --pattern "${CONTENT_TAG}.tar.gz.sha256"
+          sha256sum --check "${CONTENT_TAG}.tar.gz.sha256"
+
+      - name: Configure pinned SSH
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 0700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 0600 ~/.ssh/known_hosts
+
+      - name: Transfer and deploy
+        env:
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          scp -P "$PORT" \
+            bhava-images-${RELEASE_SHA}.tar.gz \
+            bhava-config-${RELEASE_SHA}.tar.gz \
+            "${{ inputs.content_release_tag }}.tar.gz" \
+            "${{ inputs.content_release_tag }}.tar.gz.sha256" \
+            "$USER@$HOST:/opt/bhava/incoming/"
+          CONTENT_TAG="${{ inputs.content_release_tag }}"
+          CONTENT_SHA="$(awk '{print $1}' "${CONTENT_TAG}.tar.gz.sha256")"
+          ssh -p "$PORT" "$USER@$HOST" \
+            "mkdir -p /opt/bhava/config && \
+             tar -xzf /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz -C /opt/bhava/config && \
+             bash /opt/bhava/config/scripts/install-content-bundle.sh \
+               /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
+             bash /opt/bhava/config/scripts/deploy-release.sh production ${RELEASE_SHA} \
+               /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz \
+               /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz"
+
+      - name: Production smoke
+        env:
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+        run: bash deploy/ionos/scripts/smoke-test.sh https://bhava.me "${RELEASE_SHA}"
+
+      - name: Roll back automatically on failed smoke
+        if: failure()
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -p "$PORT" "$USER@$HOST" \
+            "bash /opt/bhava/config/scripts/rollback-release.sh production"

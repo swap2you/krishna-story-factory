@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BASELINE = ROOT / "docs" / "releases" / "BHAVA_STORIES_LAUNCH_SAFETY_BASELINE.json"
 
 
+@pytest.mark.content_release
 @pytest.mark.parametrize("chapter", [f"{n:03d}" for n in range(1, 10)])
 def test_launch_story_hashes_unchanged(chapter: str) -> None:
     data = json.loads(BASELINE.read_text(encoding="utf-8"))
@@ -24,6 +25,7 @@ def test_launch_story_hashes_unchanged(chapter: str) -> None:
         assert actual == expected, f"{chapter}/{name} changed"
 
 
+@pytest.mark.local_archive
 @pytest.mark.parametrize("chapter", [f"{n:03d}" for n in range(1, 10)])
 def test_pre_copyright_archive_preserved(chapter: str) -> None:
     data = json.loads(BASELINE.read_text(encoding="utf-8"))
@@ -40,6 +42,7 @@ def test_pre_copyright_archive_preserved(chapter: str) -> None:
         assert actual == expected.lower(), f"Archive drift {chapter}/{name}"
 
 
+@pytest.mark.local_archive
 @pytest.mark.parametrize("chapter", [f"{n:03d}" for n in range(1, 10)])
 def test_prior_2_1_0_archive_preserved(chapter: str) -> None:
     data = json.loads(BASELINE.read_text(encoding="utf-8"))
@@ -56,5 +59,6 @@ def test_prior_2_1_0_archive_preserved(chapter: str) -> None:
         assert actual == expected.lower(), f"2.1.0 archive drift {chapter}/{name}"
 
 
+@pytest.mark.content_release
 def test_story_010_absent_from_output() -> None:
     assert not list((ROOT / "output").glob("010_*"))

@@ -1,8 +1,16 @@
 import { PageIntro } from "@/components/page-intro";
 import { StoryGrid } from "@/components/story-grid";
 import { getStories } from "@/lib/catalog";
+import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = pageMetadata({
+  title: "Krishna Book stories for children",
+  description:
+    "Published Krishna Book bedtime packages with audio, activities, coloring pages and teacher-ready printables.",
+  path: "/library/krishna-book",
+});
 
 function publishedRangeLabel(storyNos: string[]): string {
   const nums = storyNos

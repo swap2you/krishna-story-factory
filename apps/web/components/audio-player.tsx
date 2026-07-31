@@ -84,6 +84,16 @@ async function waitForAdvancement(audio: HTMLAudioElement, minTime = 0.05, timeo
   return !audio.paused && audio.readyState >= 2 && audio.currentTime > Math.max(minTime, baseline + 0.02);
 }
 
+/** Headless Firefox/WebKit on Linux CI often need longer to decode real MP3s. */
+function advancementBudgetMs(baseMs: number): number {
+  if (typeof navigator === "undefined") return baseMs;
+  const ua = navigator.userAgent;
+  if (/firefox/i.test(ua) || (/safari/i.test(ua) && !/chrome|chromium|android/i.test(ua))) {
+    return Math.max(baseMs, 15_000);
+  }
+  return baseMs;
+}
+
 function markBlobUnsupported(mediaSrc: string) {
   BLOB_UNSUPPORTED.add(mediaSrc);
   const cached = BLOB_CACHE.get(mediaSrc);
@@ -281,7 +291,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
         /* ignore */
       }
     }
-    const ok = await waitForAdvancement(audio, 0.05, 6000);
+    const ok = await waitForAdvancement(audio, 0.05, advancementBudgetMs(6000));
     if (!ok) throw new Error("Native playback did not advance");
     setPath("native_playing");
     setStatus(null);
@@ -401,7 +411,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
       await playViaNative(audio, mediaSrc);
       return;
     }
-    const ok = await waitForAdvancement(audio, 0.05, 4000);
+    const ok = await waitForAdvancement(audio, 0.05, advancementBudgetMs(4000));
     if (!ok) {
       markBlobUnsupported(mediaSrc);
       await playViaNative(audio, mediaSrc);
@@ -434,7 +444,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
       void (async () => {
         try {
           if (playPromise) await playPromise;
-          const ok = await waitForAdvancement(audio, 0.05, 6000);
+          const ok = await waitForAdvancement(audio, 0.05, advancementBudgetMs(6000));
           if (!ok) {
             await playViaNative(audio, mediaSrc);
             return;
@@ -482,7 +492,7 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
       void (async () => {
         try {
           if (playPromise) await playPromise;
-          const ok = await waitForAdvancement(audio, 0.05, 4000);
+          const ok = await waitForAdvancement(audio, 0.05, advancementBudgetMs(4000));
           if (!ok) {
             markBlobUnsupported(mediaSrc);
             startNativeInGesture();

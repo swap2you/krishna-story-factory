@@ -1,0 +1,26 @@
+# syntax=docker/dockerfile:1.7
+FROM python:3.12-slim-bookworm AS builder
+WORKDIR /build
+COPY apps/api/requirements.production.lock /build/requirements.production.lock
+RUN python -m pip install --no-cache-dir --upgrade pip \
+ && python -m pip install --no-cache-dir --require-hashes \
+      --target /python-packages \
+      -r /build/requirements.production.lock
+
+FROM python:3.12-slim-bookworm AS runtime
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app/apps/api
+WORKDIR /app
+RUN useradd --system --uid 10002 --create-home bhava-api \
+ && mkdir -p /app/data/catalog /app/output /app/data/web-assets \
+ && chown -R bhava-api:bhava-api /app
+COPY --from=builder /python-packages /usr/local/lib/python3.12/site-packages
+COPY --chown=bhava-api:bhava-api apps/api /app/apps/api
+USER 10002
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=3)"
+CMD ["python", "-m", "uvicorn", "bhava_api.main:app", \
+     "--host", "0.0.0.0", "--port", "8000", "--workers", "1", \
+     "--proxy-headers", "--forwarded-allow-ips=*", "--no-server-header"]

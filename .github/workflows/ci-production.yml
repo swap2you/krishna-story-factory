@@ -1,0 +1,96 @@
+name: Production CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop, "feature/bhava-me-production-deployment"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  production-gate:
+    name: production-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Require deterministic API lock
+        run: |
+          test -s apps/api/requirements.production.lock
+          ! grep -q "REPLACE" apps/api/requirements.production.lock
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --require-hashes -r apps/api/requirements.production.lock
+          python -m pip install -r requirements.txt
+
+      - name: Python tests
+        env:
+          PYTHONPATH: apps/api
+        run: |
+          # Production boundary suite (no local output packages required).
+          python -m pytest -q tests/test_public_production_boundary.py
+          # Factory unit suite excluding package-hash guards that need output/.
+          python -m pytest -q -m "not slow" \
+            --ignore=tests/portal \
+            --ignore=tests/test_launch_story_hash_guard.py \
+            --ignore=tests/test_poster_text_glyphs.py \
+            --ignore=tests/test_unicode_printable_copyright.py \
+            --ignore=tests/test_pilot_release_hash_evidence.py \
+            --ignore=tests/test_release_artifacts_001_006.py \
+            --ignore=tests/test_post_pr7_release_blockers.py \
+            --ignore=tests/test_coverage_non_skipping.py \
+            --ignore=tests/test_publication_copyright.py
+
+
+      - name: Web install and checks
+        run: |
+          npm ci
+          npm run lint:web
+          npm run typecheck:web
+          npm run test:web
+          npm run build:web
+
+      - name: SEO audit
+        run: python scripts/deployment/audit_seo_metadata.py
+
+      - name: Build production images
+        run: |
+          docker build -f deploy/ionos/Dockerfile.web -t bhava-web:${GITHUB_SHA} .
+          docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${GITHUB_SHA} .
+
+      - name: Compose validation
+        env:
+          ACME_EMAIL: ci@example.invalid
+          BHAVA_CONTENT_ROOT: /tmp/bhava-content
+          BHAVA_PROD_RELEASE_SHA: ${{ github.sha }}
+          BHAVA_STAGING_RELEASE_SHA: ${{ github.sha }}
+          STAGING_BASIC_AUTH_USER: test
+          STAGING_BASIC_AUTH_HASH: "$2a$14$abcdefghijklmnopqrstuv"
+        run: docker compose -f deploy/ionos/docker-compose.yml config >/dev/null
+
+      - name: Image secret-pattern check
+        run: |
+          for image in bhava-web:${GITHUB_SHA} bhava-api:${GITHUB_SHA}; do
+            docker history --no-trunc "$image" > history.txt
+            ! grep -Eiq 'OPENAI_API_KEY|ELEVENLABS|PRIVATE KEY|BEGIN RSA|BEGIN OPENSSH' history.txt
+          done

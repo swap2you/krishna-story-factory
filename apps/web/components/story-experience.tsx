@@ -58,31 +58,64 @@ type ShlokaPayload = {
 
 type NotesSaveState = "idle" | "typing" | "saving" | "saved";
 
-function renderMarkdown(source: string): string {
+function renderInlineMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
+}
+
+export function renderMarkdown(source: string): string {
   const escaped = source
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-  const withBlocks = escaped
-    .replace(/^### (.*)$/gm, "<h3>$1</h3>")
-    .replace(/^## (.*)$/gm, "<h2>$1</h2>")
-    .replace(/^# (.*)$/gm, "<h1>$1</h1>")
-    .replace(/^\s*[-*] (.*)$/gm, "<li>$1</li>")
-    .replace(/(<li>.*<\/li>\n?)+/g, (block) => `<ul>${block}</ul>`)
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/`([^`]+)`/g, "<code>$1</code>");
+  const html: string[] = [];
+  let paragraph: string[] = [];
+  let items: string[] = [];
 
-  return withBlocks
-    .split(/\n{2,}/)
-    .map((chunk) => {
-      const trimmed = chunk.trim();
-      if (!trimmed) return "";
-      if (trimmed.startsWith("<h") || trimmed.startsWith("<ul") || trimmed.startsWith("<ol")) return trimmed;
-      return `<p>${trimmed.replace(/\n/g, "<br/>")}</p>`;
-    })
-    .join("\n");
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    html.push(`<p>${renderInlineMarkdown(paragraph.join("\n")).replace(/\n/g, "<br/>")}</p>`);
+    paragraph = [];
+  };
+  const flushList = () => {
+    if (!items.length) return;
+    const rendered = items.map((item) => `<li>${renderInlineMarkdown(item)}</li>`).join("");
+    html.push(`<ul>${rendered}</ul>`);
+    items = [];
+  };
+
+  for (const line of escaped.split("\n")) {
+    if (!line.trim()) {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+    const heading = /^(#{1,3}) +(.*)$/.exec(line);
+    if (heading) {
+      flushParagraph();
+      flushList();
+      const level = heading[1].length;
+      html.push(`<h${level}>${renderInlineMarkdown(heading[2].trim())}</h${level}>`);
+      continue;
+    }
+    const bullet = /^\s*[-*] +(.*)$/.exec(line);
+    if (bullet) {
+      // A list may begin immediately after prose, so close the paragraph first
+      // rather than letting <ul> land inside <p> with <br/> between items.
+      flushParagraph();
+      items.push(bullet[1].trim());
+      continue;
+    }
+    flushList();
+    paragraph.push(line.trim());
+  }
+  flushParagraph();
+  flushList();
+
+  return html.join("\n");
 }
 
 function formatTime(seconds: number) {

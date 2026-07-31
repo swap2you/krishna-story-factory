@@ -60,33 +60,39 @@ def _read_static_rows(project_root: Path) -> tuple[list[str], list[dict[str, str
         return list(reader.fieldnames or []), list(reader)
 
 
+def _derive_queue_rows(project_root: Path, *, stamp: bool = True) -> list[dict[str, str]]:
+    """Queue rows implied by the static plan, without touching the filesystem.
+
+    When ``stamp`` is false (read-only callers with no queue file), leave
+    ``updated_at`` / ``completed_at`` empty so pure reads stay deterministic.
+    """
+    _, plan_rows = _read_static_rows(project_root)
+    now = datetime.now().isoformat(timespec="seconds") if stamp else ""
+    rows: list[dict[str, str]] = []
+    for row in plan_rows:
+        chapter = row.get("chapter_no", "").strip().zfill(3)
+        legacy = row.get("status", "").strip().lower()
+        status = legacy if legacy in {"pending", "processing", "done", "disabled"} else ("done" if chapter in {"001", "002"} else "pending")
+        rows.append({
+            "chapter_no": chapter, "slug": row.get("slug", "").strip(), "status": status,
+            "attempts": "0", "last_error": "", "completed_at": now if status == "done" and stamp else "",
+            "drive_folder_id": "", "updated_at": now,
+        })
+    return rows
+
+
 def bootstrap_queue_state(project_root: Path) -> Path:
     path = project_root / "tracking" / "queue_state.csv"
     if path.exists():
         _sync_queue_file(project_root, path)
         return path
-    _, plan_rows = _read_static_rows(project_root)
     path.parent.mkdir(parents=True, exist_ok=True)
-    now = datetime.now().isoformat(timespec="seconds")
-    with path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=QUEUE_FIELDS)
-        writer.writeheader()
-        for row in plan_rows:
-            chapter = row.get("chapter_no", "").strip().zfill(3)
-            legacy = row.get("status", "").strip().lower()
-            status = legacy if legacy in {"pending", "processing", "done", "disabled"} else ("done" if chapter in {"001", "002"} else "pending")
-            writer.writerow({
-                "chapter_no": chapter, "slug": row.get("slug", "").strip(), "status": status,
-                "attempts": "0", "last_error": "", "completed_at": now if status == "done" else "",
-                "drive_folder_id": "", "updated_at": now,
-            })
+    _write_queue(path, _derive_queue_rows(project_root))
     return path
 
 
-def _sync_queue_file(project_root: Path, path: Path) -> None:
+def _reconcile_queue_rows(project_root: Path, queue_rows: list[dict[str, str]]) -> tuple[list[dict[str, str]], bool]:
     _, plan_rows = _read_static_rows(project_root)
-    with path.open("r", newline="", encoding="utf-8-sig") as handle:
-        queue_rows = list(csv.DictReader(handle))
     by_chapter = {row.get("chapter_no", "").strip().zfill(3): row for row in queue_rows}
     now = datetime.now().isoformat(timespec="seconds")
     changed = False
@@ -99,14 +105,25 @@ def _sync_queue_file(project_root: Path, path: Path) -> None:
             queue_rows.append(row); by_chapter[chapter] = row; changed = True
         elif by_chapter[chapter].get("slug") != slug:
             by_chapter[chapter]["slug"] = slug; by_chapter[chapter]["updated_at"] = now; changed = True
+    return queue_rows, changed
+
+
+def _sync_queue_file(project_root: Path, path: Path) -> None:
+    with path.open("r", newline="", encoding="utf-8-sig") as handle:
+        queue_rows = list(csv.DictReader(handle))
+    queue_rows, changed = _reconcile_queue_rows(project_root, queue_rows)
     if changed:
         _write_queue(path, queue_rows)
 
 
 def read_queue_state(project_root: Path) -> list[dict[str, str]]:
-    path = bootstrap_queue_state(project_root)
+    """Read runtime queue state. Never writes; callers that mutate must bootstrap first."""
+    path = project_root / "tracking" / "queue_state.csv"
+    if not path.exists():
+        return _derive_queue_rows(project_root, stamp=False)
     with path.open("r", newline="", encoding="utf-8-sig") as handle:
-        return list(csv.DictReader(handle))
+        queue_rows = list(csv.DictReader(handle))
+    return _reconcile_queue_rows(project_root, queue_rows)[0]
 
 
 def _queue_by_chapter(project_root: Path) -> dict[str, dict[str, str]]:
