@@ -78,11 +78,12 @@ jobs:
         run: |
           CONTENT_TAG="${{ inputs.content_release_tag || 'bhava-content-001-010-v1' }}"
           CONTENT_SHA="$(awk '{print $1}' "${CONTENT_TAG}.tar.gz.sha256")"
+          PUBLIC_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
           ssh -p "$PORT" "$USER@$HOST" \
             "mkdir -p /opt/bhava/config && \
              tar -xzf /opt/bhava/incoming/bhava-config-${GITHUB_SHA}.tar.gz -C /opt/bhava/config && \
              chmod +x /opt/bhava/config/scripts/*.sh && \
-             bash /opt/bhava/config/scripts/install-content-bundle.sh \
+             BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
              bash /opt/bhava/config/scripts/deploy-release.sh staging ${GITHUB_SHA} \
                /opt/bhava/incoming/bhava-images-${GITHUB_SHA}.tar.gz \
