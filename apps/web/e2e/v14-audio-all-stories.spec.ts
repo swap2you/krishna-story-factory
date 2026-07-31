@@ -123,6 +123,10 @@ test.describe("published-story audio advancement", () => {
     const prev = nos[nos.length - 2];
     const lastPad = String(last).padStart(3, "0");
     await page.goto(`/stories/${String(prev).padStart(3, "0")}`);
-    await expect(page.locator(`a[href="/stories/${lastPad}"], a[href*="/stories/${lastPad}"]`).first()).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Released story navigation" }).getByRole("link", {
+        name: new RegExp(`Story ${lastPad}`, "i"),
+      }),
+    ).toBeVisible();
   });
 });

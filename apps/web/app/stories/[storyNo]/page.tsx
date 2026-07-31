@@ -157,7 +157,7 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
         <StoryExperience
           story={story}
           storyNo={story.story_no}
-          maxReleased={Math.min(maxReleased || 9, 9)}
+          maxReleased={Math.min(maxReleased || 10, 10)}
         />
       </section>
     </div>
