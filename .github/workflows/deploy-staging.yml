@@ -12,7 +12,7 @@ on:
       content_release_tag:
         description: Public content release tag
         required: true
-        default: bhava-content-001-010-v1
+        default: bhava-content-001-020-v1
 
 permissions:
   contents: read
@@ -42,15 +42,15 @@ jobs:
           git fetch origin develop
           if [[ "$EVENT_NAME" == "push" ]]; then
             SHA="${GITHUB_SHA}"
-            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-010-v1}"
+            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-020-v1}"
             # push path ignores workflow_dispatch content input; pin from repo default until content tag bumps
-            CONTENT_TAG="bhava-content-001-010-v1"
+            CONTENT_TAG="bhava-content-001-020-v1"
             if [[ -f deploy/content/RELEASE_CONTENT.json ]]; then
               CONTENT_TAG="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["tag"])')"
             fi
           else
             SHA="${REQUESTED:-$(git rev-parse origin/develop)}"
-            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-010-v1}"
+            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-020-v1}"
           fi
           git cat-file -e "${SHA}^{commit}"
           git merge-base --is-ancestor "$SHA" origin/develop

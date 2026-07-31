@@ -1,7 +1,7 @@
 {
-  "tag": "bhava-content-001-010-v1",
-  "bundle": "bhava-content-001-010-v1.tar.gz",
-  "sha256": "d2bace63b87d695d6017613bf4a101e2a7205a2b5e6b328b9e055de21d499416",
-  "public_story_max": 10,
-  "note": "Immutable public Stories 001-010. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes, so replacing the release asset cannot silently change what CI validates. Stories 011-020 generation blocked pending cost approval."
+  "tag": "bhava-content-001-020-v1",
+  "bundle": "bhava-content-001-020-v1.tar.gz",
+  "sha256": "ac950da9df9dc110ed91753f0928682d6e2a5889264756f7d2eb9fd8d1f6e32b",
+  "public_story_max": 20,
+  "note": "Immutable public Stories 001-020. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes. Story 021+ remains private."
 }

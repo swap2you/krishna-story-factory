@@ -6,7 +6,7 @@ RELEASE="${2:?content release name required}"
 EXPECTED_SHA="${3:?expected bundle sha256 required}"
 CONTENT_ROOT="${BHAVA_CONTENT_ROOT:-/opt/bhava/content}"
 # Prefer explicit env from deploy workflow / RELEASE_CONTENT; default matches current pin.
-MAX_STORY="${BHAVA_PUBLIC_STORY_MAX:-${4:-10}}"
+MAX_STORY="${BHAVA_PUBLIC_STORY_MAX:-${4:-20}}"
 
 actual_sha="$(sha256sum "${BUNDLE}" | awk '{print $1}')"
 if [[ "${actual_sha}" != "${EXPECTED_SHA}" ]]; then

@@ -16,7 +16,7 @@
 | `SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh https://bhava.me <sha> production` | App smoke only |
 | `bash deploy/ionos/scripts/smoke-test.sh https://staging.bhava.me <sha> staging` | Staging smoke (expects noindex) |
 
-Default content tag for current public site: `bhava-content-001-010-v1`.
+Default content tag for current public site: `bhava-content-001-020-v1`.
 
 ## Operator command library (Stories release)
 
