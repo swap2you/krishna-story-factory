@@ -31,7 +31,7 @@ test.describe("public story boundary", () => {
   });
 
   test("Story 010 Next Story Preview does not advertise Story 011", async ({ page, request }) => {
-    const reader = await request.get("/api/v1/stories/010/reader.md");
+    const reader = await request.get("/api/v1/stories/010/reader");
     expect(reader.ok()).toBeTruthy();
     const md = await reader.text();
     const idx = md.indexOf("## Next Story Preview");
