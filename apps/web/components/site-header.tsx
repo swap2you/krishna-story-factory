@@ -134,7 +134,13 @@ export function SiteHeader() {
               aria-expanded={learningOpen}
               aria-controls={learningId}
               aria-haspopup="true"
-              onClick={() => setLearningOpen((value) => !value)}
+              onClick={() => {
+                // Desktop: hover may already open the menu; a click must not toggle it closed.
+                // Mobile accordion: click toggles open/closed.
+                const mobile =
+                  typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches;
+                setLearningOpen((was) => (mobile ? !was : true));
+              }}
             >
               Learning
             </button>

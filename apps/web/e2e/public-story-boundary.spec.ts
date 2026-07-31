@@ -30,21 +30,21 @@ test.describe("public story boundary", () => {
     }
   });
 
-  test("Story 010 Next Story Preview does not advertise Story 011", async ({ page }) => {
+  test("Story 010 Next Story Preview does not advertise Story 011", async ({ page, request }) => {
+    const reader = await request.get("/api/v1/stories/010/reader.md");
+    expect(reader.ok()).toBeTruthy();
+    const md = await reader.text();
+    const idx = md.indexOf("## Next Story Preview");
+    expect(idx).toBeGreaterThanOrEqual(0);
+    const window = md.slice(idx, idx + 320);
+    expect(window).not.toMatch(/Story 011/i);
+    expect(window).not.toMatch(/Tṛṇāvarta|Trinavarta/i);
+    expect(window).toMatch(/beautiful milestone|Celebrate with gratitude/i);
+
     await page.goto("/stories/010");
     await expect(page.getByRole("heading", { name: /Breaks the Cart|Cart/i }).first()).toBeVisible({
       timeout: 20_000,
     });
-    await page.getByRole("tab", { name: /Read/i }).click().catch(() => undefined);
-    const preview = page.locator("text=Next Story Preview").first();
-    if (await preview.count()) {
-      const sectionText = await page.locator("article, .reading, main").innerText();
-      const idx = sectionText.indexOf("Next Story Preview");
-      const window = idx >= 0 ? sectionText.slice(idx, idx + 280) : "";
-      expect(window).not.toMatch(/Story 011/i);
-      expect(window).not.toMatch(/Tṛṇāvarta|Trinavarta/i);
-      expect(window).toMatch(/beautiful milestone|Celebrate with gratitude/i);
-    }
   });
 
   test("sitemap lists Stories 001-010 only", async ({ request, baseURL }) => {
