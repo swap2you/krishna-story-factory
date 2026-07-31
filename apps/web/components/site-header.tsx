@@ -131,8 +131,9 @@ export function SiteHeader() {
   };
 
   const onLearningFocusCapture = () => {
+    // Keep open while focus moves inside; do not force-open on mouse click focus
+    // (that races with the click toggle and immediately closes the menu).
     clearHoverCloseTimer();
-    openLearning();
   };
 
   return (

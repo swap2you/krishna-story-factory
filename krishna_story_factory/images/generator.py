@@ -321,6 +321,13 @@ def _identity_constraints(title: str) -> str:
             "Do not depict graphic struggle, choking, injury, corpses, scary demon faces, or violent combat. "
             "If a defeated asura is implied, keep it abstract/distant or omit the body entirely; prefer the peaceful reunion scene."
         )
+    if any(token in title for token in ("Binds", "Damodara", "Dāmodara", "Mother Yasoda", "Mother Yaśodā")):
+        return (
+            universal
+            + " Child-safe Damodara tone: show Mother Yaśodā’s loving care and baby Kṛṣṇa’s playful smile near a mortar. "
+            "Do not depict ropes wrapped tightly around the child, bondage poses, struggle, or frightening restraint. "
+            "Prefer embrace, playful butter pots, and peaceful courtyard devotion."
+        )
     return universal
 
 
