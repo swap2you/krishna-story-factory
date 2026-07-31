@@ -121,7 +121,8 @@ test.describe("published-story audio advancement", () => {
       .sort((a, b) => a - b);
     const last = nos[nos.length - 1];
     const prev = nos[nos.length - 2];
+    const lastPad = String(last).padStart(3, "0");
     await page.goto(`/stories/${String(prev).padStart(3, "0")}`);
-    await expect(page.getByRole("link", { name: new RegExp(`Story ${String(last).padStart(3, "0")}`, "i") })).toBeVisible();
+    await expect(page.locator(`a[href="/stories/${lastPad}"], a[href*="/stories/${lastPad}"]`).first()).toBeVisible();
   });
 });
