@@ -16,7 +16,7 @@ test.describe("published-story audio advancement", () => {
     expect(stories.length).toBeGreaterThanOrEqual(9);
     const storyNos = stories.map((s) => String(s.story_no).padStart(3, "0"));
     expect(storyNos).toContain("009");
-    expect(storyNos).not.toContain("010");
+    expect(storyNos).not.toContain("011");
 
     for (const storyNo of storyNos) {
       await page.goto(`/stories/${storyNo}`);
@@ -121,7 +121,12 @@ test.describe("published-story audio advancement", () => {
       .sort((a, b) => a - b);
     const last = nos[nos.length - 1];
     const prev = nos[nos.length - 2];
+    const lastPad = String(last).padStart(3, "0");
     await page.goto(`/stories/${String(prev).padStart(3, "0")}`);
-    await expect(page.getByRole("link", { name: new RegExp(`Story ${String(last).padStart(3, "0")}`, "i") })).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Released story navigation" }).getByRole("link", {
+        name: new RegExp(`Story ${lastPad}`, "i"),
+      }),
+    ).toBeVisible();
   });
 });

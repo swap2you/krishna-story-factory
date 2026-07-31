@@ -5,8 +5,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 MODE="${1:-status}"
-CONTENT_TAG="${CONTENT_RELEASE_TAG:-bhava-content-001-009-v1}"
-PUBLIC_MAX="${PUBLIC_STORY_MAX:-9}"
+CONTENT_TAG="${CONTENT_RELEASE_TAG:-bhava-content-001-010-v1}"
+PUBLIC_MAX="${PUBLIC_STORY_MAX:-10}"
 
 case "$MODE" in
   status)

@@ -1,6 +1,6 @@
 name: Provision public content
 description: >
-  Download the approved Stories 001-009 release, verify it against the committed
+  Download the approved public Stories release, verify it against the committed
   digest, validate its structure, and extract it into output/.
 
 runs:
@@ -46,5 +46,5 @@ runs:
       shell: bash
       run: |
         tar -xzf "$RUNNER_TEMP/bhava-content/${{ steps.pin.outputs.bundle }}" -C "$GITHUB_WORKSPACE"
-        test -d output/009_putana-krishnas-astonishing-mercy
-        test ! -d output/010_baby-krishna-breaks-the-cart
+        test -d output/010_baby-krishna-breaks-the-cart
+        test ! -d output/011_the-salvation-of-trinavarta

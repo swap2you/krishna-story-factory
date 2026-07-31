@@ -8,7 +8,7 @@ on:
       content_release_tag:
         description: Public content release tag
         required: true
-        default: bhava-content-001-009-v1
+        default: bhava-content-001-010-v1
 
 permissions:
   contents: read
@@ -43,7 +43,7 @@ jobs:
       - name: Download approved public content
         env:
           GH_TOKEN: ${{ github.token }}
-          CONTENT_TAG: ${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}
+          CONTENT_TAG: ${{ inputs.content_release_tag || 'bhava-content-001-010-v1' }}
         run: |
           gh release download "$CONTENT_TAG" \
             --repo "${GITHUB_REPOSITORY}" \
@@ -66,8 +66,8 @@ jobs:
           scp -P "$PORT" \
             bhava-images-${GITHUB_SHA}.tar.gz \
             bhava-config-${GITHUB_SHA}.tar.gz \
-            "${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}.tar.gz" \
-            "${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}.tar.gz.sha256" \
+            "${{ inputs.content_release_tag || 'bhava-content-001-010-v1' }}.tar.gz" \
+            "${{ inputs.content_release_tag || 'bhava-content-001-010-v1' }}.tar.gz.sha256" \
             "$USER@$HOST:/opt/bhava/incoming/"
 
       - name: Deploy release
@@ -76,7 +76,7 @@ jobs:
           PORT: ${{ secrets.VPS_PORT }}
           USER: ${{ secrets.VPS_USER }}
         run: |
-          CONTENT_TAG="${{ inputs.content_release_tag || 'bhava-content-001-009-v1' }}"
+          CONTENT_TAG="${{ inputs.content_release_tag || 'bhava-content-001-010-v1' }}"
           CONTENT_SHA="$(awk '{print $1}' "${CONTENT_TAG}.tar.gz.sha256")"
           ssh -p "$PORT" "$USER@$HOST" \
             "mkdir -p /opt/bhava/config && \

@@ -60,5 +60,5 @@ def test_prior_2_1_0_archive_preserved(chapter: str) -> None:
 
 
 @pytest.mark.content_release
-def test_story_010_absent_from_output() -> None:
-    assert not list((ROOT / "output").glob("010_*"))
+def test_story_011_absent_from_output() -> None:
+    assert not list((ROOT / "output").glob("011_*"))

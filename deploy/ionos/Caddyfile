@@ -10,17 +10,28 @@
 		-Server
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
-		X-Frame-Options "DENY"
 		Permissions-Policy "accelerometer=(), autoplay=(self), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()"
 		Cross-Origin-Opener-Policy "same-origin"
 		Cross-Origin-Resource-Policy "same-origin"
 		Strict-Transport-Security "max-age=86400"
 	}
 
+	# Public activity-sheet PDF only: allow same-origin iframe preview.
+	# All other routes keep clickjacking DENY (including HTML and private APIs).
+	@activity_pdf path_regexp activity_pdf ^/api/v1/stories/[0-9]{3}/assets/activity_sheet\.pdf$
+	@not_activity_pdf not path_regexp activity_pdf ^/api/v1/stories/[0-9]{3}/assets/activity_sheet\.pdf$
+	header @not_activity_pdf {
+		X-Frame-Options "DENY"
+	}
+	header @activity_pdf {
+		X-Frame-Options "SAMEORIGIN"
+		Content-Security-Policy "frame-ancestors 'self'"
+	}
+
 	@immutable path /_next/static/* /brand/* /heroes/* /icons/* /collections/* /empty-states/*
 	header @immutable Cache-Control "public, max-age=31536000, immutable"
 
-	@private path /studio* /dev* /api/studio* /api/v1/factory* /api/v1/scheduler* /api/v1/queue* /stories/010*
+	@private path /studio* /dev* /api/studio* /api/v1/factory* /api/v1/scheduler* /api/v1/queue* /stories/011*
 	respond @private 404
 
 	@mutation {

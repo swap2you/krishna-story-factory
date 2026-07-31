@@ -20,7 +20,7 @@ export async function generateMetadata({
   const { storyNo } = await params;
   const digits = storyNo.replace(/\D/g, "");
   const numeric = Number.parseInt(digits, 10);
-  if (!digits || !Number.isFinite(numeric) || numeric < 1 || numeric > 9) {
+  if (!digits || !Number.isFinite(numeric) || numeric < 1 || numeric > 10) {
     return pageMetadata({
       title: `Story ${storyNo} — unpublished`,
       description: "This Bhāva story is not publicly released.",
@@ -55,7 +55,7 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
   if (!/^[a-z0-9-]+$/i.test(storyNo)) notFound();
 
   const numeric = Number.parseInt(storyNo.replace(/\D/g, ""), 10);
-  if (!Number.isFinite(numeric) || numeric < 1 || numeric > 9) notFound();
+  if (!Number.isFinite(numeric) || numeric < 1 || numeric > 10) notFound();
 
   let story = null;
   let maxReleased = 0;
@@ -157,7 +157,7 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
         <StoryExperience
           story={story}
           storyNo={story.story_no}
-          maxReleased={Math.min(maxReleased || 9, 9)}
+          maxReleased={Math.min(maxReleased || 10, 10)}
         />
       </section>
     </div>

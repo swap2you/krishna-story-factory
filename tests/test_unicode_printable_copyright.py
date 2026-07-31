@@ -129,8 +129,8 @@ def test_image_credit_strip_unicode_and_no_duplicate() -> None:
 
 
 @pytest.mark.content_release
-def test_story_010_absent_from_public_content() -> None:
-    assert not list((ROOT / "output").glob("010_*"))
+def test_story_011_absent_from_public_content() -> None:
+    assert not list((ROOT / "output").glob("011_*"))
 
 
 @pytest.mark.local_runtime

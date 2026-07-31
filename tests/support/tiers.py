@@ -4,8 +4,8 @@
 tiers below are probed by this module:
 
 ``content_release``
-    Public Stories 001-009 (exact-eight files each), provisioned in CI by
-    downloading and verifying the approved ``bhava-content-001-009-v1`` GitHub
+    Public Stories 001-010 (exact-eight files each), provisioned in CI by
+    downloading and verifying the approved ``bhava-content-001-010-v1`` GitHub
     Release, and present naturally on an operator workstation.
 
 ``local_archive``
@@ -95,7 +95,7 @@ TIERS = {
     "content_release": (
         missing_public_content,
         "BHAVA_REQUIRE_CONTENT",
-        "public Stories 001-009 release content",
+        "Public Stories 001-010 release content",
     ),
     "local_archive": (
         missing_local_archives,

@@ -15,8 +15,8 @@ from .redact import sanitize_error_text
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_OPENAI_TTS_MODEL = "gpt-4o-mini-tts-2025-12-15"
-FALLBACK_OPENAI_TTS_MODELS = ("gpt-4o-mini-tts", "tts-1-hd")
+DEFAULT_OPENAI_TTS_MODEL = "gpt-4o-mini-tts"
+FALLBACK_OPENAI_TTS_MODELS = ("gpt-4o-mini-tts-2025-12-15", "tts-1-hd")
 
 # Terminal statuses for callers
 BLOCKED_OPENAI_TTS_QUOTA = "BLOCKED_OPENAI_TTS_QUOTA"

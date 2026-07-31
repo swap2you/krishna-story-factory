@@ -42,12 +42,13 @@ def _cache_control(path: Path) -> str:
     return "public, max-age=3600, must-revalidate"
 
 
-def _common_headers(path: Path) -> dict[str, str]:
+def _common_headers(path: Path, *, download: bool = False) -> dict[str, str]:
     encoded = quote(path.name, safe="")
+    disposition = "attachment" if download else "inline"
     return {
         "accept-ranges": "bytes",
         "cache-control": _cache_control(path),
-        "content-disposition": f"inline; filename*=UTF-8''{encoded}",
+        "content-disposition": f"{disposition}; filename*=UTF-8''{encoded}",
         "x-content-type-options": "nosniff",
     }
 
@@ -95,7 +96,8 @@ def serve_asset(
 ):
     path, media_type = _resolve_asset(story_no, filename, session)
     size = path.stat().st_size
-    headers = _common_headers(path)
+    download = request.query_params.get("download", "").strip().lower() in {"1", "true", "yes"}
+    headers = _common_headers(path, download=download)
 
     range_value = request.headers.get("range")
     if range_value:
