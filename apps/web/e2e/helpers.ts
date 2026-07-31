@@ -11,6 +11,10 @@ export async function fetchStories(request: APIRequestContext) {
 
 export async function expectNoCriticalAxe(page: Page) {
   // Lazy import so unit tooling without browsers still loads helpers.
+  // Wait for network settle so Firefox axe on heavier routes (/faq) is deterministic.
+  await page.waitForLoadState("domcontentloaded");
+  await page.locator("main, #main, [role='main'], body").first().waitFor({ state: "visible", timeout: 30_000 });
+  await page.waitForTimeout(250);
   const AxeBuilder = (await import("@axe-core/playwright")).default;
   const results = await new AxeBuilder({ page }).analyze();
   const serious = results.violations.filter((v) => v.impact === "critical" || v.impact === "serious");

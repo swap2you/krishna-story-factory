@@ -5,6 +5,10 @@ on:
     branches: [develop]
   workflow_dispatch:
     inputs:
+      commit_sha:
+        description: Exact develop commit SHA to deploy; leave blank for current origin/develop
+        required: false
+        default: ""
       content_release_tag:
         description: Public content release tag
         required: true
@@ -18,7 +22,44 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.release.outputs.sha }}
+      content_tag: ${{ steps.release.outputs.content_tag }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: develop
+
+      - id: release
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED: ${{ inputs.commit_sha }}
+          CONTENT_TAG_INPUT: ${{ inputs.content_release_tag }}
+        run: |
+          git fetch origin develop
+          if [[ "$EVENT_NAME" == "push" ]]; then
+            SHA="${GITHUB_SHA}"
+            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-010-v1}"
+            # push path ignores workflow_dispatch content input; pin from repo default until content tag bumps
+            CONTENT_TAG="bhava-content-001-010-v1"
+            if [[ -f deploy/content/RELEASE_CONTENT.json ]]; then
+              CONTENT_TAG="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["tag"])')"
+            fi
+          else
+            SHA="${REQUESTED:-$(git rev-parse origin/develop)}"
+            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-010-v1}"
+          fi
+          git cat-file -e "${SHA}^{commit}"
+          git merge-base --is-ancestor "$SHA" origin/develop
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "content_tag=$CONTENT_TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved staging deploy SHA=$SHA content=$CONTENT_TAG"
+
   deploy:
+    needs: resolve
     runs-on: ubuntu-latest
     timeout-minutes: 50
     environment:
@@ -26,24 +67,30 @@ jobs:
       url: https://staging.bhava.me
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.resolve.outputs.sha }}
 
       - name: Build images
+        env:
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
         run: |
-          docker build -f deploy/ionos/Dockerfile.web -t bhava-web:${GITHUB_SHA} .
-          docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${GITHUB_SHA} .
-          docker save bhava-web:${GITHUB_SHA} bhava-api:${GITHUB_SHA} \
-            | gzip -9 > bhava-images-${GITHUB_SHA}.tar.gz
+          docker build -f deploy/ionos/Dockerfile.web -t bhava-web:${RELEASE_SHA} .
+          docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${RELEASE_SHA} .
+          docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} \
+            | gzip -9 > bhava-images-${RELEASE_SHA}.tar.gz
 
       - name: Package deployment configuration
+        env:
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
         run: |
-          tar -czf bhava-config-${GITHUB_SHA}.tar.gz \
+          tar -czf bhava-config-${RELEASE_SHA}.tar.gz \
             -C deploy/ionos \
             docker-compose.yml Caddyfile runtime.env.example scripts
 
       - name: Download approved public content
         env:
           GH_TOKEN: ${{ github.token }}
-          CONTENT_TAG: ${{ inputs.content_release_tag || 'bhava-content-001-010-v1' }}
+          CONTENT_TAG: ${{ needs.resolve.outputs.content_tag }}
         run: |
           gh release download "$CONTENT_TAG" \
             --repo "${GITHUB_REPOSITORY}" \
@@ -62,12 +109,14 @@ jobs:
           HOST: ${{ secrets.VPS_HOST }}
           PORT: ${{ secrets.VPS_PORT }}
           USER: ${{ secrets.VPS_USER }}
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+          CONTENT_TAG: ${{ needs.resolve.outputs.content_tag }}
         run: |
           scp -P "$PORT" \
-            bhava-images-${GITHUB_SHA}.tar.gz \
-            bhava-config-${GITHUB_SHA}.tar.gz \
-            "${{ inputs.content_release_tag || 'bhava-content-001-010-v1' }}.tar.gz" \
-            "${{ inputs.content_release_tag || 'bhava-content-001-010-v1' }}.tar.gz.sha256" \
+            bhava-images-${RELEASE_SHA}.tar.gz \
+            bhava-config-${RELEASE_SHA}.tar.gz \
+            "${CONTENT_TAG}.tar.gz" \
+            "${CONTENT_TAG}.tar.gz.sha256" \
             "$USER@$HOST:/opt/bhava/incoming/"
 
       - name: Deploy release
@@ -75,19 +124,20 @@ jobs:
           HOST: ${{ secrets.VPS_HOST }}
           PORT: ${{ secrets.VPS_PORT }}
           USER: ${{ secrets.VPS_USER }}
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+          CONTENT_TAG: ${{ needs.resolve.outputs.content_tag }}
         run: |
-          CONTENT_TAG="${{ inputs.content_release_tag || 'bhava-content-001-010-v1' }}"
           CONTENT_SHA="$(awk '{print $1}' "${CONTENT_TAG}.tar.gz.sha256")"
           PUBLIC_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
           ssh -p "$PORT" "$USER@$HOST" \
             "mkdir -p /opt/bhava/config && \
-             tar -xzf /opt/bhava/incoming/bhava-config-${GITHUB_SHA}.tar.gz -C /opt/bhava/config && \
+             tar -xzf /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz -C /opt/bhava/config && \
              chmod +x /opt/bhava/config/scripts/*.sh && \
              BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
-             bash /opt/bhava/config/scripts/deploy-release.sh staging ${GITHUB_SHA} \
-               /opt/bhava/incoming/bhava-images-${GITHUB_SHA}.tar.gz \
-               /opt/bhava/incoming/bhava-config-${GITHUB_SHA}.tar.gz"
+             bash /opt/bhava/config/scripts/deploy-release.sh staging ${RELEASE_SHA} \
+               /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz \
+               /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz"
 
       - name: Staging TLS readiness
         env:
@@ -99,6 +149,7 @@ jobs:
         env:
           STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
           STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
         run: |
           SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh \
-            https://staging.bhava.me "${GITHUB_SHA}" staging
+            https://staging.bhava.me "${RELEASE_SHA}" staging
