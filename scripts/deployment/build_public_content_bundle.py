@@ -40,7 +40,7 @@ def main() -> int:
     parser.add_argument("--repository-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--manifest-output", type=Path, required=True)
-    parser.add_argument("--max-story", type=int, default=9)
+    parser.add_argument("--max-story", type=int, default=10)
     args = parser.parse_args()
 
     repository = args.repository_root.resolve()
