@@ -205,6 +205,9 @@ function Invoke-Release {
 - [ ] CI green
 - [ ] Production deploy after merge + environment approval
 "@
+    if ($LASTEXITCODE -ne 0) {
+      throw "gh pr create failed ($LASTEXITCODE)"
+    }
   } finally {
     Pop-Location
   }

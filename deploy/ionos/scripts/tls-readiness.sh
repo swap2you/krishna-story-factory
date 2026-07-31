@@ -64,14 +64,15 @@ while (( attempt < MAX_ATTEMPTS )); do
     if command -v openssl >/dev/null 2>&1; then
       cert_host="$(echo | openssl s_client -servername "${HOST}" -connect "${HOST}:443" 2>/dev/null \
         | openssl x509 -noout -subject -ext subjectAltName 2>/dev/null || true)"
-      if ! grep -Eiq "${HOST}|DNS:${HOST}" <<<"${cert_host}"; then
-        echo "Attempt ${attempt}/${MAX_ATTEMPTS}: HTTP ${code} but certificate does not yet name ${HOST}"
+      # Fixed-string match only — HOST may contain regex metacharacters (e.g. dots).
+      if ! grep -Fq "DNS:${HOST}" <<<"${cert_host}"; then
+        echo "Attempt ${attempt}/${MAX_ATTEMPTS}: HTTP ${code} but certificate does not yet name DNS:${HOST}"
         echo "${cert_host}" | head -n 5
         rm -f "${body}"
         sleep "${SLEEP_SECONDS}"
         continue
       fi
-      echo "Certificate names ${HOST}"
+      echo "Certificate names DNS:${HOST}"
     fi
     rm -f "${body}"
     echo "TLS ready after ${attempt} attempt(s) (HTTP ${code})."
