@@ -3,20 +3,20 @@ import { fetchStories } from "./helpers";
 
 test.describe("published-story audio advancement", () => {
   test("catalog-driven play advances currentTime for every published story", async ({ page, request }, testInfo) => {
-    test.setTimeout(3 * 60_000);
+    test.setTimeout(6 * 60_000);
     test.skip(
       testInfo.project.name.includes("mobile") && testInfo.project.name.includes("webkit"),
       "iOS WebKit autoplay policy",
     );
-    // Desktop WebKit is slower for sequential MP3 blob priming across nine stories.
+    // Desktop WebKit is slower for sequential MP3 blob priming across twenty stories.
     if (testInfo.project.name === "webkit-desktop") {
-      test.setTimeout(5 * 60_000);
+      test.setTimeout(10 * 60_000);
     }
     const stories = await fetchStories(request);
-    expect(stories.length).toBeGreaterThanOrEqual(9);
+    expect(stories.length).toBe(20);
     const storyNos = stories.map((s) => String(s.story_no).padStart(3, "0"));
-    expect(storyNos).toContain("009");
-    expect(storyNos).not.toContain("011");
+    expect(storyNos).toContain("020");
+    expect(storyNos).not.toContain("021");
 
     for (const storyNo of storyNos) {
       await page.goto(`/stories/${storyNo}`);

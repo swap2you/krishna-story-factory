@@ -19,10 +19,10 @@
 [CmdletBinding(DefaultParameterSetName = "Release")]
 param(
   [Parameter(ParameterSetName = "Release")]
-  [string]$ContentReleaseTag = "bhava-content-001-010-v1",
+  [string]$ContentReleaseTag = "bhava-content-001-020-v1",
 
   [Parameter(ParameterSetName = "Release")]
-  [int]$PublicStoryMax = 10,
+  [int]$PublicStoryMax = 20,
 
   [Parameter(ParameterSetName = "Release")]
   [switch]$DryRun,
@@ -112,8 +112,8 @@ function Assert-ContentPolicy {
   if ($PublicStoryMax -ge 11 -and $ContentReleaseTag -notmatch 'bhava-content-001-020') {
     throw "PublicStoryMax=$PublicStoryMax requires content tag bhava-content-001-020-* (got $ContentReleaseTag)."
   }
-  if ($ContentReleaseTag -notmatch "^bhava-content-001-0(09|10)-") {
-    Write-Warning "Content tag '$ContentReleaseTag' is outside the approved 001-009/001-010 series. Confirm intentionally before promote."
+  if ($ContentReleaseTag -notmatch "^bhava-content-001-(009|010|020)-") {
+    Write-Warning "Content tag '$ContentReleaseTag' is outside the approved 001-009/001-010/001-020 series. Confirm intentionally before promote."
   }
   $pin = Join-Path $RepoRoot "deploy/content/RELEASE_CONTENT.json"
   if (Test-Path $pin) {

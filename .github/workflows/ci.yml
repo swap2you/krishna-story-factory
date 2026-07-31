@@ -197,7 +197,7 @@ jobs:
           BHAVA_OUTPUT_ROOT: ${{ github.workspace }}/output
           BHAVA_CATALOG_DB: ${{ runner.temp }}/bhava-public.sqlite
           BHAVA_PUBLIC_SITE: "1"
-          BHAVA_PUBLIC_STORY_MAX: "10"
+          BHAVA_PUBLIC_STORY_MAX: "20"
           BHAVA_ENFORCE_LOOPBACK: "0"
           BHAVA_FACTORY_ACTIONS_ENABLED: "0"
           BHAVA_ALLOWED_HOSTS: 127.0.0.1,localhost
@@ -209,7 +209,7 @@ jobs:
             curl -sf http://127.0.0.1:8000/healthz >/dev/null && break
             sleep 1
           done
-          curl -sf http://127.0.0.1:8000/api/v1/stories | python -c "import json,sys; assert [s['story_no'] for s in json.load(sys.stdin)] == [f'{n:03d}' for n in range(1,11)]"
+          curl -sf http://127.0.0.1:8000/api/v1/stories | python -c "import json,sys; assert [s['story_no'] for s in json.load(sys.stdin)] == [f'{n:03d}' for n in range(1,21)]"
 
       - name: Build and start public production web
         env:
