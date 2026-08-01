@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Button, Tabs, Toast, useToast } from "@bhava/ui";
 import Link from "next/link";
 import type { Story } from "@/lib/catalog";
 import { AudioPlayer } from "@/components/audio-player";
 import { PdfJsViewer } from "@/components/pdf-js-viewer";
+import { lockBodyScroll } from "@/lib/body-scroll-lock";
 
 type Mode = "default" | "sepia" | "dark";
 
@@ -137,12 +139,25 @@ function addHeadingIds(html: string): { html: string; headings: Array<{ id: stri
   return { html: processed, headings };
 }
 
-/* ── Phase 5: Sticky mini-player ──────────────────────────────── */
+/* ── True floating mini-player (portaled, fixed) ──────────────── */
 
-function MiniPlayer({ audioEl, title }: { audioEl: HTMLAudioElement; title: string }) {
+function MiniPlayer({
+  audioEl,
+  title,
+  geometry,
+}: {
+  audioEl: HTMLAudioElement;
+  title: string;
+  geometry: { top: number; left: number; width: number };
+}) {
   const [playing, setPlaying] = useState(!audioEl.paused);
   const [current, setCurrent] = useState(audioEl.currentTime);
   const [duration, setDuration] = useState(audioEl.duration || 0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const onPlay = () => setPlaying(true);
@@ -181,31 +196,74 @@ function MiniPlayer({ audioEl, title }: { audioEl: HTMLAudioElement; title: stri
     [audioEl],
   );
 
-  const progress = duration ? current / duration : 0;
+  const seekRatio = useCallback(
+    (clientX: number, el: HTMLElement) => {
+      if (!duration) return;
+      const rect = el.getBoundingClientRect();
+      const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+      audioEl.currentTime = ratio * duration;
+    },
+    [audioEl, duration],
+  );
 
-  return (
-    <div className="mini-player" role="region" aria-label="Mini audio player">
-      <button className="mini-player-btn" onClick={toggle} aria-label={playing ? "Pause" : "Play"}>
+  const progress = duration ? current / duration : 0;
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      className="mini-player mini-player--floating"
+      role="region"
+      aria-label="Mini audio player"
+      style={{
+        top: geometry.top,
+        left: geometry.left,
+        width: geometry.width,
+      }}
+    >
+      <button type="button" className="mini-player-btn" onClick={toggle} aria-label={playing ? "Pause" : "Play"}>
         {playing ? "\u23F8" : "\u25B6"}
       </button>
       <span className="mini-player-title">{title}</span>
-      <button className="mini-player-skip" onClick={() => skip(-15)} aria-label="Back 15 seconds">&minus;15</button>
+      <button type="button" className="mini-player-skip" onClick={() => skip(-15)} aria-label="Back 15 seconds">
+        &minus;15
+      </button>
       <div
         className="mini-player-progress"
-        role="progressbar"
+        role="slider"
+        tabIndex={0}
+        aria-label="Seek narration"
+        aria-valuemin={0}
+        aria-valuemax={Math.max(0, Math.round(duration))}
         aria-valuenow={Math.round(current)}
-        aria-valuemax={Math.round(duration)}
-        onClick={(e) => {
+        aria-valuetext={`${formatTime(current)} of ${formatTime(duration)}`}
+        onClick={(e) => seekRatio(e.clientX, e.currentTarget)}
+        onKeyDown={(e) => {
           if (!duration) return;
-          const rect = e.currentTarget.getBoundingClientRect();
-          audioEl.currentTime = ((e.clientX - rect.left) / rect.width) * duration;
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            skip(-5);
+          } else if (e.key === "ArrowRight") {
+            e.preventDefault();
+            skip(5);
+          } else if (e.key === "Home") {
+            e.preventDefault();
+            audioEl.currentTime = 0;
+          } else if (e.key === "End") {
+            e.preventDefault();
+            audioEl.currentTime = duration;
+          }
         }}
       >
         <div className="mini-player-bar" style={{ width: `${progress * 100}%` }} />
       </div>
-      <button className="mini-player-skip" onClick={() => skip(15)} aria-label="Forward 15 seconds">+15</button>
-      <span className="mini-player-time">{formatTime(current)} / {formatTime(duration)}</span>
-    </div>
+      <button type="button" className="mini-player-skip" onClick={() => skip(15)} aria-label="Forward 15 seconds">
+        +15
+      </button>
+      <span className="mini-player-time">
+        {formatTime(current)} / {formatTime(duration)}
+      </span>
+    </div>,
+    document.body,
   );
 }
 
@@ -253,10 +311,12 @@ export function StoryExperience({
   const [loadingMd, setLoadingMd] = useState(false);
   const [audioEl, setAudioEl] = useState<HTMLAudioElement | null>(null);
   const [showMini, setShowMini] = useState(false);
+  const [miniGeometry, setMiniGeometry] = useState({ top: 82, left: 16, width: 360 });
   const [syncData, setSyncData] = useState<SyncData | null>(null);
   const [audioTime, setAudioTime] = useState(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [carouselOpen, setCarouselOpen] = useState(false);
+  const [portalReady, setPortalReady] = useState(false);
   const [sourceLinks, setSourceLinks] = useState<SourceLink[] | null>(null);
   const [reflections, setReflections] = useState<Reflection[]>([]);
   const [shlokaPayload, setShlokaPayload] = useState<ShlokaPayload | null>(null);
@@ -424,6 +484,10 @@ export function StoryExperience({
   }, [audioEl]);
 
   useEffect(() => {
+    setPortalReady(true);
+  }, []);
+
+  useEffect(() => {
     const el = playerContainerRef.current;
     if (!el || !audioEl) return;
     const observer = new IntersectionObserver(([entry]) => setShowMini(!entry.isIntersecting), { threshold: 0 });
@@ -431,12 +495,51 @@ export function StoryExperience({
     return () => observer.disconnect();
   }, [audioEl]);
 
+  const updateMiniGeometry = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const header = document.querySelector<HTMLElement>(".site-header");
+    const main = document.querySelector<HTMLElement>(".story-main");
+    const headerBottom = header ? header.getBoundingClientRect().bottom : 74;
+    const gap = 8;
+    const top = Math.max(headerBottom + gap, gap);
+    if (main) {
+      const rect = main.getBoundingClientRect();
+      const pad = 12;
+      const left = Math.max(pad, rect.left + pad);
+      const width = Math.max(240, Math.min(rect.width - pad * 2, window.innerWidth - left - pad));
+      setMiniGeometry({ top, left, width });
+      return;
+    }
+    const pad = 16;
+    setMiniGeometry({
+      top,
+      left: pad,
+      width: Math.max(240, Math.min(520, window.innerWidth - pad * 2)),
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!showMini || carouselOpen) return;
+    updateMiniGeometry();
+    const header = document.querySelector(".site-header");
+    const main = document.querySelector(".story-main");
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => updateMiniGeometry()) : null;
+    if (ro && header) ro.observe(header);
+    if (ro && main) ro.observe(main);
+    window.addEventListener("resize", updateMiniGeometry);
+    window.addEventListener("orientationchange", updateMiniGeometry);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", updateMiniGeometry);
+      window.removeEventListener("orientationchange", updateMiniGeometry);
+    };
+  }, [showMini, carouselOpen, updateMiniGeometry]);
+
   useEffect(() => {
     if (!carouselOpen) return;
     previousFocusRef.current = document.activeElement as HTMLElement | null;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    carouselCloseRef.current?.focus();
+    const { unlock } = lockBodyScroll();
+    const focusTimer = window.setTimeout(() => carouselCloseRef.current?.focus(), 0);
 
     const coloringLen = coloring.length;
     const onKeyDown = (e: KeyboardEvent) => {
@@ -477,11 +580,18 @@ export function StoryExperience({
     };
     document.addEventListener("keydown", onKeyDown, true);
     return () => {
+      window.clearTimeout(focusTimer);
       document.removeEventListener("keydown", onKeyDown, true);
-      document.body.style.overflow = prevOverflow;
+      unlock();
       previousFocusRef.current?.focus();
     };
   }, [carouselOpen, coloring.length]);
+
+  useEffect(() => {
+    if (!carouselOpen) return;
+    const dialog = carouselDialogRef.current;
+    if (dialog) dialog.scrollTop = 0;
+  }, [carouselOpen, carouselIndex]);
 
   /* ── Handlers ─────────────────────────────────────────────── */
 
@@ -496,13 +606,13 @@ export function StoryExperience({
   return (
     <>
       {story?.poster_url ? (
-        <div className="story-poster-wash" aria-hidden="true">
+        <div className="story-poster-wash" aria-hidden="true" data-poster-src={story.poster_url}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={story.poster_url} alt="" decoding="async" />
         </div>
       ) : null}
 
-      {/* Phase 5: Persistent player above tabs — playback survives tab switches */}
+      {/* Persistent player above tabs — playback survives tab switches */}
       {story?.narration_url ? (
         <div ref={playerContainerRef} className="persistent-player">
           <AudioPlayer
@@ -517,10 +627,12 @@ export function StoryExperience({
         </div>
       ) : null}
 
-      {/* Phase 5: Sticky mini-player when the primary player scrolls away */}
-      {showMini && audioEl ? <MiniPlayer audioEl={audioEl} title={title} /> : null}
+      {/* True floating mini-player when primary player scrolls away (hidden during image modal) */}
+      {showMini && audioEl && !carouselOpen ? (
+        <MiniPlayer audioEl={audioEl} title={title} geometry={miniGeometry} />
+      ) : null}
 
-      {/* Phase 5: Previous / Next story links */}
+      {/* Previous / Next story links */}
       <StoryNav storyNo={storyNo} maxReleased={maxReleased} />
 
       <Tabs tabs={["Listen", "Read", "Activities", "Coloring", "Source", "Notes", "\u015Alok\u0101s"]}>
@@ -888,92 +1000,121 @@ export function StoryExperience({
         )}
       </Tabs>
 
-      {/* ── Phase 8: Carousel overlay ─────────────────────── */}
-      {carouselOpen && coloring.length > 0 ? (
-        <div className="bhava-dialog-backdrop" role="presentation" onMouseDown={() => setCarouselOpen(false)}>
-          <div
-            ref={carouselDialogRef}
-            className="bhava-dialog carousel-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={dialogTitleId}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => { touchStartRef.current = e.touches[0].clientX; }}
-            onTouchEnd={(e) => {
-              const diff = e.changedTouches[0].clientX - touchStartRef.current;
-              if (diff > 50) setCarouselIndex((i) => Math.max(0, i - 1));
-              else if (diff < -50) setCarouselIndex((i) => Math.min(coloring.length - 1, i + 1));
-            }}
-          >
-            <h2 id={dialogTitleId} style={{ marginTop: 0 }}>{coloring[carouselIndex]?.label}</h2>
-            <p className="visually-hidden" aria-live="polite">
-              Showing {coloring[carouselIndex]?.label}, image {carouselIndex + 1} of {coloring.length}
-            </p>
-            <div className="carousel-viewport">
-              <button
-                className="carousel-arrow carousel-prev"
-                disabled={carouselIndex === 0}
-                onClick={() => setCarouselIndex((i) => i - 1)}
-                aria-label="Previous image"
+      {/* Image / coloring modal viewer (portaled) */}
+      {portalReady && carouselOpen && coloring.length > 0
+        ? createPortal(
+            <div
+              className="bhava-dialog-backdrop carousel-backdrop"
+              role="presentation"
+              onMouseDown={() => setCarouselOpen(false)}
+            >
+              <div
+                ref={carouselDialogRef}
+                className="bhava-dialog carousel-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={dialogTitleId}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => {
+                  touchStartRef.current = e.touches[0].clientX;
+                }}
+                onTouchEnd={(e) => {
+                  const diff = e.changedTouches[0].clientX - touchStartRef.current;
+                  if (diff > 50) setCarouselIndex((i) => Math.max(0, i - 1));
+                  else if (diff < -50) setCarouselIndex((i) => Math.min(coloring.length - 1, i + 1));
+                }}
               >
-                &larr;
-              </button>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={coloring[carouselIndex]?.url}
-                alt={`${title} — ${coloring[carouselIndex]?.label}`}
-                className="carousel-image"
-              />
-              <button
-                className="carousel-arrow carousel-next"
-                disabled={carouselIndex === coloring.length - 1}
-                onClick={() => setCarouselIndex((i) => i + 1)}
-                aria-label="Next image"
-              >
-                &rarr;
-              </button>
-            </div>
-            <div className="carousel-thumbs" role="list" aria-label="Coloring pages">
-              {coloring.map((item, i) => (
-                <button
-                  key={item.url}
-                  type="button"
-                  role="listitem"
-                  className={`carousel-thumb${i === carouselIndex ? " active" : ""}`}
-                  onClick={() => setCarouselIndex(i)}
-                  aria-label={`Show ${item.label}`}
-                  aria-current={i === carouselIndex ? "true" : undefined}
-                >
+                <div className="carousel-dialog-header">
+                  <h2 id={dialogTitleId}>{coloring[carouselIndex]?.label}</h2>
+                  <button
+                    ref={carouselCloseRef}
+                    type="button"
+                    className="carousel-close-top"
+                    aria-label="Close image viewer"
+                    onClick={() => setCarouselOpen(false)}
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <p className="visually-hidden" aria-live="polite">
+                  Showing {coloring[carouselIndex]?.label}, image {carouselIndex + 1} of {coloring.length}
+                </p>
+                <div className="carousel-viewport">
+                  <button
+                    type="button"
+                    className="carousel-arrow carousel-prev"
+                    disabled={carouselIndex === 0}
+                    onClick={() => setCarouselIndex((i) => i - 1)}
+                    aria-label="Previous image"
+                  >
+                    &larr;
+                  </button>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={item.url} alt="" />
-                </button>
-              ))}
-            </div>
-            {coloring.map((item, i) => (
-              Math.abs(i - carouselIndex) === 1 ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={`preload-${item.url}`} src={item.url} alt="" hidden aria-hidden="true" />
-              ) : null
-            ))}
-            <div className="carousel-position" aria-label={`Image ${carouselIndex + 1} of ${coloring.length}`}>
-              {coloring.map((item, i) => (
-                <button
-                  key={item.label}
-                  className={`carousel-dot${i === carouselIndex ? " active" : ""}`}
-                  onClick={() => setCarouselIndex(i)}
-                  aria-label={`Go to ${item.label}`}
-                  aria-current={i === carouselIndex ? "true" : undefined}
-                />
-              ))}
-            </div>
-            <div className="actions" style={{ marginTop: "1rem" }}>
-              <a className="bhava-button bhava-button--quiet" href={coloring[carouselIndex]?.url} download>Download</a>
-              <Button variant="quiet" onClick={() => window.print()}>Print</Button>
-              <Button ref={carouselCloseRef} variant="quiet" onClick={() => setCarouselOpen(false)}>Close</Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+                  <img
+                    src={coloring[carouselIndex]?.url}
+                    alt={`${title} — ${coloring[carouselIndex]?.label}`}
+                    className="carousel-image"
+                  />
+                  <button
+                    type="button"
+                    className="carousel-arrow carousel-next"
+                    disabled={carouselIndex === coloring.length - 1}
+                    onClick={() => setCarouselIndex((i) => i + 1)}
+                    aria-label="Next image"
+                  >
+                    &rarr;
+                  </button>
+                </div>
+                <div className="carousel-thumbs" role="list" aria-label="Coloring pages">
+                  {coloring.map((item, i) => (
+                    <button
+                      key={item.url}
+                      type="button"
+                      role="listitem"
+                      className={`carousel-thumb${i === carouselIndex ? " active" : ""}`}
+                      onClick={() => setCarouselIndex(i)}
+                      aria-label={`Show ${item.label}`}
+                      aria-current={i === carouselIndex ? "true" : undefined}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.url} alt="" />
+                    </button>
+                  ))}
+                </div>
+                {coloring.map((item, i) =>
+                  Math.abs(i - carouselIndex) === 1 ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={`preload-${item.url}`} src={item.url} alt="" hidden aria-hidden="true" />
+                  ) : null,
+                )}
+                <div className="carousel-position" aria-label={`Image ${carouselIndex + 1} of ${coloring.length}`}>
+                  {coloring.map((item, i) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      className={`carousel-dot${i === carouselIndex ? " active" : ""}`}
+                      onClick={() => setCarouselIndex(i)}
+                      aria-label={`Go to ${item.label}`}
+                      aria-current={i === carouselIndex ? "true" : undefined}
+                    />
+                  ))}
+                </div>
+                <div className="actions carousel-actions" style={{ marginTop: "1rem" }}>
+                  <a className="bhava-button bhava-button--quiet" href={coloring[carouselIndex]?.url} download>
+                    Download
+                  </a>
+                  <Button variant="quiet" onClick={() => window.print()}>
+                    Print
+                  </Button>
+                  <Button variant="quiet" onClick={() => setCarouselOpen(false)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
 
       <Toast message={message} />
     </>
