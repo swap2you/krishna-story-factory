@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 import os
 
 import pytest
@@ -61,8 +62,10 @@ def test_version_endpoint_contains_safe_release(monkeypatch, tmp_path):
     monkeypatch.setenv("BHAVA_OUTPUT_ROOT", str(tmp_path / "output"))
     monkeypatch.setenv("BHAVA_CATALOG_DB", str(tmp_path / "catalog.sqlite"))
     monkeypatch.setenv("BHAVA_ALLOWED_HOSTS", "testserver")
-    monkeypatch.setenv("BHAVA_RELEASE_SHA", "abc123")
+    monkeypatch.setenv("BHAVA_RELEASE_SHA", "abc123def456")
     monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "10")
+    monkeypatch.setenv("BHAVA_WEB_VERSION", "001-020-v3")
+    monkeypatch.setenv("BHAVA_CONTENT_RELEASE", "bhava-content-001-020-v3")
 
     import bhava_api.main
 
@@ -70,12 +73,19 @@ def test_version_endpoint_contains_safe_release(monkeypatch, tmp_path):
     with TestClient(app) as client:
         response = client.get("/api/v1/version")
     assert response.status_code == 200
-    assert response.json() == {
+    payload = response.json()
+    assert payload == {
         "service": "bhava-api",
-        "release_sha": "abc123",
+        "web_version": "001-020-v3",
+        "release_sha": "abc123def456",
+        "short_sha": "abc123d",
+        "content_tag": "bhava-content-001-020-v3",
         "environment": os.getenv("BHAVA_ENVIRONMENT", "development"),
         "public_story_max": 10,
     }
+    forbidden = {"password", "token", "secret", "hostname", "ssh", "path", "key"}
+    blob = json.dumps(payload).lower()
+    assert not any(word in blob for word in forbidden)
 
 
 def test_default_allowed_hosts_reject_unknown_origin(monkeypatch, tmp_path):
