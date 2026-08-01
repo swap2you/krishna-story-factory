@@ -20,6 +20,14 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@bhava/ui"],
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: false },
+  webpack: (config) => {
+    // pdfjs-dist optional Node canvas binding is unused in the browser viewer.
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      canvas: false,
+    };
+    return config;
+  },
   async redirects() {
     return [
       { source: "/vanani", destination: "/prabhupada-vani", permanent: true },

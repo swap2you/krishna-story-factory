@@ -18,6 +18,17 @@ REQUIRED = {
     "manifest.json",
 }
 
+REQUIRED_WEB_ASSETS = {
+    "reader.md",
+    "reader.txt",
+    "source_links.json",
+    "reflections.json",
+    "shlokas.json",
+    "sync.json",
+    "waveform.json",
+    "web_manifest.json",
+}
+
 FORBIDDEN_PARTS = {
     ".git",
     ".env",
@@ -37,6 +48,50 @@ def digest(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             result.update(chunk)
     return result.hexdigest()
+
+
+def _validate_web_assets(root: Path, max_story: int) -> None:
+    web_root = root / "web-assets"
+    if not web_root.is_dir():
+        raise SystemExit("Missing required web-assets/ directory in content bundle.")
+
+    for number in range(1, max_story + 1):
+        story_no = f"{number:03d}"
+        dest = web_root / story_no
+        if not dest.is_dir():
+            raise SystemExit(f"Missing web-assets/{story_no}/")
+        names = {item.name for item in dest.iterdir() if item.is_file()}
+        missing = REQUIRED_WEB_ASSETS - names
+        if missing:
+            raise SystemExit(f"web-assets/{story_no}/ missing required files: {sorted(missing)}")
+
+        manifest_path = dest / "web_manifest.json"
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise SystemExit(f"Invalid web_manifest.json for {story_no}: {exc}") from exc
+
+        for field in ("package_manifest_sha256", "story_md_sha256", "generated_at", "assets"):
+            if field not in manifest:
+                raise SystemExit(f"web-assets/{story_no}/web_manifest.json missing {field}")
+
+        assets = manifest.get("assets")
+        if not isinstance(assets, dict):
+            raise SystemExit(f"web-assets/{story_no}/web_manifest.json assets invalid")
+
+        for name in REQUIRED_WEB_ASSETS:
+            if name == "web_manifest.json":
+                continue
+            path = dest / name
+            if path.stat().st_size < 1:
+                raise SystemExit(f"web-assets/{story_no}/{name} is empty")
+            meta = assets.get(name)
+            if not isinstance(meta, dict):
+                raise SystemExit(f"web-assets/{story_no}/web_manifest.json missing assets.{name}")
+            if meta.get("sha256") != digest(path):
+                raise SystemExit(f"web-assets/{story_no}/{name} hash mismatch vs web_manifest")
+            if meta.get("bytes") != path.stat().st_size:
+                raise SystemExit(f"web-assets/{story_no}/{name} size mismatch vs web_manifest")
 
 
 def validate(root: Path, max_story: int) -> None:
@@ -81,6 +136,8 @@ def validate(root: Path, max_story: int) -> None:
 
     if observed != list(range(1, max_story + 1)):
         raise SystemExit(f"Unexpected story sequence: {observed}")
+
+    _validate_web_assets(root, max_story)
 
 
 def main() -> int:

@@ -43,6 +43,8 @@ apps/web/.next/
 apps/web/out/
 apps/web/test-results/
 apps/web/playwright-report/
+# Copied from pdfjs-dist on postinstall/prebuild (do not commit)
+apps/web/public/pdfjs/
 data/catalog/bhava.sqlite
 data/catalog/*.sqlite-*
 .bhava/

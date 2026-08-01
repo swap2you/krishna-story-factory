@@ -163,10 +163,10 @@ def generate_poster_copy(settings: Settings, story_md: str, brief: VisualBrief) 
     return copy
 
 
-def load_visual_brief_json(path) -> VisualBrief:
+def load_visual_brief_json(path, *, story_no: str | None = None) -> VisualBrief:
     data = json.loads(path.read_text(encoding="utf-8"))
     brief = visual_brief_from_dict(data)
-    errors = brief.validate()
+    errors = brief.validate(story_no=story_no)
     if errors:
         raise VisualBriefError(" | ".join(errors))
     return brief

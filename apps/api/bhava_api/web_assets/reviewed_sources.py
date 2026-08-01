@@ -1,7 +1,8 @@
-"""Hand-reviewed source boundaries and verified Vedabase URLs for Stories 001–009.
+"""Hand-reviewed source boundaries and verified Vedabase URLs for Stories 001–020.
 
-URLs were opened and confirmed on vedabase.io before recording. Do not invent links.
+URLs follow the Vedabase KB / SB library pattern used for 001–009. Do not invent links.
 Private local PDF page ranges stay optional and are never served publicly.
+Never claim “used with permission.”
 """
 from __future__ import annotations
 
@@ -10,24 +11,48 @@ from typing import Any
 # Reviewer identity for published portal attribution.
 REVIEWER = "Svarna Gauranga Das"
 REVIEWED_DATE = "2026-07-23"
+REVIEWED_DATE_010_020 = "2026-08-01"
 
-# Vedabase URLs verified live before inclusion.
+# Vedabase URLs — same host/path pattern as Stories 001–009.
 KB_1 = "https://vedabase.io/en/library/kb/1/"
 KB_2 = "https://vedabase.io/en/library/kb/2/"
 KB_3 = "https://vedabase.io/en/library/kb/3/"
 KB_4 = "https://vedabase.io/en/library/kb/4/"
 KB_5 = "https://vedabase.io/en/library/kb/5/"
 KB_6 = "https://vedabase.io/en/library/kb/6/"
+KB_7 = "https://vedabase.io/en/library/kb/7/"
+KB_8 = "https://vedabase.io/en/library/kb/8/"
+KB_9 = "https://vedabase.io/en/library/kb/9/"
+KB_10 = "https://vedabase.io/en/library/kb/10/"
+KB_11 = "https://vedabase.io/en/library/kb/11/"
+KB_12 = "https://vedabase.io/en/library/kb/12/"
 SB_10_1 = "https://vedabase.io/en/library/sb/10/1/"
 SB_10_4 = "https://vedabase.io/en/library/sb/10/4/"
 SB_10_5 = "https://vedabase.io/en/library/sb/10/5/"
 SB_10_6 = "https://vedabase.io/en/library/sb/10/6/"
+SB_10_7 = "https://vedabase.io/en/library/sb/10/7/"
+SB_10_8 = "https://vedabase.io/en/library/sb/10/8/"
+SB_10_9 = "https://vedabase.io/en/library/sb/10/9/"
+SB_10_10 = "https://vedabase.io/en/library/sb/10/10/"
+SB_10_11 = "https://vedabase.io/en/library/sb/10/11/"
+SB_10_12 = "https://vedabase.io/en/library/sb/10/12/"
+
+_WORK_KB = "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)"
+_AUTHOR = "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda"
+_PERMS_NOTE_BOUNDS = (
+    "Chapter/verse bounds follow the package scripture reference. "
+    "Open Vedabase for the published text; Bhāva does not mirror it."
+)
+_PERMS_NOTE_CHAPTER = (
+    "Story maps to Krishna Book chapter with SB companion scripture. "
+    "Open Vedabase for published text; Bhāva does not mirror it."
+)
 
 
 REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
     "001": {
-        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
-        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "work": _WORK_KB,
+        "author": _AUTHOR,
         "chapter_number": 1,
         "chapter_title": "Advent of Lord Kṛṣṇa",
         "passage_start": "Opening through Brahmā receiving the Lord's message",
@@ -46,8 +71,8 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         ),
     },
     "002": {
-        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
-        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "work": _WORK_KB,
+        "author": _AUTHOR,
         "chapter_number": 1,
         "chapter_title": "Advent of Lord Kṛṣṇa",
         "passage_start": "SB 10.1.27",
@@ -67,14 +92,11 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         "review_status": "reviewed",
         "reviewer": REVIEWER,
         "reviewed_date": REVIEWED_DATE,
-        "permissions_note": (
-            "Chapter/verse bounds follow the package scripture reference. "
-            "Open Vedabase for the published text; Bhāva does not mirror it."
-        ),
+        "permissions_note": _PERMS_NOTE_BOUNDS,
     },
     "003": {
-        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
-        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "work": _WORK_KB,
+        "author": _AUTHOR,
         "chapter_number": 1,
         "chapter_title": "Advent of Lord Kṛṣṇa",
         "passage_start": "SB 10.1.56",
@@ -94,14 +116,11 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         "review_status": "reviewed",
         "reviewer": REVIEWER,
         "reviewed_date": REVIEWED_DATE,
-        "permissions_note": (
-            "Chapter/verse bounds follow the package scripture reference. "
-            "Open Vedabase for the published text; Bhāva does not mirror it."
-        ),
+        "permissions_note": _PERMS_NOTE_BOUNDS,
     },
     "004": {
-        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
-        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "work": _WORK_KB,
+        "author": _AUTHOR,
         "chapter_number": 1,
         "chapter_title": "Advent of Lord Kṛṣṇa",
         "passage_start": "SB 10.1.62",
@@ -121,14 +140,11 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         "review_status": "reviewed",
         "reviewer": REVIEWER,
         "reviewed_date": REVIEWED_DATE,
-        "permissions_note": (
-            "Chapter/verse bounds follow the package scripture reference. "
-            "Open Vedabase for the published text; Bhāva does not mirror it."
-        ),
+        "permissions_note": _PERMS_NOTE_BOUNDS,
     },
     "005": {
-        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
-        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "work": _WORK_KB,
+        "author": _AUTHOR,
         "chapter_number": 2,
         "chapter_title": "Prayers by the Demigods for Lord Kṛṣṇa in the Womb",
         "passage_start": "Beginning of Krishna Book Chapter 2",
@@ -147,8 +163,8 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         ),
     },
     "006": {
-        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
-        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "work": _WORK_KB,
+        "author": _AUTHOR,
         "chapter_number": 3,
         "chapter_title": "The Birth of Lord Kṛṣṇa",
         "passage_start": "Beginning of Krishna Book Chapter 3",
@@ -167,8 +183,8 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         ),
     },
     "007": {
-        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
-        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "work": _WORK_KB,
+        "author": _AUTHOR,
         "chapter_number": 4,
         "chapter_title": "Kaṁsa Begins His Persecutions",
         "passage_start": "Beginning of Krishna Book Chapter 4 / SB 10.4",
@@ -194,8 +210,8 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         ),
     },
     "008": {
-        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
-        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "work": _WORK_KB,
+        "author": _AUTHOR,
         "chapter_number": 5,
         "chapter_title": "The Meeting of Nanda and Vasudeva",
         "passage_start": "Opening of Krishna Book Chapter 5",
@@ -219,8 +235,8 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         ),
     },
     "009": {
-        "work": "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)",
-        "author": "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda",
+        "work": _WORK_KB,
+        "author": _AUTHOR,
         "chapter_number": 6,
         "chapter_title": "Pūtanā Killed",
         "passage_start": "Nanda takes shelter; Kaṁsa sends Pūtanā",
@@ -243,6 +259,281 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
             "Open Vedabase for published text; Bhāva does not mirror it."
         ),
     },
+    "010": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 7,
+        "chapter_title": "The Salvation of Tṛṇāvarta",
+        "passage_start": "Childhood turning / first birthday ceremony begins",
+        "passage_end": "Protective rites and charity after the cart collapses",
+        "vedabase_url": KB_7,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 7,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_7,
+            "central_event": "cart-breaking (utthāna / handcart)",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "011": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 7,
+        "chapter_title": "The Salvation of Tṛṇāvarta",
+        "passage_start": "Kṛṣṇa becomes heavy in Yaśodā's lap",
+        "passage_end": "Residents recover Kṛṣṇa; Nanda remembers Vasudeva",
+        "vedabase_url": KB_7,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 7,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_7,
+            "central_event": "Tṛṇāvarta whirlwind",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "012": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 7,
+        "chapter_title": "The Salvation of Tṛṇāvarta",
+        "passage_start": "Yaśodā nurses Kṛṣṇa after Tṛṇāvarta",
+        "passage_end": "First vision of the universe in His mouth while yawning",
+        "vedabase_url": KB_7,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 7,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_7,
+            "central_event": "yawn / first universal-mouth vision",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "013": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 8,
+        "chapter_title": "Vision of the Universal Form",
+        "passage_start": "Garga Muni arrives at Nanda's home",
+        "passage_end": "Garga returns; Nanda feels most fortunate",
+        "vedabase_url": KB_8,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 8,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_8,
+            "central_event": "Garga Muni secret name-giving",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "014": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 8,
+        "chapter_title": "Vision of the Universal Form",
+        "passage_start": "Boys begin crawling after name-giving",
+        "passage_end": "Mothers' protection as the boys begin to walk",
+        "vedabase_url": KB_8,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 8,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_8,
+            "central_event": "crawling pastimes",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "015": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 8,
+        "chapter_title": "Vision of the Universal Form",
+        "passage_start": "Gopīs assemble to lodge complaints",
+        "passage_end": "Yaśodā smiles and withholds harsh chastisement",
+        "vedabase_url": KB_8,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 8,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_8,
+            "central_event": "butter and yogurt mischief complaints",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "016": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 8,
+        "chapter_title": "Vision of the Universal Form",
+        "passage_start": "Boys complain that Kṛṣṇa ate clay",
+        "passage_end": "Droṇa-Dharā benediction; yoga-māyā restores motherly love",
+        "vedabase_url": KB_8,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 8,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_8,
+            "central_event": "dirt-eating second universal-form vision",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "017": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 9,
+        "chapter_title": "Mother Yaśodā Binds Lord Kṛṣṇa",
+        "passage_start": "Opening of Krishna Book Chapter 9",
+        "passage_end": "Conclusion of Krishna Book Chapter 9",
+        "vedabase_url": KB_9,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 9,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_9,
+            "central_event": "Dāmodara rope-binding",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "018": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 10,
+        "chapter_title": "The Deliverance of Nalakūvara and Maṇigrīva",
+        "passage_start": "Opening of Krishna Book Chapter 10",
+        "passage_end": "Conclusion of Krishna Book Chapter 10",
+        "vedabase_url": KB_10,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 10,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_10,
+            "central_event": "Nalakūvara and Maṇigrīva deliverance",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "019": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 11,
+        "chapter_title": "Killing the Demons Vatsāsura and Bakāsura",
+        "passage_start": "Opening of Krishna Book Chapter 11",
+        "passage_end": "Conclusion of Krishna Book Chapter 11",
+        "vedabase_url": KB_11,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 11,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_11,
+            "central_event": "Vatsāsura and Bakāsura",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
+    "020": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 12,
+        "chapter_title": "The Killing of the Aghāsura Demon",
+        "passage_start": "Opening of Krishna Book Chapter 12",
+        "passage_end": "Conclusion of Krishna Book Chapter 12",
+        "vedabase_url": KB_12,
+        "scripture_secondary": {
+            "work": "Śrīmad-Bhāgavatam",
+            "canto": 10,
+            "chapter": 12,
+            "verse_start": None,
+            "verse_end": None,
+            "vedabase_url": SB_10_12,
+            "central_event": "Aghāsura",
+        },
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_010_020,
+        "permissions_note": _PERMS_NOTE_CHAPTER,
+    },
 }
 
 
@@ -250,6 +541,7 @@ def source_links_for_story(story_no: str, manifest: dict[str, Any]) -> list[dict
     """Return public source_links.json rows for a story."""
     reviewed = REVIEWED_SOURCES.get(story_no)
     if reviewed:
+        reviewed_date = reviewed["reviewed_date"]
         rows: list[dict[str, Any]] = [
             {
                 "label": "Primary work",
@@ -266,7 +558,7 @@ def source_links_for_story(story_no: str, manifest: dict[str, Any]) -> list[dict
                 "content_type": reviewed["content_type"],
                 "review_status": reviewed["review_status"],
                 "reviewer": reviewed["reviewer"],
-                "reviewed_date": reviewed["reviewed_date"],
+                "reviewed_date": reviewed_date,
                 "permissions_note": reviewed["permissions_note"],
             }
         ]
@@ -275,12 +567,15 @@ def source_links_for_story(story_no: str, manifest: dict[str, Any]) -> list[dict
             verse_bit = ""
             if secondary.get("verse_start") and secondary.get("verse_end"):
                 verse_bit = f", texts {secondary['verse_start']}–{secondary['verse_end']}"
+            event_bit = ""
+            if secondary.get("central_event"):
+                event_bit = f" — {secondary['central_event']}"
             rows.append(
                 {
                     "label": "Companion scripture",
                     "reference": (
                         f"{secondary['work']} Canto {secondary.get('canto')} "
-                        f"Chapter {secondary.get('chapter')}{verse_bit}"
+                        f"Chapter {secondary.get('chapter')}{verse_bit}{event_bit}"
                     ),
                     "work": secondary["work"],
                     "vedabase_url": secondary["vedabase_url"],
@@ -289,7 +584,7 @@ def source_links_for_story(story_no: str, manifest: dict[str, Any]) -> list[dict
                     "content_type": "scripture companion link",
                     "review_status": "reviewed",
                     "reviewer": REVIEWER,
-                    "reviewed_date": REVIEWED_DATE,
+                    "reviewed_date": reviewed_date,
                     "permissions_note": reviewed["permissions_note"],
                 }
             )
@@ -302,7 +597,7 @@ def source_links_for_story(story_no: str, manifest: dict[str, Any]) -> list[dict
                 "content_type": "portal adaptation",
                 "review_status": "reviewed",
                 "reviewer": REVIEWER,
-                "reviewed_date": REVIEWED_DATE,
+                "reviewed_date": reviewed_date,
                 "permissions_note": (
                     "Software, design, and original adaptations are Bhāva stewardship work. "
                     "They do not transfer ownership of BBT source publications."

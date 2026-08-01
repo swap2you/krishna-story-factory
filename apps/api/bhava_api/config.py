@@ -32,6 +32,7 @@ def _cors_origins() -> tuple[str, ...]:
 class Settings:
     repository_root: Path
     output_root: Path
+    web_assets_root: Path
     catalog_db: Path
     factory_actions_enabled: bool
     enforce_loopback: bool
@@ -39,6 +40,7 @@ class Settings:
     allowed_hosts: tuple[str, ...]
     catalog_refresh_sec: float
     auto_web_assets: bool
+    web_assets_writable: bool
     public_site: bool
     public_story_max: int
     release_sha: str
@@ -54,10 +56,21 @@ def get_settings() -> Settings:
     story_max = int(os.getenv("BHAVA_PUBLIC_STORY_MAX", "20"))
     release_sha = os.getenv("BHAVA_RELEASE_SHA", "development").strip() or "development"
     environment = os.getenv("BHAVA_ENVIRONMENT", "development").strip().lower()
+    public_site = _as_bool("BHAVA_PUBLIC_SITE", False)
+
+    web_assets_root = Path(
+        os.getenv("BHAVA_WEB_ASSETS_ROOT", str(root / "data" / "web-assets"))
+    )
+    if "BHAVA_WEB_ASSETS_WRITABLE" in os.environ:
+        web_assets_writable = _as_bool("BHAVA_WEB_ASSETS_WRITABLE", False)
+    else:
+        # Production/public containers never generate derived assets at runtime.
+        web_assets_writable = not public_site
 
     return Settings(
         repository_root=root,
         output_root=Path(os.getenv("BHAVA_OUTPUT_ROOT", str(root / "output"))),
+        web_assets_root=web_assets_root,
         catalog_db=catalog_db,
         factory_actions_enabled=_as_bool("BHAVA_FACTORY_ACTIONS_ENABLED", False),
         enforce_loopback=_as_bool("BHAVA_ENFORCE_LOOPBACK", True),
@@ -68,7 +81,8 @@ def get_settings() -> Settings:
         ),
         catalog_refresh_sec=max(15.0, min(refresh, 30.0)),
         auto_web_assets=_as_bool("BHAVA_AUTO_WEB_ASSETS", False),
-        public_site=_as_bool("BHAVA_PUBLIC_SITE", False),
+        web_assets_writable=web_assets_writable,
+        public_site=public_site,
         public_story_max=max(1, min(story_max, 999)),
         release_sha=release_sha[:64],
         environment=environment,

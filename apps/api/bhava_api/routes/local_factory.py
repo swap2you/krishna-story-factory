@@ -94,6 +94,16 @@ def rebuild_web_assets(story_no: str, session: Session = Depends(get_session)) -
             ),
             "story_no": story_no.zfill(3),
         }
+    if settings.public_site or not settings.web_assets_writable:
+        return {
+            "operation": "rebuild-web-assets",
+            "status": "disabled",
+            "detail": (
+                "Web-asset writes are disabled in public/read-only mode. "
+                "Build assets at release time and mount BHAVA_WEB_ASSETS_ROOT."
+            ),
+            "story_no": story_no.zfill(3),
+        }
     padded = story_no.zfill(3)
     story = session.scalar(select(Story).where(Story.story_no == padded))
     if story is None:
@@ -101,7 +111,7 @@ def rebuild_web_assets(story_no: str, session: Session = Depends(get_session)) -
     package = Path(story.package_path)
     if not package.is_dir():
         raise HTTPException(status_code=404, detail="Story package not available")
-    web_root = settings.repository_root / "data" / "web-assets"
+    web_root = settings.web_assets_root
     dest = build_web_assets_for_package(package, padded, web_root)
     return {
         "operation": "rebuild-web-assets",
