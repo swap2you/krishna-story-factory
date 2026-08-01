@@ -4,8 +4,8 @@
 tiers below are probed by this module:
 
 ``content_release``
-    Public Stories 001-010 (exact-eight files each), provisioned in CI by
-    downloading and verifying the approved ``bhava-content-001-010-v1`` GitHub
+    Public Stories 001-020 (exact-eight files each), provisioned in CI by
+    downloading and verifying the approved ``bhava-content-001-020-v1`` GitHub
     Release, and present naturally on an operator workstation.
 
 ``local_archive``
@@ -34,7 +34,9 @@ OUTPUT = ROOT / "output"
 ARCHIVE = OUTPUT / "_archive" / "pre-copyright"
 QUEUE = ROOT / "tracking" / "queue_state.csv"
 
-PUBLIC_STORIES = tuple(f"{n:03d}" for n in range(1, 10))
+PUBLIC_STORIES = tuple(f"{n:03d}" for n in range(1, 21))
+# Pre-copyright archives exist only for the original launch band.
+ARCHIVE_STORIES = tuple(f"{n:03d}" for n in range(1, 10))
 EXACT_EIGHT = frozenset(
     {
         "story.md",
@@ -77,7 +79,7 @@ def missing_public_content() -> list[str]:
 
 def missing_local_archives() -> list[str]:
     problems: list[str] = []
-    for story_no in PUBLIC_STORIES:
+    for story_no in ARCHIVE_STORIES:
         for version in ARCHIVE_VERSIONS:
             folder = ARCHIVE / story_no / version
             if not folder.is_dir():
@@ -95,7 +97,7 @@ TIERS = {
     "content_release": (
         missing_public_content,
         "BHAVA_REQUIRE_CONTENT",
-        "Public Stories 001-010 release content",
+        "Public Stories 001-020 release content",
     ),
     "local_archive": (
         missing_local_archives,

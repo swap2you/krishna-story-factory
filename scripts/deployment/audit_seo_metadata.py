@@ -34,16 +34,18 @@ if layout.is_file():
 
 if sitemap.is_file():
     sitemap_text = sitemap.read_text(encoding="utf-8")
-    if "/stories/011" in sitemap_text or "PUBLIC_STORY_COUNT = 11" in sitemap_text:
-        failures.append("P0 sitemap may expose Story 011")
-    if "PUBLIC_STORY_COUNT = 10" not in sitemap_text:
-        failures.append("P0 sitemap must pin Stories 001-010 only")
+    if "PUBLIC_STORY_MAX" not in sitemap_text:
+        failures.append("P0 sitemap must pin Stories via PUBLIC_STORY_MAX")
+    if "PUBLIC_STORY_COUNT = 21" in sitemap_text:
+        failures.append("P0 sitemap may expose Story 021")
 
 if robots.is_file():
     robots_text = robots.read_text(encoding="utf-8")
-    for private_path in ("/studio", "/dev", "/stories/011"):
+    for private_path in ("/studio", "/dev", "/stories/021"):
         if private_path not in robots_text:
             failures.append(f"P0 robots missing disallow for {private_path}")
+    if '"/stories/011"' in robots_text or "'/stories/011'" in robots_text:
+        failures.append("P0 robots still treats Story 011 as private")
 
 for relative, label in P0_PAGES.items():
     page = APP / Path(relative)
@@ -59,9 +61,10 @@ for relative, label in P0_PAGES.items():
         for token in ("Article", "AudioObject", "BreadcrumbList", "pageMetadata"):
             if token not in text:
                 failures.append(f"P0 story page missing {token}")
-        if "Number(padded) > 10" not in text and "numeric > 10" not in text:
-            if "numeric > 10" not in text and "> 10" not in text:
-                failures.append("P0 story page must hard-stop above Story 010")
+        if "PUBLIC_STORY_MAX" not in text:
+            failures.append("P0 story page must hard-stop above the public story maximum")
+        if "numeric > 10" in text or "Number(padded) > 10" in text:
+            failures.append("P0 story page still hard-stops at Story 010")
     # h1 may live in a child component imported by the page.
     if "<h1" not in text and label in {"home", "story"}:
         # Accept child-component heading for composed experiences.

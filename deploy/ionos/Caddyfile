@@ -31,7 +31,12 @@
 	@immutable path /_next/static/* /brand/* /heroes/* /icons/* /collections/* /empty-states/*
 	header @immutable Cache-Control "public, max-age=31536000, immutable"
 
-	@private path /studio* /dev* /api/studio* /api/v1/factory* /api/v1/scheduler* /api/v1/queue* /stories/011*
+	@private {
+		or {
+			path /studio* /dev* /api/studio* /api/v1/factory* /api/v1/scheduler* /api/v1/queue*
+			path_regexp private_story ^/stories/0*(2[1-9]|[3-9][0-9]|[1-9][0-9]{2,})(/.*)?$
+		}
+	}
 	respond @private 404
 
 	@mutation {

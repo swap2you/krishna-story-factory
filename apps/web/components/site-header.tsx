@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 
 const primary = [
   { label: "Home", href: "/" },
@@ -24,13 +24,17 @@ const trailing = [
   { label: "Contact", href: "/contact" },
 ] as const;
 
+const HOVER_CLOSE_DELAY_MS = 150;
+const HOVER_OPEN_DELAY_MS = 220;
+
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function learningPathActive(pathname: string) {
-  return learningLinks.some((item) => isActive(pathname, item.href));
+function prefersFineHover() {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
+  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 }
 
 export function SiteHeader() {
@@ -39,37 +43,54 @@ export function SiteHeader() {
   const [learningOpen, setLearningOpen] = useState(false);
   const learningId = useId();
   const learningRef = useRef<HTMLDivElement | null>(null);
+  const learningButtonRef = useRef<HTMLButtonElement | null>(null);
   const hoverCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hoverOpenTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const clearHoverClose = () => {
+  const clearHoverTimers = useCallback(() => {
     if (hoverCloseTimer.current) {
       clearTimeout(hoverCloseTimer.current);
       hoverCloseTimer.current = null;
     }
-  };
+    if (hoverOpenTimer.current) {
+      clearTimeout(hoverOpenTimer.current);
+      hoverOpenTimer.current = null;
+    }
+  }, []);
 
-  const openLearning = () => {
-    clearHoverClose();
+  const closeLearning = useCallback(
+    (restoreFocus = false) => {
+      clearHoverTimers();
+      setLearningOpen(false);
+      if (restoreFocus) {
+        learningButtonRef.current?.focus();
+      }
+    },
+    [clearHoverTimers],
+  );
+
+  const openLearning = useCallback(() => {
+    clearHoverTimers();
     setLearningOpen(true);
-  };
-
-  const scheduleCloseLearning = () => {
-    clearHoverClose();
-    hoverCloseTimer.current = setTimeout(() => setLearningOpen(false), 180);
-  };
+  }, [clearHoverTimers]);
 
   useEffect(() => {
     setOpen(false);
-    setLearningOpen(false);
-  }, [pathname]);
+    closeLearning(false);
+  }, [pathname, closeLearning]);
 
   useEffect(() => {
     if (!learningOpen) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setLearningOpen(false);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeLearning(true);
+      }
     };
     const onPointerDown = (event: PointerEvent) => {
-      if (!learningRef.current?.contains(event.target as Node)) setLearningOpen(false);
+      if (!learningRef.current?.contains(event.target as Node)) {
+        closeLearning(false);
+      }
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("pointerdown", onPointerDown);
@@ -77,9 +98,45 @@ export function SiteHeader() {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("pointerdown", onPointerDown);
     };
-  }, [learningOpen]);
+  }, [learningOpen, closeLearning]);
 
-  useEffect(() => () => clearHoverClose(), []);
+  useEffect(() => () => clearHoverTimers(), [clearHoverTimers]);
+
+  const onLearningClick = () => {
+    // Click/tap is authoritative and synchronous relative to delayed hover-open.
+    clearHoverTimers();
+    setLearningOpen((value) => !value);
+  };
+
+  const onLearningKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onLearningClick();
+    }
+  };
+
+  const onLearningMouseEnter = () => {
+    if (!prefersFineHover()) return;
+    clearHoverTimers();
+    // Delay hover-open so a real click is never raced by an immediate mouseenter open.
+    hoverOpenTimer.current = setTimeout(() => {
+      setLearningOpen(true);
+    }, HOVER_OPEN_DELAY_MS);
+  };
+
+  const onLearningMouseLeave = () => {
+    if (!prefersFineHover()) return;
+    clearHoverTimers();
+    hoverCloseTimer.current = setTimeout(() => {
+      const root = learningRef.current;
+      if (root?.contains(document.activeElement)) return;
+      setLearningOpen(false);
+    }, HOVER_CLOSE_DELAY_MS);
+  };
+
+  const onLearningFocusCapture = () => {
+    clearHoverTimers();
+  };
 
   return (
     <header className="site-header">
@@ -118,36 +175,29 @@ export function SiteHeader() {
           ))}
 
           <div
-            className={`nav-learning ${learningOpen ? "is-open" : ""}`}
+            className="nav-learning"
             ref={learningRef}
-            onMouseEnter={openLearning}
-            onMouseLeave={scheduleCloseLearning}
-            onFocusCapture={openLearning}
-            onBlurCapture={(event) => {
-              const next = event.relatedTarget as Node | null;
-              if (!learningRef.current?.contains(next)) setLearningOpen(false);
-            }}
+            data-state={learningOpen ? "open" : "closed"}
+            onMouseEnter={onLearningMouseEnter}
+            onMouseLeave={onLearningMouseLeave}
+            onFocusCapture={onLearningFocusCapture}
           >
             <button
               type="button"
+              ref={learningButtonRef}
               className="nav-learning__button"
               aria-expanded={learningOpen}
               aria-controls={learningId}
               aria-haspopup="true"
-              onClick={() => {
-                // Desktop: hover may already open the menu; a click must not toggle it closed.
-                // Mobile accordion: click toggles open/closed.
-                const mobile =
-                  typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches;
-                setLearningOpen((was) => (mobile ? !was : true));
-              }}
+              onClick={onLearningClick}
+              onKeyDown={onLearningKeyDown}
             >
               Learning
             </button>
             <div
               id={learningId}
-              className={`nav-learning__menu ${learningOpen ? "is-open" : ""}`}
-              hidden={!learningOpen}
+              className="nav-learning__menu"
+              data-state={learningOpen ? "open" : "closed"}
               role="group"
               aria-label="Learning links"
             >
@@ -156,16 +206,12 @@ export function SiteHeader() {
                   key={item.href}
                   href={item.href}
                   aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                  onClick={() => {
-                    setLearningOpen(false);
-                    setOpen(false);
-                  }}
+                  onClick={() => closeLearning(false)}
                 >
                   {item.label}
                 </Link>
               ))}
             </div>
-            {learningPathActive(pathname) ? <span className="sr-only">Learning section active</span> : null}
           </div>
 
           {trailing.map((item) => (

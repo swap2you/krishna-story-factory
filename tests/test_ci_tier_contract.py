@@ -17,8 +17,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Needs public Stories 001-010 bytes; provisioned in CI from the approved
-# bhava-content-001-010-v1 GitHub Release.
+# Needs public Stories 001-020 bytes; provisioned in CI from the approved
+# bhava-content-001-020-v1 GitHub Release.
 BAND_CHAPTERS = ("001", "002", "003", "006", "007", "008", "009")
 CORRECTED_CHAPTERS = ("007", "009")
 
@@ -26,7 +26,7 @@ EXPECTED_CONTENT_RELEASE = {
     "tests/portal/test_catalog_discover_stories.py::test_catalog_discovers_released_stories_including_008",
     "tests/portal/test_package_hash_guard.py::test_locked_story_packages_match_recorded_hashes",
     "tests/portal/test_v11_safety_baseline.py::test_stories_001_007_file_hashes_match_baseline",
-    "tests/test_launch_story_hash_guard.py::test_story_011_absent_from_output",
+    "tests/test_launch_story_hash_guard.py::test_story_021_absent_from_output",
     "tests/test_poster_text_glyphs.py::test_already_credited_poster_is_not_accepted_as_a_master",
     "tests/test_poster_text_glyphs.py::test_band_and_corrected_chapters_are_discovered",
     "tests/test_poster_text_glyphs.py::test_story_007_poster_caption_keeps_its_diacritics",
@@ -35,7 +35,7 @@ EXPECTED_CONTENT_RELEASE = {
     "tests/test_publication_copyright.py::test_retrofitted_packages_have_rights_and_exact_eight",
     "tests/test_unicode_printable_copyright.py::test_public_packages_version_and_exact_eight",
     "tests/test_unicode_printable_copyright.py::test_public_pdf_has_footer_on_all_activity_pages",
-    "tests/test_unicode_printable_copyright.py::test_story_011_absent_from_public_content",
+    "tests/test_unicode_printable_copyright.py::test_story_021_absent_from_public_content",
 } | {
     f"tests/test_launch_story_hash_guard.py::test_launch_story_hashes_unchanged[{n:03d}]"
     for n in range(1, 10)

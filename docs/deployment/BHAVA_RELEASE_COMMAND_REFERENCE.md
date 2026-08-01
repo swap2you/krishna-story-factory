@@ -16,15 +16,15 @@
 | `SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh https://bhava.me <sha> production` | App smoke only |
 | `bash deploy/ionos/scripts/smoke-test.sh https://staging.bhava.me <sha> staging` | Staging smoke (expects noindex) |
 
-Default content tag for current public site: `bhava-content-001-010-v1`.
+Default content tag for current public site: `bhava-content-001-020-v1`.
 
 ## Operator command library (Stories release)
 
 | Alias | Mapped command |
 | --- | --- |
 | BHAVA STATUS | `.\scripts\release-bhava.ps1 -Status` |
-| BHAVA COST FORECAST 011-020 MAX_USD=5 | Read `MyPilotDropbox/bhava-production-ops/reports/BHAVA_STORIES_011_020_COST_FORECAST.md` (paid gate; no API spend) |
-| BHAVA GENERATE 011-020 MAX_USD=5 | Blocked until cost approval; do not run paid batch |
+| BHAVA COST FORECAST 011-020 MAX_USD=25 | Read `MyPilotDropbox/bhava-production-ops/reports/BHAVA_STORIES_011_020_COST_FORECAST.md`; authorized ceiling USD $25 |
+| BHAVA GENERATE 011-020 MAX_USD=25 | Attended sequential `.\scripts\run_prod.ps1 --chapter NNN` with OpenAI-only TTS; stop before cumulative spend exceeds $25 |
 | BHAVA RELEASE `<CONTENT_TAG>` | `.\scripts\release-bhava.ps1 -ContentReleaseTag <CONTENT_TAG> -PublicStoryMax <N>` |
 | BHAVA UAT HANDOFF | Update `MyPilotDropbox/bhava-production-ops/reports/BHAVA_PRODUCTION_COWORK_UAT_HANDOFF.md` after smoke PASS |
 | BHAVA ROLLBACK STAGING | `.\scripts\release-bhava.ps1 -Rollback -Environment staging -ConfirmRollback` |

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStory, getStories } from "@/lib/catalog";
 import { StoryExperience } from "@/components/story-experience";
+import { PUBLIC_STORY_MAX } from "@/lib/public-boundary";
 import {
   AUTHOR_NAME,
   PUBLISHER_NAME,
@@ -20,7 +21,7 @@ export async function generateMetadata({
   const { storyNo } = await params;
   const digits = storyNo.replace(/\D/g, "");
   const numeric = Number.parseInt(digits, 10);
-  if (!digits || !Number.isFinite(numeric) || numeric < 1 || numeric > 10) {
+  if (!digits || !Number.isFinite(numeric) || numeric < 1 || numeric > PUBLIC_STORY_MAX) {
     return pageMetadata({
       title: `Story ${storyNo} — unpublished`,
       description: "This Bhāva story is not publicly released.",
@@ -55,7 +56,7 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
   if (!/^[a-z0-9-]+$/i.test(storyNo)) notFound();
 
   const numeric = Number.parseInt(storyNo.replace(/\D/g, ""), 10);
-  if (!Number.isFinite(numeric) || numeric < 1 || numeric > 10) notFound();
+  if (!Number.isFinite(numeric) || numeric < 1 || numeric > PUBLIC_STORY_MAX) notFound();
 
   let story = null;
   let maxReleased = 0;
@@ -157,7 +158,7 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
         <StoryExperience
           story={story}
           storyNo={story.story_no}
-          maxReleased={Math.min(maxReleased || 10, 10)}
+          maxReleased={Math.min(maxReleased || PUBLIC_STORY_MAX, PUBLIC_STORY_MAX)}
         />
       </section>
     </div>
