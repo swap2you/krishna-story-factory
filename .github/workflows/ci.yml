@@ -219,7 +219,8 @@ jobs:
           BHAVA_WEB_URL: http://127.0.0.1:3000
         run: |
           npm run build:web
-          npm run start -w @bhava/web -- -p 3000 -H 127.0.0.1 &
+          # Standalone output must be served by node server.js, not next start.
+          PORT=3000 HOSTNAME=127.0.0.1 node apps/web/.next/standalone/apps/web/server.js &
           for _ in $(seq 1 60); do
             curl -sf http://127.0.0.1:3000/ >/dev/null && break
             sleep 1

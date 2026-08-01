@@ -1,9 +1,16 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+async function openPrimaryNavIfNeeded(page: Page) {
+  const menu = page.getByRole("button", { name: /^Menu$/i });
+  if (await menu.isVisible().catch(() => false)) {
+    await menu.click();
+  }
+}
 
 test.describe("learning navigation", () => {
-  test("desktop Learning opens on click and lists required destinations", async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 900 });
+  test("Learning opens on click and lists required destinations", async ({ page }) => {
     await page.goto("/");
+    await openPrimaryNavIfNeeded(page);
     const learning = page.getByRole("button", { name: /^Learning$/i });
     await expect(learning).toBeVisible();
     await expect(learning).toHaveAttribute("aria-expanded", "false");
@@ -18,11 +25,16 @@ test.describe("learning navigation", () => {
     await expect(learning).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("desktop Learning opens on hover without relying on overflow clipping", async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 900 });
+  test("desktop Learning opens on hover without relying on overflow clipping", async ({ page }, testInfo) => {
+    test.skip(!/desktop/i.test(testInfo.project.name), "Hover enhancement is desktop-only");
     await page.goto("/");
+    const fineHover = await page.evaluate(
+      () => window.matchMedia("(hover: hover) and (pointer: fine)").matches,
+    );
+    test.skip(!fineHover, "Browser/project does not advertise fine hover");
+
     const learning = page.getByRole("button", { name: /^Learning$/i });
-    await learning.hover();
+    await page.locator(".nav-learning").hover();
     await expect(learning).toHaveAttribute("aria-expanded", "true");
     const menu = page.getByRole("group", { name: "Learning links" });
     await expect(menu.getByRole("link", { name: "For Teachers" })).toBeVisible();
@@ -30,10 +42,10 @@ test.describe("learning navigation", () => {
     expect(["visible", "clip"].includes(overflowX)).toBeTruthy();
   });
 
-  test("mobile Learning is an inline accordion under the menu", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
+  test("mobile Learning is an inline accordion under the menu", async ({ page }, testInfo) => {
+    test.skip(!/mobile/i.test(testInfo.project.name), "Accordion layout is mobile viewport");
     await page.goto("/");
-    await page.getByRole("button", { name: /^Menu$/i }).click();
+    await openPrimaryNavIfNeeded(page);
     const learning = page.getByRole("button", { name: /^Learning$/i });
     await learning.click();
     const menu = page.getByRole("group", { name: "Learning links" });
