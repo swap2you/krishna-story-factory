@@ -3,18 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/copy-pdf-worker.cjs",
     "dev": "next dev",
+    "prebuild": "node scripts/copy-pdf-worker.cjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "pretest:e2e": "node scripts/copy-pdf-worker.cjs",
+    "test:e2e": "playwright test",
+    "copy-pdf-worker": "node scripts/copy-pdf-worker.cjs"
   },
   "dependencies": {
     "@bhava/ui": "0.1.0",
     "next": "15.5.22",
+    "pdfjs-dist": "^4.10.38",
     "react": "19.1.9",
     "react-dom": "19.1.9"
   },

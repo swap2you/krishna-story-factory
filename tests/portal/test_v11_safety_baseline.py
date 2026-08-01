@@ -74,15 +74,15 @@ def test_stories_001_007_file_hashes_match_baseline(baseline: dict) -> None:
 
 
 @pytest.mark.local_runtime
-def test_queue_010_pending_after_009_release(baseline: dict) -> None:
-    """V1.7 released Story 009 — assert 010 is next pending and 009 is done."""
+def test_queue_021_pending_after_020_release(baseline: dict) -> None:
+    """Stories 001–020 released — assert 021 is next pending and 020 is done."""
     rows = list(csv.DictReader(QUEUE.open(encoding="utf-8")))
     by_chapter = {str(row["chapter_no"]).zfill(3): row["status"] for row in rows}
-    assert by_chapter.get("009") == "done", (
-        f"Story 009 must be done after V1.7 release; found status={by_chapter.get('009')!r}"
+    assert by_chapter.get("020") == "done", (
+        f"Story 020 must be done; found status={by_chapter.get('020')!r}"
     )
-    assert by_chapter.get("010") == "pending", (
-        f"Story 010 must remain pending; found status={by_chapter.get('010')!r}"
+    assert by_chapter.get("021") == "pending", (
+        f"Story 021 must remain pending; found status={by_chapter.get('021')!r}"
     )
 
 

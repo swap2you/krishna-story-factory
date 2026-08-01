@@ -1,7 +1,8 @@
 """Build web-asset files for a single story package.
 
 Reads the package's story.md + manifest.json and writes clean, public-safe
-derivatives into data/web-assets/<story_no>/.
+derivatives into data/web-assets/<story_no>/. Exact-eight package files are
+never modified.
 """
 from __future__ import annotations
 
@@ -11,14 +12,36 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .public_rights import ensure_reader_rights_section, sanitize_public_rights
+from .recommended_playback_rates import recommended_playback_rate_for_story
+from .reviewed_shlokas import shlokas_payload_for_story
 from .reviewed_sources import source_links_for_story
-from .story_parser import parse_story_markdown
+from .story_parser import md_to_plain, parse_story_markdown
+from .waveform import write_peaks_json
+
+# Files hashed into web_manifest.assets (schema-required set).
+_MANIFEST_ASSET_NAMES = (
+    "reader.md",
+    "reader.txt",
+    "source_links.json",
+    "reflections.json",
+    "shlokas.json",
+    "sync.json",
+    "waveform.json",
+)
 
 
-def _sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    h.update(path.read_bytes())
-    return h.hexdigest()
+def _sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _sha256_file(path: Path) -> str:
+    return _sha256_bytes(path.read_bytes())
+
+
+def _asset_meta(path: Path) -> dict[str, int | str]:
+    data = path.read_bytes()
+    return {"sha256": _sha256_bytes(data), "bytes": len(data)}
 
 
 def _extract_lessons(reader_md: str) -> list[dict]:
@@ -69,25 +92,47 @@ def _extract_lessons(reader_md: str) -> list[dict]:
     return reflections
 
 
+def _placeholder_waveform(dest: Path) -> dict:
+    """Honest empty waveform when narration.mp3 is absent from the package."""
+    payload = {
+        "bars": 0,
+        "method": "none",
+        "confidence": 0,
+        "note": "Narration audio not present at build time; waveform peaks unavailable.",
+        "peaks": [],
+    }
+    dest.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return payload
+
+
 def build_web_assets_for_package(
     package_path: Path,
     story_no: str,
     output_root: Path,
+    recommended_playback_rate: float | None = None,
 ) -> Path:
     """Build web-asset files for one story package and return the output directory."""
+    if recommended_playback_rate is None:
+        recommended_playback_rate = recommended_playback_rate_for_story(story_no)
     story_md_path = package_path / "story.md"
     manifest_path = package_path / "manifest.json"
+    narration_path = package_path / "narration.mp3"
 
     raw_md = story_md_path.read_text(encoding="utf-8")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
     parsed = parse_story_markdown(raw_md)
+    public_rights = sanitize_public_rights(manifest, story_no=story_no)
+    reader_md = ensure_reader_rights_section(
+        parsed.reader_md, public_rights, story_no=story_no
+    )
+    reader_txt = md_to_plain(reader_md)
 
     dest = output_root / story_no
     dest.mkdir(parents=True, exist_ok=True)
 
-    (dest / "reader.md").write_text(parsed.reader_md, encoding="utf-8")
-    (dest / "reader.txt").write_text(parsed.reader_txt, encoding="utf-8")
+    (dest / "reader.md").write_text(reader_md, encoding="utf-8")
+    (dest / "reader.txt").write_text(reader_txt, encoding="utf-8")
     (dest / "narration.txt").write_text(parsed.narration_txt, encoding="utf-8")
 
     source_links = source_links_for_story(story_no, manifest)
@@ -95,12 +140,12 @@ def build_web_assets_for_package(
         json.dumps(source_links, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
-    reflections = _extract_lessons(parsed.reader_md)
+    reflections = _extract_lessons(reader_md)
     (dest / "reflections.json").write_text(
         json.dumps(reflections, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
-    shlokas = {"shlokas": [], "status": "pending"}
+    shlokas = shlokas_payload_for_story(story_no)
     (dest / "shlokas.json").write_text(
         json.dumps(shlokas, indent=2, ensure_ascii=False), encoding="utf-8"
     )
@@ -115,18 +160,39 @@ def build_web_assets_for_package(
         json.dumps(sync, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
+    waveform_path = dest / "waveform.json"
+    if narration_path.is_file():
+        write_peaks_json(narration_path, waveform_path)
+    else:
+        _placeholder_waveform(waveform_path)
+
+    assets_meta = {}
+    for name in _MANIFEST_ASSET_NAMES:
+        path = dest / name
+        if not path.is_file():
+            raise FileNotFoundError(
+                f"Required web-asset missing after build: {story_no}/{name}"
+            )
+        assets_meta[name] = _asset_meta(path)
+
+    shloka_status = str(shlokas.get("status") or "pending")
     web_manifest = {
         "story_no": story_no,
-        "package_sha": _sha256(manifest_path),
-        "built_at": datetime.now(timezone.utc).isoformat(),
-        "rights": manifest.get("rights") or manifest.get("publication") or {},
+        "package_manifest_sha256": _sha256_file(manifest_path),
+        "story_md_sha256": _sha256_file(story_md_path),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "recommended_playback_rate": float(recommended_playback_rate),
+        "assets": assets_meta,
+        # Public-safe rights only (never includes contact_email).
+        "rights": public_rights,
         "statuses": {
             "reader": "clean" if not parsed.has_internal_leak_markers else "has_leak_markers",
             "narration": "present" if parsed.narration_txt else "missing",
             "reflections": "seeded" if reflections else "empty",
-            "shlokas": "pending",
+            "shlokas": shloka_status,
             "sync": "needs_alignment",
             "source_links": "seeded" if source_links else "empty",
+            "waveform": "present" if narration_path.is_file() else "missing_audio",
         },
     }
     (dest / "web_manifest.json").write_text(

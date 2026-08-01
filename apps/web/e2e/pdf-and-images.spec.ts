@@ -17,6 +17,15 @@ test.describe("pdf and images", () => {
     await tile.click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
+    const topClose = page.getByRole("button", { name: "Close image viewer" });
+    await expect(topClose).toBeVisible();
+    await expect(dialog.locator(".carousel-dialog-header")).toBeVisible();
+    await expect(topClose).toHaveClass(/carousel-close-top/);
+    await topClose.click();
+    await expect(dialog).toHaveCount(0);
+
+    await tile.click();
+    await expect(dialog).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
   });

@@ -23,7 +23,32 @@ router = APIRouter(prefix="/api/v1/stories", tags=["reader"])
 
 
 def _web_assets_root() -> Path:
-    return get_settings().repository_root / "data" / "web-assets"
+    return get_settings().web_assets_root
+
+
+def _can_write_web_assets() -> bool:
+    settings = get_settings()
+    return bool(settings.web_assets_writable) and not settings.public_site
+
+
+def _missing_web_asset_error(filename: str) -> HTTPException:
+    settings = get_settings()
+    if settings.public_site:
+        return HTTPException(
+            status_code=503,
+            detail=(
+                f"Required web asset '{filename}' is missing. "
+                "Public deployments must ship pre-built web-assets; runtime generation is disabled."
+            ),
+        )
+    return HTTPException(
+        status_code=404,
+        detail=(
+            f"{filename} not available. "
+            "Local on-demand generation requires BHAVA_WEB_ASSETS_WRITABLE=true "
+            "and BHAVA_PUBLIC_SITE=false."
+        ),
+    )
 
 
 def _web_asset_path(story_no: str, filename: str) -> Path | None:
@@ -41,7 +66,11 @@ def _get_story_record(session: Session, story_no: str) -> Story:
 
 
 def _parse_on_the_fly(story: Story) -> tuple[str, str]:
-    """Fallback: parse story.md from the package when pre-built web assets are missing."""
+    """Fallback: parse story.md from the package when pre-built web assets are missing.
+
+    Only used in local writable mode. Public / read-only mode never falls back to
+    generating derivatives from the package.
+    """
     raw_path = package_file(story.package_path, "story.md")
     if raw_path is None:
         raise HTTPException(status_code=404, detail="Story content not available")
@@ -51,7 +80,10 @@ def _parse_on_the_fly(story: Story) -> tuple[str, str]:
 
 
 def ensure_web_assets(story: Story) -> Path:
-    """Return web-assets dir for the story, building from package_path when missing."""
+    """Return web-assets dir for the story, building from package_path when allowed."""
+    if not _can_write_web_assets():
+        raise _missing_web_asset_error("web_manifest.json")
+
     padded = story.story_no.zfill(3)
     dest = _web_assets_root() / padded
     if (dest / "web_manifest.json").is_file():
@@ -66,10 +98,13 @@ def _read_web_json(story: Story, filename: str) -> Any:
     padded = story.story_no.zfill(3)
     path = _web_asset_path(padded, filename)
     if path is None:
-        ensure_web_assets(story)
-        path = _web_asset_path(padded, filename)
+        if _can_write_web_assets():
+            ensure_web_assets(story)
+            path = _web_asset_path(padded, filename)
+        else:
+            raise _missing_web_asset_error(filename)
     if path is None:
-        raise HTTPException(status_code=404, detail=f"{filename} not available")
+        raise _missing_web_asset_error(filename)
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -82,6 +117,9 @@ def reader_md(story_no: str, session: Session = Depends(get_session)) -> PlainTe
     if asset is not None:
         md = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
         return PlainTextResponse(md, media_type="text/markdown")
+
+    if not _can_write_web_assets():
+        raise _missing_web_asset_error("reader.md")
 
     story = _get_story_record(session, story_no)
     try:
@@ -106,6 +144,9 @@ def reader_txt(story_no: str, session: Session = Depends(get_session)) -> PlainT
     if asset is not None:
         txt = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
         return PlainTextResponse(txt, media_type="text/plain")
+
+    if not _can_write_web_assets():
+        raise _missing_web_asset_error("reader.txt")
 
     story = _get_story_record(session, story_no)
     try:
@@ -161,6 +202,10 @@ def story_waveform(story_no: str, session: Session = Depends(get_session)) -> JS
     cache = _web_assets_root() / padded / "waveform.json"
     if cache.is_file():
         return JSONResponse(json.loads(cache.read_text(encoding="utf-8")))
+
+    if not _can_write_web_assets():
+        raise _missing_web_asset_error("waveform.json")
+
     mp3 = package_file(story.package_path, "narration.mp3")
     if mp3 is None:
         raise HTTPException(status_code=404, detail="Narration audio not found")

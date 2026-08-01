@@ -42,9 +42,15 @@ runs:
           --bundle "$RUNNER_TEMP/bhava-content/${{ steps.pin.outputs.bundle }}" \
           --max-story "${{ steps.pin.outputs.public_story_max }}"
 
-    - name: Extract into output/
+    - name: Extract into output/ and data/web-assets/
       shell: bash
       run: |
         tar -xzf "$RUNNER_TEMP/bhava-content/${{ steps.pin.outputs.bundle }}" -C "$GITHUB_WORKSPACE"
         test -d output/020_krishna-protects-everyone-from-the-aghasura-demon
         test ! -d output/021_the-stealing-of-the-boys-and-calves-by-brahma
+        test -d web-assets/001
+        mkdir -p data
+        rm -rf data/web-assets
+        mv web-assets data/web-assets
+        test -f data/web-assets/001/web_manifest.json
+        test -f data/web-assets/020/web_manifest.json

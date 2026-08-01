@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import shutil
 import hashlib
 import re
@@ -474,6 +475,7 @@ def _run_once(
             content.audio_script,
             paths.narration_mp3,
             provider_decision=provider_decision,
+            work_dir=work.root,
         )
         audio_metadata = _audio_provider_manifest(audio_source, audio_gen)
         waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
@@ -600,6 +602,14 @@ def _run_once(
         parent_answer_key=parent_key.to_dict(),
         audio_metadata=audio_metadata,
     )
+
+    # Phase 9: fail-closed web-assets/UI contract before Drive upload and queue advance.
+    if mode == "prod":
+        _fail_closed_web_assets_ui_gate(
+            settings,
+            chapter_no=plan.chapter_no,
+            package_dir=paths.root,
+        )
 
     drive_status = "SKIPPED"
     drive_detail = "Upload disabled by flag." if no_upload else ""
@@ -807,6 +817,96 @@ def _run_once(
         reference_used=reference_used,
         detail=drive_detail,
     )
+
+
+_REQUIRED_WEB_ASSET_FILES = frozenset(
+    {
+        "reader.md",
+        "reader.txt",
+        "source_links.json",
+        "reflections.json",
+        "shlokas.json",
+        "sync.json",
+        "waveform.json",
+        "web_manifest.json",
+    }
+)
+
+
+def _web_assets_ui_gate_required() -> bool:
+    """Fail-closed web-assets/UI gate for create-next / prod (opt-out BHAVA_WEB_ASSETS_UI_GATE=0)."""
+    raw = os.getenv("BHAVA_WEB_ASSETS_UI_GATE")
+    if raw is not None and str(raw).strip() != "":
+        return str(raw).strip().lower() in {"1", "true", "yes", "on"}
+    from .audio.sample_first_gate import sample_first_required
+
+    # Align default with sample-first create-next governance.
+    return sample_first_required()
+
+
+def _assert_web_assets_ui_contract(web_dir: Path, story_no: str) -> None:
+    """Raise PipelineError when derived web-assets fail the package-to-tabs UI contract."""
+    if not web_dir.is_dir():
+        raise PipelineError(
+            f"Web-assets/UI contract failed: missing data/web-assets/{story_no}/ "
+            "(fail-closed before Drive upload / queue advance)."
+        )
+    names = {p.name for p in web_dir.iterdir() if p.is_file()}
+    missing = sorted(_REQUIRED_WEB_ASSET_FILES - names)
+    if missing:
+        raise PipelineError(
+            f"Web-assets/UI contract failed for {story_no}: missing {missing} "
+            "(fail-closed before Drive upload / queue advance)."
+        )
+    for name in sorted(_REQUIRED_WEB_ASSET_FILES):
+        path = web_dir / name
+        if path.stat().st_size < 1:
+            raise PipelineError(
+                f"Web-assets/UI contract failed for {story_no}: {name} is empty "
+                "(fail-closed before Drive upload / queue advance)."
+            )
+    try:
+        manifest = json.loads((web_dir / "web_manifest.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise PipelineError(
+            f"Web-assets/UI contract failed for {story_no}: web_manifest.json invalid ({exc})."
+        ) from exc
+    if not isinstance(manifest, dict) or not manifest.get("assets"):
+        raise PipelineError(
+            f"Web-assets/UI contract failed for {story_no}: web_manifest.json missing assets map."
+        )
+
+
+def _fail_closed_web_assets_ui_gate(
+    settings: Settings,
+    *,
+    chapter_no: str,
+    package_dir: Path,
+) -> None:
+    """Build (when possible) and validate derived web-assets before Drive/queue advance."""
+    if not _web_assets_ui_gate_required():
+        return
+    story_no = str(chapter_no or "").zfill(3)
+    web_root = Path(
+        os.getenv("BHAVA_WEB_ASSETS_ROOT", str(settings.project_root / "data" / "web-assets"))
+    )
+    try:
+        from bhava_api.web_assets.builder import build_web_assets_for_package
+    except ImportError as exc:
+        raise PipelineError(
+            "Web-assets/UI contract gate is enabled but bhava_api is not importable. "
+            "Set PYTHONPATH to include apps/api (create-next-bhava-story.ps1 does this), "
+            "or opt out only for legacy tools with BHAVA_WEB_ASSETS_UI_GATE=0. "
+            f"Import error: {exc}"
+        ) from exc
+    try:
+        dest = build_web_assets_for_package(Path(package_dir), story_no, web_root)
+    except Exception as exc:
+        raise PipelineError(
+            f"Web-assets/UI contract build failed for {story_no} "
+            f"(fail-closed before Drive upload / queue advance): {exc}"
+        ) from exc
+    _assert_web_assets_ui_contract(Path(dest), story_no)
 
 
 def _audio_provider_manifest(audio_source: str, audio_gen: AudioGenerator) -> dict:

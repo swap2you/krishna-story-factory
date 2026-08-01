@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Authoritative manual rebuild for existing Krishna Book packages (001–006).
+"""Authoritative manual rebuild for existing Krishna Book packages.
+
+Default safety lock: Stories 001–006 only.
+Quality-repair mode: Stories 001–020 when --quality-repair is set and
+components are limited to image/activity/caption/manifest (never story/narration
+unless explicitly allowed by a separate reviewed process).
 
 Never advances the queue. Never enables the scheduler. Drive upload is opt-in.
 Does not silently add --force to the daily CLI.
@@ -235,11 +240,16 @@ def _rebuild_one(
     parent_key = None
     package_link = _existing_package_link(production.manifest)
 
+    # Only rewrite story.md when the story component is requested. Image/audio-only
+    # rebuilds must preserve the production story text (including Rights and Credits).
     if "story" in components:
         stage_paths.story_md.write_text(repaired_md, encoding="utf-8")
-    story_md = stage_paths.story_md.read_text(encoding="utf-8")
-    content, story_md = _load_content(settings, plan, stage_paths.story_md)
-    stage_paths.story_md.write_text(story_md, encoding="utf-8")
+        content, story_md = _load_content(settings, plan, stage_paths.story_md)
+        stage_paths.story_md.write_text(story_md, encoding="utf-8")
+    else:
+        # Keep staged copy from production; reload content for image prompts only.
+        story_md = stage_paths.story_md.read_text(encoding="utf-8")
+        content, _ = _load_content(settings, plan, stage_paths.story_md)
 
     from krishna_story_factory.audio.drift import (
         detect_audio_stale,
@@ -519,8 +529,19 @@ def _rebuild_one(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Manual rebuild for Stories 001–006 without queue mutation.")
+    import os
+
+    # Legacy rebuild tool: sample-first / web-assets create-next gates opt out unless forced.
+    os.environ.setdefault("AUDIO_SAMPLE_FIRST_REQUIRED", "0")
+    os.environ.setdefault("BHAVA_WEB_ASSETS_UI_GATE", "0")
+
+    parser = argparse.ArgumentParser(description="Manual rebuild for story packages without queue mutation.")
     parser.add_argument("--chapters", required=True, help="Comma-separated chapter numbers, e.g. 001,002,006")
+    parser.add_argument(
+        "--quality-repair",
+        action="store_true",
+        help="Allow Stories 007–020 for image/activity repairs only (blocks story+narration).",
+    )
     parser.add_argument(
         "--components",
         default="",
@@ -555,11 +576,29 @@ def main(argv: list[str] | None = None) -> int:
             "output/_swap_journal_invalid/ before rebuilding."
         )
     chapters = _parse_chapters(args.chapters)
-    if any(int(c) > 6 for c in chapters):
-        raise SystemExit("This rebuild tool only allows Stories 001–006.")
     components = _parse_components(args.components or None)
+    if any(int(c) > 6 for c in chapters):
+        if not args.quality_repair:
+            raise SystemExit(
+                "This rebuild tool only allows Stories 001–006 unless --quality-repair is set."
+            )
+        if any(int(c) > 20 for c in chapters):
+            raise SystemExit("Quality-repair mode allows at most Stories 001–020.")
+        blocked = components & {"story", "narration"}
+        if blocked:
+            raise SystemExit(
+                "Quality-repair mode blocks story/narration regeneration "
+                f"(requested: {sorted(blocked)})."
+            )
     queue_before = _queue_snapshot(settings.project_root)
-    safety = _assert_queue_safe(settings.project_root)
+    if args.quality_repair:
+        safety = {
+            "mode": "quality-repair",
+            "note": "Pilot 001-006 queue assertion skipped; queue must remain unchanged.",
+            "queue_rows": len(queue_before),
+        }
+    else:
+        safety = _assert_queue_safe(settings.project_root)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
 
     report: dict = {
@@ -623,12 +662,26 @@ def main(argv: list[str] | None = None) -> int:
             )
             report["stories"].append(story_report)
 
-    queue_after = _assert_queue_safe(settings.project_root)
-    if queue_after["statuses"] != safety["statuses"]:
-        from krishna_story_factory.pipeline import restore_queue_snapshot
+    if args.quality_repair:
+        queue_after = {
+            "mode": "quality-repair",
+            "note": "Pilot queue assertion skipped after quality-repair.",
+            "queue_rows": len(_queue_snapshot(settings.project_root)),
+        }
+        # Soft check: queue CSV must be byte-identical to pre-run snapshot.
+        queue_now = _queue_snapshot(settings.project_root)
+        if queue_now != queue_before:
+            from krishna_story_factory.pipeline import restore_queue_snapshot
 
-        restore_queue_snapshot(settings.project_root, queue_before)
-        raise SystemExit("Queue mutated during rebuild; restored snapshot and aborting.")
+            restore_queue_snapshot(settings.project_root, queue_before)
+            raise SystemExit("Queue mutated during quality-repair; restored snapshot and aborting.")
+    else:
+        queue_after = _assert_queue_safe(settings.project_root)
+        if queue_after["statuses"] != safety["statuses"]:
+            from krishna_story_factory.pipeline import restore_queue_snapshot
+
+            restore_queue_snapshot(settings.project_root, queue_before)
+            raise SystemExit("Queue mutated during rebuild; restored snapshot and aborting.")
     report["queue_after"] = queue_after
     report["scheduler_note"] = "Scheduler must remain Disabled (not modified by this script)."
     report["drive_modified"] = bool(args.upload_drive and not args.dry_run and not args.validate_only)

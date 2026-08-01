@@ -9,13 +9,26 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from sqlalchemy import text
 
+import json
+
 from .catalog.filesystem import discover_packages
 from .catalog.freshness import catalog_freshness, refresh_if_stale
-from .config import get_settings
+from .config import Settings, get_settings
 from .csrf import issue_token
 from .db import Base, SessionLocal, engine
 from .knowledge.routes import router as knowledge_router
 from .routes import media, public as public_routes, reader
+
+_REQUIRED_WEB_ASSET_FILES = (
+    "reader.md",
+    "reader.txt",
+    "source_links.json",
+    "reflections.json",
+    "shlokas.json",
+    "sync.json",
+    "waveform.json",
+    "web_manifest.json",
+)
 
 
 def _story_number(package) -> int:
@@ -35,6 +48,71 @@ def _validate_public_content() -> None:
             "Public content boundary violation: packages above "
             f"{settings.public_story_max:03d}: {', '.join(invalid)}"
         )
+
+
+def _verify_public_web_assets(settings: Settings) -> None:
+    """Fail readiness when required derived web assets are missing or invalid."""
+    root = settings.web_assets_root
+    if not root.is_dir():
+        raise HTTPException(
+            status_code=503,
+            detail=f"web-assets root missing: {root}",
+        )
+    for number in range(1, settings.public_story_max + 1):
+        story_no = f"{number:03d}"
+        dest = root / story_no
+        if not dest.is_dir():
+            raise HTTPException(
+                status_code=503,
+                detail=f"web-assets missing for story {story_no}",
+            )
+        for name in _REQUIRED_WEB_ASSET_FILES:
+            path = dest / name
+            if not path.is_file() or path.stat().st_size < 1:
+                raise HTTPException(
+                    status_code=503,
+                    detail=f"web-assets/{story_no}/{name} missing or empty",
+                )
+        try:
+            manifest = json.loads((dest / "web_manifest.json").read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise HTTPException(
+                status_code=503,
+                detail=f"web-assets/{story_no}/web_manifest.json invalid",
+            ) from exc
+        for field in ("package_manifest_sha256", "story_md_sha256", "generated_at", "assets"):
+            if field not in manifest:
+                raise HTTPException(
+                    status_code=503,
+                    detail=f"web-assets/{story_no}/web_manifest.json missing {field}",
+                )
+        assets = manifest.get("assets")
+        if not isinstance(assets, dict):
+            raise HTTPException(
+                status_code=503,
+                detail=f"web-assets/{story_no}/web_manifest.json assets invalid",
+            )
+        for name in _REQUIRED_WEB_ASSET_FILES:
+            if name == "web_manifest.json":
+                continue
+            meta = assets.get(name)
+            if not isinstance(meta, dict):
+                raise HTTPException(
+                    status_code=503,
+                    detail=f"web-assets/{story_no}/web_manifest.json missing assets.{name}",
+                )
+            sha = meta.get("sha256")
+            size = meta.get("bytes")
+            if not isinstance(sha, str) or len(sha) != 64:
+                raise HTTPException(
+                    status_code=503,
+                    detail=f"web-assets/{story_no}/web_manifest.json bad sha for {name}",
+                )
+            if not isinstance(size, int) or size < 1:
+                raise HTTPException(
+                    status_code=503,
+                    detail=f"web-assets/{story_no}/web_manifest.json bad bytes for {name}",
+                )
 
 
 @asynccontextmanager
@@ -120,6 +198,8 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=503, detail="not ready")
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
+        if settings.public_site:
+            _verify_public_web_assets(settings)
         return {"status": "ready", "service": "bhava-api"}
 
     @app.get("/api/v1/version", include_in_schema=False)

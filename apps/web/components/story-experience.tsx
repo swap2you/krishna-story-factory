@@ -1,10 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Button, Tabs, Toast, useToast } from "@bhava/ui";
 import Link from "next/link";
 import type { Story } from "@/lib/catalog";
 import { AudioPlayer } from "@/components/audio-player";
+import { PdfJsViewer } from "@/components/pdf-js-viewer";
+import { lockBodyScroll } from "@/lib/body-scroll-lock";
 
 type Mode = "default" | "sepia" | "dark";
 
@@ -136,12 +139,25 @@ function addHeadingIds(html: string): { html: string; headings: Array<{ id: stri
   return { html: processed, headings };
 }
 
-/* ── Phase 5: Sticky mini-player ──────────────────────────────── */
+/* ── True floating mini-player (portaled, fixed) ──────────────── */
 
-function MiniPlayer({ audioEl, title }: { audioEl: HTMLAudioElement; title: string }) {
+function MiniPlayer({
+  audioEl,
+  title,
+  geometry,
+}: {
+  audioEl: HTMLAudioElement;
+  title: string;
+  geometry: { top: number; left: number; width: number };
+}) {
   const [playing, setPlaying] = useState(!audioEl.paused);
   const [current, setCurrent] = useState(audioEl.currentTime);
   const [duration, setDuration] = useState(audioEl.duration || 0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const onPlay = () => setPlaying(true);
@@ -180,31 +196,74 @@ function MiniPlayer({ audioEl, title }: { audioEl: HTMLAudioElement; title: stri
     [audioEl],
   );
 
-  const progress = duration ? current / duration : 0;
+  const seekRatio = useCallback(
+    (clientX: number, el: HTMLElement) => {
+      if (!duration) return;
+      const rect = el.getBoundingClientRect();
+      const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+      audioEl.currentTime = ratio * duration;
+    },
+    [audioEl, duration],
+  );
 
-  return (
-    <div className="mini-player" role="region" aria-label="Mini audio player">
-      <button className="mini-player-btn" onClick={toggle} aria-label={playing ? "Pause" : "Play"}>
+  const progress = duration ? current / duration : 0;
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      className="mini-player mini-player--floating"
+      role="region"
+      aria-label="Mini audio player"
+      style={{
+        top: geometry.top,
+        left: geometry.left,
+        width: geometry.width,
+      }}
+    >
+      <button type="button" className="mini-player-btn" onClick={toggle} aria-label={playing ? "Pause" : "Play"}>
         {playing ? "\u23F8" : "\u25B6"}
       </button>
       <span className="mini-player-title">{title}</span>
-      <button className="mini-player-skip" onClick={() => skip(-15)} aria-label="Back 15 seconds">&minus;15</button>
+      <button type="button" className="mini-player-skip" onClick={() => skip(-15)} aria-label="Back 15 seconds">
+        &minus;15
+      </button>
       <div
         className="mini-player-progress"
-        role="progressbar"
+        role="slider"
+        tabIndex={0}
+        aria-label="Seek narration"
+        aria-valuemin={0}
+        aria-valuemax={Math.max(0, Math.round(duration))}
         aria-valuenow={Math.round(current)}
-        aria-valuemax={Math.round(duration)}
-        onClick={(e) => {
+        aria-valuetext={`${formatTime(current)} of ${formatTime(duration)}`}
+        onClick={(e) => seekRatio(e.clientX, e.currentTarget)}
+        onKeyDown={(e) => {
           if (!duration) return;
-          const rect = e.currentTarget.getBoundingClientRect();
-          audioEl.currentTime = ((e.clientX - rect.left) / rect.width) * duration;
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            skip(-5);
+          } else if (e.key === "ArrowRight") {
+            e.preventDefault();
+            skip(5);
+          } else if (e.key === "Home") {
+            e.preventDefault();
+            audioEl.currentTime = 0;
+          } else if (e.key === "End") {
+            e.preventDefault();
+            audioEl.currentTime = duration;
+          }
         }}
       >
         <div className="mini-player-bar" style={{ width: `${progress * 100}%` }} />
       </div>
-      <button className="mini-player-skip" onClick={() => skip(15)} aria-label="Forward 15 seconds">+15</button>
-      <span className="mini-player-time">{formatTime(current)} / {formatTime(duration)}</span>
-    </div>
+      <button type="button" className="mini-player-skip" onClick={() => skip(15)} aria-label="Forward 15 seconds">
+        +15
+      </button>
+      <span className="mini-player-time">
+        {formatTime(current)} / {formatTime(duration)}
+      </span>
+    </div>,
+    document.body,
   );
 }
 
@@ -252,16 +311,19 @@ export function StoryExperience({
   const [loadingMd, setLoadingMd] = useState(false);
   const [audioEl, setAudioEl] = useState<HTMLAudioElement | null>(null);
   const [showMini, setShowMini] = useState(false);
+  const [miniGeometry, setMiniGeometry] = useState({ top: 82, left: 16, width: 360 });
   const [syncData, setSyncData] = useState<SyncData | null>(null);
   const [audioTime, setAudioTime] = useState(0);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [carouselOpen, setCarouselOpen] = useState(false);
+  const [portalReady, setPortalReady] = useState(false);
   const [sourceLinks, setSourceLinks] = useState<SourceLink[] | null>(null);
   const [reflections, setReflections] = useState<Reflection[]>([]);
   const [shlokaPayload, setShlokaPayload] = useState<ShlokaPayload | null>(null);
-  const [revealShlokaMeta, setRevealShlokaMeta] = useState(false);
   const [notesSaveState, setNotesSaveState] = useState<NotesSaveState>("idle");
   const [notesDirty, setNotesDirty] = useState(false);
+  const [recommendedPlaybackRate, setRecommendedPlaybackRate] = useState<number | undefined>(undefined);
+  const [readerError, setReaderError] = useState(false);
 
   const { message, showToast } = useToast();
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -327,23 +389,50 @@ export function StoryExperience({
   useEffect(() => {
     if (!readerSrc) {
       setMarkdown("");
+      setReaderError(false);
       return;
     }
     setLoadingMd(true);
+    setReaderError(false);
     const controller = new AbortController();
     void (async () => {
       try {
         const response = await fetch(readerSrc, { signal: controller.signal });
-        if (!response.ok) { setMarkdown(""); return; }
+        if (!response.ok) {
+          setMarkdown("");
+          setReaderError(true);
+          return;
+        }
         setMarkdown(await response.text());
       } catch {
-        if (!controller.signal.aborted) setMarkdown("");
+        if (!controller.signal.aborted) {
+          setMarkdown("");
+          setReaderError(true);
+        }
       } finally {
         if (!controller.signal.aborted) setLoadingMd(false);
       }
     })();
     return () => controller.abort();
   }, [readerSrc]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setRecommendedPlaybackRate(undefined);
+    void fetch(`/api/v1/stories/${storyNo}/web-manifest`, { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { recommended_playback_rate?: unknown } | null) => {
+        if (controller.signal.aborted || !data) return;
+        const rate = data.recommended_playback_rate;
+        if (typeof rate === "number" && Number.isFinite(rate) && rate > 0) {
+          setRecommendedPlaybackRate(rate);
+        }
+      })
+      .catch(() => {
+        /* optional field */
+      });
+    return () => controller.abort();
+  }, [storyNo]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -360,7 +449,6 @@ export function StoryExperience({
 
   useEffect(() => {
     const controller = new AbortController();
-    setRevealShlokaMeta(false);
     void (async () => {
       try {
         const [linksRes, reflectionsRes, shlokasRes] = await Promise.all([
@@ -396,6 +484,10 @@ export function StoryExperience({
   }, [audioEl]);
 
   useEffect(() => {
+    setPortalReady(true);
+  }, []);
+
+  useEffect(() => {
     const el = playerContainerRef.current;
     if (!el || !audioEl) return;
     const observer = new IntersectionObserver(([entry]) => setShowMini(!entry.isIntersecting), { threshold: 0 });
@@ -403,12 +495,51 @@ export function StoryExperience({
     return () => observer.disconnect();
   }, [audioEl]);
 
+  const updateMiniGeometry = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const header = document.querySelector<HTMLElement>(".site-header");
+    const main = document.querySelector<HTMLElement>(".story-main");
+    const headerBottom = header ? header.getBoundingClientRect().bottom : 74;
+    const gap = 8;
+    const top = Math.max(headerBottom + gap, gap);
+    if (main) {
+      const rect = main.getBoundingClientRect();
+      const pad = 12;
+      const left = Math.max(pad, rect.left + pad);
+      const width = Math.max(240, Math.min(rect.width - pad * 2, window.innerWidth - left - pad));
+      setMiniGeometry({ top, left, width });
+      return;
+    }
+    const pad = 16;
+    setMiniGeometry({
+      top,
+      left: pad,
+      width: Math.max(240, Math.min(520, window.innerWidth - pad * 2)),
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!showMini || carouselOpen) return;
+    updateMiniGeometry();
+    const header = document.querySelector(".site-header");
+    const main = document.querySelector(".story-main");
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => updateMiniGeometry()) : null;
+    if (ro && header) ro.observe(header);
+    if (ro && main) ro.observe(main);
+    window.addEventListener("resize", updateMiniGeometry);
+    window.addEventListener("orientationchange", updateMiniGeometry);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", updateMiniGeometry);
+      window.removeEventListener("orientationchange", updateMiniGeometry);
+    };
+  }, [showMini, carouselOpen, updateMiniGeometry]);
+
   useEffect(() => {
     if (!carouselOpen) return;
     previousFocusRef.current = document.activeElement as HTMLElement | null;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    carouselCloseRef.current?.focus();
+    const { unlock } = lockBodyScroll();
+    const focusTimer = window.setTimeout(() => carouselCloseRef.current?.focus(), 0);
 
     const coloringLen = coloring.length;
     const onKeyDown = (e: KeyboardEvent) => {
@@ -449,11 +580,19 @@ export function StoryExperience({
     };
     document.addEventListener("keydown", onKeyDown, true);
     return () => {
+      window.clearTimeout(focusTimer);
       document.removeEventListener("keydown", onKeyDown, true);
-      document.body.style.overflow = prevOverflow;
-      previousFocusRef.current?.focus();
+      // Restore focus without scrolling; unlock restores exact scrollY.
+      previousFocusRef.current?.focus({ preventScroll: true });
+      unlock();
     };
   }, [carouselOpen, coloring.length]);
+
+  useEffect(() => {
+    if (!carouselOpen) return;
+    const dialog = carouselDialogRef.current;
+    if (dialog) dialog.scrollTop = 0;
+  }, [carouselOpen, carouselIndex]);
 
   /* ── Handlers ─────────────────────────────────────────────── */
 
@@ -467,23 +606,34 @@ export function StoryExperience({
 
   return (
     <>
-      {/* Phase 5: Persistent player above tabs — playback survives tab switches */}
+      {story?.poster_url ? (
+        <div className="story-poster-wash" aria-hidden="true" data-poster-src={story.poster_url}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={story.poster_url} alt="" decoding="async" />
+        </div>
+      ) : null}
+
+      {/* Persistent player above tabs — playback survives tab switches */}
       {story?.narration_url ? (
         <div ref={playerContainerRef} className="persistent-player">
           <AudioPlayer
+            key={storyNo}
             src={story.narration_url}
             title={title}
             storyNo={storyNo}
             posterUrl={story.poster_url}
             onAudioMount={setAudioEl}
+            recommendedPlaybackRate={recommendedPlaybackRate}
           />
         </div>
       ) : null}
 
-      {/* Phase 5: Sticky mini-player when the primary player scrolls away */}
-      {showMini && audioEl ? <MiniPlayer audioEl={audioEl} title={title} /> : null}
+      {/* True floating mini-player when primary player scrolls away (hidden during image modal) */}
+      {showMini && audioEl && !carouselOpen ? (
+        <MiniPlayer audioEl={audioEl} title={title} geometry={miniGeometry} />
+      ) : null}
 
-      {/* Phase 5: Previous / Next story links */}
+      {/* Previous / Next story links */}
       <StoryNav storyNo={storyNo} maxReleased={maxReleased} />
 
       <Tabs tabs={["Listen", "Read", "Activities", "Coloring", "Source", "Notes", "\u015Alok\u0101s"]}>
@@ -498,7 +648,7 @@ export function StoryExperience({
                   <p className="hint">Narration appears when the catalog provides narration.mp3.</p>
                 )}
 
-                {/* Phase 6: follow-along cues or fallback reader text */}
+                {/* Follow-along only when aligned cues exist; otherwise quiet reader text. */}
                 {syncData?.status === "aligned" && syncData.cues.length > 0 ? (
                   <article className="reading follow-along">
                     {syncData.cues.map((cue, i) => (
@@ -521,10 +671,12 @@ export function StoryExperience({
                   </article>
                 ) : (
                   <>
-                    {syncData && syncData.status !== "aligned" && (
-                      <p className="hint follow-pending">Follow-along cues pending review</p>
-                    )}
-                    {loadingMd ? <p className="hint">Opening the story manuscript&hellip;</p> : null}
+                    {loadingMd ? <p className="hint reader-status" role="status">Opening the story manuscript&hellip;</p> : null}
+                    {readerError && !loadingMd ? (
+                      <p className="hint reader-status reader-status--error" role="alert">
+                        Story text could not be loaded. Try again shortly, or open the Read tab after refresh.
+                      </p>
+                    ) : null}
                     <article className="reading" dangerouslySetInnerHTML={{ __html: readingHtmlWithIds }} />
                   </>
                 )}
@@ -560,7 +712,12 @@ export function StoryExperience({
                     </a>
                   ) : null}
                 </div>
-                {loadingMd ? <p className="hint">Opening the story manuscript&hellip;</p> : null}
+                {loadingMd ? <p className="hint reader-status" role="status">Opening the story manuscript&hellip;</p> : null}
+                {readerError && !loadingMd ? (
+                  <p className="hint reader-status reader-status--error" role="alert">
+                    Story text could not be loaded. Use Download story text if available, or try again later.
+                  </p>
+                ) : null}
                 <article className={`reading ${large ? "large" : ""}`} dangerouslySetInnerHTML={{ __html: readingHtmlWithIds }} />
               </div>
             )}
@@ -580,10 +737,8 @@ export function StoryExperience({
                       </a>
                       <Button variant="quiet" onClick={openActivityPdf}>Open to print</Button>
                     </div>
-                    <div className="pdf-shell">
-                      <iframe title={`${title} activity sheet`} src={story.activity_pdf_url} />
-                    </div>
-                    <p className="hint">Opens the PDF in a new tab — use your browser&rsquo;s print command from there.</p>
+                    <PdfJsViewer url={story.activity_pdf_url} title={title} />
+                    <p className="hint">Open full tab or Download for print — use your browser&rsquo;s print command from there.</p>
                   </>
                 ) : (
                   <p className="hint">Activity sheet appears when activity_sheet.pdf is in the package.</p>
@@ -665,7 +820,6 @@ export function StoryExperience({
                 </div>
                 <div className="source-card">
                   <h3>Publication care</h3>
-                  <p><strong>Quality:</strong> {story?.quality_status ?? "See package manifest."}</p>
                   <p>Stewarded for families and teachers by <strong>Svarna Gauranga Das</strong>.</p>
                   <p className="hint" style={{ marginTop: "0.75rem" }}>
                     © Svarna Gauranga Das · Dauji Publication · Bhāva. Scripture and preexisting
@@ -772,140 +926,196 @@ export function StoryExperience({
             {active === "\u015Alok\u0101s" && (
               <div className="shloka-card">
                 <p className="eyebrow" style={{ color: "var(--bhava-saffron)" }}>
-                  {shlokaPayload?.status === "pending" || !shlokaPayload?.shlokas?.length
-                    ? "Not yet curated"
-                    : "Reviewed"}
+                  Companion scripture
                 </p>
                 {shlokaPayload?.shlokas?.length ? (
-                  shlokaPayload.shlokas.map((verse, idx) => (
-                    <article key={idx} style={{ marginBottom: "1.25rem" }}>
-                      <p className="sanskrit">{String(verse.sanskrit ?? verse.devanagari ?? "—")}</p>
-                      {revealShlokaMeta ? (
-                        <>
-                          <p><strong>Transliteration:</strong> {String(verse.transliteration ?? "—")}</p>
-                          <p><strong>Word-for-word:</strong> {String(verse.word_for_word ?? verse.word_by_word ?? "—")}</p>
-                          <p><strong>Translation:</strong> {String(verse.translation ?? "—")}</p>
-                        </>
-                      ) : (
-                        <p className="hint">Meta fields hidden until you reveal them.</p>
-                      )}
-                    </article>
-                  ))
+                  shlokaPayload.shlokas.map((verse, idx) => {
+                    const reviewStatus = String(verse.review_status ?? "");
+                    const notApplicable =
+                      reviewStatus === "not_applicable" ||
+                      String(verse.decision ?? "") === "no-separate-verse";
+                    const reference = String(verse.reference ?? "").trim();
+                    const explanation = String(verse.child_explanation ?? "").trim();
+                    const url = typeof verse.url === "string" ? verse.url.trim() : "";
+                    const sanskrit = String(verse.sanskrit ?? verse.devanagari ?? "").trim();
+                    const transliteration = String(verse.transliteration ?? "").trim();
+                    const translation = String(verse.translation ?? "").trim();
+                    const wordForWord = String(verse.word_for_word ?? verse.word_by_word ?? "").trim();
+                    const note = String(verse.note ?? "").trim();
+                    const provenance = String(verse.provenance ?? "").trim();
+                    const reviewer = String(verse.reviewer ?? "").trim();
+                    const reviewedDate = String(verse.reviewed_date ?? "").trim();
+                    const stateLabel = notApplicable
+                      ? "No separate verse selected"
+                      : reviewStatus === "reviewed"
+                        ? "Reviewed companion reference"
+                        : reviewStatus === "pending"
+                          ? "Pending review"
+                          : "Companion reference";
+                    return (
+                      <article key={`${reference || "shloka"}-${idx}`} className="shloka-entry" style={{ marginBottom: "1.25rem" }}>
+                        <p className="eyebrow" style={{ marginBottom: "0.35rem" }}>{stateLabel}</p>
+                        {reference ? <h3 style={{ marginTop: 0 }}>{reference}</h3> : null}
+                        {explanation ? <p style={{ marginTop: "0.5rem" }}>{explanation}</p> : null}
+                        {url ? (
+                          <p style={{ marginTop: "0.65rem" }}>
+                            <a href={url} target="_blank" rel="noreferrer">
+                              Read on Vedabase
+                            </a>
+                          </p>
+                        ) : null}
+                        {sanskrit ? <p className="sanskrit" lang="sa">{sanskrit}</p> : null}
+                        {transliteration ? (
+                          <p><strong>Transliteration:</strong> {transliteration}</p>
+                        ) : null}
+                        {wordForWord ? (
+                          <p><strong>Word-for-word:</strong> {wordForWord}</p>
+                        ) : null}
+                        {translation ? (
+                          <p><strong>Translation:</strong> {translation}</p>
+                        ) : null}
+                        {(reviewer || reviewedDate || note || provenance) ? (
+                          <p className="hint" style={{ marginTop: "0.75rem" }}>
+                            {[
+                              reviewer ? `Reviewer: ${reviewer}` : null,
+                              reviewedDate ? `Reviewed: ${reviewedDate}` : null,
+                              provenance ? `Provenance: ${provenance}` : null,
+                              note || null,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </p>
+                        ) : null}
+                      </article>
+                    );
+                  })
                 ) : (
-                  <>
-                    <p className="sanskrit" aria-hidden="true">—</p>
-                    <p className="hint">Sanskrit placeholder — no verse text invented.</p>
-                    {revealShlokaMeta ? (
-                      <>
-                        <p><strong>Transliteration:</strong> —</p>
-                        <p><strong>Word-for-word:</strong> —</p>
-                        <p><strong>Translation:</strong> —</p>
-                      </>
-                    ) : (
-                      <p className="hint">Reveal stubs to preview the future layout without fabricated content.</p>
-                    )}
-                  </>
+                  <p className="hint">
+                    {shlokaPayload?.note ??
+                      "Reviewed companion references appear when web assets are built. We will not invent verses."}
+                  </p>
                 )}
-                <div className="actions" style={{ marginTop: "1rem" }}>
-                  <Button variant="quiet" onClick={() => setRevealShlokaMeta((v) => !v)}>
-                    {revealShlokaMeta ? "Hide stubs" : "Reveal stubs"}
-                  </Button>
-                </div>
-                <p className="hint">
-                  {shlokaPayload?.note ?? "Placeholders only until reviewed ślokas are supplied. We will not invent verses."}
-                </p>
               </div>
             )}
           </div>
         )}
       </Tabs>
 
-      {/* ── Phase 8: Carousel overlay ─────────────────────── */}
-      {carouselOpen && coloring.length > 0 ? (
-        <div className="bhava-dialog-backdrop" role="presentation" onMouseDown={() => setCarouselOpen(false)}>
-          <div
-            ref={carouselDialogRef}
-            className="bhava-dialog carousel-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={dialogTitleId}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => { touchStartRef.current = e.touches[0].clientX; }}
-            onTouchEnd={(e) => {
-              const diff = e.changedTouches[0].clientX - touchStartRef.current;
-              if (diff > 50) setCarouselIndex((i) => Math.max(0, i - 1));
-              else if (diff < -50) setCarouselIndex((i) => Math.min(coloring.length - 1, i + 1));
-            }}
-          >
-            <h2 id={dialogTitleId} style={{ marginTop: 0 }}>{coloring[carouselIndex]?.label}</h2>
-            <p className="visually-hidden" aria-live="polite">
-              Showing {coloring[carouselIndex]?.label}, image {carouselIndex + 1} of {coloring.length}
-            </p>
-            <div className="carousel-viewport">
-              <button
-                className="carousel-arrow carousel-prev"
-                disabled={carouselIndex === 0}
-                onClick={() => setCarouselIndex((i) => i - 1)}
-                aria-label="Previous image"
+      {/* Image / coloring modal viewer (portaled) */}
+      {portalReady && carouselOpen && coloring.length > 0
+        ? createPortal(
+            <div
+              className="bhava-dialog-backdrop carousel-backdrop"
+              role="presentation"
+              onMouseDown={() => setCarouselOpen(false)}
+            >
+              <div
+                ref={carouselDialogRef}
+                className="bhava-dialog carousel-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={dialogTitleId}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => {
+                  touchStartRef.current = e.touches[0].clientX;
+                }}
+                onTouchEnd={(e) => {
+                  const diff = e.changedTouches[0].clientX - touchStartRef.current;
+                  if (diff > 50) setCarouselIndex((i) => Math.max(0, i - 1));
+                  else if (diff < -50) setCarouselIndex((i) => Math.min(coloring.length - 1, i + 1));
+                }}
               >
-                &larr;
-              </button>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={coloring[carouselIndex]?.url}
-                alt={`${title} — ${coloring[carouselIndex]?.label}`}
-                className="carousel-image"
-              />
-              <button
-                className="carousel-arrow carousel-next"
-                disabled={carouselIndex === coloring.length - 1}
-                onClick={() => setCarouselIndex((i) => i + 1)}
-                aria-label="Next image"
-              >
-                &rarr;
-              </button>
-            </div>
-            <div className="carousel-thumbs" role="list" aria-label="Coloring pages">
-              {coloring.map((item, i) => (
-                <button
-                  key={item.url}
-                  type="button"
-                  role="listitem"
-                  className={`carousel-thumb${i === carouselIndex ? " active" : ""}`}
-                  onClick={() => setCarouselIndex(i)}
-                  aria-label={`Show ${item.label}`}
-                  aria-current={i === carouselIndex ? "true" : undefined}
-                >
+                <div className="carousel-dialog-header">
+                  <h2 id={dialogTitleId}>{coloring[carouselIndex]?.label}</h2>
+                  <button
+                    ref={carouselCloseRef}
+                    type="button"
+                    className="carousel-close-top"
+                    aria-label="Close image viewer"
+                    onClick={() => setCarouselOpen(false)}
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <p className="visually-hidden" aria-live="polite">
+                  Showing {coloring[carouselIndex]?.label}, image {carouselIndex + 1} of {coloring.length}
+                </p>
+                <div className="carousel-viewport">
+                  <button
+                    type="button"
+                    className="carousel-arrow carousel-prev"
+                    disabled={carouselIndex === 0}
+                    onClick={() => setCarouselIndex((i) => i - 1)}
+                    aria-label="Previous image"
+                  >
+                    &larr;
+                  </button>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={item.url} alt="" />
-                </button>
-              ))}
-            </div>
-            {coloring.map((item, i) => (
-              Math.abs(i - carouselIndex) === 1 ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={`preload-${item.url}`} src={item.url} alt="" hidden aria-hidden="true" />
-              ) : null
-            ))}
-            <div className="carousel-position" aria-label={`Image ${carouselIndex + 1} of ${coloring.length}`}>
-              {coloring.map((item, i) => (
-                <button
-                  key={item.label}
-                  className={`carousel-dot${i === carouselIndex ? " active" : ""}`}
-                  onClick={() => setCarouselIndex(i)}
-                  aria-label={`Go to ${item.label}`}
-                  aria-current={i === carouselIndex ? "true" : undefined}
-                />
-              ))}
-            </div>
-            <div className="actions" style={{ marginTop: "1rem" }}>
-              <a className="bhava-button bhava-button--quiet" href={coloring[carouselIndex]?.url} download>Download</a>
-              <Button variant="quiet" onClick={() => window.print()}>Print</Button>
-              <Button ref={carouselCloseRef} variant="quiet" onClick={() => setCarouselOpen(false)}>Close</Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+                  <img
+                    src={coloring[carouselIndex]?.url}
+                    alt={`${title} — ${coloring[carouselIndex]?.label}`}
+                    className="carousel-image"
+                  />
+                  <button
+                    type="button"
+                    className="carousel-arrow carousel-next"
+                    disabled={carouselIndex === coloring.length - 1}
+                    onClick={() => setCarouselIndex((i) => i + 1)}
+                    aria-label="Next image"
+                  >
+                    &rarr;
+                  </button>
+                </div>
+                <div className="carousel-thumbs" role="list" aria-label="Coloring pages">
+                  {coloring.map((item, i) => (
+                    <button
+                      key={item.url}
+                      type="button"
+                      role="listitem"
+                      className={`carousel-thumb${i === carouselIndex ? " active" : ""}`}
+                      onClick={() => setCarouselIndex(i)}
+                      aria-label={`Show ${item.label}`}
+                      aria-current={i === carouselIndex ? "true" : undefined}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.url} alt="" />
+                    </button>
+                  ))}
+                </div>
+                {coloring.map((item, i) =>
+                  Math.abs(i - carouselIndex) === 1 ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={`preload-${item.url}`} src={item.url} alt="" hidden aria-hidden="true" />
+                  ) : null,
+                )}
+                <div className="carousel-position" aria-label={`Image ${carouselIndex + 1} of ${coloring.length}`}>
+                  {coloring.map((item, i) => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      className={`carousel-dot${i === carouselIndex ? " active" : ""}`}
+                      onClick={() => setCarouselIndex(i)}
+                      aria-label={`Go to ${item.label}`}
+                      aria-current={i === carouselIndex ? "true" : undefined}
+                    />
+                  ))}
+                </div>
+                <div className="actions carousel-actions" style={{ marginTop: "1rem" }}>
+                  <a className="bhava-button bhava-button--quiet" href={coloring[carouselIndex]?.url} download>
+                    Download
+                  </a>
+                  <Button variant="quiet" onClick={() => window.print()}>
+                    Print
+                  </Button>
+                  <Button variant="quiet" onClick={() => setCarouselOpen(false)}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
 
       <Toast message={message} />
     </>

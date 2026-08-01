@@ -17,6 +17,7 @@ from .pronunciation import (
     normalize_for_tts,
     validate_locked_voice,
 )
+from .sample_first_gate import AudioSampleFirstError, assert_full_tts_allowed
 from .sanitize import sanitize_audio_script
 
 logger = logging.getLogger(__name__)
@@ -53,6 +54,62 @@ class AudioGenerator:
         self.last_provider_decision = None
         self.last_chunk_metadata: list = []
 
+    def _intended_tts_binding(self, provider: str, *, model: str | None = None) -> dict:
+        """Provider/model/voice/settings intended for full TTS (sample-pass binding)."""
+        provider_norm = (provider or "").strip().lower()
+        if provider_norm == "openai":
+            selected_model = (
+                (model or getattr(self.settings, "openai_tts_model", "gpt-4o-mini-tts-2025-12-15") or "")
+            ).strip()
+            voice = (getattr(self.settings, "openai_tts_voice", "marin") or "marin").strip()
+            settings = {
+                "speed": float(getattr(self.settings, "openai_tts_speed", 0.92) or 0.92),
+                "response_format": getattr(self.settings, "openai_tts_response_format", "mp3") or "mp3",
+            }
+            return {
+                "provider": "openai",
+                "model": selected_model,
+                "voice": voice,
+                "settings": settings,
+            }
+        # ElevenLabs (primary) and any other locked voice path.
+        model_id = (model or self.settings.elevenlabs_model_id or LOCKED_MODEL_ID or "").strip()
+        voice = (
+            self.settings.elevenlabs_voice_id
+            or getattr(self.settings, "elevenlabs_voice_name", "")
+            or LOCKED_VOICE_ID
+        ).strip()
+        return {
+            "provider": "elevenlabs",
+            "model": model_id,
+            "voice": voice,
+            "settings": self._voice_settings(model_id),
+        }
+
+    def _assert_sample_first(
+        self,
+        *,
+        work_dir: Path | None,
+        narration_text: str,
+        provider: str,
+        model: str | None = None,
+    ) -> None:
+        """Phase 9: block full TTS without a valid sample PASS bound to this text/settings."""
+        binding = self._intended_tts_binding(provider, model=model)
+        try:
+            assert_full_tts_allowed(
+                work_dir=work_dir,
+                narration_text=narration_text,
+                provider=binding["provider"],
+                model=binding["model"],
+                voice=binding["voice"],
+                settings=binding["settings"],
+            )
+        except AudioSampleFirstError:
+            raise
+        except Exception as exc:
+            raise AudioGenerationError(str(exc)) from exc
+
     def generate_mp3(
         self,
         text: str,
@@ -88,6 +145,15 @@ class AudioGenerator:
         if not provider:
             raise AudioGenerationError("No audio provider selected.")
 
+        # Phase 9: fail closed — full TTS requires a bound sample PASS (default on).
+        intended_model = (decision.model_id if decision else "") or None
+        self._assert_sample_first(
+            work_dir=work_dir,
+            narration_text=narration_text,
+            provider=provider,
+            model=intended_model,
+        )
+
         if provider == "openai":
             model = (decision.model_id if decision else "") or None
             return self._synthesize_openai(
@@ -120,11 +186,19 @@ class AudioGenerator:
                     raise AudioGenerationError(
                         f"ElevenLabs synthesis failed and OpenAI fallback unavailable: {exc}"
                     ) from exc
+                openai_model = str(openai_pf.get("model_id") or "") or None
+                # Fallback provider must also have a valid sample PASS (no silent voice change).
+                self._assert_sample_first(
+                    work_dir=work_dir,
+                    narration_text=narration_text,
+                    provider="openai",
+                    model=openai_model,
+                )
                 return self._synthesize_openai(
                     narration_text,
                     output_path,
                     work_dir=work_dir,
-                    model=str(openai_pf.get("model_id") or "") or None,
+                    model=openai_model,
                     allow_model_fallback=False,
                 )
         raise AudioGenerationError(f"Unsupported audio provider: {provider!r}")

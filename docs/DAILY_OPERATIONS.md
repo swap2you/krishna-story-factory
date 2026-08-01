@@ -22,7 +22,7 @@ Get-ScheduledTaskInfo -TaskName "Krishna Story Factory MWF" | Select-Object Next
 Import-Csv tracking\queue_state.csv | Select-Object chapter_no, slug, status | Format-Table
 ```
 
-Production schedule: Mon/Wed/Fri **10:00 AM** + **12:00 PM** backup. Same-day guard prevents a second story if morning already succeeded. Details: [SCHEDULER.md](SCHEDULER.md).
+MWF task definition: Mon/Wed/Fri **10:00 AM** + **12:00 PM** backup. Installer defaults **Disabled**; current ops keep scheduler **Disabled**. Same-day guard prevents a second story if morning already succeeded. Details: [SCHEDULER.md](SCHEDULER.md).
 
 ## B. Check next pending story
 
@@ -38,7 +38,7 @@ Or:
 
 (`diagnose_local_config.py` prints `Next pending story`.)
 
-Stories **001–007** are done. Expect **008** as next pending until it is successfully generated.
+Stories **001–020** are complete/public. Expect **021** as next pending (private; not generated).
 
 ## C. Dry run / test mode (no paid APIs)
 
@@ -49,6 +49,14 @@ Stories **001–007** are done. Expect **008** as next pending until it is succe
 Test mode must not call paid APIs. Use it to confirm pipeline structure only.
 
 ## D. Generate one pending story (production)
+
+Preferred create-next path:
+
+```powershell
+.\scripts\create-next-bhava-story.ps1
+```
+
+Or the classic wrapper:
 
 ```powershell
 .\scripts\run_prod.ps1

@@ -133,15 +133,9 @@ def source(story_no: str, session: Session = Depends(get_session)) -> SourceResp
 
 @router.get("/stories/{story_no}/shlokas", response_model=ShlokaResponse)
 def shlokas(story_no: str, session: Session = Depends(get_session)) -> ShlokaResponse:
-    """Prefer data/web-assets shlokas.json when present; never invent verses."""
+    """Prefer web-assets shlokas.json when present; never invent verses."""
     item = _get_story(session, story_no)
-    path = (
-        get_settings().repository_root
-        / "data"
-        / "web-assets"
-        / item.story_no
-        / "shlokas.json"
-    )
+    path = get_settings().web_assets_root / item.story_no / "shlokas.json"
     if path.is_file():
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -154,7 +148,18 @@ def shlokas(story_no: str, session: Session = Depends(get_session)) -> ShlokaRes
         note = "not yet curated" if not verses else "curated"
         if status == "pending" and not verses:
             note = "not yet curated"
+        elif status == "reviewed":
+            note = "reviewed"
         return ShlokaResponse(shlokas=verses, status=status, note=note)
+    settings = get_settings()
+    if settings.public_site or not settings.web_assets_writable:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Required web asset 'shlokas.json' is missing. "
+                "Public deployments must ship pre-built web-assets."
+            ),
+        )
     return ShlokaResponse()
 
 

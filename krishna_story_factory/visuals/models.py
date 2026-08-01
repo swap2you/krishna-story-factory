@@ -48,12 +48,29 @@ class VisualBrief:
     must_include: list[str] = field(default_factory=list)
     must_avoid: list[str] = field(default_factory=list)
 
-    def validate(self) -> list[str]:
+    def validate(self, *, story_no: str | None = None) -> list[str]:
         errors: list[str] = []
         if not self.title.strip():
             errors.append("Visual brief missing title.")
         if not self.central_scene.strip():
             errors.append("Visual brief missing central_scene.")
+        include = [str(x).strip() for x in self.must_include if str(x).strip()]
+        avoid = [str(x).strip() for x in self.must_avoid if str(x).strip()]
+        if not include:
+            errors.append("Visual brief must_include cannot be empty.")
+        if not avoid:
+            errors.append("Visual brief must_avoid cannot be empty.")
+        if story_no:
+            from .event_relevance import validate_event_relevance_keywords
+
+            errors.extend(
+                validate_event_relevance_keywords(
+                    story_no,
+                    must_include=include,
+                    central_scene=self.central_scene,
+                    must_avoid=avoid,
+                )
+            )
         return errors
 
     def to_dict(self) -> dict[str, Any]:

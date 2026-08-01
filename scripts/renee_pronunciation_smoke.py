@@ -13,6 +13,11 @@ SCRIPT = (
 
 
 def main() -> int:
+    import os
+
+    # Legacy smoke tool — not the create-next path; opt out of sample-first gate.
+    os.environ.setdefault("AUDIO_SAMPLE_FIRST_REQUIRED", "0")
+
     from mutagen.mp3 import MP3
 
     from krishna_story_factory.audio.pronunciation import (

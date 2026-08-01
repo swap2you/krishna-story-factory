@@ -195,6 +195,7 @@ jobs:
       - name: Start public production API
         env:
           BHAVA_OUTPUT_ROOT: ${{ github.workspace }}/output
+          BHAVA_WEB_ASSETS_ROOT: ${{ github.workspace }}/data/web-assets
           BHAVA_CATALOG_DB: ${{ runner.temp }}/bhava-public.sqlite
           BHAVA_PUBLIC_SITE: "1"
           BHAVA_PUBLIC_STORY_MAX: "20"
@@ -277,6 +278,7 @@ jobs:
       - name: Start operator-workstation API
         env:
           BHAVA_OUTPUT_ROOT: ${{ github.workspace }}/output
+          BHAVA_WEB_ASSETS_ROOT: ${{ github.workspace }}/data/web-assets
           BHAVA_CATALOG_DB: ${{ runner.temp }}/bhava-local.sqlite
           BHAVA_PUBLIC_SITE: "0"
           BHAVA_ENFORCE_LOOPBACK: "0"

@@ -39,6 +39,7 @@ class StoryVisualGenerator:
         use_references: bool | None = None,
         force: bool = False,
         dry_run: bool = False,
+        story_no: str | None = None,
     ) -> VisualGenerationResult:
         paths = make_visual_paths(output_dir)
         story_md = story_md_path.read_text(encoding="utf-8")
@@ -58,7 +59,7 @@ class StoryVisualGenerator:
             dry_run=dry_run,
         )
 
-        brief = self._load_or_create_brief(story_md, paths, force=force)
+        brief = self._load_or_create_brief(story_md, paths, force=force, story_no=story_no)
         paths.visual_brief_json.write_text(json.dumps(brief.to_dict(), indent=2), encoding="utf-8")
 
         line_prompt = render_line_art_prompt(self.settings.project_root, brief, use_reference=use_refs)
@@ -151,17 +152,24 @@ class StoryVisualGenerator:
         self._write_manifest(paths, result, records)
         return result
 
-    def _load_or_create_brief(self, story_md: str, paths: VisualPaths, *, force: bool):
+    def _load_or_create_brief(
+        self,
+        story_md: str,
+        paths: VisualPaths,
+        *,
+        force: bool,
+        story_no: str | None = None,
+    ):
         if paths.visual_brief_json.exists() and not force:
             try:
-                return load_visual_brief_json(paths.visual_brief_json)
+                return load_visual_brief_json(paths.visual_brief_json, story_no=story_no)
             except VisualBriefError:
                 pass
         brief = generate_visual_brief(self.settings, story_md)
-        errors = brief.validate()
+        errors = brief.validate(story_no=story_no)
         if errors:
             brief = generate_visual_brief(self.settings, story_md, repair=True)
-            errors = brief.validate()
+            errors = brief.validate(story_no=story_no)
             if errors:
                 raise VisualBriefError(" | ".join(errors))
         return brief

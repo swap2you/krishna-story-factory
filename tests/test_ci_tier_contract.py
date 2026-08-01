@@ -25,6 +25,12 @@ CORRECTED_CHAPTERS = ("007", "009")
 EXPECTED_CONTENT_RELEASE = {
     "tests/portal/test_catalog_discover_stories.py::test_catalog_discovers_released_stories_including_008",
     "tests/portal/test_package_hash_guard.py::test_locked_story_packages_match_recorded_hashes",
+    "tests/portal/test_package_to_tabs_contract.py::test_package_to_tabs_required_web_assets",
+    "tests/portal/test_package_to_tabs_contract.py::test_package_to_tabs_reader_nonempty",
+    "tests/portal/test_package_to_tabs_contract.py::test_package_to_tabs_source_links_reviewed",
+    "tests/portal/test_package_to_tabs_contract.py::test_package_to_tabs_shlokas_not_fake_pending",
+    "tests/portal/test_public_rights_contract.py::test_public_reader_rights_section_contract",
+    "tests/portal/test_public_rights_contract.py::test_public_web_manifest_rights_contract",
     "tests/portal/test_v11_safety_baseline.py::test_stories_001_007_file_hashes_match_baseline",
     "tests/test_launch_story_hash_guard.py::test_story_021_absent_from_output",
     "tests/test_poster_text_glyphs.py::test_already_credited_poster_is_not_accepted_as_a_master",
@@ -48,13 +54,17 @@ EXPECTED_CONTENT_RELEASE = {
     for name in (
         "test_correction_history_records_poster_fix",
         "test_manifest_records_poster_text_rebuild",
-        "test_narration_and_narrative_survive_the_correction",
-        "test_only_poster_story_and_manifest_changed",
         "test_unicode_poster_caption_band_uses_a_real_typeface",
         "test_unicode_poster_text_glyphs_are_covered",
         "test_unicode_poster_text_has_no_replacement_or_box_characters",
         "test_unicode_poster_text_is_not_transliterated",
         "test_unicode_poster_title_band_uses_a_real_typeface",
+    )
+} | {
+    f"tests/test_poster_text_glyphs.py::{name}[007]"
+    for name in (
+        "test_narration_and_narrative_survive_the_correction",
+        "test_only_poster_story_and_manifest_changed",
     )
 }
 
@@ -94,10 +104,10 @@ EXPECTED_LOCAL_ARCHIVE = {
 # workstation. Equivalent logic is covered deterministically by
 # test_coverage_non_skipping.py::test_next_pending_is_cart_breaking.
 EXPECTED_LOCAL_RUNTIME = {
-    "tests/portal/test_queue_guard.py::test_queue_001_009_done_and_010_pending",
-    "tests/portal/test_v11_safety_baseline.py::test_queue_010_pending_after_009_release",
-    "tests/test_coverage_non_skipping.py::test_live_queue_next_pending_is_cart_breaking",
-    "tests/test_unicode_printable_copyright.py::test_queue_pending_holds_at_story_010",
+    "tests/portal/test_queue_guard.py::test_queue_001_020_done_and_021_pending",
+    "tests/portal/test_v11_safety_baseline.py::test_queue_021_pending_after_020_release",
+    "tests/test_coverage_non_skipping.py::test_live_queue_next_pending_is_brahma_stealing",
+    "tests/test_unicode_printable_copyright.py::test_queue_pending_holds_at_story_021",
 }
 
 EXPECTED = {

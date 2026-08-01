@@ -7,6 +7,7 @@ const PRIVATE_PREFIXES = [
   "/api/v1/factory",
   "/api/v1/scheduler",
   "/api/v1/queue",
+  "/api/v1/local",
 ];
 
 const CSP = [
