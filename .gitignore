@@ -65,7 +65,7 @@ portal-bootstrap/
 
 /MyPilotDropbox/
 
-# Governed factory recovery workspaces (artifacts, not docs)
-work/stories/
+# Local operator scratch (restores, recompose reports, release checks)
+/work/
 .pipeline.lock
 
