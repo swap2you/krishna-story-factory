@@ -25,6 +25,10 @@ CORRECTED_CHAPTERS = ("007", "009")
 EXPECTED_CONTENT_RELEASE = {
     "tests/portal/test_catalog_discover_stories.py::test_catalog_discovers_released_stories_including_008",
     "tests/portal/test_package_hash_guard.py::test_locked_story_packages_match_recorded_hashes",
+    "tests/portal/test_package_to_tabs_contract.py::test_package_to_tabs_required_web_assets",
+    "tests/portal/test_package_to_tabs_contract.py::test_package_to_tabs_reader_nonempty",
+    "tests/portal/test_package_to_tabs_contract.py::test_package_to_tabs_source_links_reviewed",
+    "tests/portal/test_package_to_tabs_contract.py::test_package_to_tabs_shlokas_not_fake_pending",
     "tests/portal/test_v11_safety_baseline.py::test_stories_001_007_file_hashes_match_baseline",
     "tests/test_launch_story_hash_guard.py::test_story_021_absent_from_output",
     "tests/test_poster_text_glyphs.py::test_already_credited_poster_is_not_accepted_as_a_master",

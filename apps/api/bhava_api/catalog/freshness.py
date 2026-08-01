@@ -24,7 +24,10 @@ def _build_web_assets_for_stories(story_nos: list[str]) -> None:
     if not story_nos:
         return
     settings = get_settings()
-    web_root = settings.repository_root / "data" / "web-assets"
+    if settings.public_site or not settings.web_assets_writable:
+        logger.info("Skipping auto web-assets build (public/read-only mode)")
+        return
+    web_root = settings.web_assets_root
     with SessionLocal() as session:
         for story_no in story_nos:
             story = session.scalar(select(Story).where(Story.story_no == story_no))

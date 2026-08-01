@@ -81,7 +81,8 @@ class ImageClient:
         for attempt in range(1, max_api_attempts + 1):
             started_at = datetime.now(timezone.utc)
             print("COLORING GENERATION", flush=True)
-            print(f"story: {story_title or 'unknown'}", flush=True)
+            safe_title = (story_title or "unknown").encode("ascii", "replace").decode("ascii")
+            print(f"story: {safe_title}", flush=True)
             print(f"attempt: {attempt}/{max_api_attempts}", flush=True)
             print(f"model: {self.model}", flush=True)
             print(f"size: {actual_size}", flush=True)

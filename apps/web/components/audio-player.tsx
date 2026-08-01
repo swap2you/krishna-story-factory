@@ -10,6 +10,8 @@ type Props = {
   posterUrl?: string | null;
   onAudioMount?: (el: HTMLAudioElement) => void;
   peaksUrl?: string | null;
+  /** Suggested pace from web-manifest; clamped to nearest SPEEDS entry. */
+  recommendedPlaybackRate?: number;
 };
 
 /** Observable playback path for diagnostics and UAT (local UI only). */
@@ -44,12 +46,25 @@ function isEditableTarget(target: EventTarget | null): boolean {
   }
   if (
     target.closest(
-      "input, textarea, select, button, a, [role='button'], [contenteditable='true'], [role='dialog'], [aria-modal='true']",
+      "input, textarea, select, button, a, [role='button'], [contenteditable='true'], [role='dialog'], [aria-modal='true'], [data-pdf-viewer]",
     )
   ) {
     return true;
   }
   return false;
+}
+
+function nearestSpeed(rate: number): (typeof SPEEDS)[number] {
+  let best: (typeof SPEEDS)[number] = 1;
+  let bestDist = Infinity;
+  for (const s of SPEEDS) {
+    const d = Math.abs(s - rate);
+    if (d < bestDist) {
+      bestDist = d;
+      best = s;
+    }
+  }
+  return best;
 }
 
 function absoluteUrl(src: string): string {
@@ -107,16 +122,33 @@ function markBlobUnsupported(mediaSrc: string) {
   }
 }
 
-export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peaksUrl }: Props) {
+export function AudioPlayer({
+  src,
+  title,
+  storyNo,
+  posterUrl,
+  onAudioMount,
+  peaksUrl,
+  recommendedPlaybackRate,
+}: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const objectUrlRef = useRef<string | null>(null);
   const activeSrcRef = useRef<string>(src);
   const fetchInFlight = useRef<Promise<string> | null>(null);
+  const appliedRecommendationRef = useRef<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
+  const initialSpeed =
+    typeof recommendedPlaybackRate === "number" && Number.isFinite(recommendedPlaybackRate)
+      ? nearestSpeed(recommendedPlaybackRate)
+      : 1;
+  const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(initialSpeed);
+  const recommendedSpeed =
+    typeof recommendedPlaybackRate === "number" && Number.isFinite(recommendedPlaybackRate)
+      ? nearestSpeed(recommendedPlaybackRate)
+      : null;
   const [volume, setVolume] = useState(1);
   const [path, setPath] = useState<PlaybackPath>("idle");
   const [status, setStatus] = useState<string | null>(null);
@@ -137,6 +169,25 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
   useEffect(() => {
     if (audioRef.current && onAudioMount) onAudioMount(audioRef.current);
   }, [onAudioMount]);
+
+  useEffect(() => {
+    appliedRecommendationRef.current = null;
+  }, [storyNo]);
+
+  useEffect(() => {
+    if (typeof recommendedPlaybackRate !== "number" || !Number.isFinite(recommendedPlaybackRate)) {
+      return;
+    }
+    if (appliedRecommendationRef.current === recommendedPlaybackRate) return;
+    const next = nearestSpeed(recommendedPlaybackRate);
+    appliedRecommendationRef.current = recommendedPlaybackRate;
+    setSpeed(next);
+    if (audioRef.current) audioRef.current.playbackRate = next;
+  }, [recommendedPlaybackRate, storyNo]);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.playbackRate = speed;
+  }, [speed]);
 
   useEffect(() => {
     let cancelled = false;
@@ -644,6 +695,11 @@ export function AudioPlayer({ src, title, storyNo, posterUrl, onAudioMount, peak
             ))}
           </select>
         </label>
+        {recommendedSpeed != null && recommendedSpeed !== 1 ? (
+          <span className="playback-recommend-label" title={`Suggested ${recommendedSpeed}×`}>
+            Recommended story pace
+          </span>
+        ) : null}
         <label>
           Volume
           <input

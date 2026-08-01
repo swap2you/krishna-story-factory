@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Bhava Story Source Record",
+  "type": "object",
+  "required": [
+    "story_no",
+    "title",
+    "central_event",
+    "sources",
+    "review_status",
+    "reviewed_date",
+    "permissions_status"
+  ],
+  "properties": {
+    "story_no": {"type": "string", "pattern": "^[0-9]{3}$"},
+    "title": {"type": "string", "minLength": 3},
+    "central_event": {"type": "string", "minLength": 10},
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["work", "reference", "provenance"],
+        "properties": {
+          "work": {"type": "string"},
+          "author": {"type": "string"},
+          "reference": {"type": "string"},
+          "passage_start": {"type": ["string", "null"]},
+          "passage_end": {"type": ["string", "null"]},
+          "url": {"type": ["string", "null"], "format": "uri"},
+          "provenance": {"type": "string"},
+          "content_type": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "shlokas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["reference", "review_status"],
+        "properties": {
+          "reference": {"type": "string"},
+          "sanskrit": {"type": ["string", "null"]},
+          "transliteration": {"type": ["string", "null"]},
+          "child_explanation": {"type": ["string", "null"]},
+          "url": {"type": ["string", "null"], "format": "uri"},
+          "review_status": {"enum": ["reviewed", "pending", "not_applicable"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "review_status": {"enum": ["reviewed", "needs_review"]},
+    "reviewed_date": {"type": "string", "format": "date"},
+    "reviewer": {"type": ["string", "null"]},
+    "permissions_status": {
+      "enum": [
+        "reference-only",
+        "public-domain",
+        "licensed",
+        "original",
+        "needs-review",
+        "excerpt-needs-review"
+      ]
+    },
+    "permissions_note": {"type": ["string", "null"]}
+  },
+  "additionalProperties": true
+}

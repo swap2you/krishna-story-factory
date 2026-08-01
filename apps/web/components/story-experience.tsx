@@ -5,6 +5,7 @@ import { Button, Tabs, Toast, useToast } from "@bhava/ui";
 import Link from "next/link";
 import type { Story } from "@/lib/catalog";
 import { AudioPlayer } from "@/components/audio-player";
+import { PdfJsViewer } from "@/components/pdf-js-viewer";
 
 type Mode = "default" | "sepia" | "dark";
 
@@ -262,6 +263,8 @@ export function StoryExperience({
   const [revealShlokaMeta, setRevealShlokaMeta] = useState(false);
   const [notesSaveState, setNotesSaveState] = useState<NotesSaveState>("idle");
   const [notesDirty, setNotesDirty] = useState(false);
+  const [recommendedPlaybackRate, setRecommendedPlaybackRate] = useState<number | undefined>(undefined);
+  const [readerError, setReaderError] = useState(false);
 
   const { message, showToast } = useToast();
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -327,23 +330,50 @@ export function StoryExperience({
   useEffect(() => {
     if (!readerSrc) {
       setMarkdown("");
+      setReaderError(false);
       return;
     }
     setLoadingMd(true);
+    setReaderError(false);
     const controller = new AbortController();
     void (async () => {
       try {
         const response = await fetch(readerSrc, { signal: controller.signal });
-        if (!response.ok) { setMarkdown(""); return; }
+        if (!response.ok) {
+          setMarkdown("");
+          setReaderError(true);
+          return;
+        }
         setMarkdown(await response.text());
       } catch {
-        if (!controller.signal.aborted) setMarkdown("");
+        if (!controller.signal.aborted) {
+          setMarkdown("");
+          setReaderError(true);
+        }
       } finally {
         if (!controller.signal.aborted) setLoadingMd(false);
       }
     })();
     return () => controller.abort();
   }, [readerSrc]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setRecommendedPlaybackRate(undefined);
+    void fetch(`/api/v1/stories/${storyNo}/web-manifest`, { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { recommended_playback_rate?: unknown } | null) => {
+        if (controller.signal.aborted || !data) return;
+        const rate = data.recommended_playback_rate;
+        if (typeof rate === "number" && Number.isFinite(rate) && rate > 0) {
+          setRecommendedPlaybackRate(rate);
+        }
+      })
+      .catch(() => {
+        /* optional field */
+      });
+    return () => controller.abort();
+  }, [storyNo]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -467,15 +497,24 @@ export function StoryExperience({
 
   return (
     <>
+      {story?.poster_url ? (
+        <div className="story-poster-wash" aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={story.poster_url} alt="" decoding="async" />
+        </div>
+      ) : null}
+
       {/* Phase 5: Persistent player above tabs — playback survives tab switches */}
       {story?.narration_url ? (
         <div ref={playerContainerRef} className="persistent-player">
           <AudioPlayer
+            key={storyNo}
             src={story.narration_url}
             title={title}
             storyNo={storyNo}
             posterUrl={story.poster_url}
             onAudioMount={setAudioEl}
+            recommendedPlaybackRate={recommendedPlaybackRate}
           />
         </div>
       ) : null}
@@ -524,7 +563,12 @@ export function StoryExperience({
                     {syncData && syncData.status !== "aligned" && (
                       <p className="hint follow-pending">Follow-along cues pending review</p>
                     )}
-                    {loadingMd ? <p className="hint">Opening the story manuscript&hellip;</p> : null}
+                    {loadingMd ? <p className="hint reader-status" role="status">Opening the story manuscript&hellip;</p> : null}
+                    {readerError && !loadingMd ? (
+                      <p className="hint reader-status reader-status--error" role="alert">
+                        Story text could not be loaded. Try again shortly, or open the Read tab after refresh.
+                      </p>
+                    ) : null}
                     <article className="reading" dangerouslySetInnerHTML={{ __html: readingHtmlWithIds }} />
                   </>
                 )}
@@ -560,7 +604,12 @@ export function StoryExperience({
                     </a>
                   ) : null}
                 </div>
-                {loadingMd ? <p className="hint">Opening the story manuscript&hellip;</p> : null}
+                {loadingMd ? <p className="hint reader-status" role="status">Opening the story manuscript&hellip;</p> : null}
+                {readerError && !loadingMd ? (
+                  <p className="hint reader-status reader-status--error" role="alert">
+                    Story text could not be loaded. Use Download story text if available, or try again later.
+                  </p>
+                ) : null}
                 <article className={`reading ${large ? "large" : ""}`} dangerouslySetInnerHTML={{ __html: readingHtmlWithIds }} />
               </div>
             )}
@@ -580,10 +629,8 @@ export function StoryExperience({
                       </a>
                       <Button variant="quiet" onClick={openActivityPdf}>Open to print</Button>
                     </div>
-                    <div className="pdf-shell">
-                      <iframe title={`${title} activity sheet`} src={story.activity_pdf_url} />
-                    </div>
-                    <p className="hint">Opens the PDF in a new tab — use your browser&rsquo;s print command from there.</p>
+                    <PdfJsViewer url={story.activity_pdf_url} title={title} />
+                    <p className="hint">Open full tab or Download for print — use your browser&rsquo;s print command from there.</p>
                   </>
                 ) : (
                   <p className="hint">Activity sheet appears when activity_sheet.pdf is in the package.</p>

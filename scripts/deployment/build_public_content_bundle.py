@@ -19,6 +19,17 @@ REQUIRED = {
     "manifest.json",
 }
 
+REQUIRED_WEB_ASSETS = {
+    "reader.md",
+    "reader.txt",
+    "source_links.json",
+    "reflections.json",
+    "shlokas.json",
+    "sync.json",
+    "waveform.json",
+    "web_manifest.json",
+}
+
 
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -33,6 +44,28 @@ def story_number(folder: Path) -> int:
     if not prefix.isdigit():
         return 0
     return int(prefix)
+
+
+def _require_web_assets(web_assets: Path, story_no: str) -> None:
+    if not web_assets.is_dir():
+        raise SystemExit(
+            f"Required web-assets/{story_no}/ missing. "
+            "Build derived web assets before packaging public content."
+        )
+    names = {item.name for item in web_assets.iterdir() if item.is_file()}
+    missing = REQUIRED_WEB_ASSETS - names
+    if missing:
+        raise SystemExit(
+            f"web-assets/{story_no}/ incomplete. Missing={sorted(missing)}"
+        )
+    manifest_path = web_assets / "web_manifest.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise SystemExit(f"Invalid web_manifest.json for {story_no}: {exc}") from exc
+    for field in ("package_manifest_sha256", "story_md_sha256", "generated_at", "assets"):
+        if field not in manifest:
+            raise SystemExit(f"web-assets/{story_no}/web_manifest.json missing {field}")
 
 
 def main() -> int:
@@ -79,6 +112,7 @@ def main() -> int:
             "public_story_max": args.max_story,
             "forbidden_local_packages_observed": forbidden_names,
             "packages": [],
+            "web_assets": [],
         }
 
         for package in packages:
@@ -101,21 +135,29 @@ def main() -> int:
                     {"name": name, "sha256": sha256(target), "bytes": target.stat().st_size}
                 )
 
+            story_no = f"{story_number(package):03d}"
             manifest["packages"].append(
                 {
-                    "story_no": f"{story_number(package):03d}",
+                    "story_no": story_no,
                     "directory": package.name,
                     "files": file_rows,
                 }
             )
 
-            web_assets = repository / "data" / "web-assets" / f"{story_number(package):03d}"
-            if web_assets.is_dir():
-                shutil.copytree(
-                    web_assets,
-                    deployed_web_assets / f"{story_number(package):03d}",
-                    dirs_exist_ok=True,
+            web_assets = repository / "data" / "web-assets" / story_no
+            _require_web_assets(web_assets, story_no)
+            shutil.copytree(
+                web_assets,
+                deployed_web_assets / story_no,
+                dirs_exist_ok=True,
+            )
+            web_rows = []
+            for name in sorted(REQUIRED_WEB_ASSETS):
+                target = deployed_web_assets / story_no / name
+                web_rows.append(
+                    {"name": name, "sha256": sha256(target), "bytes": target.stat().st_size}
                 )
+            manifest["web_assets"].append({"story_no": story_no, "files": web_rows})
 
         manifest_path = bundle_root / "BHAVA_DEPLOYMENT_CONTENT_MANIFEST.json"
         manifest_path.write_text(

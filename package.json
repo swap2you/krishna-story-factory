@@ -15,7 +15,7 @@
     "typecheck:web": "npm run typecheck -w @bhava/web",
     "test:web": "npm run test -w @bhava/web",
     "test:e2e": "npm run test:e2e -w @bhava/web",
-    "postinstall": "node scripts/ensure_native_optionals.cjs"
+    "postinstall": "node scripts/ensure_native_optionals.cjs && node apps/web/scripts/copy-pdf-worker.cjs"
   },
   "engines": {
     "node": ">=24 <25"

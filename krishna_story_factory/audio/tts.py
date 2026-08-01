@@ -17,6 +17,7 @@ from .pronunciation import (
     normalize_for_tts,
     validate_locked_voice,
 )
+from .sample_first_gate import assert_full_tts_allowed
 from .sanitize import sanitize_audio_script
 
 logger = logging.getLogger(__name__)
@@ -72,6 +73,9 @@ class AudioGenerator:
             output_path.write_bytes(_TEST_MP3_PLACEHOLDER)
             self.last_provider = "placeholder"
             return "placeholder"
+
+        # Phase 7/9: fail closed when sample-first is enabled (default off).
+        assert_full_tts_allowed(work_dir=work_dir)
 
         decision = provider_decision
         if decision is None:

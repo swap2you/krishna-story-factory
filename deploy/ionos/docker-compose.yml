@@ -77,6 +77,7 @@ services:
       BHAVA_PUBLIC_STORY_MAX: "20"
       BHAVA_REPOSITORY_ROOT: /app
       BHAVA_OUTPUT_ROOT: /app/output
+      BHAVA_WEB_ASSETS_ROOT: /app/data/web-assets
       BHAVA_CATALOG_DB: /app/data/catalog/bhava.sqlite
       BHAVA_FACTORY_ACTIONS_ENABLED: "0"
       BHAVA_ENABLE_PRODUCTION_RECOVERY: "0"
@@ -119,6 +120,7 @@ services:
       BHAVA_PUBLIC_STORY_MAX: "20"
       BHAVA_REPOSITORY_ROOT: /app
       BHAVA_OUTPUT_ROOT: /app/output
+      BHAVA_WEB_ASSETS_ROOT: /app/data/web-assets
       BHAVA_CATALOG_DB: /app/data/catalog/bhava.sqlite
       BHAVA_FACTORY_ACTIONS_ENABLED: "0"
       BHAVA_ENABLE_PRODUCTION_RECOVERY: "0"
