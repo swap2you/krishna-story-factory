@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatFooterReleaseLine, getBhavaReleaseMeta } from "@/lib/release-meta";
 
 const groups = [
   {
@@ -41,6 +42,7 @@ const groups = [
 ] as const;
 
 export function SiteFooter() {
+  const releaseLine = formatFooterReleaseLine(getBhavaReleaseMeta());
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
@@ -63,6 +65,9 @@ export function SiteFooter() {
             © 2026 Svarna Gauranga Das. All rights reserved.
             <br />
             Published by Dauji Publication · A Bhāva Project publication
+          </p>
+          <p className="hint footer-release" aria-label={`Release metadata: ${releaseLine}`}>
+            {releaseLine}
           </p>
         </div>
         {groups.map((group) => (

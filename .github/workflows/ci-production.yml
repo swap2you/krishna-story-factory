@@ -75,7 +75,11 @@ jobs:
 
       - name: Build production images
         run: |
-          docker build -f deploy/ionos/Dockerfile.web -t bhava-web:${GITHUB_SHA} .
+          docker build -f deploy/ionos/Dockerfile.web \
+            --build-arg RELEASE_SHA=${GITHUB_SHA} \
+            --build-arg BHAVA_WEB_VERSION=001-020-v3 \
+            --build-arg BHAVA_CONTENT_RELEASE=bhava-content-001-020-v3 \
+            -t bhava-web:${GITHUB_SHA} .
           docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${GITHUB_SHA} .
 
       - name: Compose validation
