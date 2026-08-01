@@ -54,7 +54,14 @@
     "reviewed_date": {"type": "string", "format": "date"},
     "reviewer": {"type": ["string", "null"]},
     "permissions_status": {
-      "enum": ["reference-only", "public-domain", "licensed", "original", "needs-review"]
+      "enum": [
+        "reference-only",
+        "public-domain",
+        "licensed",
+        "original",
+        "needs-review",
+        "excerpt-needs-review"
+      ]
     },
     "permissions_note": {"type": ["string", "null"]}
   },

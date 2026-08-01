@@ -160,11 +160,14 @@ def build_web_assets_for_package(
     else:
         _placeholder_waveform(waveform_path)
 
-    assets_meta = {
-        name: _asset_meta(dest / name)
-        for name in _MANIFEST_ASSET_NAMES
-        if (dest / name).is_file()
-    }
+    assets_meta = {}
+    for name in _MANIFEST_ASSET_NAMES:
+        path = dest / name
+        if not path.is_file():
+            raise FileNotFoundError(
+                f"Required web-asset missing after build: {story_no}/{name}"
+            )
+        assets_meta[name] = _asset_meta(path)
 
     shloka_status = str(shlokas.get("status") or "pending")
     web_manifest = {
