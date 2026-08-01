@@ -4,7 +4,7 @@ Canonical engineering/operations snapshot for Cursor, Codex, Claude, or a human 
 
 ## Purpose
 
-Local Python automation that generates **one Krishna Book bedtime story package per run** for children ages **6–12**, validates an exact **eight-file** package, and uploads it to **Google Drive**. WhatsApp and Telegram sending are **disabled** for the pilot. CLI is source of truth; Streamlit dashboard is optional.
+Local Python automation that generates **one Krishna Book bedtime story package per run** for children ages **6–12**, validates an exact **eight-file** package, and uploads it to **Google Drive**. WhatsApp and Telegram sending are **disabled**. CLI is source of truth; Streamlit dashboard is optional. Bhāva portal: Node **24** / Python **3.14**.
 
 Repository: [github.com/swap2you/krishna-story-factory](https://github.com/swap2you/krishna-story-factory)
 
@@ -142,31 +142,35 @@ Test mode must not call paid APIs and is never publishable.
 - Same-day guard: noon exits with `SKIPPED_ALREADY_COMPLETED_TODAY` after a successful morning run  
 - Legacy **`Krishna Story Factory Daily`** must not remain enabled  
 
-Installer defaults to **Disabled** unless `-Enable`. See [SCHEDULER.md](SCHEDULER.md).
+Installer defaults to **Disabled** unless `-Enable`. Current ops state: **Disabled**. See [SCHEDULER.md](SCHEDULER.md).
 
 ## Release state (current)
 
 | Item | State |
 | --- | --- |
 | Stories 001–006 | Locked (Story Format V2); do not modify without approval |
-| Stories 001–007 | **done** (runtime queue) |
-| Next pending | **008** (`the-meeting-of-nanda-and-vasudeva`) |
-| Story 007 Drive | Released — [STORY_007_RELEASE.md](releases/STORY_007_RELEASE.md) |
-| Scheduler | **`Krishna Story Factory MWF` enabled** — Mon/Wed/Fri **10:00 + 12:00** local |
+| Stories 001–020 | **complete / public** (exact-eight packages) |
+| Next pending | **021** (private; not generated) |
+| PublicStoryMax | **20** |
+| Content tag (exists) | `bhava-content-001-020-v2` |
+| Staging candidate | quality-completion **v3** content (`bhava-content-001-020-v3` being prepared) |
+| Production | Older web/content until later approval — do not promote v3 without explicit approval |
+| Scheduler | **`Krishna Story Factory MWF` Disabled** (install defaults Disabled) |
+| Stack | Node **24**, Python **3.14** |
 | Senior devotee review (001–006 pilot) | **Pending** |
 | Git tag (001–006 pilot baseline) | `v1.0.0-pilot-stories-001-006` |
 | Evidence (001–006) | [releases/PILOT_001_006_RELEASE_LOCK.md](releases/PILOT_001_006_RELEASE_LOCK.md), [releases/PILOT_001_006_HASHES.json](releases/PILOT_001_006_HASHES.json) |
-| Messaging | WhatsApp / Telegram disabled |
-| Distribution | Google Drive |
-
-Pilot narration for 001–006 (and Story 007) used OpenAI Marin when ElevenLabs Renee was unavailable; policy still prefers Renee first.
+| Messaging | WhatsApp / Telegram sending disabled |
+| Distribution | Google Drive after local PASS |
+| Follow-along | `needs_alignment` — backlog [backlog/FOLLOW_ALONG_ALIGNMENT.md](backlog/FOLLOW_ALONG_ALIGNMENT.md) (D-09) |
 
 ## Manual generation
 
 ```powershell
 cd C:\Development\Workspace\DevotionalRepo\krishna-story-factory
-.\scripts\run_test.ps1 --force          # structure only; no paid APIs
-.\scripts\run_prod.ps1                  # next pending; Drive if enabled
+.\scripts\run_test.ps1 --force                 # structure only; no paid APIs
+.\scripts\create-next-bhava-story.ps1           # next pending (governed create-next)
+.\scripts\run_prod.ps1                         # next pending; Drive if enabled
 ```
 
 Optional: `--chapter NNN`, `--force`, `--no-upload`, `--rebuild-components activity,coloring`, `--debug`. Do not invent flags. Full ops: [DAILY_OPERATIONS.md](DAILY_OPERATIONS.md).
@@ -206,7 +210,9 @@ To recreate the system you need:
 | `tracking/` | Runtime queue/logs (local; templates if present) |
 | `credentials/` | Local Drive OAuth only (never commit) |
 | `output/` | Local packages (never commit) |
-| `.venv/` | Created by `scripts/bootstrap.ps1` (Python 3.12) |
+| `.venv/` | Created by `scripts/bootstrap.ps1` (Python **3.14** preferred; see `.python-version`) |
+| `apps/web/` | Bhāva Next.js portal (Node **24**) |
+| `apps/api/` | Bhāva API (Python **3.14**) |
 
 ## Related canonical docs
 
@@ -218,4 +224,6 @@ To recreate the system you need:
 - [DRIVE_AND_PACKAGE_LAYOUT.md](DRIVE_AND_PACKAGE_LAYOUT.md)  
 - [SCHEDULER.md](SCHEDULER.md)  
 - [RELEASE_AND_ROLLBACK.md](RELEASE_AND_ROLLBACK.md)  
+- [deployment/BHAVA_PUSH_BUTTON_RELEASE_RUNBOOK.md](deployment/BHAVA_PUSH_BUTTON_RELEASE_RUNBOOK.md)  
+- [backlog/FOLLOW_ALONG_ALIGNMENT.md](backlog/FOLLOW_ALONG_ALIGNMENT.md)  
 - [`../prompts/KRISHNA_STORY_FACTORY_MASTER_AGENT.md`](../prompts/KRISHNA_STORY_FACTORY_MASTER_AGENT.md)  

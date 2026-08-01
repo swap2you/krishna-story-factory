@@ -12,10 +12,11 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .public_rights import ensure_reader_rights_section, sanitize_public_rights
 from .recommended_playback_rates import recommended_playback_rate_for_story
 from .reviewed_shlokas import shlokas_payload_for_story
 from .reviewed_sources import source_links_for_story
-from .story_parser import parse_story_markdown
+from .story_parser import md_to_plain, parse_story_markdown
 from .waveform import write_peaks_json
 
 # Files hashed into web_manifest.assets (schema-required set).
@@ -121,12 +122,17 @@ def build_web_assets_for_package(
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
     parsed = parse_story_markdown(raw_md)
+    public_rights = sanitize_public_rights(manifest, story_no=story_no)
+    reader_md = ensure_reader_rights_section(
+        parsed.reader_md, public_rights, story_no=story_no
+    )
+    reader_txt = md_to_plain(reader_md)
 
     dest = output_root / story_no
     dest.mkdir(parents=True, exist_ok=True)
 
-    (dest / "reader.md").write_text(parsed.reader_md, encoding="utf-8")
-    (dest / "reader.txt").write_text(parsed.reader_txt, encoding="utf-8")
+    (dest / "reader.md").write_text(reader_md, encoding="utf-8")
+    (dest / "reader.txt").write_text(reader_txt, encoding="utf-8")
     (dest / "narration.txt").write_text(parsed.narration_txt, encoding="utf-8")
 
     source_links = source_links_for_story(story_no, manifest)
@@ -134,7 +140,7 @@ def build_web_assets_for_package(
         json.dumps(source_links, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
-    reflections = _extract_lessons(parsed.reader_md)
+    reflections = _extract_lessons(reader_md)
     (dest / "reflections.json").write_text(
         json.dumps(reflections, indent=2, ensure_ascii=False), encoding="utf-8"
     )
@@ -177,8 +183,8 @@ def build_web_assets_for_package(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "recommended_playback_rate": float(recommended_playback_rate),
         "assets": assets_meta,
-        # Operator convenience fields (schema allows additionalProperties).
-        "rights": manifest.get("rights") or manifest.get("publication") or {},
+        # Public-safe rights only (never includes contact_email).
+        "rights": public_rights,
         "statuses": {
             "reader": "clean" if not parsed.has_internal_leak_markers else "has_leak_markers",
             "narration": "present" if parsed.narration_txt else "missing",

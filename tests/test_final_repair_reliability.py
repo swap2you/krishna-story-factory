@@ -249,6 +249,8 @@ def test_elevenlabs_timeout_falls_back_in_preflight(monkeypatch) -> None:
 def test_synthesis_time_elevenlabs_fallback_to_openai(tmp_path: Path, monkeypatch) -> None:
     from krishna_story_factory.config import load_settings
 
+    # Legacy unit path — not create-next; opt out of Phase 9 sample-first default.
+    monkeypatch.setenv("AUDIO_SAMPLE_FIRST_REQUIRED", "0")
     settings = load_settings(ROOT)
     gen = AudioGenerator(settings, mode="prod")
     decision = MagicMock(status="READY", provider="elevenlabs", model_id="eleven_v3")

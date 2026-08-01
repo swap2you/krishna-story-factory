@@ -24,6 +24,7 @@ export function PdfJsViewer({ url, title }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [effectiveScale, setEffectiveScale] = useState(1);
 
   const zoom = ZOOM_STEPS[zoomIndex] ?? 1;
 
@@ -95,6 +96,7 @@ export function PdfJsViewer({ url, title }: Props) {
       const task = pdfPage.render({ canvasContext: ctx, viewport });
       renderTaskRef.current = task;
       await task.promise;
+      setEffectiveScale(scale);
       setError(null);
     } catch (err) {
       if (err && typeof err === "object" && "name" in err && (err as { name: string }).name === "RenderingCancelledException") {
@@ -182,7 +184,9 @@ export function PdfJsViewer({ url, title }: Props) {
         >
           −
         </Button>
-        <span className="pdf-zoom-label">{Math.round(zoom * 100)}%</span>
+        <span className="pdf-zoom-label" aria-live="polite">
+          {Math.round(effectiveScale * 100)}%
+        </span>
         <Button
           variant="quiet"
           disabled={zoomIndex >= ZOOM_STEPS.length - 1}

@@ -97,6 +97,10 @@ BAND_CHAPTERS = ["001", "002", "003", "006", "007", "008", "009"]
 #: the strict typeface and box-glyph gates.
 CORRECTED_CHAPTERS = ["007", "009"]
 
+#: Unicode-font poster correction that left coloring/audio/PDF unchanged.
+#: Story 009 later received an intentional v3 visual (poster+coloring) repair.
+SUPERSESSION_STABLE_CHAPTERS = ["007"]
+
 
 def _discover_band_chapters() -> list[str]:
     return [chapter for chapter in CHAPTERS if has_text_bands(_poster(chapter))]
@@ -443,7 +447,7 @@ def test_superseded_archive_is_intact_and_correctly_labelled(chapter: str) -> No
 
 
 @pytest.mark.content_release
-@pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
+@pytest.mark.parametrize("chapter", SUPERSESSION_STABLE_CHAPTERS)
 def test_narration_and_narrative_survive_the_correction(chapter: str) -> None:
     rights = _manifest(chapter).get("rights") or {}
     current = rights.get("sha256") or {}
@@ -461,7 +465,7 @@ def test_narration_and_narrative_survive_the_correction(chapter: str) -> None:
 
 
 @pytest.mark.content_release
-@pytest.mark.parametrize("chapter", CORRECTED_CHAPTERS)
+@pytest.mark.parametrize("chapter", SUPERSESSION_STABLE_CHAPTERS)
 def test_only_poster_story_and_manifest_changed(chapter: str) -> None:
     rights = _manifest(chapter).get("rights") or {}
     current = rights.get("sha256") or {}

@@ -335,25 +335,40 @@ def _identity_constraints(title: str) -> str:
 
 
 def compose_poster(raw_path: Path, output_path: Path, title: str, one_liner: str) -> None:
+    from ..publication.poster_text import (
+        MAX_CAPTION_LINES,
+        TITLE_LINE_GAP,
+        TITLE_PAD_Y,
+        bands_for_art_height,
+        fit_title_layout,
+        wrap_text_lines,
+    )
+
     base = Image.open(raw_path).convert("RGB")
     width, height = base.size
-    title_band = max(int(height * 0.08), 72)
-    footer_band = max(int(height * 0.06), 56)
+    title_band, footer_band = bands_for_art_height(height, legacy=False)
     canvas = Image.new("RGB", (width, height + title_band + footer_band), "#120c06")
     canvas.paste(base, (0, title_band))
     draw = ImageDraw.Draw(canvas)
-    title_font = _font(42, bold=True)
     body_font = _font(24, bold=False)
-    assert_text_renderable(title_font, [title], context="poster title band")
+    assert_text_renderable(_font(42, bold=True), [title], context="poster title band")
     assert_text_renderable(body_font, [one_liner], context="poster caption band")
     margin = int(width * 0.06)
     max_w = width - margin * 2
-    y = 16
-    for line in _wrap(draw, title, title_font, max_w)[:2]:
+    title_lines, title_font, _title_size = fit_title_layout(
+        draw,
+        title,
+        font_loader=lambda size: _font(size, bold=True),
+        max_width=max_w,
+        band_height=title_band,
+    )
+    y = TITLE_PAD_Y
+    for line in title_lines:
+        # Keep ink inside the band: ascender at y, full glyph box below.
         draw.text((width // 2, y), line, font=title_font, fill="#f6e7b8", anchor="ma")
-        y += title_font.size + 4
+        y += title_font.size + TITLE_LINE_GAP
     footer_y = height + title_band + 14
-    for line in _wrap(draw, one_liner, body_font, max_w)[:2]:
+    for line in wrap_text_lines(draw, one_liner, body_font, max_w)[:MAX_CAPTION_LINES]:
         draw.text((width // 2, footer_y), line, font=body_font, fill="#efe2c0", anchor="ma")
         footer_y += body_font.size + 4
     canvas.save(output_path, "PNG")
@@ -380,22 +395,9 @@ def _font(size: int, *, bold: bool = True) -> ImageFont.FreeTypeFont:
 
 
 def _wrap(draw: ImageDraw.ImageDraw, text: str, font, max_width: int) -> list[str]:
-    if not text.strip():
-        return []
-    words = text.split()
-    lines: list[str] = []
-    current: list[str] = []
-    for word in words:
-        trial = " ".join(current + [word])
-        if draw.textlength(trial, font=font) <= max_width:
-            current.append(word)
-        else:
-            if current:
-                lines.append(" ".join(current))
-            current = [word]
-    if current:
-        lines.append(" ".join(current))
-    return lines
+    from ..publication.poster_text import wrap_text_lines
+
+    return wrap_text_lines(draw, text, font, max_width)
 
 
 def _placeholder_poster(output_path: Path, title: str, one_liner: str) -> None:

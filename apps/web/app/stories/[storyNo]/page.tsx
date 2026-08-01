@@ -153,7 +153,6 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
             <p className="eyebrow">Listen · Read · Activities</p>
             <h1>{story.title}</h1>
           </div>
-          <span className="status-chip">{story.quality_status ?? "Published"}</span>
         </div>
         <StoryExperience
           story={story}

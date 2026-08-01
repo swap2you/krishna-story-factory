@@ -40,10 +40,6 @@ def _wrap(draw: ImageDraw.ImageDraw, text: str, font, max_width: int) -> list[st
 def compose_poster(raw_path: Path, output_path: Path, copy: PosterCopy, whatsapp_path: Path | None = None) -> None:
     base = Image.open(raw_path).convert("RGB")
     width, height = base.size
-    canvas = Image.new("RGB", (width, height + 220), "#1a1208")
-    canvas.paste(base, (0, 110))
-
-    draw = ImageDraw.Draw(canvas)
     title_font, body_font, small_font, caption_font = _load_fonts()
     assert_text_renderable(title_font, [copy.title], context="poster title band")
     assert_text_renderable(
@@ -60,35 +56,72 @@ def compose_poster(raw_path: Path, output_path: Path, copy: PosterCopy, whatsapp
 
     margin = int(width * 0.06)
     max_text = width - margin * 2
-
-    draw.rounded_rectangle((margin // 2, 20, width - margin // 2, 100), radius=18, fill="#2b1d0f", outline="#c9a227", width=2)
-    title_lines = _wrap(draw, copy.title, title_font, max_text)
-    y = 34
-    for line in title_lines[:2]:
-        draw.text((width // 2, y), line, font=title_font, fill="#f6e7b8", anchor="ma")
-        y += title_font.size + 4
+    # Probe wrap against a throwaway draw context sized like the final canvas.
+    probe = Image.new("RGB", (width, 64), "#1a1208")
+    probe_draw = ImageDraw.Draw(probe)
+    title_lines = _wrap(probe_draw, copy.title, title_font, max_text)[:3]
+    line_gap = 4
+    title_pad = 16
+    panel_top = 20
+    needed = (
+        title_pad * 2
+        + max(1, len(title_lines)) * title_font.size
+        + max(0, len(title_lines) - 1) * line_gap
+    )
     if copy.subtitle:
-        draw.text((width // 2, 88), copy.subtitle, font=small_font, fill="#d8c792", anchor="ma")
+        needed += small_font.size + 8
+    panel_bottom = max(100, panel_top + needed)
+    art_offset = max(110, panel_bottom + 10)
+    footer_band = 110
+    canvas = Image.new("RGB", (width, height + art_offset + footer_band), "#1a1208")
+    canvas.paste(base, (0, art_offset))
+    draw = ImageDraw.Draw(canvas)
+
+    draw.rounded_rectangle(
+        (margin // 2, panel_top, width - margin // 2, panel_bottom),
+        radius=18,
+        fill="#2b1d0f",
+        outline="#c9a227",
+        width=2,
+    )
+    y = panel_top + title_pad
+    for line in title_lines:
+        draw.text((width // 2, y), line, font=title_font, fill="#f6e7b8", anchor="ma")
+        y += title_font.size + line_gap
+    if copy.subtitle:
+        draw.text((width // 2, y + 2), copy.subtitle, font=small_font, fill="#d8c792", anchor="ma")
 
     if copy.heavenly_quote:
-        panel_top = 120
-        panel_bottom = panel_top + 90
-        draw.rounded_rectangle((margin, panel_top, width - margin, panel_bottom), radius=14, fill="#120c06cc", outline="#c9a227")
+        quote_top = art_offset + 10
+        quote_bottom = quote_top + 90
+        draw.rounded_rectangle(
+            (margin, quote_top, width - margin, quote_bottom),
+            radius=14,
+            fill="#120c06cc",
+            outline="#c9a227",
+        )
         quote_lines = _wrap(draw, f'"{copy.heavenly_quote}"', body_font, max_text - 40)
-        qy = panel_top + 12
+        qy = quote_top + 12
         for line in quote_lines[:3]:
             draw.text((width // 2, qy), line, font=body_font, fill="#fff6df", anchor="ma")
             qy += body_font.size + 4
 
-    footer_top = height + 120
-    draw.rounded_rectangle((margin, footer_top, width - margin, height + 200), radius=14, fill="#2b1d0f", outline="#c9a227", width=2)
+    footer_top = height + art_offset + 10
+    footer_bottom = height + art_offset + footer_band - 20
+    draw.rounded_rectangle(
+        (margin, footer_top, width - margin, footer_bottom),
+        radius=14,
+        fill="#2b1d0f",
+        outline="#c9a227",
+        width=2,
+    )
     one_liner_lines = _wrap(draw, copy.one_liner, body_font, max_text - 20)
     oy = footer_top + 16
     for line in one_liner_lines[:3]:
         draw.text((width // 2, oy), line, font=body_font, fill="#f6e7b8", anchor="ma")
         oy += body_font.size + 4
 
-    side_y = int(height * 0.35)
+    side_y = art_offset + int(height * 0.35)
     for idx, caption in enumerate(copy.supporting_captions[:3]):
         label = caption.label.strip()
         text = caption.text.strip()

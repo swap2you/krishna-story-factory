@@ -1,6 +1,15 @@
 "use client";
 
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode, useEffect, useId, useState } from "react";
+import {
+  forwardRef,
+  type ButtonHTMLAttributes,
+  type KeyboardEvent,
+  type ReactNode,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
 
 export const Button = forwardRef<
   HTMLButtonElement,
@@ -15,7 +24,69 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
 
 export function Tabs({ tabs, children }: { tabs: string[]; children: (active: string) => ReactNode }) {
   const [active, setActive] = useState(tabs[0]);
-  return <div><div className="bhava-tabs" role="tablist">{tabs.map((tab) => <button key={tab} className="bhava-tab" role="tab" aria-selected={active === tab} onClick={() => setActive(tab)}>{tab}</button>)}</div><div role="tabpanel">{children(active)}</div></div>;
+  const baseId = useId();
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const activeIndex = Math.max(0, tabs.indexOf(active));
+
+  const selectIndex = (index: number) => {
+    const nextIndex = ((index % tabs.length) + tabs.length) % tabs.length;
+    setActive(tabs[nextIndex]);
+    queueMicrotask(() => tabRefs.current[nextIndex]?.focus());
+  };
+
+  const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      selectIndex(index + 1);
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      selectIndex(index - 1);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      selectIndex(0);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      selectIndex(tabs.length - 1);
+    }
+  };
+
+  return (
+    <div>
+      <div className="bhava-tabs" role="tablist" aria-label="Story sections">
+        {tabs.map((tab, index) => {
+          const tabId = `${baseId}-tab-${index}`;
+          const panelId = `${baseId}-panel-${index}`;
+          const selected = active === tab;
+          return (
+            <button
+              key={tab}
+              id={tabId}
+              ref={(el) => {
+                tabRefs.current[index] = el;
+              }}
+              className="bhava-tab"
+              role="tab"
+              type="button"
+              aria-selected={selected}
+              aria-controls={panelId}
+              tabIndex={selected ? 0 : -1}
+              onClick={() => setActive(tab)}
+              onKeyDown={(event) => onTabKeyDown(event, index)}
+            >
+              {tab}
+            </button>
+          );
+        })}
+      </div>
+      <div
+        id={`${baseId}-panel-${activeIndex}`}
+        role="tabpanel"
+        aria-labelledby={`${baseId}-tab-${activeIndex}`}
+      >
+        {children(active)}
+      </div>
+    </div>
+  );
 }
 
 export function Dialog({ open, title, children, onClose }: { open: boolean; title: string; children: ReactNode; onClose: () => void }) {

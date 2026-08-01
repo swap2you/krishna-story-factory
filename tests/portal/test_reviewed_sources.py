@@ -31,11 +31,46 @@ def test_stories_010_020_have_sb_companion_and_aug_review_date():
         assert secondary["vedabase_url"].startswith("https://vedabase.io/en/library/sb/10/")
 
 
+def test_stories_001_005_006_have_sb_chapter_companions():
+    expected = {
+        "001": ("https://vedabase.io/en/library/sb/10/1/", 1),
+        "005": ("https://vedabase.io/en/library/sb/10/2/", 2),
+        "006": ("https://vedabase.io/en/library/sb/10/3/", 3),
+    }
+    for story_no, (url, chapter) in expected.items():
+        secondary = REVIEWED_SOURCES[story_no]["scripture_secondary"]
+        assert isinstance(secondary, dict)
+        assert secondary["chapter"] == chapter
+        assert secondary["vedabase_url"] == url
+        assert secondary.get("verse_start") is None
+        assert secondary.get("verse_end") is None
+
+
+def test_bona_fide_verse_ranges_only_where_series_plan_pins_them():
+    """Exact ranges only for Stories 002–004 (series_plan SB 10.1.x pins)."""
+    for story_no, start, end in (("002", 27, 55), ("003", 56, 61), ("004", 62, 69)):
+        secondary = REVIEWED_SOURCES[story_no]["scripture_secondary"]
+        assert secondary["verse_start"] == start
+        assert secondary["verse_end"] == end
+    for n in list(range(1, 2)) + list(range(5, 21)):
+        secondary = REVIEWED_SOURCES[f"{n:03d}"]["scripture_secondary"]
+        assert secondary.get("verse_start") is None
+        assert secondary.get("verse_end") is None
+
+
+def test_not_applicable_shlokas_remain_not_applicable():
+    for story_no in ("001", "005", "006"):
+        rows = shlokas_payload_for_story(story_no)["shlokas"]
+        assert rows
+        assert all(row["review_status"] == "not_applicable" for row in rows)
+
+
 def test_source_links_include_openable_vedabase_and_bhava_original():
     links = source_links_for_story("006", {"source_reference": "Krishna Book Chapter 3"})
     assert any(item.get("vedabase_url") for item in links)
     assert any(item.get("provenance") == "bhava-original" for item in links)
     assert any(item.get("provenance") == "bbt-source-derived" for item in links)
+    assert sum(1 for item in links if item.get("label") == "Companion scripture") == 1
 
 
 def test_unreviewed_story_does_not_invent_vedabase_url():

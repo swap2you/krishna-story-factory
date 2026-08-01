@@ -20,12 +20,13 @@ def _sha256(path: Path) -> str:
 
 
 @pytest.mark.local_runtime
-def test_queue_001_009_done_and_010_pending() -> None:
+def test_queue_001_020_done_and_021_pending() -> None:
     rows = list(csv.DictReader(QUEUE.open(encoding="utf-8")))
     by_chapter = {str(row["chapter_no"]).zfill(3): row["status"] for row in rows}
-    for chapter in ("001", "002", "003", "004", "005", "006", "007", "008", "009"):
+    for n in range(1, 21):
+        chapter = f"{n:03d}"
         assert by_chapter.get(chapter) == "done", chapter
-    assert by_chapter.get("010") == "pending"
+    assert by_chapter.get("021") == "pending"
 
 
 def test_v15_baseline_records_008_complete() -> None:

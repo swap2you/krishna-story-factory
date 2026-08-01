@@ -1,7 +1,7 @@
 {
-  "tag": "bhava-content-001-020-v2",
-  "bundle": "bhava-content-001-020-v2.tar.gz",
-  "sha256": "4ecd16b35cf9f07d1bf370630eb2c7a30a738489cde3230ea97710cb0892699a",
+  "tag": "bhava-content-001-020-v3",
+  "bundle": "bhava-content-001-020-v3.tar.gz",
+  "sha256": "35c40da62e6695f7caca9f1eff30da493382c95b1b7a4d7fbbb706d1ffb64f93",
   "public_story_max": 20,
-  "note": "Immutable public Stories 001-020 quality-completion v2 with release-time web-assets. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes. Story 021+ remains private."
+  "note": "Immutable public Stories 001-020 final UAT v3: Ślokas panel, rights completion, Story 009 visual repair, poster title bounds, public security boundary. Story 021+ remains private. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes."
 }

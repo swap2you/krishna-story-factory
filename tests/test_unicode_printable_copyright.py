@@ -134,11 +134,11 @@ def test_story_021_absent_from_public_content() -> None:
 
 
 @pytest.mark.local_runtime
-def test_queue_pending_holds_at_story_010() -> None:
+def test_queue_pending_holds_at_story_021() -> None:
     queue = ROOT / "tracking" / "queue_state.csv"
     rows = {str(r["chapter_no"]).zfill(3): r["status"] for r in csv.DictReader(queue.open(encoding="utf-8"))}
-    assert rows.get("009") == "done"
-    assert rows.get("010") == "pending"
+    assert rows.get("020") == "done"
+    assert rows.get("021") == "pending"
 
 
 @pytest.mark.content_release

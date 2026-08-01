@@ -240,11 +240,16 @@ def _rebuild_one(
     parent_key = None
     package_link = _existing_package_link(production.manifest)
 
+    # Only rewrite story.md when the story component is requested. Image/audio-only
+    # rebuilds must preserve the production story text (including Rights and Credits).
     if "story" in components:
         stage_paths.story_md.write_text(repaired_md, encoding="utf-8")
-    story_md = stage_paths.story_md.read_text(encoding="utf-8")
-    content, story_md = _load_content(settings, plan, stage_paths.story_md)
-    stage_paths.story_md.write_text(story_md, encoding="utf-8")
+        content, story_md = _load_content(settings, plan, stage_paths.story_md)
+        stage_paths.story_md.write_text(story_md, encoding="utf-8")
+    else:
+        # Keep staged copy from production; reload content for image prompts only.
+        story_md = stage_paths.story_md.read_text(encoding="utf-8")
+        content, _ = _load_content(settings, plan, stage_paths.story_md)
 
     from krishna_story_factory.audio.drift import (
         detect_audio_stale,
@@ -524,6 +529,12 @@ def _rebuild_one(
 
 
 def main(argv: list[str] | None = None) -> int:
+    import os
+
+    # Legacy rebuild tool: sample-first / web-assets create-next gates opt out unless forced.
+    os.environ.setdefault("AUDIO_SAMPLE_FIRST_REQUIRED", "0")
+    os.environ.setdefault("BHAVA_WEB_ASSETS_UI_GATE", "0")
+
     parser = argparse.ArgumentParser(description="Manual rebuild for story packages without queue mutation.")
     parser.add_argument("--chapters", required=True, help="Comma-separated chapter numbers, e.g. 001,002,006")
     parser.add_argument(

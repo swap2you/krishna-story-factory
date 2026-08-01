@@ -19,9 +19,10 @@ REVIEWED_DATE_008_009 = "2026-07-27"
 REVIEWED_DATE_010_020 = "2026-08-01"
 
 _CHAPTER_NOTE = (
-    "Chapter-framed companion reference. Exact single-verse pin deferred until "
-    "Vedabase verse-range verification against local editorial sources; "
-    "Sanskrit and transliteration intentionally null (not invented)."
+    "Reviewed chapter-framed companion reference. Exact verse start/end deferred — "
+    "not pinned in series_plan.csv scripture_reference or docs/editorial/; "
+    "chapter Vedabase URL retained. Sanskrit and transliteration intentionally "
+    "null (not invented)."
 )
 
 

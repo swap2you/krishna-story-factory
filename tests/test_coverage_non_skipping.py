@@ -316,8 +316,8 @@ def test_next_pending_is_cart_breaking(tmp_path: Path) -> None:
 
 
 @pytest.mark.local_runtime
-def test_live_queue_next_pending_is_cart_breaking() -> None:
+def test_live_queue_next_pending_is_brahma_stealing() -> None:
     nxt = read_next_pending(ROOT)
     assert nxt is not None
-    assert nxt.chapter_no == "010"
-    assert "cart" in nxt.slug
+    assert nxt.chapter_no == "021"
+    assert "brahma" in nxt.slug or "calves" in nxt.slug or "boys" in nxt.slug

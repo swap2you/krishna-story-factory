@@ -663,14 +663,36 @@ export function AudioPlayer({
         className="waveform-canvas"
         width={640}
         height={72}
-        role="img"
-        aria-label="Narration waveform preview"
+        role="slider"
+        tabIndex={0}
+        aria-label="Narration waveform seek"
+        aria-valuemin={0}
+        aria-valuemax={Math.max(0, Math.round(duration))}
+        aria-valuenow={Math.max(0, Math.round(current))}
+        aria-valuetext={`${formatTime(current)} of ${formatTime(duration)}`}
         onClick={(event) => {
           const audio = audioRef.current;
           if (!audio || !duration) return;
           const rect = event.currentTarget.getBoundingClientRect();
-          const ratio = (event.clientX - rect.left) / rect.width;
+          const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
           audio.currentTime = ratio * duration;
+        }}
+        onKeyDown={(event) => {
+          const audio = audioRef.current;
+          if (!audio || !duration) return;
+          if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            audio.currentTime = Math.max(0, audio.currentTime - 5);
+          } else if (event.key === "ArrowRight") {
+            event.preventDefault();
+            audio.currentTime = Math.min(duration, audio.currentTime + 5);
+          } else if (event.key === "Home") {
+            event.preventDefault();
+            audio.currentTime = 0;
+          } else if (event.key === "End") {
+            event.preventDefault();
+            audio.currentTime = duration;
+          }
         }}
       />
       <div className="audio-controls">

@@ -5,8 +5,8 @@
 ```powershell
 cd C:\Development\Workspace\DevotionalRepo\krishna-story-factory
 .\scripts\release-bhava.ps1 -Status
-.\scripts\release-bhava.ps1 -ContentReleaseTag bhava-content-001-010-v1 -DryRun
-.\scripts\release-bhava.ps1 -ContentReleaseTag bhava-content-001-010-v1
+.\scripts\release-bhava.ps1 -ContentReleaseTag bhava-content-001-020-v3 -PublicStoryMax 20 -DryRun
+.\scripts\release-bhava.ps1 -ContentReleaseTag bhava-content-001-020-v3 -PublicStoryMax 20
 ```
 
 Bash companion (status/dry-run only):
@@ -16,12 +16,21 @@ Bash companion (status/dry-run only):
 ./scripts/release-bhava.sh dry-run
 ```
 
+## Content tags
+
+| Tag | Role |
+| --- | --- |
+| `bhava-content-001-020-v2` | Exists (published quality-completion v2) |
+| `bhava-content-001-020-v3` | Staging candidate being prepared (quality-completion / v3) |
+
+Production remains on older web/content until later approval. Do not `-PromoteToProduction` for v3 without explicit approval.
+
 ## Gates
 
 1. Clean working tree  
 2. Content tag + checksum (`deploy/content/RELEASE_CONTENT.json`)  
-3. `PublicStoryMax` must be **9** for current production series (blocks Story 010)  
-4. CI green on modernization / develop  
+3. `PublicStoryMax` must be **20** for Stories 001–020 (blocks Story 021+)  
+4. CI green on develop  
 5. Staging deploy + TLS readiness + environment-aware smoke  
 6. Staging rollback exercise (when a `previous` pointer exists)  
 7. Explicit `-PromoteToProduction` before develop→main PR  
@@ -35,7 +44,7 @@ Bash companion (status/dry-run only):
 - force-push  
 - bypass CI  
 - enable scheduler  
-- paid generation  
+- paid generation during release gates  
 - print secrets  
 - duplicate concurrent production deploys (`concurrency: bhava-production`)  
 - one-click production rollback without `-ConfirmRollback`
@@ -54,10 +63,9 @@ Bash companion (status/dry-run only):
 | Alias | Mapped command |
 | --- | --- |
 | BHAVA STATUS | `.\scripts\release-bhava.ps1 -Status` |
-| BHAVA COST FORECAST 011-020 MAX_USD=25 | Read `MyPilotDropbox/bhava-production-ops/reports/BHAVA_STORIES_011_020_COST_FORECAST.md`; authorized ceiling USD $25 |
-| BHAVA GENERATE 011-020 MAX_USD=25 | Attended sequential `.\scripts\run_prod.ps1 --chapter NNN` with OpenAI-only TTS; stop before cumulative spend exceeds $25 |
-| BHAVA RELEASE `<CONTENT_TAG>` | `.\scripts\release-bhava.ps1 -ContentReleaseTag <CONTENT_TAG> -PublicStoryMax <N>` |
+| BHAVA RELEASE `<CONTENT_TAG>` | `.\scripts\release-bhava.ps1 -ContentReleaseTag <CONTENT_TAG> -PublicStoryMax 20` |
+| BHAVA RELEASE V3 STAGING | `.\scripts\release-bhava.ps1 -ContentReleaseTag bhava-content-001-020-v3 -PublicStoryMax 20` |
 | BHAVA UAT HANDOFF | Update `MyPilotDropbox/bhava-production-ops/reports/BHAVA_PRODUCTION_COWORK_UAT_HANDOFF.md` after smoke PASS |
 | BHAVA ROLLBACK STAGING | `.\scripts\release-bhava.ps1 -Rollback -Environment staging -ConfirmRollback` |
 | BHAVA ROLLBACK PRODUCTION | `.\scripts\release-bhava.ps1 -Rollback -Environment production -ConfirmRollback` |
-
+| BHAVA CREATE NEXT | `.\scripts\create-next-bhava-story.ps1` |
