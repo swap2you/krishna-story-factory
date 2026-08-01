@@ -42,6 +42,8 @@ export function lockBodyScroll(): { unlock: () => void } {
       if (lockCount !== 0) return;
 
       document.body.style.cssText = savedBodyCssText;
+      // Force layout before restoring scroll (esp. mobile Chromium).
+      void document.body.offsetHeight;
       window.scrollTo(0, savedScrollY);
     },
   };

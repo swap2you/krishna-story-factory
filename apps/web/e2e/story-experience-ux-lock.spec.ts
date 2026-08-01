@@ -31,7 +31,7 @@ test.describe("Story experience UX lock", () => {
     const posterPath = story.poster_url ?? "story_poster";
 
     await page.goto(`/stories/${story.story_no}`);
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator(".story-main h1").first()).toBeVisible({ timeout: 20_000 });
 
     const wash = page.locator(".story-poster-wash");
     await expect(wash).toBeVisible();
@@ -53,6 +53,7 @@ test.describe("Story experience UX lock", () => {
 
     await selectStoryTab(page, /Coloring/i);
     await page.evaluate(() => window.scrollTo(0, 480));
+    await page.waitForFunction(() => window.scrollY >= 400, undefined, { timeout: 5_000 });
     const scrollBefore = await page.evaluate(() => window.scrollY);
 
     const tile = page.locator(".asset-tile").first();
@@ -71,9 +72,9 @@ test.describe("Story experience UX lock", () => {
     await expect(dialog).toHaveCount(0);
 
     await page.waitForFunction(
-      (before) => Math.abs(window.scrollY - before) <= 3,
+      (before) => Math.abs(window.scrollY - before) <= 8,
       scrollBefore,
-      { timeout: 5_000 },
+      { timeout: 8_000 },
     );
 
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));

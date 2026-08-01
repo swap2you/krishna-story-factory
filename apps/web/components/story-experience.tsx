@@ -582,8 +582,9 @@ export function StoryExperience({
     return () => {
       window.clearTimeout(focusTimer);
       document.removeEventListener("keydown", onKeyDown, true);
+      // Restore focus without scrolling; unlock restores exact scrollY.
+      previousFocusRef.current?.focus({ preventScroll: true });
       unlock();
-      previousFocusRef.current?.focus();
     };
   }, [carouselOpen, coloring.length]);
 
