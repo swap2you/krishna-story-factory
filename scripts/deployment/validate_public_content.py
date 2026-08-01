@@ -88,7 +88,7 @@ def main() -> int:
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--bundle", type=Path)
     source.add_argument("--directory", type=Path)
-    parser.add_argument("--max-story", type=int, default=9)
+    parser.add_argument("--max-story", type=int, default=10)
     args = parser.parse_args()
 
     if args.directory:

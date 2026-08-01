@@ -1,7 +1,7 @@
 {
-  "tag": "bhava-content-001-009-v1",
-  "bundle": "bhava-content-001-009-v1.tar.gz",
-  "sha256": "564234cf7196784e8bda7f3520e1cd2b2b3440ef7b7cd5f72fd961a71821c204",
-  "public_story_max": 9,
-  "note": "Immutable public Stories 001-009. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes, so replacing the release asset cannot silently change what CI validates."
+  "tag": "bhava-content-001-020-v1",
+  "bundle": "bhava-content-001-020-v1.tar.gz",
+  "sha256": "ac950da9df9dc110ed91753f0928682d6e2a5889264756f7d2eb9fd8d1f6e32b",
+  "public_story_max": 20,
+  "note": "Immutable public Stories 001-020. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes. Story 021+ remains private."
 }

@@ -96,6 +96,23 @@ def upload_final_package(settings: Settings, *, folder_name: str, source_dir: Pa
 
 def ensure_story_folder(settings: Settings, *, folder_name: str) -> DriveUploadResult:
     """Create or reuse the per-story Drive child folder without uploading files."""
+    folder_name = (folder_name or "").strip()
+    if not folder_name or folder_name.lower() in {"package", "output", "work"}:
+        return DriveUploadResult(
+            status="FAILED",
+            publish_mode="drive_api",
+            package_link=settings.google_drive_folder_url,
+            detail=f"Refusing invalid Drive folder_name={folder_name!r}; expected '<chapter>_<slug>'.",
+            folder_name=folder_name,
+        )
+    if not re.match(r"^\d{3}_[a-z0-9]+(?:-[a-z0-9]+)*$", folder_name):
+        return DriveUploadResult(
+            status="FAILED",
+            publish_mode="drive_api",
+            package_link=settings.google_drive_folder_url,
+            detail=f"Refusing non-canonical Drive folder_name={folder_name!r}; expected '<chapter>_<slug>'.",
+            folder_name=folder_name,
+        )
     creds_file = settings.google_drive_credentials_file
     token_file = settings.google_drive_token_file
     parent_id = settings.google_drive_folder_id

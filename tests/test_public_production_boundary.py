@@ -16,7 +16,7 @@ def test_public_app_omits_factory_router(monkeypatch, tmp_path):
     monkeypatch.setenv("BHAVA_OUTPUT_ROOT", str(tmp_path / "output"))
     monkeypatch.setenv("BHAVA_CATALOG_DB", str(tmp_path / "catalog.sqlite"))
     monkeypatch.setenv("BHAVA_ALLOWED_HOSTS", "testserver,localhost,127.0.0.1")
-    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "9")
+    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "10")
 
     import bhava_api.config
     import bhava_api.main
@@ -42,7 +42,7 @@ def test_public_app_blocks_local_factory_routes(monkeypatch, tmp_path):
     monkeypatch.setenv("BHAVA_OUTPUT_ROOT", str(build_public_catalog(tmp_path / "output")))
     monkeypatch.setenv("BHAVA_CATALOG_DB", str(tmp_path / "catalog.sqlite"))
     monkeypatch.setenv("BHAVA_ALLOWED_HOSTS", "testserver")
-    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "9")
+    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "10")
 
     import bhava_api.main
 
@@ -62,7 +62,7 @@ def test_version_endpoint_contains_safe_release(monkeypatch, tmp_path):
     monkeypatch.setenv("BHAVA_CATALOG_DB", str(tmp_path / "catalog.sqlite"))
     monkeypatch.setenv("BHAVA_ALLOWED_HOSTS", "testserver")
     monkeypatch.setenv("BHAVA_RELEASE_SHA", "abc123")
-    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "9")
+    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "10")
 
     import bhava_api.main
 
@@ -74,7 +74,7 @@ def test_version_endpoint_contains_safe_release(monkeypatch, tmp_path):
         "service": "bhava-api",
         "release_sha": "abc123",
         "environment": os.getenv("BHAVA_ENVIRONMENT", "development"),
-        "public_story_max": 9,
+        "public_story_max": 10,
     }
 
 
@@ -99,13 +99,13 @@ def test_default_allowed_hosts_reject_unknown_origin(monkeypatch, tmp_path):
 
 def test_public_site_refuses_to_start_above_story_ceiling(monkeypatch, tmp_path):
     output = tmp_path / "output"
-    build_public_catalog(output)
-    write_package(output, "010")
+    build_public_catalog(output, count=10)
+    write_package(output, "011")
 
     monkeypatch.setenv("BHAVA_PUBLIC_SITE", "1")
     monkeypatch.setenv("BHAVA_OUTPUT_ROOT", str(output))
     monkeypatch.setenv("BHAVA_CATALOG_DB", str(tmp_path / "catalog.sqlite"))
-    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "9")
+    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "10")
 
     import bhava_api.main
 
@@ -114,19 +114,18 @@ def test_public_site_refuses_to_start_above_story_ceiling(monkeypatch, tmp_path)
             pass
 
 
-def test_public_reader_does_not_tease_story_010(monkeypatch, tmp_path):
-    """Story 009's Next Story Preview must not advertise the unreleased cart story."""
+def test_public_reader_does_not_tease_story_011(monkeypatch, tmp_path):
+    """Story 010's Next Story Preview must not advertise the unreleased Trinavarta story."""
     from bhava_api.catalog.next_preview import apply_dynamic_next_preview, clear_next_preview_caches
 
     monkeypatch.setenv("BHAVA_PUBLIC_SITE", "1")
-    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "9")
+    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "10")
     clear_next_preview_caches()
 
     rendered = apply_dynamic_next_preview(
-        "# Pūtanā\n\nMercy.\n\n## Next Story Preview\nNext time: The Salvation of Trinavarta.\n",
-        "009",
+        "# Baby Krishna Breaks the Cart\n\nMercy.\n\n## Next Story Preview\nNext time: The Salvation of Trinavarta.\n",
+        "010",
     )
-    assert "Breaks the Cart" not in rendered
-    assert "Story 010" not in rendered
     assert "Trinavarta" not in rendered
+    assert "Story 011" not in rendered
     assert "beautiful milestone" in rendered

@@ -5,6 +5,8 @@ BUNDLE="${1:?bundle path required}"
 RELEASE="${2:?content release name required}"
 EXPECTED_SHA="${3:?expected bundle sha256 required}"
 CONTENT_ROOT="${BHAVA_CONTENT_ROOT:-/opt/bhava/content}"
+# Prefer explicit env from deploy workflow / RELEASE_CONTENT; default matches current pin.
+MAX_STORY="${BHAVA_PUBLIC_STORY_MAX:-${4:-20}}"
 
 actual_sha="$(sha256sum "${BUNDLE}" | awk '{print $1}')"
 if [[ "${actual_sha}" != "${EXPECTED_SHA}" ]]; then
@@ -22,7 +24,7 @@ tar -xzf "${BUNDLE}" -C "${staging}"
 
 python3 /opt/bhava/config/scripts/validate_public_content.py \
   --directory "${staging}" \
-  --max-story 9
+  --max-story "${MAX_STORY}"
 
 rm -rf "${target}"
 mv "${staging}" "${target}"
@@ -37,4 +39,4 @@ if [[ -w "${CONTENT_ROOT}" ]]; then
   echo "${RELEASE}" >"${CONTENT_ROOT}/CURRENT_RELEASE"
 fi
 
-echo "Installed content release ${RELEASE}"
+echo "Installed content release ${RELEASE} (max_story=${MAX_STORY})"

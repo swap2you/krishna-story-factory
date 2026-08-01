@@ -163,6 +163,18 @@ def _child_safe_divergent_title(title: str) -> bool:
             "kamsa begins",
             "kaṁsa begins",
             "kaṃsa begins",
+            "tṛṇāvarta",
+            "trinavarta",
+            "whirlwind",
+            "salvation of",
+            "demon",
+            "asura",
+            "aghasura",
+            "bakasura",
+            "vatsasura",
+            "binds",
+            "damodara",
+            "dāmodara",
         )
     )
 
@@ -304,6 +316,20 @@ def _identity_constraints(title: str) -> str:
             "OR a later ordinary infant scene—never both conflicting. If guards are shown, they must be asleep (or omit guards). "
             "Do not show awake/alert guards. Reduce excessive chain clutter. Do not show baby Krishna visible inside Devakī's womb. "
             "Hands, faces, chains, and prison structures must be anatomically coherent. Simple coloring stays gentle for ages 4–8."
+        )
+    if any(token in title for token in ("Tṛṇāvarta", "Trinavarta", "Whirlwind", "Aghasura", "Bakasura", "Vatsasura")) or "Demon" in title:
+        return (
+            universal
+            + " Child-safe bedtime tone: emphasize baby Kṛṣṇa’s protection, Mother Yaśodā’s love, and joyful relief after danger has passed. "
+            "Do not depict graphic struggle, choking, injury, corpses, scary demon faces, or violent combat. "
+            "If a defeated asura is implied, keep it abstract/distant or omit the body entirely; prefer the peaceful reunion scene."
+        )
+    if any(token in title for token in ("Binds", "Damodara", "Dāmodara", "Mother Yasoda", "Mother Yaśodā")):
+        return (
+            universal
+            + " Child-safe Damodara tone: show Mother Yaśodā’s loving care and baby Kṛṣṇa’s playful smile near a mortar. "
+            "Do not depict ropes wrapped tightly around the child, bondage poses, struggle, or frightening restraint. "
+            "Prefer embrace, playful butter pots, and peaceful courtyard devotion."
         )
     return universal
 

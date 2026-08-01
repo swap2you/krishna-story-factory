@@ -550,8 +550,10 @@ def _run_once(
     will_upload = mode != "test" and not no_upload and settings.google_drive_upload_enabled
     package_link = None if mode == "test" else (settings.package_public_link or settings.google_drive_folder_url)
     drive_folder_id = ""
+    drive_folder_name = f"{plan.chapter_no}_{plan.slug}"
     if will_upload:
-        folder = ensure_story_folder(settings, folder_name=paths.root.name)
+        # Never use staging dir basename (often "package"); Drive folders must be chapter_slug.
+        folder = ensure_story_folder(settings, folder_name=drive_folder_name)
         if folder.status != "READY" or not folder.folder_id or not folder.package_link:
             raise PipelineError(f"Drive folder ensure failed: {folder.detail}")
         package_link = folder.package_link
@@ -608,7 +610,7 @@ def _run_once(
             package_link=package_link or "",
             source_dir=paths.root,
             files=FINAL_OUTPUT_FILES,
-            folder_name=paths.root.name,
+            folder_name=drive_folder_name,
         )
         if upload.status != "UPLOADED":
             raise PipelineError(f"Drive upload failed: {upload.detail}")
@@ -659,7 +661,7 @@ def _run_once(
             package_link=package_link or "",
             source_dir=paths.root,
             files=("manifest.json", "whatsapp_caption.txt"),
-            folder_name=paths.root.name,
+            folder_name=drive_folder_name,
         )
         if reupload.status != "UPLOADED":
             raise PipelineError(f"Drive manifest re-upload failed: {reupload.detail}")
@@ -682,7 +684,7 @@ def _run_once(
             },
         )
     elif mode != "test" and not no_upload and settings.google_drive_local_sync_root:
-        upload = upload_final_package(settings, folder_name=paths.root.name, source_dir=paths.root)
+        upload = upload_final_package(settings, folder_name=drive_folder_name, source_dir=paths.root)
         drive_status = upload.status
         drive_detail = upload.detail
         package_link = upload.package_link or package_link

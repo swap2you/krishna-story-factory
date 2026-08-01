@@ -575,7 +575,7 @@ export function StoryExperience({
                       <a className="bhava-button bhava-button--quiet" href={story.activity_pdf_url} target="_blank" rel="noreferrer">
                         Open full tab
                       </a>
-                      <a className="bhava-button bhava-button--quiet" href={story.activity_pdf_url} download>
+                      <a className="bhava-button bhava-button--quiet" href={`${story.activity_pdf_url}${story.activity_pdf_url.includes("?") ? "&" : "?"}download=1`} download>
                         Download PDF
                       </a>
                       <Button variant="quiet" onClick={openActivityPdf}>Open to print</Button>

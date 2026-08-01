@@ -19,7 +19,7 @@ export default function robots(): MetadataRoute.Robots {
         "/work",
         "/staging",
         "/output/_archive",
-        "/stories/010",
+        "/stories/021",
       ],
     },
     sitemap: `${CANONICAL_ORIGIN}/sitemap.xml`,

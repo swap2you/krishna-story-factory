@@ -19,10 +19,10 @@
 [CmdletBinding(DefaultParameterSetName = "Release")]
 param(
   [Parameter(ParameterSetName = "Release")]
-  [string]$ContentReleaseTag = "bhava-content-001-009-v1",
+  [string]$ContentReleaseTag = "bhava-content-001-020-v1",
 
   [Parameter(ParameterSetName = "Release")]
-  [int]$PublicStoryMax = 9,
+  [int]$PublicStoryMax = 20,
 
   [Parameter(ParameterSetName = "Release")]
   [switch]$DryRun,
@@ -106,11 +106,14 @@ function Assert-CleanTree {
 }
 
 function Assert-ContentPolicy {
-  if ($PublicStoryMax -ge 10) {
-    throw "PublicStoryMax=$PublicStoryMax would expose Story 010+. Refusing."
+  if ($PublicStoryMax -gt 20) {
+    throw "PublicStoryMax=$PublicStoryMax exceeds supported Bhāva public ceiling (20)."
   }
-  if ($ContentReleaseTag -notmatch "^bhava-content-001-009-") {
-    Write-Warning "Content tag '$ContentReleaseTag' is not the 001-009 series. Confirm intentionally before promote."
+  if ($PublicStoryMax -ge 11 -and $ContentReleaseTag -notmatch 'bhava-content-001-020') {
+    throw "PublicStoryMax=$PublicStoryMax requires content tag bhava-content-001-020-* (got $ContentReleaseTag)."
+  }
+  if ($ContentReleaseTag -notmatch "^bhava-content-001-(009|010|020)-") {
+    Write-Warning "Content tag '$ContentReleaseTag' is outside the approved 001-009/001-010/001-020 series. Confirm intentionally before promote."
   }
   $pin = Join-Path $RepoRoot "deploy/content/RELEASE_CONTENT.json"
   if (Test-Path $pin) {
@@ -137,7 +140,7 @@ function Invoke-ReleaseDryRun {
   Write-Host "Would run staging smoke + rollback exercise + restore"
   Write-Host "Would require explicit -PromoteToProduction before main merge"
   Write-Host "Would deploy origin/main SHA=$main only after protected environment approval"
-  Write-Host "Would NOT enable scheduler, generate Story 011, or publish Story 010"
+  Write-Host "Would NOT enable scheduler, generate Story 011+, or publish unapproved content"
 }
 
 function Invoke-Rollback {

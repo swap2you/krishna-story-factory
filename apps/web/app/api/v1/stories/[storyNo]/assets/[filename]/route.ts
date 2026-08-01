@@ -62,6 +62,7 @@ async function proxy(req: NextRequest, ctx: Ctx, method: "GET" | "HEAD") {
     for (const key of [
       "content-type",
       "content-length",
+      "content-disposition",
       "content-range",
       "accept-ranges",
       "etag",
