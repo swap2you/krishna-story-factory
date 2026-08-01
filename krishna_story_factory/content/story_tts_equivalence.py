@@ -50,11 +50,10 @@ def extract_canonical_narrative(story_md: str) -> str:
         if line.startswith("# ") and not line.startswith("## "):
             # Title headings are metadata for reading chrome, not TTS body.
             continue
-        if line.startswith("## ") and any(line.startswith(p) for p in skip_prefixes):
-            skipping = True
-            continue
-        if line.startswith("## ") and not skipping:
-            skipping = False
+        if line.startswith("## "):
+            skipping = any(line.startswith(p) for p in skip_prefixes)
+            if skipping:
+                continue
         if skipping:
             continue
         lines.append(line)

@@ -6,11 +6,12 @@ from krishna_story_factory.content.story_tts_equivalence import (
 
 
 def test_extract_drops_educational_sections():
-    md = "# Title\n\nBody line.\n\n## Lessons\n- one\n\n## Questions\nQ?\n"
+    md = "# Title\n\nBody line.\n\n## Lessons\n- one\n\n## Questions\nQ?\n\n## Closing\nEnd.\n"
     body = extract_canonical_narrative(md)
     assert "Body line." in body
     assert "Lessons" not in body
     assert "Questions" not in body
+    assert "End." in body
 
 
 def test_non_semantic_pause_difference():
