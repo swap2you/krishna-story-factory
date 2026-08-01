@@ -205,6 +205,7 @@ export function SiteHeader() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={isActive(pathname, item.href) ? "page" : undefined}
                   onClick={() => closeLearning(false)}
                 >
                   {item.label}
