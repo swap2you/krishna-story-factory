@@ -219,8 +219,12 @@ jobs:
           BHAVA_WEB_URL: http://127.0.0.1:3000
         run: |
           npm run build:web
-          # Standalone output must be served by node server.js, not next start.
-          PORT=3000 HOSTNAME=127.0.0.1 node apps/web/.next/standalone/apps/web/server.js &
+          # Mirror the production standalone layout (Dockerfile.web) for CI browsers.
+          STANDALONE="apps/web/.next/standalone"
+          mkdir -p "${STANDALONE}/apps/web/.next"
+          cp -R apps/web/.next/static "${STANDALONE}/apps/web/.next/static"
+          cp -R apps/web/public "${STANDALONE}/apps/web/public"
+          PORT=3000 HOSTNAME=127.0.0.1 node "${STANDALONE}/apps/web/server.js" &
           for _ in $(seq 1 60); do
             curl -sf http://127.0.0.1:3000/ >/dev/null && break
             sleep 1
