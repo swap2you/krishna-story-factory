@@ -94,7 +94,7 @@ def _strip_internal_heading_sections(md: str) -> str:
     return "".join(result)
 
 
-def _md_to_plain(md: str) -> str:
+def md_to_plain(md: str) -> str:
     """Minimal markdown-to-plaintext: strip heading markers, keep structure."""
     lines: list[str] = []
     for line in md.splitlines():
@@ -104,6 +104,10 @@ def _md_to_plain(md: str) -> str:
         lines.append(cleaned)
     text = "\n".join(lines)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+# Backward-compatible alias for internal callers.
+_md_to_plain = md_to_plain
 
 
 def parse_story_markdown(raw: str) -> ParsedStory:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from krishna_story_factory.visuals.event_relevance import (
+    STORY_009_EVENT_KEYWORDS,
     STORY_011_EVENT_KEYWORDS,
     STORY_020_EVENT_KEYWORDS,
     validate_event_relevance_keywords,
@@ -53,9 +54,25 @@ def test_story_020_keywords_constant_and_helper() -> None:
 def test_other_stories_skip_event_override() -> None:
     assert (
         validate_event_relevance_keywords(
-            "009",
-            must_include=["Putana"],
-            central_scene="Mercy pastime",
+            "012",
+            must_include=["Mother Yasoda"],
+            central_scene="Quiet home scene",
         )
         == []
     )
+
+
+def test_story_009_keywords_constant_and_helper() -> None:
+    assert "putana" in STORY_009_EVENT_KEYWORDS or "pūtanā" in STORY_009_EVENT_KEYWORDS
+    ok = validate_event_relevance_keywords(
+        "009",
+        must_include=["Pūtanā nurse visitor", "baby Krishna"],
+        central_scene="Beautiful visitor/nurse offers to hold baby Krishna",
+    )
+    assert ok == []
+    bad = validate_event_relevance_keywords(
+        "009",
+        must_include=["flowers and cows"],
+        central_scene="Peaceful garden picnic only",
+    )
+    assert bad

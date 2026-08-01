@@ -1,6 +1,6 @@
 # Agent Instructions
 
-Krishna Book Bedtime v1 — lightweight local Python automation.
+Krishna Book Bedtime v1 — lightweight local Python automation + Bhāva portal.
 
 Canonical reading order:
 
@@ -12,14 +12,15 @@ Canonical reading order:
 Rules:
 
 1. CSV files are source of truth for plans (`input/series_plan.csv`) and runtime queue (`tracking/queue_state.csv`).  
-2. CLI (`run_daily_story.py --mode prod|test`) is source of truth; wrappers: `scripts/run_prod.ps1`, `scripts/run_test.ps1`.  
+2. CLI (`run_daily_story.py --mode prod|test`) is source of truth; wrappers: `scripts/run_prod.ps1`, `scripts/run_test.ps1`. Preferred create-next path: `.\scripts\create-next-bhava-story.ps1`.  
 3. Dashboard is optional.  
 4. Do not commit `.env`, output packages, credentials, or secrets.  
-5. Krishna Book sequence only — never skip; one pending story per run.  
+5. Krishna Book sequence only — never skip; one pending story per run. Next pending is Story **021** (private; not generated). Stories **001–020** are complete/public.  
 6. Exact **eight-file** package only: `story.md`, `narration.mp3`, `story_poster.png`, `coloring_page.png`, `simple_coloring_page.png`, `activity_sheet.pdf`, `whatsapp_caption.txt`, `manifest.json`. (`line_art_prompt.txt` is not a required final output.)  
-7. TTS: ElevenLabs Renee primary, OpenAI Marin fallback. Drive via `GOOGLE_DRIVE_UPLOAD_ENABLED`. WhatsApp/Telegram disabled for the pilot.  
+7. TTS: ElevenLabs Renee primary, OpenAI Marin fallback. Drive via `GOOGLE_DRIVE_UPLOAD_ENABLED` after local PASS. WhatsApp/Telegram sending disabled.  
 8. Never modify locked Stories **001–006** without explicit approval. Senior devotee review pending.  
-9. Scheduler: `Krishna Story Factory MWF` (Mon/Wed/Fri 10:00 AM + 12:00 PM backup) via `scripts/install_mwf_story_task.ps1` and `scripts/run_daily_story_scheduled.ps1`.
+9. Scheduler: `Krishna Story Factory MWF` (Mon/Wed/Fri 10:00 AM + 12:00 PM backup) via `scripts/install_mwf_story_task.ps1` and `scripts/run_daily_story_scheduled.ps1`. Install defaults **Disabled**; keep Disabled unless explicitly approved.  
+10. Stack: Node **24**, Python **3.14**. Content: `bhava-content-001-020-v2` exists; **v3** is the staging candidate being prepared. Production stays on older web/content until later approval.
 
 Before finishing:
 
@@ -28,4 +29,4 @@ Before finishing:
 .\scripts\run_test.ps1 --force
 ```
 
-Ops: [docs/DAILY_OPERATIONS.md](docs/DAILY_OPERATIONS.md). Release: [docs/RELEASE_AND_ROLLBACK.md](docs/RELEASE_AND_ROLLBACK.md).
+Ops: [docs/DAILY_OPERATIONS.md](docs/DAILY_OPERATIONS.md). Release: [docs/RELEASE_AND_ROLLBACK.md](docs/RELEASE_AND_ROLLBACK.md). Push-button: [docs/deployment/BHAVA_PUSH_BUTTON_RELEASE_RUNBOOK.md](docs/deployment/BHAVA_PUSH_BUTTON_RELEASE_RUNBOOK.md). Follow-along backlog: [docs/backlog/FOLLOW_ALONG_ALIGNMENT.md](docs/backlog/FOLLOW_ALONG_ALIGNMENT.md).

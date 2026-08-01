@@ -180,6 +180,8 @@ def test_provider_preflight_cached_once_per_run(monkeypatch) -> None:
         openai_tts_enabled=True,
         openai_api_key="y",
         audio_provider_mode="auto",
+        audio_provider_primary="elevenlabs",
+        audio_provider_fallback="openai",
     )
     calls = {"el": 0, "oa": 0}
 
@@ -193,8 +195,11 @@ def test_provider_preflight_cached_once_per_run(monkeypatch) -> None:
         lambda _key, _vid: (True, "Renee - Rich, Calm and Smooth"),
     )
     monkeypatch.setattr(
-        "krishna_story_factory.audio.provider.preflight_openai_tts",
-        lambda **_kwargs: calls.__setitem__("oa", calls["oa"] + 1) or {"ok": True, "model_id": "m", "voice": "marin"},
+        "krishna_story_factory.audio.provider.preflight_openai",
+        lambda _settings: (
+            calls.__setitem__("oa", calls["oa"] + 1)
+            or {"ok": True, "model_id": "m", "voice": "marin"}
+        ),
     )
     d1 = select_audio_provider(settings, estimated_chars=1000)
     d2 = select_audio_provider(settings, estimated_chars=1000)

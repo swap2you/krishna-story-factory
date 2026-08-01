@@ -16,6 +16,8 @@ export default function robots(): MetadataRoute.Robots {
         "/api/v1/factory",
         "/api/v1/scheduler",
         "/api/v1/queue",
+        "/api/v1/local",
+        "/api/v1/local/",
         "/work",
         "/staging",
         "/output/_archive",

@@ -260,7 +260,6 @@ export function StoryExperience({
   const [sourceLinks, setSourceLinks] = useState<SourceLink[] | null>(null);
   const [reflections, setReflections] = useState<Reflection[]>([]);
   const [shlokaPayload, setShlokaPayload] = useState<ShlokaPayload | null>(null);
-  const [revealShlokaMeta, setRevealShlokaMeta] = useState(false);
   const [notesSaveState, setNotesSaveState] = useState<NotesSaveState>("idle");
   const [notesDirty, setNotesDirty] = useState(false);
   const [recommendedPlaybackRate, setRecommendedPlaybackRate] = useState<number | undefined>(undefined);
@@ -390,7 +389,6 @@ export function StoryExperience({
 
   useEffect(() => {
     const controller = new AbortController();
-    setRevealShlokaMeta(false);
     void (async () => {
       try {
         const [linksRes, reflectionsRes, shlokasRes] = await Promise.all([
@@ -537,7 +535,7 @@ export function StoryExperience({
                   <p className="hint">Narration appears when the catalog provides narration.mp3.</p>
                 )}
 
-                {/* Phase 6: follow-along cues or fallback reader text */}
+                {/* Follow-along only when aligned cues exist; otherwise quiet reader text. */}
                 {syncData?.status === "aligned" && syncData.cues.length > 0 ? (
                   <article className="reading follow-along">
                     {syncData.cues.map((cue, i) => (
@@ -560,9 +558,6 @@ export function StoryExperience({
                   </article>
                 ) : (
                   <>
-                    {syncData && syncData.status !== "aligned" && (
-                      <p className="hint follow-pending">Follow-along cues pending review</p>
-                    )}
                     {loadingMd ? <p className="hint reader-status" role="status">Opening the story manuscript&hellip;</p> : null}
                     {readerError && !loadingMd ? (
                       <p className="hint reader-status reader-status--error" role="alert">
@@ -712,7 +707,6 @@ export function StoryExperience({
                 </div>
                 <div className="source-card">
                   <h3>Publication care</h3>
-                  <p><strong>Quality:</strong> {story?.quality_status ?? "See package manifest."}</p>
                   <p>Stewarded for families and teachers by <strong>Svarna Gauranga Das</strong>.</p>
                   <p className="hint" style={{ marginTop: "0.75rem" }}>
                     © Svarna Gauranga Das · Dauji Publication · Bhāva. Scripture and preexisting
@@ -819,48 +813,75 @@ export function StoryExperience({
             {active === "\u015Alok\u0101s" && (
               <div className="shloka-card">
                 <p className="eyebrow" style={{ color: "var(--bhava-saffron)" }}>
-                  {shlokaPayload?.status === "pending" || !shlokaPayload?.shlokas?.length
-                    ? "Not yet curated"
-                    : "Reviewed"}
+                  Companion scripture
                 </p>
                 {shlokaPayload?.shlokas?.length ? (
-                  shlokaPayload.shlokas.map((verse, idx) => (
-                    <article key={idx} style={{ marginBottom: "1.25rem" }}>
-                      <p className="sanskrit">{String(verse.sanskrit ?? verse.devanagari ?? "—")}</p>
-                      {revealShlokaMeta ? (
-                        <>
-                          <p><strong>Transliteration:</strong> {String(verse.transliteration ?? "—")}</p>
-                          <p><strong>Word-for-word:</strong> {String(verse.word_for_word ?? verse.word_by_word ?? "—")}</p>
-                          <p><strong>Translation:</strong> {String(verse.translation ?? "—")}</p>
-                        </>
-                      ) : (
-                        <p className="hint">Meta fields hidden until you reveal them.</p>
-                      )}
-                    </article>
-                  ))
+                  shlokaPayload.shlokas.map((verse, idx) => {
+                    const reviewStatus = String(verse.review_status ?? "");
+                    const notApplicable =
+                      reviewStatus === "not_applicable" ||
+                      String(verse.decision ?? "") === "no-separate-verse";
+                    const reference = String(verse.reference ?? "").trim();
+                    const explanation = String(verse.child_explanation ?? "").trim();
+                    const url = typeof verse.url === "string" ? verse.url.trim() : "";
+                    const sanskrit = String(verse.sanskrit ?? verse.devanagari ?? "").trim();
+                    const transliteration = String(verse.transliteration ?? "").trim();
+                    const translation = String(verse.translation ?? "").trim();
+                    const wordForWord = String(verse.word_for_word ?? verse.word_by_word ?? "").trim();
+                    const note = String(verse.note ?? "").trim();
+                    const provenance = String(verse.provenance ?? "").trim();
+                    const reviewer = String(verse.reviewer ?? "").trim();
+                    const reviewedDate = String(verse.reviewed_date ?? "").trim();
+                    const stateLabel = notApplicable
+                      ? "No separate verse selected"
+                      : reviewStatus === "reviewed"
+                        ? "Reviewed companion reference"
+                        : reviewStatus === "pending"
+                          ? "Pending review"
+                          : "Companion reference";
+                    return (
+                      <article key={`${reference || "shloka"}-${idx}`} className="shloka-entry" style={{ marginBottom: "1.25rem" }}>
+                        <p className="eyebrow" style={{ marginBottom: "0.35rem" }}>{stateLabel}</p>
+                        {reference ? <h3 style={{ marginTop: 0 }}>{reference}</h3> : null}
+                        {explanation ? <p style={{ marginTop: "0.5rem" }}>{explanation}</p> : null}
+                        {url ? (
+                          <p style={{ marginTop: "0.65rem" }}>
+                            <a href={url} target="_blank" rel="noreferrer">
+                              Read on Vedabase
+                            </a>
+                          </p>
+                        ) : null}
+                        {sanskrit ? <p className="sanskrit" lang="sa">{sanskrit}</p> : null}
+                        {transliteration ? (
+                          <p><strong>Transliteration:</strong> {transliteration}</p>
+                        ) : null}
+                        {wordForWord ? (
+                          <p><strong>Word-for-word:</strong> {wordForWord}</p>
+                        ) : null}
+                        {translation ? (
+                          <p><strong>Translation:</strong> {translation}</p>
+                        ) : null}
+                        {(reviewer || reviewedDate || note || provenance) ? (
+                          <p className="hint" style={{ marginTop: "0.75rem" }}>
+                            {[
+                              reviewer ? `Reviewer: ${reviewer}` : null,
+                              reviewedDate ? `Reviewed: ${reviewedDate}` : null,
+                              provenance ? `Provenance: ${provenance}` : null,
+                              note || null,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </p>
+                        ) : null}
+                      </article>
+                    );
+                  })
                 ) : (
-                  <>
-                    <p className="sanskrit" aria-hidden="true">—</p>
-                    <p className="hint">Sanskrit placeholder — no verse text invented.</p>
-                    {revealShlokaMeta ? (
-                      <>
-                        <p><strong>Transliteration:</strong> —</p>
-                        <p><strong>Word-for-word:</strong> —</p>
-                        <p><strong>Translation:</strong> —</p>
-                      </>
-                    ) : (
-                      <p className="hint">Reveal stubs to preview the future layout without fabricated content.</p>
-                    )}
-                  </>
+                  <p className="hint">
+                    {shlokaPayload?.note ??
+                      "Reviewed companion references appear when web assets are built. We will not invent verses."}
+                  </p>
                 )}
-                <div className="actions" style={{ marginTop: "1rem" }}>
-                  <Button variant="quiet" onClick={() => setRevealShlokaMeta((v) => !v)}>
-                    {revealShlokaMeta ? "Hide stubs" : "Reveal stubs"}
-                  </Button>
-                </div>
-                <p className="hint">
-                  {shlokaPayload?.note ?? "Placeholders only until reviewed ślokas are supplied. We will not invent verses."}
-                </p>
               </div>
             )}
           </div>

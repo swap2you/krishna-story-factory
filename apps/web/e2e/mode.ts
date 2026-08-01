@@ -13,5 +13,11 @@ export const isLocalMode = appMode === "local";
 
 /** Route prefixes that must never be reachable on the public site. */
 export const PRIVATE_PAGE_PREFIXES = ["/studio", "/dev"] as const;
-export const PRIVATE_API_PREFIXES = ["/api/studio", "/api/v1/factory"] as const;
+export const PRIVATE_API_PREFIXES = [
+  "/api/studio",
+  "/api/v1/factory",
+  "/api/v1/scheduler",
+  "/api/v1/queue",
+  "/api/v1/local",
+] as const;
 export const PRIVATE_PREFIXES = [...PRIVATE_PAGE_PREFIXES, ...PRIVATE_API_PREFIXES] as const;

@@ -19,7 +19,7 @@
 [CmdletBinding(DefaultParameterSetName = "Release")]
 param(
   [Parameter(ParameterSetName = "Release")]
-  [string]$ContentReleaseTag = "bhava-content-001-020-v1",
+  [string]$ContentReleaseTag = "bhava-content-001-020-v3",
 
   [Parameter(ParameterSetName = "Release")]
   [int]$PublicStoryMax = 20,

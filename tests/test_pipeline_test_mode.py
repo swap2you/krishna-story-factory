@@ -49,6 +49,7 @@ def test_test_mode_does_not_mutate_runtime_queue(tmp_path: Path) -> None:
     project = tmp_path / "project"
     copy_project_fixture(source, project)
     ensure_csv_files(project)
+    _mark_first_story_pending(project)
     queue = project / "tracking" / "queue_state.csv"
     before = queue.read_text(encoding="utf-8")
     settings = load_settings(project)

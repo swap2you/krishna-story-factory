@@ -7,6 +7,18 @@ from __future__ import annotations
 
 from typing import Iterable
 
+# Story 009 — Pūtanā nurse/visitor disguise with baby Kṛṣṇa (not garden-only / not horror corpse).
+STORY_009_EVENT_KEYWORDS: tuple[str, ...] = (
+    "pūtanā",
+    "putana",
+    "putanā",
+    "nurse",
+    "visitor",
+    "krishna",
+    "kṛṣṇa",
+    "krsna",
+)
+
 # Story 011 — must visibly depict Tṛṇāvarta / whirlwind with Kṛṣṇa (not only Yaśodā + baby).
 STORY_011_EVENT_KEYWORDS: tuple[str, ...] = (
     "trinavarta",
@@ -32,6 +44,7 @@ STORY_020_EVENT_KEYWORDS: tuple[str, ...] = (
 )
 
 STORY_EVENT_RELEVANCE_KEYWORDS: dict[str, tuple[str, ...]] = {
+    "009": STORY_009_EVENT_KEYWORDS,
     "011": STORY_011_EVENT_KEYWORDS,
     "020": STORY_020_EVENT_KEYWORDS,
 }
@@ -70,7 +83,7 @@ def validate_event_relevance_keywords(
 ) -> list[str]:
     """Return errors when story-specific event keywords are absent from the brief.
 
-    Only stories with named overrides (011, 020) are checked. Other stories
+    Only stories with named overrides (009, 011, 020) are checked. Other stories
     return an empty error list from this helper.
     """
     padded = (story_no or "").strip().zfill(3)
@@ -85,9 +98,16 @@ def validate_event_relevance_keywords(
         extra_text=extra_text,
     )
     # Group aliases: at least one token from each semantic group must appear.
+    # For 009: (Putana) AND (nurse|visitor) AND (Krishna)
     # For 011: (Trinavarta|whirlwind) AND (Krishna|Kṛṣṇa)
     # For 020: (Aghasura) AND (serpent|snake|cave) AND (protect) AND (Krishna)
-    if padded == "011":
+    if padded == "009":
+        groups = (
+            ("pūtanā", "putana", "putanā"),
+            ("nurse", "visitor", "disguise"),
+            ("krishna", "kṛṣṇa", "krsna"),
+        )
+    elif padded == "011":
         groups = (
             ("trinavarta", "tṛṇāvarta", "trnavarta", "whirlwind"),
             ("krishna", "kṛṣṇa", "krsna"),

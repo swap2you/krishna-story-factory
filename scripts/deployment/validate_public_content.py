@@ -41,6 +41,12 @@ FORBIDDEN_PARTS = {
     "logs",
 }
 
+REQUIRED_RIGHTS_ATTR = (
+    "Svarna Gauranga Das",
+    "Dauji Publication",
+    "Bhāva",
+)
+
 
 def digest(path: Path) -> str:
     result = hashlib.sha256()
@@ -92,6 +98,51 @@ def _validate_web_assets(root: Path, max_story: int) -> None:
                 raise SystemExit(f"web-assets/{story_no}/{name} hash mismatch vs web_manifest")
             if meta.get("bytes") != path.stat().st_size:
                 raise SystemExit(f"web-assets/{story_no}/{name} size mismatch vs web_manifest")
+
+        _validate_public_rights(dest, story_no, manifest)
+
+
+def _validate_public_rights(dest: Path, story_no: str, manifest: dict) -> None:
+    rights = manifest.get("rights")
+    if not isinstance(rights, dict) or not rights:
+        raise SystemExit(f"web-assets/{story_no}/web_manifest.json rights must be non-empty")
+    if "contact_email" in rights:
+        raise SystemExit(
+            f"web-assets/{story_no}/web_manifest.json rights must omit contact_email"
+        )
+    rights_blob = json.dumps(rights, ensure_ascii=False)
+    for token in REQUIRED_RIGHTS_ATTR:
+        if token not in rights_blob:
+            raise SystemExit(
+                f"web-assets/{story_no}/web_manifest.json rights missing {token!r}"
+            )
+    if "used with permission" in rights_blob.lower():
+        raise SystemExit(
+            f"web-assets/{story_no}/web_manifest.json rights must not claim "
+            "'used with permission'"
+        )
+    if "@gmail" in rights_blob.lower() or "contact_email" in rights_blob.lower():
+        raise SystemExit(
+            f"web-assets/{story_no}/web_manifest.json rights must not contain contact email"
+        )
+    if "Windows\\Fonts" in rights_blob or "artifact_notes" in rights:
+        raise SystemExit(
+            f"web-assets/{story_no}/web_manifest.json rights must not leak operator paths"
+        )
+
+    reader_path = dest / "reader.md"
+    reader = reader_path.read_text(encoding="utf-8")
+    if "## Rights and Credits" not in reader:
+        raise SystemExit(f"web-assets/{story_no}/reader.md missing Rights and Credits section")
+    if "contact_email" in reader.lower():
+        raise SystemExit(f"web-assets/{story_no}/reader.md must not contain contact_email")
+    if "@gmail" in reader.lower():
+        raise SystemExit(f"web-assets/{story_no}/reader.md must not contain contact email")
+    for token in REQUIRED_RIGHTS_ATTR:
+        if token not in reader:
+            raise SystemExit(
+                f"web-assets/{story_no}/reader.md Rights section missing {token!r}"
+            )
 
 
 def validate(root: Path, max_story: int) -> None:

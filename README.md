@@ -1,25 +1,24 @@
 # Krishna Story Factory — Krishna Book Bedtime v1
 
-Local Python automation for **daily Krishna Book bedtime story packages** (children ages 6–12).
+Local Python automation for **daily Krishna Book bedtime story packages** (children ages 6–12), plus the Bhāva web portal.
 
-- **CLI first** — `run_daily_story.py`
+- **CLI first** — `run_daily_story.py` / `.\scripts\create-next-bhava-story.ps1`
 - **CSV source of truth** — queue, recipients, logs
 - **Streamlit optional** — `dashboard.py`
-- **WhatsApp Cloud v1** — individual template broadcast only (no groups)
+- **Messaging** — WhatsApp / Telegram sending disabled; Google Drive after validation
 
 Repository: [github.com/swap2you/krishna-story-factory](https://github.com/swap2you/krishna-story-factory)
 
 ## Current operational state
 
-- **Locked pilot packages:** Stories **001–006** (Story Format V2); senior devotee review **pending**
-- **Released:** Stories **001–007** done on the live queue
-- **Next pending:** Story **008** — The Meeting of Nanda and Vasudeva
-- **Story 007 release:** [docs/releases/STORY_007_RELEASE.md](docs/releases/STORY_007_RELEASE.md)
-- **Pilot tag:** `v1.0.0-pilot-stories-001-006` (001–006 baseline; not moved for Story 007)
-- **Scheduler:** `Krishna Story Factory MWF` enabled (Mon/Wed/Fri 10:00 AM + 12:00 PM backup, local) — [docs/SCHEDULER.md](docs/SCHEDULER.md)
-- **Messaging:** WhatsApp / Telegram disabled; Google Drive distribution
+- **Public stories:** **001–020** complete (exact-eight packages)
+- **Next pending / private:** Story **021** (not generated)
+- **Scheduler:** `Krishna Story Factory MWF` — **Disabled** (installer defaults Disabled unless `-Enable`) — [docs/SCHEDULER.md](docs/SCHEDULER.md)
+- **Stack:** Node **24** (`package.json` engines / Docker `node:24`); Python **3.14** (`.python-version` / Docker `python:3.14`)
+- **Content tags:** `bhava-content-001-020-v2` exists; **v3** is the staging candidate being prepared (quality-completion)
+- **Production:** remains on older web/content until later approval; do not promote v3 without explicit approval
+- **Messaging:** WhatsApp / Telegram disabled; Google Drive distribution after local PASS
 - Pilot 001–006 lock record: [docs/releases/PILOT_001_006_RELEASE_LOCK.md](docs/releases/PILOT_001_006_RELEASE_LOCK.md)
-- Hash evidence: [docs/releases/PILOT_001_006_HASHES.json](docs/releases/PILOT_001_006_HASHES.json)
 
 ## Start here
 
@@ -28,16 +27,17 @@ Repository: [github.com/swap2you/krishna-story-factory](https://github.com/swap2
 3. [docs/DAILY_OPERATIONS.md](docs/DAILY_OPERATIONS.md) — Windows inspect / generate / validate / rollback
 4. [docs/SETUP_AND_CREDENTIALS.md](docs/SETUP_AND_CREDENTIALS.md) — install and API keys
 5. [docs/CONTENT_STANDARD.md](docs/CONTENT_STANDARD.md) — Story Format V2 and content rules
+6. [docs/deployment/BHAVA_PUSH_BUTTON_RELEASE_RUNBOOK.md](docs/deployment/BHAVA_PUSH_BUTTON_RELEASE_RUNBOOK.md) — staging/production release
 
-## Supported Python
+## Supported runtimes
 
-Python 3.12 is the supported runtime on Windows and Linux. Run `scripts/bootstrap.ps1`
-once, then use the repository wrappers below. The project never relies on whichever
-global `python` happens to be on `PATH`.
+- **Python 3.14** — API Docker/CI and preferred local factory (`.python-version`). Bootstrap creates `.venv`; use repo wrappers, not a random global `python`.
+- **Node 24** — web app (`engines.node`: `>=24 <25`, `.nvmrc`, Docker `node:24-bookworm-slim`).
 
 ## Core commands
 
 ```powershell
+.\scripts\create-next-bhava-story.ps1   # next pending story (governed create-next path)
 .\scripts\run_prod.ps1
 .\scripts\run_test.ps1 --force
 .\scripts\test_all.ps1
@@ -59,8 +59,7 @@ output/<chapter_no>_<slug>/
   manifest.json
 ```
 
-WhatsApp and Telegram sending are disabled for v1 delivery; Google Drive upload is the
-package distribution path. Set `GOOGLE_DRIVE_FOLDER_URL` in local `.env` (see `.env.example`).
+WhatsApp and Telegram sending are disabled; Google Drive upload is the package distribution path after local validation. Set `GOOGLE_DRIVE_FOLDER_URL` in local `.env` (see `.env.example`).
 
 ## Project layout
 
@@ -71,6 +70,8 @@ tracking/                      # mutable CSV state (mostly gitignored)
 docs/
 scripts/
 krishna_story_factory/
+apps/web/                      # Bhāva Next.js portal (Node 24)
+apps/api/                      # Bhāva API (Python 3.14)
 ```
 
 ## Git safety
