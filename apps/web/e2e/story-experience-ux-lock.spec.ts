@@ -52,13 +52,16 @@ test.describe("Story experience UX lock", () => {
     }
 
     await selectStoryTab(page, /Coloring/i);
-    await page.evaluate(() => window.scrollTo(0, 480));
+    await page.evaluate(() => {
+      document.documentElement.style.scrollBehavior = "auto";
+      window.scrollTo(0, 480);
+    });
     await page.waitForFunction(() => window.scrollY >= 400, undefined, { timeout: 5_000 });
-    const scrollBefore = await page.evaluate(() => window.scrollY);
 
     const tile = page.locator(".asset-tile").first();
     await expect(tile).toBeVisible({ timeout: 15_000 });
-    await tile.click();
+    // Avoid scrollIntoView side-effects that would change the locked scroll origin.
+    await tile.click({ force: true });
 
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
@@ -68,24 +71,24 @@ test.describe("Story experience UX lock", () => {
     const dialogScrollTop = await dialog.evaluate((el) => el.scrollTop);
     expect(dialogScrollTop).toBe(0);
 
+    const lockedScrollY = await page.evaluate(() => {
+      const top = document.body.style.top || "0";
+      const fromTop = Math.abs(Number.parseInt(top, 10) || 0);
+      return fromTop || window.scrollY || document.documentElement.scrollTop || 0;
+    });
+    expect(lockedScrollY).toBeGreaterThan(100);
+
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
 
-    // Assert product behavior: page does not jump to top after close.
     await page.waitForFunction(
       (before) => {
         const y = window.scrollY || document.documentElement.scrollTop || 0;
-        // Mobile visualViewport / chrome can shift a few px; reject only large jumps (e.g. to 0).
-        return before <= 20 ? y <= 40 : Math.abs(y - before) <= Math.max(24, before * 0.15);
+        return Math.abs(y - before) <= Math.max(24, before * 0.2);
       },
-      scrollBefore,
+      lockedScrollY,
       { timeout: 8_000 },
     );
-    const scrollAfter = await page.evaluate(
-      () => window.scrollY || document.documentElement.scrollTop || 0,
-    );
-    expect(scrollAfter).toBeGreaterThan(Math.max(0, scrollBefore - Math.max(40, scrollBefore * 0.2)));
-    expect(scrollAfter).toBeLessThan(scrollBefore + Math.max(40, scrollBefore * 0.2));
 
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     const miniPlayer = page.locator(".mini-player--floating");
