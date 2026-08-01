@@ -9,7 +9,7 @@ on:
       content_release_tag:
         description: Approved public content release
         required: true
-        default: bhava-content-001-020-v3
+        default: bhava-content-001-020-v2
 
 permissions:
   contents: read
