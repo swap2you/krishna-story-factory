@@ -74,7 +74,11 @@ jobs:
         env:
           RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
         run: |
-          docker build -f deploy/ionos/Dockerfile.web -t bhava-web:${RELEASE_SHA} .
+          docker build -f deploy/ionos/Dockerfile.web \
+            --build-arg RELEASE_SHA=${RELEASE_SHA} \
+            --build-arg BHAVA_WEB_VERSION=001-020-v3 \
+            --build-arg BHAVA_CONTENT_RELEASE=bhava-content-001-020-v3 \
+            -t bhava-web:${RELEASE_SHA} .
           docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${RELEASE_SHA} .
           docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} \
             | gzip -9 > bhava-images-${RELEASE_SHA}.tar.gz

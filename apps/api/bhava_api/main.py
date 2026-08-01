@@ -204,9 +204,13 @@ def create_app() -> FastAPI:
 
     @app.get("/api/v1/version", include_in_schema=False)
     def version() -> dict[str, str | int]:
+        short = settings.release_sha[:7] if settings.release_sha else "unknown"
         return {
             "service": "bhava-api",
+            "web_version": settings.web_version,
             "release_sha": settings.release_sha,
+            "short_sha": short,
+            "content_tag": settings.content_tag,
             "environment": settings.environment,
             "public_story_max": settings.public_story_max,
         }

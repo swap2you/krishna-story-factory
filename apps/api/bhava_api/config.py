@@ -45,6 +45,8 @@ class Settings:
     public_story_max: int
     release_sha: str
     environment: str
+    web_version: str
+    content_tag: str
 
 
 def get_settings() -> Settings:
@@ -57,6 +59,11 @@ def get_settings() -> Settings:
     release_sha = os.getenv("BHAVA_RELEASE_SHA", "development").strip() or "development"
     environment = os.getenv("BHAVA_ENVIRONMENT", "development").strip().lower()
     public_site = _as_bool("BHAVA_PUBLIC_SITE", False)
+    web_version = os.getenv("BHAVA_WEB_VERSION", "001-020-v3").strip() or "001-020-v3"
+    content_tag = (
+        os.getenv("BHAVA_CONTENT_RELEASE", "bhava-content-001-020-v3").strip()
+        or "bhava-content-001-020-v3"
+    )
 
     web_assets_root = Path(
         os.getenv("BHAVA_WEB_ASSETS_ROOT", str(root / "data" / "web-assets"))
@@ -86,4 +93,6 @@ def get_settings() -> Settings:
         public_story_max=max(1, min(story_max, 999)),
         release_sha=release_sha[:64],
         environment=environment,
+        web_version=web_version[:64],
+        content_tag=content_tag[:128],
     )
