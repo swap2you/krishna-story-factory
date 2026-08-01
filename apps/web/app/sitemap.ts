@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
+import { PUBLIC_STORY_MAX } from "@/lib/public-boundary";
 import { CANONICAL_ORIGIN } from "@/lib/seo";
-
-const PUBLIC_STORY_COUNT = 20;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
@@ -42,7 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     (_, index) => `/library/srimad-bhagavatam/canto/${index + 1}`,
   );
   const stories = Array.from(
-    { length: PUBLIC_STORY_COUNT },
+    { length: PUBLIC_STORY_MAX },
     (_, index) => `/stories/${String(index + 1).padStart(3, "0")}`,
   );
 

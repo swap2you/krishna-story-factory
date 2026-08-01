@@ -74,7 +74,7 @@ test.describe("Learning menu", () => {
     await openPrimaryNavIfNeeded(page);
     await learningButton(page).click();
     await expect(learningMenu(page)).toHaveAttribute("data-state", "open");
-    await learningMenu(page).getByRole("menuitem", { name: "For Teachers" }).click();
+    await learningMenu(page).getByRole("link", { name: "For Teachers" }).click();
     await expect(page).toHaveURL(/\/teachers\/?$/);
     await openPrimaryNavIfNeeded(page);
     await expect(learningMenu(page)).toHaveAttribute("data-state", "closed");
@@ -98,7 +98,7 @@ test.describe("Learning menu", () => {
       await page.goto("/");
       await openPrimaryNavIfNeeded(page);
       await learningButton(page).click();
-      await learningMenu(page).getByRole("menuitem", { name: dest.label }).click();
+      await learningMenu(page).getByRole("link", { name: dest.label }).click();
       await expect(page).toHaveURL(dest.href);
     });
   }

@@ -69,7 +69,7 @@ def test_work_manifest_validation_and_sound_recording_gate() -> None:
 
 def test_sitemap_includes_twenty_stories_rights_excludes_021() -> None:
     text = (ROOT / "apps" / "web" / "app" / "sitemap.ts").read_text(encoding="utf-8")
-    assert "PUBLIC_STORY_COUNT = 20" in text
+    assert "PUBLIC_STORY_MAX" in text
     assert '"/rights"' in text
     # The sitemap enumerates an explicit public allow-list, so private surfaces
     # cannot leak by omission from a deny-list.

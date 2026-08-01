@@ -46,6 +46,8 @@ export function SiteHeader() {
   const hoverCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hoverIntentRef = useRef(false);
 
+  const hoverOpenedRef = useRef(false);
+
   const clearHoverCloseTimer = useCallback(() => {
     if (hoverCloseTimer.current) {
       clearTimeout(hoverCloseTimer.current);
@@ -57,6 +59,7 @@ export function SiteHeader() {
     (restoreFocus = false) => {
       clearHoverCloseTimer();
       hoverIntentRef.current = false;
+      hoverOpenedRef.current = false;
       setLearningOpen(false);
       if (restoreFocus) {
         learningButtonRef.current?.focus();
@@ -100,6 +103,14 @@ export function SiteHeader() {
 
   const onLearningClick = () => {
     clearHoverCloseTimer();
+    // Click is primary. If hover already opened the menu, the first click must
+    // keep it open (convert ownership) instead of immediately toggling closed.
+    if (hoverOpenedRef.current && learningOpen) {
+      hoverOpenedRef.current = false;
+      hoverIntentRef.current = false;
+      return;
+    }
+    hoverOpenedRef.current = false;
     hoverIntentRef.current = false;
     setLearningOpen((value) => !value);
   };
@@ -107,6 +118,7 @@ export function SiteHeader() {
   const onLearningKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
+      hoverOpenedRef.current = false;
       onLearningClick();
     }
   };
@@ -114,6 +126,7 @@ export function SiteHeader() {
   const onLearningMouseEnter = () => {
     if (!prefersFineHover()) return;
     hoverIntentRef.current = true;
+    hoverOpenedRef.current = true;
     openLearning();
   };
 
@@ -196,13 +209,13 @@ export function SiteHeader() {
               id={learningId}
               className="nav-learning__menu"
               data-state={learningOpen ? "open" : "closed"}
-              role="menu"
+              role="group"
+              aria-label="Learning links"
             >
               {learningLinks.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  role="menuitem"
                   onClick={() => closeLearning(false)}
                 >
                   {item.label}
