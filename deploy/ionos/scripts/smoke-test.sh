@@ -46,11 +46,24 @@ wait_for_ready
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/" >/dev/null
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/rights" >/dev/null
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/001" >/dev/null
-curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/010" >/dev/null
-curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/020" >/dev/null
 
-if curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/021" >/dev/null; then
-  echo "Story 021 is publicly reachable." >&2
+version="$(curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/version")"
+echo "${version}" | grep -F "${EXPECTED_SHA}" >/dev/null
+PUBLIC_MAX="$(printf '%s' "${version}" | python -c 'import json,sys; print(int(json.load(sys.stdin)["public_story_max"]))')"
+if [[ "${PUBLIC_MAX}" -lt 1 || "${PUBLIC_MAX}" -gt 999 ]]; then
+  echo "Invalid public_story_max from /api/v1/version: ${PUBLIC_MAX}" >&2
+  exit 1
+fi
+LAST_STORY="$(printf '%03d' "${PUBLIC_MAX}")"
+PRIVATE_STORY="$(printf '%03d' "$((PUBLIC_MAX + 1))")"
+
+curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${LAST_STORY}" >/dev/null
+if [[ "${PUBLIC_MAX}" -ge 10 ]]; then
+  curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/010" >/dev/null
+fi
+
+if curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${PRIVATE_STORY}" >/dev/null; then
+  echo "Story ${PRIVATE_STORY} is publicly reachable." >&2
   exit 1
 fi
 
@@ -62,18 +75,15 @@ for private_path in /studio /dev/audio-lab /api/studio/session /api/v1/factory/s
   fi
 done
 
-version="$(curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/version")"
-echo "${version}" | grep -F "${EXPECTED_SHA}" >/dev/null
-
 headers="$(curl -fsSI "${AUTH_ARGS[@]}" -H 'Range: bytes=0-1023' \
   "${BASE_URL}/api/v1/stories/009/assets/narration.mp3")"
 echo "${headers}" | grep -Eiq '^HTTP/[0-9.]+ 206'
 echo "${headers}" | grep -Eiq '^content-range: bytes 0-1023/'
 echo "${headers}" | grep -Eiq '^accept-ranges: bytes'
 
-curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml" | grep -F '/stories/020' >/dev/null
-if curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml" | grep -F '/stories/021' >/dev/null; then
-  echo "Story 021 appears in sitemap." >&2
+curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml" | grep -F "/stories/${LAST_STORY}" >/dev/null
+if curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml" | grep -F "/stories/${PRIVATE_STORY}" >/dev/null; then
+  echo "Story ${PRIVATE_STORY} appears in sitemap." >&2
   exit 1
 fi
 
@@ -108,4 +118,4 @@ for n in 001 002 003 004 005 006 007 008 009; do
   curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${n}" >/dev/null
 done
 
-echo "Smoke test passed for ${BASE_URL} (${ENVIRONMENT}) at ${EXPECTED_SHA}"
+echo "Smoke test passed for ${BASE_URL} (${ENVIRONMENT}) at ${EXPECTED_SHA} public_max=${PUBLIC_MAX}"
