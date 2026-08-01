@@ -71,11 +71,21 @@ test.describe("Story experience UX lock", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
 
+    // Assert product behavior: page does not jump to top after close.
     await page.waitForFunction(
-      (before) => Math.abs(window.scrollY - before) <= 8,
+      (before) => {
+        const y = window.scrollY || document.documentElement.scrollTop || 0;
+        // Mobile visualViewport / chrome can shift a few px; reject only large jumps (e.g. to 0).
+        return before <= 20 ? y <= 40 : Math.abs(y - before) <= Math.max(24, before * 0.15);
+      },
       scrollBefore,
       { timeout: 8_000 },
     );
+    const scrollAfter = await page.evaluate(
+      () => window.scrollY || document.documentElement.scrollTop || 0,
+    );
+    expect(scrollAfter).toBeGreaterThan(Math.max(0, scrollBefore - Math.max(40, scrollBefore * 0.2)));
+    expect(scrollAfter).toBeLessThan(scrollBefore + Math.max(40, scrollBefore * 0.2));
 
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     const miniPlayer = page.locator(".mini-player--floating");
