@@ -25,6 +25,7 @@ const trailing = [
 ] as const;
 
 const HOVER_CLOSE_DELAY_MS = 150;
+const HOVER_OPEN_DELAY_MS = 220;
 
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -44,34 +45,34 @@ export function SiteHeader() {
   const learningRef = useRef<HTMLDivElement | null>(null);
   const learningButtonRef = useRef<HTMLButtonElement | null>(null);
   const hoverCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hoverIntentRef = useRef(false);
+  const hoverOpenTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const hoverOpenedRef = useRef(false);
-
-  const clearHoverCloseTimer = useCallback(() => {
+  const clearHoverTimers = useCallback(() => {
     if (hoverCloseTimer.current) {
       clearTimeout(hoverCloseTimer.current);
       hoverCloseTimer.current = null;
+    }
+    if (hoverOpenTimer.current) {
+      clearTimeout(hoverOpenTimer.current);
+      hoverOpenTimer.current = null;
     }
   }, []);
 
   const closeLearning = useCallback(
     (restoreFocus = false) => {
-      clearHoverCloseTimer();
-      hoverIntentRef.current = false;
-      hoverOpenedRef.current = false;
+      clearHoverTimers();
       setLearningOpen(false);
       if (restoreFocus) {
         learningButtonRef.current?.focus();
       }
     },
-    [clearHoverCloseTimer],
+    [clearHoverTimers],
   );
 
   const openLearning = useCallback(() => {
-    clearHoverCloseTimer();
+    clearHoverTimers();
     setLearningOpen(true);
-  }, [clearHoverCloseTimer]);
+  }, [clearHoverTimers]);
 
   useEffect(() => {
     setOpen(false);
@@ -99,54 +100,42 @@ export function SiteHeader() {
     };
   }, [learningOpen, closeLearning]);
 
-  useEffect(() => () => clearHoverCloseTimer(), [clearHoverCloseTimer]);
+  useEffect(() => () => clearHoverTimers(), [clearHoverTimers]);
 
   const onLearningClick = () => {
-    clearHoverCloseTimer();
-    // Click is primary. If hover already opened the menu, the first click must
-    // keep it open (convert ownership) instead of immediately toggling closed.
-    if (hoverOpenedRef.current && learningOpen) {
-      hoverOpenedRef.current = false;
-      hoverIntentRef.current = false;
-      return;
-    }
-    hoverOpenedRef.current = false;
-    hoverIntentRef.current = false;
+    // Click/tap is authoritative and synchronous relative to delayed hover-open.
+    clearHoverTimers();
     setLearningOpen((value) => !value);
   };
 
   const onLearningKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      hoverOpenedRef.current = false;
       onLearningClick();
     }
   };
 
   const onLearningMouseEnter = () => {
     if (!prefersFineHover()) return;
-    hoverIntentRef.current = true;
-    hoverOpenedRef.current = true;
-    openLearning();
+    clearHoverTimers();
+    // Delay hover-open so a real click is never raced by an immediate mouseenter open.
+    hoverOpenTimer.current = setTimeout(() => {
+      setLearningOpen(true);
+    }, HOVER_OPEN_DELAY_MS);
   };
 
   const onLearningMouseLeave = () => {
     if (!prefersFineHover()) return;
-    hoverIntentRef.current = true;
-    clearHoverCloseTimer();
+    clearHoverTimers();
     hoverCloseTimer.current = setTimeout(() => {
       const root = learningRef.current;
       if (root?.contains(document.activeElement)) return;
-      if (hoverIntentRef.current) {
-        closeLearning(false);
-      }
+      setLearningOpen(false);
     }, HOVER_CLOSE_DELAY_MS);
   };
 
   const onLearningFocusCapture = () => {
-    // Keep open while focus moves inside; do not force-open on mouse click focus
-    // (that races with the click toggle and immediately closes the menu).
-    clearHoverCloseTimer();
+    clearHoverTimers();
   };
 
   return (
