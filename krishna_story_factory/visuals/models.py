@@ -47,6 +47,14 @@ class VisualBrief:
     poster_focus: str = ""
     must_include: list[str] = field(default_factory=list)
     must_avoid: list[str] = field(default_factory=list)
+    # Future Story 021+ Vaiṣṇava iconography fields (see docs/visual/BHAVA_VAISNAVA_CHARACTER_AND_ICONOGRAPHY_STANDARD.md)
+    tilaka_requirement: str = ""
+    tilaka_style: str = ""
+    tulasi_beads_requirement: str = ""
+    character_devotional_identity: str = ""
+    must_show: list[str] = field(default_factory=list)
+    cultural_context: str = ""
+    reviewer_status: str = "pending"
 
     def validate(self, *, story_no: str | None = None) -> list[str]:
         errors: list[str] = []
@@ -115,6 +123,13 @@ class VisualBrief:
             "poster_focus": self.poster_focus,
             "must_include": self.must_include,
             "must_avoid": self.must_avoid,
+            "tilaka_requirement": self.tilaka_requirement,
+            "tilaka_style": self.tilaka_style,
+            "tulasi_beads_requirement": self.tulasi_beads_requirement,
+            "character_devotional_identity": self.character_devotional_identity,
+            "must_show": self.must_show,
+            "cultural_context": self.cultural_context,
+            "reviewer_status": self.reviewer_status,
         }
 
 
