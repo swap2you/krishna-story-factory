@@ -27,8 +27,8 @@ def test_caddyfile_keeps_private_story_boundary() -> None:
     text = CADDYFILE.read_text(encoding="utf-8")
     assert "private_story" in text
     assert "2[1-9]" in text
-    # Split matchers (not http.matchers.or) so stock caddy:2.10-alpine can start.
+    # Split matchers (not a nested `or {` block) so stock caddy:2.10-alpine can start.
     assert "respond @private_paths 404" in text
     assert "respond @private_story 404" in text
-    assert "http.matchers.or" not in text
+    assert "\tor {" not in text and "\n\tor {" not in text
     assert "/stories/011*" not in text
