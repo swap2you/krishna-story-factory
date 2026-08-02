@@ -1,14 +1,19 @@
 """Index manifest facts into SQLite without mutating story packages."""
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from ..config import get_settings
 from ..models import Asset, Collection, Story
 from .filesystem import asset_media_type, discover_packages
 from .publish_gates import is_publicly_publishable
+from .readiness import CatalogReadinessError, assert_public_scan_complete
+
+logger = logging.getLogger(__name__)
 
 COLLECTION_SLUG = "krishna-book-bedtime"
 COLLECTION_TITLE = "Krishna Book Bedtime Stories"
@@ -56,11 +61,24 @@ def index_packages(session: Session) -> IndexResult:
         session.add(collection)
         session.flush()
 
+    settings = get_settings()
+    packages = discover_packages(settings.output_root)
+    publishable_packages = [package for package in packages if is_publicly_publishable(package)]
+    try:
+        assert_public_scan_complete(len(publishable_packages), settings)
+    except CatalogReadinessError:
+        # Preserve last-known-good SQLite rows; never commit a destructive empty refresh.
+        session.rollback()
+        logger.error(
+            "catalog_incomplete_scan preserved_existing_catalog publishable=%s expected=%s",
+            len(publishable_packages),
+            settings.public_story_max,
+        )
+        raise
+
     seen: set[str] = set()
     result = IndexResult()
-    for package in discover_packages():
-        if not is_publicly_publishable(package):
-            continue
+    for package in publishable_packages:
         manifest = package.manifest
         story_no = _normalize_story_no(manifest.get("chapter_no"))
         if not story_no or not manifest.get("slug") or not manifest.get("title"):
@@ -103,6 +121,7 @@ def index_packages(session: Session) -> IndexResult:
                 )
         result.indexed += 1
 
+    # Stale deletion is allowed only after a complete validated public scan (or non-public mode).
     stale = session.scalars(select(Story).where(Story.collection_id == collection.id)).all()
     for story in stale:
         if story.story_no not in seen:
