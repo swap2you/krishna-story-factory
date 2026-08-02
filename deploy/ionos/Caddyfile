@@ -31,13 +31,12 @@
 	@immutable path /_next/static/* /brand/* /heroes/* /icons/* /collections/* /empty-states/*
 	header @immutable Cache-Control "public, max-age=31536000, immutable"
 
-	@private {
-		or {
-			path /studio* /dev* /api/studio* /api/v1/factory* /api/v1/scheduler* /api/v1/queue*
-			path_regexp private_story ^/stories/0*(2[1-9]|[3-9][0-9]|[1-9][0-9]{2,})(/.*)?$
-		}
-	}
-	respond @private 404
+	# Split matchers instead of `or` — stock caddy:2.10-alpine does not register
+	# http.matchers.or, and a recreate with this block crash-loops TLS (P1 outage).
+	@private_paths path /studio* /dev* /api/studio* /api/v1/factory* /api/v1/scheduler* /api/v1/queue*
+	@private_story path_regexp private_story ^/stories/0*(2[1-9]|[3-9][0-9]|[1-9][0-9]{2,})(/.*)?$
+	respond @private_paths 404
+	respond @private_story 404
 
 	@mutation {
 		path /api/*
