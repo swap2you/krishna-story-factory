@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 import os
 
 import pytest
@@ -70,12 +71,18 @@ def test_version_endpoint_contains_safe_release(monkeypatch, tmp_path):
     with TestClient(app) as client:
         response = client.get("/api/v1/version")
     assert response.status_code == 200
-    assert response.json() == {
-        "service": "bhava-api",
-        "release_sha": "abc123",
-        "environment": os.getenv("BHAVA_ENVIRONMENT", "development"),
-        "public_story_max": 10,
-    }
+    body = response.json()
+    assert body["service"] == "bhava-api"
+    assert body["release_sha"] == "abc123"
+    assert body["short_sha"] == "abc123"
+    assert body["environment"] == os.getenv("BHAVA_ENVIRONMENT", "development")
+    assert body["public_story_max"] == 10
+    assert "indexed_story_count" in body
+    assert "discovered_package_count" in body
+    # Safe diagnostics only — never expose filesystem/db paths.
+    dumped = json.dumps(body)
+    assert "/app/" not in dumped
+    assert "sqlite" not in dumped.lower()
 
 
 def test_default_allowed_hosts_reject_unknown_origin(monkeypatch, tmp_path):

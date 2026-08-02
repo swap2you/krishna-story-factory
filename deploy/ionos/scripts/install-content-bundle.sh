@@ -40,3 +40,20 @@ if [[ -w "${CONTENT_ROOT}" ]]; then
 fi
 
 echo "Installed content release ${RELEASE} (max_story=${MAX_STORY})"
+
+# Replacing the release directory changes the bind-mount inode. Recreate any
+# running API containers that mount releases/current so they see the new files.
+# Without this, an already-running api-production can observe an empty /app/output
+# while the host tree looks complete (P1 catalog outage class).
+if [[ "${BHAVA_RECREATE_CONTENT_MOUNTS:-1}" == "1" && -f /opt/bhava/config/docker-compose.yml && -f /opt/bhava/config/runtime.env ]]; then
+  (
+    cd /opt/bhava/config
+    running="$(docker compose --env-file runtime.env ps --status running --services 2>/dev/null || true)"
+    for svc in api-production api-staging; do
+      if printf '%s\n' "${running}" | grep -qx "${svc}"; then
+        echo "Recreating ${svc} to refresh content bind mounts"
+        docker compose --env-file runtime.env up -d --force-recreate --no-deps "${svc}"
+      fi
+    done
+  )
+fi

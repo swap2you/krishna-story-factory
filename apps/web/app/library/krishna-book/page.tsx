@@ -1,6 +1,6 @@
 import { PageIntro } from "@/components/page-intro";
 import { StoryGrid } from "@/components/story-grid";
-import { getStories } from "@/lib/catalog";
+import { loadStories } from "@/lib/catalog";
 import { pageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +25,9 @@ function publishedRangeLabel(storyNos: string[]): string {
 }
 
 export default async function KrishnaBookPage() {
-  const stories = await getStories();
+  const state = await loadStories();
+  const stories = state.status === "ok" ? state.stories : [];
+  const unavailable = state.status === "unavailable";
   const range = publishedRangeLabel(stories.map((s) => s.story_no));
   return (
     <>
@@ -36,7 +38,11 @@ export default async function KrishnaBookPage() {
       />
       <section className="section">
         <div className="container">
-          <StoryGrid stories={stories} empty="Run the Bhāva API so the catalog can discover locked packages." />
+          <StoryGrid
+            stories={stories}
+            unavailable={unavailable}
+            empty="Published stories will appear here when the catalog is ready."
+          />
         </div>
       </section>
     </>

@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
@@ -9,15 +12,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from sqlalchemy import text
 
-import json
-
 from .catalog.filesystem import discover_packages
 from .catalog.freshness import catalog_freshness, refresh_if_stale
+from .catalog.readiness import CatalogReadinessError, catalog_snapshot, public_catalog_ready
 from .config import Settings, get_settings
 from .csrf import issue_token
 from .db import Base, SessionLocal, engine
 from .knowledge.routes import router as knowledge_router
 from .routes import media, public as public_routes, reader
+
+logger = logging.getLogger(__name__)
 
 _REQUIRED_WEB_ASSET_FILES = (
     "reader.md",
@@ -123,11 +127,17 @@ async def lifespan(app: FastAPI):
 
     settings.catalog_db.parent.mkdir(parents=True, exist_ok=True)
     Base.metadata.create_all(bind=engine)
-    with SessionLocal() as session:
-        app.state.indexed_packages = refresh_if_stale(session=session, force=True)
+    app.state.ready = False
+    try:
+        with SessionLocal() as session:
+            app.state.indexed_packages = refresh_if_stale(session=session, force=True)
+        app.state.ready = True
+    except CatalogReadinessError:
+        app.state.indexed_packages = 0
+        app.state.ready = False
+        logger.error("catalog_startup_incomplete public_site=%s", settings.public_site)
 
     app.state.csrf_token = issue_token()
-    app.state.ready = True
     stop = asyncio.Event()
 
     async def _background_refresh() -> None:
@@ -200,16 +210,39 @@ def create_app() -> FastAPI:
             connection.execute(text("SELECT 1"))
         if settings.public_site:
             _verify_public_web_assets(settings)
+            try:
+                with SessionLocal() as session:
+                    public_catalog_ready(session, settings)
+            except CatalogReadinessError as exc:
+                raise HTTPException(status_code=503, detail="catalog not ready") from exc
         return {"status": "ready", "service": "bhava-api"}
 
     @app.get("/api/v1/version", include_in_schema=False)
     def version() -> dict[str, str | int]:
-        return {
+        short = settings.release_sha[:7] if settings.release_sha else "unknown"
+        content_tag = (
+            os.getenv("BHAVA_CONTENT_RELEASE", "").strip()
+            or os.getenv("BHAVA_CONTENT_TAG", "").strip()
+            or ""
+        )
+        payload: dict[str, str | int] = {
             "service": "bhava-api",
             "release_sha": settings.release_sha,
+            "short_sha": short,
             "environment": settings.environment,
             "public_story_max": settings.public_story_max,
         }
+        if content_tag:
+            payload["content_tag"] = content_tag
+        try:
+            with SessionLocal() as session:
+                snap = catalog_snapshot(session, settings)
+            payload["indexed_story_count"] = snap.indexed_story_count
+            payload["discovered_package_count"] = snap.discovered_package_count
+        except Exception:
+            payload["indexed_story_count"] = -1
+            payload["discovered_package_count"] = -1
+        return payload
 
     return app
 
