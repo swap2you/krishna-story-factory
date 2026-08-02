@@ -62,7 +62,7 @@ def index_packages(session: Session) -> IndexResult:
         session.flush()
 
     settings = get_settings()
-    packages = discover_packages()
+    packages = discover_packages(settings.output_root)
     publishable_packages = [package for package in packages if is_publicly_publishable(package)]
     try:
         assert_public_scan_complete(len(publishable_packages), settings)

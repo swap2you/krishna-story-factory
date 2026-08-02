@@ -65,11 +65,16 @@ if [[ "${ready_code}" != "200" ]]; then
 fi
 
 stories_json="$(curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/stories")"
-python - "${stories_json}" "${PUBLIC_MAX}" <<'PY'
+# Avoid argv length limits: pass catalog JSON via a temp file, not argv.
+stories_tmp="$(mktemp)"
+printf '%s' "${stories_json}" >"${stories_tmp}"
+python - "${PUBLIC_MAX}" "${stories_tmp}" <<'PY'
 import json, sys
-raw, expected = sys.argv[1], int(sys.argv[2])
+expected = int(sys.argv[1])
+path = sys.argv[2]
 try:
-    data = json.loads(raw)
+    with open(path, encoding="utf-8") as handle:
+        data = json.load(handle)
 except json.JSONDecodeError as exc:
     raise SystemExit(f"/api/v1/stories invalid JSON: {exc}") from exc
 if not isinstance(data, list):
@@ -92,8 +97,9 @@ print(f"catalog_ok count={len(data)} first=001 last={last}")
 PY
 
 library_html="$(curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/library/krishna-book")"
-FIRST_TITLE="$(printf '%s' "${stories_json}" | python -c 'import json,sys; print(json.load(sys.stdin)[0]["title"])')"
-LAST_TITLE="$(printf '%s' "${stories_json}" | python -c 'import json,sys; print(json.load(sys.stdin)[-1]["title"])')"
+FIRST_TITLE="$(python -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8"))[0]["title"])' "${stories_tmp}")"
+LAST_TITLE="$(python -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8"))[-1]["title"])' "${stories_tmp}")"
+rm -f "${stories_tmp}"
 printf '%s' "${library_html}" | grep -F "${FIRST_TITLE}" >/dev/null
 printf '%s' "${library_html}" | grep -F "${LAST_TITLE}" >/dev/null
 if printf '%s' "${library_html}" | grep -Eiq 'library is being prepared|Run the Bhāva API|Run the Bhava API|temporarily unavailable'; then

@@ -144,6 +144,12 @@ async def lifespan(app: FastAPI):
         while not stop.is_set():
             try:
                 await asyncio.to_thread(refresh_if_stale)
+                if settings.public_site and not getattr(app.state, "ready", False):
+                    with SessionLocal() as session:
+                        public_catalog_ready(session, settings)
+                    _verify_public_web_assets(settings)
+                    app.state.ready = True
+                    logger.info("catalog_ready_recovered_after_incomplete_startup")
             except Exception:
                 # A refresh failure must not leak filesystem paths to clients.
                 pass

@@ -38,7 +38,10 @@ def _write_web_assets(root: Path, count: int) -> None:
             if name == "web_manifest.json":
                 continue
             path = dest / name
-            path.write_text("{}", encoding="utf-8") if name.endswith(".json") else path.write_text("x", encoding="utf-8")
+            if name.endswith(".json"):
+                path.write_text("{}", encoding="utf-8")
+            else:
+                path.write_text("x", encoding="utf-8")
             assets[name] = {"sha256": "a" * 64, "bytes": max(1, path.stat().st_size)}
         (dest / "web_manifest.json").write_text(
             json.dumps(
