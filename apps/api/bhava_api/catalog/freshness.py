@@ -14,6 +14,7 @@ from ..db import SessionLocal
 from ..models import Story
 from ..web_assets.builder import build_web_assets_for_package
 from .indexer import index_packages
+from .readiness import CatalogReadinessError
 
 DEFAULT_MIN_INTERVAL_SEC = 20.0
 logger = logging.getLogger(__name__)
@@ -75,10 +76,18 @@ class CatalogFreshness:
             if not force and current == self._fingerprint and self._last_refresh > 0:
                 self._last_refresh = now
                 return self._indexed
-            with SessionLocal() as local:
-                result = index_packages(local)
-                self._indexed = result.indexed
-                newly = list(result.newly_indexed)
+            try:
+                with SessionLocal() as local:
+                    result = index_packages(local)
+                    self._indexed = result.indexed
+                    newly = list(result.newly_indexed)
+            except CatalogReadinessError:
+                # Keep prior fingerprint/index count; incomplete scans must not look "fresh".
+                self._last_refresh = now
+                if force and get_settings().public_site:
+                    raise
+                logger.error("catalog_refresh_aborted_incomplete_scan force=%s", force)
+                return self._indexed
             self._fingerprint = current
             self._last_refresh = now
             if session is not None:

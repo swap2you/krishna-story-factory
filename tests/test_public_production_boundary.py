@@ -74,18 +74,20 @@ def test_version_endpoint_contains_safe_release(monkeypatch, tmp_path):
         response = client.get("/api/v1/version")
     assert response.status_code == 200
     payload = response.json()
-    assert payload == {
-        "service": "bhava-api",
-        "web_version": "001-020-v3",
-        "release_sha": "abc123def456",
-        "short_sha": "abc123d",
-        "content_tag": "bhava-content-001-020-v3",
-        "environment": os.getenv("BHAVA_ENVIRONMENT", "development"),
-        "public_story_max": 10,
-    }
-    forbidden = {"password", "token", "secret", "hostname", "ssh", "path", "key"}
+    assert payload["service"] == "bhava-api"
+    assert payload["web_version"] == "001-020-v3"
+    assert payload["release_sha"] == "abc123def456"
+    assert payload["short_sha"] == "abc123d"
+    assert payload["content_tag"] == "bhava-content-001-020-v3"
+    assert payload["environment"] == os.getenv("BHAVA_ENVIRONMENT", "development")
+    assert payload["public_story_max"] == 10
+    assert "indexed_story_count" in payload
+    assert "discovered_package_count" in payload
+    forbidden = {"password", "token", "secret", "hostname", "ssh", "key"}
     blob = json.dumps(payload).lower()
     assert not any(word in blob for word in forbidden)
+    assert "/app/" not in blob
+    assert "sqlite" not in blob
 
 
 def test_default_allowed_hosts_reject_unknown_origin(monkeypatch, tmp_path):

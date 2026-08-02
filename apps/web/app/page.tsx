@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CollectionCard } from "@/components/collection-card";
-import { getStories } from "@/lib/catalog";
+import { loadStories } from "@/lib/catalog";
 import { StoryGrid } from "@/components/story-grid";
 
 export const dynamic = "force-dynamic";
@@ -74,7 +74,9 @@ const areas = [
 ];
 
 export default async function Home() {
-  const stories = await getStories();
+  const state = await loadStories();
+  const stories = state.status === "ok" ? state.stories : [];
+  const catalogUnavailable = state.status === "unavailable";
   const latest = stories.slice(-3).reverse();
   const featured = stories.find((story) => story.story_no === "001") ?? stories.find((story) => story.poster_url) ?? stories[0];
   const latestStory = stories[stories.length - 1];
@@ -181,7 +183,8 @@ export default async function Home() {
           </p>
           <StoryGrid
             stories={latest.length ? latest : stories}
-            empty="Start the local API to discover published story packages."
+            unavailable={catalogUnavailable}
+            empty="Published stories will appear here when the catalog is ready."
           />
         </div>
       </section>
