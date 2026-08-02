@@ -1,14 +1,33 @@
 import Link from "next/link";
 import { EmptyState } from "@bhava/ui";
 import type { Story } from "@/lib/catalog";
+import { PUBLIC_LIBRARY_UNAVAILABLE } from "@/lib/catalog";
+
+export function CatalogUnavailable({
+  message = PUBLIC_LIBRARY_UNAVAILABLE,
+}: {
+  message?: string;
+}) {
+  return (
+    <EmptyState title="The story library is temporarily unavailable">
+      <p>{message}</p>
+    </EmptyState>
+  );
+}
 
 export function StoryGrid({
   stories,
-  empty = "Stories will appear here as the local catalog becomes available.",
+  empty = "Published stories will appear here when the catalog is ready.",
+  unavailable = false,
 }: {
   stories: Story[];
   empty?: string;
+  /** True when the catalog API failed (timeout/network/5xx), not a successful empty list. */
+  unavailable?: boolean;
 }) {
+  if (unavailable) {
+    return <CatalogUnavailable />;
+  }
   if (!stories.length) {
     return (
       <EmptyState title="The library is being prepared">

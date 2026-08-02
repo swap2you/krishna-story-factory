@@ -31,6 +31,12 @@ export type Collection = {
   story_count?: number;
 };
 
+export type CatalogFailureReason = "timeout" | "network" | "http_error" | "invalid_json";
+
+export type CatalogLoadState =
+  | { status: "ok"; stories: Story[] }
+  | { status: "unavailable"; reason: CatalogFailureReason; httpStatus?: number };
+
 /** Prefer same-origin `/api/...` so Next rewrites avoid browser CORS issues. */
 function mediaUrl(url: string | undefined | null): string | null {
   if (!url) return null;
@@ -74,7 +80,22 @@ const API =
     ? `${process.env.BHAVA_API_ORIGIN.replace(/\/$/, "")}/api/v1`
     : "http://127.0.0.1:8000/api/v1");
 
-async function apiGet<T>(path: string): Promise<T | null> {
+function logCatalogFailure(path: string, reason: CatalogFailureReason, httpStatus?: number): void {
+  // Safe server-side context only — never log internal service URLs or secrets.
+  console.error(
+    JSON.stringify({
+      event: "bhava_catalog_fetch_failed",
+      path,
+      reason,
+      httpStatus: httpStatus ?? null,
+    }),
+  );
+}
+
+async function apiGetRaw(path: string): Promise<
+  | { ok: true; data: unknown }
+  | { ok: false; reason: CatalogFailureReason; httpStatus?: number }
+> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 4000);
   try {
@@ -82,36 +103,76 @@ async function apiGet<T>(path: string): Promise<T | null> {
       cache: "no-store",
       signal: controller.signal,
     });
-    if (!response.ok) return null;
-    return (await response.json()) as T;
-  } catch {
-    return null;
+    if (!response.ok) {
+      return { ok: false, reason: "http_error", httpStatus: response.status };
+    }
+    try {
+      return { ok: true, data: await response.json() };
+    } catch {
+      return { ok: false, reason: "invalid_json", httpStatus: response.status };
+    }
+  } catch (error) {
+    const name = error instanceof Error ? error.name : "";
+    if (name === "AbortError") {
+      return { ok: false, reason: "timeout" };
+    }
+    return { ok: false, reason: "network" };
   } finally {
     clearTimeout(timer);
   }
 }
 
+function asStoryList(body: unknown): Story[] {
+  if (Array.isArray(body)) return body as Story[];
+  if (body && typeof body === "object") {
+    const record = body as { items?: Story[]; stories?: Story[] };
+    return record.items ?? record.stories ?? [];
+  }
+  return [];
+}
+
+export async function loadStories(): Promise<CatalogLoadState> {
+  const result = await apiGetRaw("/stories");
+  if (!result.ok) {
+    logCatalogFailure("/stories", result.reason, result.httpStatus);
+    return { status: "unavailable", reason: result.reason, httpStatus: result.httpStatus };
+  }
+  return { status: "ok", stories: asStoryList(result.data).map(enrich) };
+}
+
 export async function getStories(): Promise<Story[]> {
-  const body = await apiGet<Story[] | { items?: Story[]; stories?: Story[] }>("/stories");
-  if (!body) return [];
-  const list = Array.isArray(body) ? body : body.items ?? body.stories ?? [];
-  return list.map(enrich);
+  const state = await loadStories();
+  return state.status === "ok" ? state.stories : [];
 }
 
 export async function getStory(storyNo: string): Promise<Story | null> {
   const padded = storyNo.replace(/\D/g, "").padStart(3, "0") || storyNo;
-  const story = await apiGet<Story>(`/stories/${padded}`);
-  if (story) return enrich(story);
+  const result = await apiGetRaw(`/stories/${padded}`);
+  if (result.ok && result.data && typeof result.data === "object" && !Array.isArray(result.data)) {
+    return enrich(result.data as Story);
+  }
   const stories = await getStories();
   return stories.find((item) => item.story_no === padded || item.slug === storyNo) ?? null;
 }
 
 export async function getCollections(): Promise<Collection[]> {
-  return (await apiGet<Collection[]>("/collections")) ?? [];
+  const result = await apiGetRaw("/collections");
+  if (!result.ok) {
+    logCatalogFailure("/collections", result.reason, result.httpStatus);
+    return [];
+  }
+  return Array.isArray(result.data) ? (result.data as Collection[]) : [];
 }
 
 export async function searchStories(query: string): Promise<Story[]> {
   if (!query.trim()) return getStories();
-  const body = await apiGet<Story[]>(`/search?q=${encodeURIComponent(query.trim())}`);
-  return (body ?? []).map(enrich);
+  const result = await apiGetRaw(`/search?q=${encodeURIComponent(query.trim())}`);
+  if (!result.ok) {
+    logCatalogFailure("/search", result.reason, result.httpStatus);
+    return [];
+  }
+  return asStoryList(result.data).map(enrich);
 }
+
+export const PUBLIC_LIBRARY_UNAVAILABLE =
+  "The story library is temporarily unavailable. Please try again shortly.";

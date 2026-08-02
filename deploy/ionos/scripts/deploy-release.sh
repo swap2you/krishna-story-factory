@@ -74,7 +74,26 @@ if [[ "${ENVIRONMENT}" == "production" ]]; then
   docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml     stop web-staging api-staging >/dev/null 2>&1 || true
 fi
 
-docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml up -d --no-build "${SERVICES[@]}"
+# Force-recreate API/web only so bind mounts to releases/current pick up a replaced
+# content inode after install-content-bundle.sh (rm+mv of the release directory).
+# Do NOT force-recreate caddy here — recreating edge TLS on every deploy risks
+# taking the site offline if Caddyfile adaptation fails.
+api_web=()
+other=()
+for svc in "${SERVICES[@]}"; do
+  case "${svc}" in
+    api-*|web-*) api_web+=("${svc}") ;;
+    *) other+=("${svc}") ;;
+  esac
+done
+if ((${#api_web[@]})); then
+  docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml \
+    up -d --no-build --force-recreate "${api_web[@]}"
+fi
+if ((${#other[@]})); then
+  docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml \
+    up -d --no-build "${other[@]}"
+fi
 
 mkdir -p /opt/bhava/backups
 echo "${RELEASE_SHA}" >"${CURRENT_FILE}"

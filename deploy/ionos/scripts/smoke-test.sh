@@ -56,7 +56,63 @@ if [[ "${PUBLIC_MAX}" -lt 1 || "${PUBLIC_MAX}" -gt 999 ]]; then
 fi
 LAST_STORY="$(printf '%03d' "${PUBLIC_MAX}")"
 PRIVATE_STORY="$(printf '%03d' "$((PUBLIC_MAX + 1))")"
+FIRST_STORY="001"
 
+ready_code="$(curl -sS -o /tmp/bhava_readyz.json -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/readyz" || true)"
+if [[ "${ready_code}" != "200" ]]; then
+  echo "/readyz returned HTTP ${ready_code:-000}; catalog must be complete before smoke passes." >&2
+  exit 1
+fi
+
+stories_json="$(curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/stories")"
+# Avoid argv length limits: pass catalog JSON via a temp file, not argv.
+stories_tmp="$(mktemp)"
+printf '%s' "${stories_json}" >"${stories_tmp}"
+python - "${PUBLIC_MAX}" "${stories_tmp}" <<'PY'
+import json, sys
+expected = int(sys.argv[1])
+path = sys.argv[2]
+try:
+    with open(path, encoding="utf-8") as handle:
+        data = json.load(handle)
+except json.JSONDecodeError as exc:
+    raise SystemExit(f"/api/v1/stories invalid JSON: {exc}") from exc
+if not isinstance(data, list):
+    raise SystemExit("/api/v1/stories must return a JSON array")
+if len(data) != expected:
+    raise SystemExit(f"/api/v1/stories length {len(data)} != public_story_max {expected}")
+required = ("story_no", "slug", "title", "poster_url", "narration_url", "reader_url")
+for index, item in enumerate(data):
+    if not isinstance(item, dict):
+        raise SystemExit(f"story[{index}] is not an object")
+    for key in required:
+        if not item.get(key):
+            raise SystemExit(f"story[{index}] missing {key}")
+if data[0].get("story_no") != "001":
+    raise SystemExit(f"first story_no={data[0].get('story_no')!r}, expected '001'")
+last = f"{expected:03d}"
+if data[-1].get("story_no") != last:
+    raise SystemExit(f"final story_no={data[-1].get('story_no')!r}, expected {last!r}")
+print(f"catalog_ok count={len(data)} first=001 last={last}")
+PY
+
+library_html="$(curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/library/krishna-book")"
+FIRST_TITLE="$(python -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8"))[0]["title"])' "${stories_tmp}")"
+LAST_TITLE="$(python -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8"))[-1]["title"])' "${stories_tmp}")"
+rm -f "${stories_tmp}"
+printf '%s' "${library_html}" | grep -F "${FIRST_TITLE}" >/dev/null
+printf '%s' "${library_html}" | grep -F "${LAST_TITLE}" >/dev/null
+if printf '%s' "${library_html}" | grep -Eiq 'library is being prepared|Run the Bhāva API|Run the Bhava API|temporarily unavailable'; then
+  echo "Library page shows an empty/unavailable catalog message." >&2
+  exit 1
+fi
+card_count="$(printf '%s' "${library_html}" | grep -oE 'href="/stories/[0-9]{3}"' | sort -u | wc -l | tr -d ' ')"
+if [[ "${card_count}" != "${PUBLIC_MAX}" ]]; then
+  echo "Library story-card links=${card_count}, expected ${PUBLIC_MAX}." >&2
+  exit 1
+fi
+
+curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${FIRST_STORY}" >/dev/null
 curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${LAST_STORY}" >/dev/null
 if [[ "${PUBLIC_MAX}" -ge 10 ]]; then
   curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/010" >/dev/null
