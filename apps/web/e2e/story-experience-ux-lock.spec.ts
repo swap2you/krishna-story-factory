@@ -90,6 +90,15 @@ test.describe("Story experience UX lock", () => {
       { timeout: 8_000 },
     );
 
+    await page.evaluate(() => {
+      if (!document.getElementById("bhava-e2e-scroll-spacer")) {
+        const spacer = document.createElement("div");
+        spacer.id = "bhava-e2e-scroll-spacer";
+        spacer.style.height = "220vh";
+        spacer.setAttribute("aria-hidden", "true");
+        document.body.appendChild(spacer);
+      }
+    });
     await page.locator(".persistent-player").scrollIntoViewIfNeeded();
     await page.evaluate(() => {
       const player = document.querySelector(".persistent-player");
