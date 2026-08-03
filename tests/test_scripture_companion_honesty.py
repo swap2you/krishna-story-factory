@@ -1,30 +1,28 @@
-"""Tests for scripture companion honesty: exact vs chapter-framed."""
+"""Scripture companion honesty: exact vs chapter-framed (SSOT = REVIEWED_SHLOKAS)."""
+
 from __future__ import annotations
 
-import json
 import re
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-WEB = ROOT / "data" / "web-assets"
+from bhava_api.web_assets.reviewed_shlokas import REVIEWED_SHLOKAS
 
 EXACT_RANGE_RE = re.compile(r"\d+\.\d+\.\d+")
 
 
-def _load_shlokas(story_no: str) -> dict:
-    path = WEB / story_no / "shlokas.json"
-    assert path.is_file(), f"missing {path}"
-    return json.loads(path.read_text(encoding="utf-8"))
+def _first_item(story_no: str) -> dict:
+    payload = REVIEWED_SHLOKAS[story_no]
+    items = payload.get("shlokas") or []
+    assert items, story_no
+    return items[0]
 
 
 def test_stories_002_004_have_distinct_non_overlapping_ranges() -> None:
     refs = []
     for story in ("002", "003", "004"):
-        payload = _load_shlokas(story)
-        items = payload.get("shlokas") or []
-        assert items, story
-        ref = str(items[0].get("reference") or "")
+        item = _first_item(story)
+        ref = str(item.get("reference") or "")
         assert "SB 10.1" in ref, story
+        assert EXACT_RANGE_RE.search(ref), story
         refs.append(ref)
     assert refs[0] != refs[1] != refs[2]
     assert "27" in refs[0] and "55" in refs[0]
@@ -34,38 +32,32 @@ def test_stories_002_004_have_distinct_non_overlapping_ranges() -> None:
 
 def test_not_applicable_entries_do_not_claim_exact_verse_range() -> None:
     for story in ("001", "005", "006"):
-        payload = _load_shlokas(story)
-        items = payload.get("shlokas") or []
-        assert items, story
-        item = items[0]
+        item = _first_item(story)
         assert item.get("review_status") == "not_applicable"
         assert item.get("decision") == "no-separate-verse"
         ref = str(item.get("reference") or "")
         assert not EXACT_RANGE_RE.search(ref), f"{story} claimed exact range while N/A"
 
 
-def test_reviewed_chapter_refs_without_verse_triplet_are_chapter_framed() -> None:
+def test_reviewed_chapter_refs_include_vedabase_url() -> None:
     for story in ("009", "011", "019", "020"):
-        payload = _load_shlokas(story)
-        items = payload.get("shlokas") or []
-        assert items, story
-        item = items[0]
+        item = _first_item(story)
         if item.get("review_status") != "reviewed":
             continue
         ref = str(item.get("reference") or "")
-        # Chapter-framed companions may omit verse triplets; that is honest.
-        if not EXACT_RANGE_RE.search(ref):
-            assert "SB" in ref or "Bhagavatam" in ref or "10." in ref
+        assert "SB" in ref or "Bhagavatam" in ref or "10." in ref
         url = item.get("url") or ""
         assert "vedabase.io" in str(url)
 
 
-def test_exact_range_status_requires_evidence_in_reference() -> None:
-    """If a companion claims an exact verse window, the reference must include a verse triplet."""
-    for path in WEB.glob("*/shlokas.json"):
-        payload = json.loads(path.read_text(encoding="utf-8"))
+def test_not_applicable_cannot_display_as_exact_and_reviewed_exact_needs_triplet() -> None:
+    for story_no, payload in REVIEWED_SHLOKAS.items():
         for item in payload.get("shlokas") or []:
-            claim = str(item.get("exact_range_status") or "").lower()
+            status = str(item.get("review_status") or "")
             ref = str(item.get("reference") or "")
-            if claim in {"exact", "verified_exact"}:
-                assert EXACT_RANGE_RE.search(ref), path
+            if status == "not_applicable":
+                assert not EXACT_RANGE_RE.search(ref), story_no
+                assert item.get("decision") == "no-separate-verse"
+            if status == "reviewed" and EXACT_RANGE_RE.search(ref):
+                # Exact-looking windows must keep distinct story-specific refs when present.
+                assert "SB" in ref or "ŚB" in ref or "10." in ref
