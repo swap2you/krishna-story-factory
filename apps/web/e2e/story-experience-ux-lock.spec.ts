@@ -95,13 +95,57 @@ test.describe("Story experience UX lock", () => {
     await expect(miniPlayer).toBeVisible({ timeout: 8_000 });
     await expect(miniPlayer.getByRole("slider", { name: "Seek narration" })).toBeVisible();
 
+    const hideFloating = miniPlayer.getByRole("button", { name: "Hide floating player" });
+    await expect(hideFloating).toBeVisible();
+    const wasPlaying = await page.locator("audio").evaluate((el) => !(el as HTMLAudioElement).paused);
+    if (!wasPlaying) {
+      await page.getByRole("button", { name: /^Play$/i }).first().click();
+    }
+    const timeBefore = await page.locator("audio").evaluate((el) => (el as HTMLAudioElement).currentTime);
+    await hideFloating.click();
+    await expect(miniPlayer).toHaveCount(0);
+    const timeAfter = await page.locator("audio").evaluate((el) => (el as HTMLAudioElement).currentTime);
+    expect(timeAfter).toBeGreaterThanOrEqual(timeBefore);
+    await expect(page.getByRole("button", { name: "Show floating player" })).toBeVisible();
+    await page.getByRole("button", { name: "Show floating player" }).click();
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(page.locator(".mini-player--floating")).toBeVisible({ timeout: 8_000 });
+
     await selectStoryTab(page, /Coloring/i);
     await page.locator(".asset-tile").first().click();
     await expect(page.getByRole("dialog")).toBeVisible();
-    await expect(miniPlayer).toHaveCount(0);
+    await expect(page.locator(".mini-player--floating")).toHaveCount(0);
+
+    // Print uses isolated iframe document — not application DOM thumbnails.
+    await page.evaluate(() => {
+      (window as unknown as { __BHAVA_SKIP_PRINT__?: boolean }).__BHAVA_SKIP_PRINT__ = true;
+    });
+    await page.getByRole("button", { name: /^Print$/i }).click();
+    await page.waitForFunction(
+      () => {
+        const frame = document.querySelector('iframe[title="Print selected image"]') as HTMLIFrameElement | null;
+        if (!frame?.contentDocument) return false;
+        const html = frame.contentDocument.documentElement.outerHTML;
+        return /<img\b/i.test(html) && !/carousel-thumb|asset-tile|site-header/i.test(html);
+      },
+      undefined,
+      { timeout: 5_000 },
+    );
 
     await page.keyboard.press("Escape");
     await expectNoHorizontalOverflow(page);
+  });
+
+  test("Ślokas tab shows Vedabase button and chapter-reference honesty", async ({ page, request }) => {
+    const stories = await fetchStories(request);
+    const story = stories.find((item) => item.story_no === "011") ?? stories.find((item) => item.story_no === "020");
+    test.skip(!story, "Need a published story with Ślokas");
+    await page.goto(`/stories/${story!.story_no}`);
+    await selectStoryTab(page, /Ślok|Shlok/i);
+    const vedabase = page.getByRole("link", { name: /Read this passage on Vedabase/i });
+    await expect(vedabase.or(page.getByText(/No separate verse|Companion|Chapter reference|pending/i))).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
   test("Story 020 wallpaper uses a different poster than Story 001 when both are published", async ({
