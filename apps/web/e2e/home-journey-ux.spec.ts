@@ -1,15 +1,18 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Home journey UX", () => {
-  test("hero shows device-aware CTA (Begin with Story 001 when no progress)", async ({ page }) => {
+  test("hero shows device-aware CTA and journey chip", async ({ page }) => {
     await page.goto("/");
     const ctas = page.getByTestId("home-story-primary-ctas");
     await expect(ctas.getByRole("link", { name: /Begin with Story 001/i })).toBeVisible();
     await expect(ctas.getByRole("link", { name: /Browse all stories/i })).toBeVisible();
     const primaryLinks = ctas.locator("a");
     expect(await primaryLinks.count()).toBeLessThanOrEqual(2);
-    await expect(page.getByRole("link", { name: /How the weekly journey works/i })).toBeVisible();
+    await expect(page.getByTestId("hero-journey-chip")).toBeVisible();
+    await expect(page.getByRole("link", { name: /See the five-step family journey/i })).toBeVisible();
+    await expect(page.getByText(/Latest published/i)).toHaveCount(0);
     await expect(page.getByRole("heading", { name: /Five gentle steps each week/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Continue the Krishna Book journey/i })).toBeVisible();
   });
 
   test("Continue CTA appears after visiting a story", async ({ page }) => {
@@ -29,6 +32,14 @@ test.describe("Home journey UX", () => {
     await expect(ctas.getByRole("link", { name: /Continue Story 001/i })).toBeVisible();
   });
 
+  test("audience pathway cards replace pills", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Little Listeners" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Young Explorers" })).toBeVisible();
+    await expect(page.getByText("Pathway growing").first()).toBeVisible();
+    await expect(page.locator(".audience-chips")).toHaveCount(0);
+  });
+
   test("how-to-use page renders five stages and sitemap entry", async ({ page, request }) => {
     await page.goto("/library/krishna-book/how-to-use");
     await expect(page.getByRole("heading", { name: /How to use Krishna Book stories/i })).toBeVisible();
@@ -41,5 +52,39 @@ test.describe("Home journey UX", () => {
     expect(sitemap.ok()).toBeTruthy();
     const body = await sitemap.text();
     expect(body).toContain("/library/krishna-book/how-to-use");
+  });
+});
+
+test.describe("Post-v4 navigation and footer", () => {
+  test("Library two-panel menu opens and switches categories", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Library", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Books & Stories" })).toBeVisible();
+    await page.getByRole("button", { name: "Prayer & Practice" }).click();
+    await expect(page.getByRole("link", { name: /Prayers & Mantras/i })).toBeVisible();
+    await expect(page.getByText("Planned").first()).toBeVisible();
+  });
+
+  test("story sidebar how-to button has high-contrast styles", async ({ page }) => {
+    await page.goto("/stories/001");
+    const button = page.locator(".sidebar-how-to");
+    await expect(button).toBeVisible();
+    const color = await button.evaluate((el) => getComputedStyle(el).color);
+    const background = await button.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(color).not.toBe("rgba(0, 0, 0, 0)");
+    expect(background).not.toMatch(/rgba\(0,\s*0,\s*0,\s*0\)/);
+    await expect(page.getByRole("link", { name: /How to use these stories/i })).toHaveCount(1);
+  });
+
+  test("compact footer trust links and version control", async ({ page }) => {
+    await page.goto("/");
+    const footer = page.locator("footer.site-footer");
+    await expect(footer.getByRole("link", { name: "About" })).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Copyright" })).toBeVisible();
+    await expect(footer.getByText(/Svarna Gauranga Das \(Swapnil Patil\)/)).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Home" })).toHaveCount(0);
+    await footer.locator("summary", { hasText: "Version" }).click();
+    await expect(footer.getByText("Content")).toBeVisible();
   });
 });
