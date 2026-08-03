@@ -38,10 +38,12 @@ logger = logging.getLogger(__name__)
 SAMPLE_MIN_SECONDS = 45.0
 SAMPLE_MAX_SECONDS = 60.0
 # Bedtime WPM band used to size the excerpt (~50s target).
+# Provider pace varies (OpenAI tts-1-hd often ~180–210 WPM; Renee slower).
+# Start mid-band and let one duration retry rescale from measured WPM.
 _TARGET_SAMPLE_SECONDS = 52.0
-_BEDTIME_WPM = 130.0
+_BEDTIME_WPM = 160.0
 _WORDS_PER_SECOND = _BEDTIME_WPM / 60.0
-_TARGET_WORDS = int(_TARGET_SAMPLE_SECONDS * _WORDS_PER_SECOND)  # ~112
+_TARGET_WORDS = int(_TARGET_SAMPLE_SECONDS * _WORDS_PER_SECOND)  # ~138
 _MAX_SAMPLE_RETRIES = 1  # one initial + one corrected retry
 
 
@@ -96,27 +98,51 @@ def build_sample_excerpt(
     narration_text: str,
     *,
     target_words: int = _TARGET_WORDS,
-    min_words: int = 90,
-    max_words: int = 140,
+    min_words: int = 100,
+    max_words: int = 180,
 ) -> str:
     """Build a representative 45–60s excerpt from canonical narration.
 
     Prefer opening narration, include at least one likely name token, ordinary
     descriptive sentence, dialogue when present, and sentence/paragraph transitions.
+    When punctuation is sparse (common after TTS sanitize), hard-cap by words so
+    the sample cannot become a full-story read.
     """
     text = (narration_text or "").strip()
     if not text:
         raise SampleFirstPipelineError("Cannot build sample excerpt from empty narration text.")
 
-    # Split into paragraphs then sentences for controlled inclusion.
-    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
-    if not paragraphs:
-        paragraphs = [text]
+    # Clamp bounds even if callers pass extreme values during retry.
+    min_words = max(40, int(min_words))
+    max_words = max(min_words, int(max_words))
+    target_words = min(max_words, max(min_words, int(target_words)))
 
+    paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()] or [text]
     sentences: list[str] = []
     for para in paragraphs:
         parts = re.split(r"(?<=[.!?])\s+", para.strip())
-        sentences.extend(s.strip() for s in parts if s.strip())
+        for part in parts:
+            part = part.strip()
+            if not part:
+                continue
+            if len(part.split()) <= max_words:
+                sentences.append(part)
+                continue
+            # Soft clause splits for long unpunctuated blocks.
+            clauses = re.split(r"(?<=[,;:])\s+", part)
+            buf: list[str] = []
+            for clause in clauses:
+                clause = clause.strip()
+                if not clause:
+                    continue
+                tentative = (" ".join(buf + [clause])).strip()
+                if buf and len(tentative.split()) > max(35, max_words // 2):
+                    sentences.append(" ".join(buf).strip())
+                    buf = [clause]
+                else:
+                    buf.append(clause)
+            if buf:
+                sentences.append(" ".join(buf).strip())
     if not sentences:
         sentences = [text]
 
@@ -131,29 +157,34 @@ def build_sample_excerpt(
     )
 
     for idx, sentence in enumerate(sentences):
+        next_words = len(sentence.split())
+        if selected and word_count + next_words > max_words and word_count >= min_words:
+            break
         selected.append(sentence)
-        word_count += len(sentence.split())
+        word_count += next_words
         if '"' in sentence or "'" in sentence or "“" in sentence or "”" in sentence:
             has_dialogue = True
         if name_hint.search(sentence):
             has_name = True
-        # Ensure we cross at least one paragraph boundary when available.
         if word_count >= min_words and idx > 0:
-            # Prefer including a bit more until target if dialogue/name still missing.
             if (has_dialogue and has_name) or word_count >= target_words:
                 break
         if word_count >= max_words:
             break
 
-    # If dialogue exists later in the story and we missed it, append one dialogue sentence.
     if not has_dialogue:
         for sentence in sentences[len(selected) :]:
-            if '"' in sentence or "“" in sentence:
+            if ('"' in sentence or "“" in sentence) and word_count + len(sentence.split()) <= max_words + 15:
                 selected.append(sentence)
-                has_dialogue = True
                 break
 
     excerpt = " ".join(selected).strip()
+    words = excerpt.split()
+    if len(words) > max_words:
+        excerpt = " ".join(words[:max_words]).rstrip(",;:") + "."
+    if len(excerpt.split()) < 40:
+        words = text.split()
+        excerpt = " ".join(words[: max(min_words, 40)]).rstrip(",;:") + "."
     if len(excerpt.split()) < 40:
         raise SampleFirstPipelineError(
             f"Sample excerpt too short ({len(excerpt.split())} words); narration may be incomplete."
@@ -337,12 +368,23 @@ def run_sample_first(
         duration_defect = any("duration" in r for r in qa.reasons)
         if allow_one_retry and retry_count < _MAX_SAMPLE_RETRIES and duration_defect:
             retry_count += 1
-            words = len(excerpt.split())
-            if any("< 45" in r or "< 45.0" in r or " < 45" in r for r in qa.reasons):
-                excerpt = build_sample_excerpt(prepared, target_words=min(140, words + 25), min_words=words + 10)
-            else:
-                excerpt = build_sample_excerpt(prepared, target_words=max(90, words - 20), max_words=max(100, words - 10))
-            logger.warning("Sample QA failed (%s); retrying once with adjusted excerpt.", qa.detail)
+            words = max(1, len(excerpt.split()))
+            measured = max(1.0, float(qa.duration_seconds or 1.0))
+            # Scale word count toward the midpoint of the 45–60s window.
+            scale = _TARGET_SAMPLE_SECONDS / measured
+            new_target = int(max(60, min(200, round(words * scale))))
+            excerpt = build_sample_excerpt(
+                prepared,
+                target_words=new_target,
+                min_words=max(50, new_target - 25),
+                max_words=min(220, new_target + 25),
+            )
+            logger.warning(
+                "Sample QA failed (%s); retrying once with adjusted excerpt (%s -> %s words).",
+                qa.detail,
+                words,
+                len(excerpt.split()),
+            )
             continue
         raise SampleFirstPipelineError(
             "Sample QA FAILED — full TTS blocked: " + (qa.detail or "; ".join(qa.reasons))
