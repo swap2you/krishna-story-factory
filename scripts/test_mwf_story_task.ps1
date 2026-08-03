@@ -23,13 +23,17 @@ if ($Runner -notmatch 'WHATSAPP_SEND_ENABLED\s*=\s*"false"') { $Failures += "Wha
 if ($Runner -notmatch 'TELEGRAM_SEND_ENABLED\s*=\s*"false"') { $Failures += "Telegram is not disabled" }
 if ($Runner -notmatch 'GOOGLE_DRIVE_UPLOAD_ENABLED\s*=\s*"true"') { $Failures += "Drive upload is not enabled for production" }
 
-# Installer source expectations (must fully reproduce accepted task)
+# Installer source expectations — safe MWF: 10:00 only, no noon loop, no catch-up.
 if ($Installer -notmatch 'MultipleInstances IgnoreNew') { $Failures += "overlap prevention is missing" }
-if ($Installer -notmatch 'RestartCount 2' -or $Installer -notmatch 'Minutes 30') { $Failures += "retry policy is incorrect" }
+if ($Installer -notmatch 'RestartCount 0') { $Failures += "RestartCount must be 0 (no paid auto-retry loop)" }
 if ($Installer -notmatch 'PrimaryTime = "10:00"') { $Failures += "primary 10:00 schedule missing" }
-if ($Installer -notmatch 'BackupTime = "12:00"') { $Failures += "noon backup schedule missing" }
+if ($Installer -match 'BackupTime') { $Failures += "noon BackupTime must be removed (no 12:00 retry loop)" }
+if ($Installer -match '-At \$BackupTime' -or $Installer -match '12:00') {
+    $Failures += "installer must not schedule 12:00 backup triggers"
+}
 if ($Installer -notmatch 'Hours 4' -and $Installer -notmatch 'PT4H') { $Failures += "installer must set ExecutionTimeLimit to 4 hours (PT4H)" }
-if ($Installer -notmatch 'StartWhenAvailable = \$true') { $Failures += "StartWhenAvailable must be true in installer source" }
+if ($Installer -notmatch 'StartWhenAvailable = \$false') { $Failures += "StartWhenAvailable must be false (no immediate catch-up)" }
+if ($Installer -match 'StartWhenAvailable = \$true') { $Failures += "StartWhenAvailable must not be true" }
 if ($Installer -notmatch 'StopOnIdleEnd = \$false' -and $Installer -notmatch 'DontStopOnIdleEnd') {
     $Failures += "StopOnIdleEnd must be false (DontStopOnIdleEnd / IdleSettings)"
 }
@@ -59,8 +63,8 @@ if (-not $StaticOnly) {
     }
 
     if ($Task.Settings.MultipleInstances -ne "IgnoreNew") { $Failures += "registered task permits overlap" }
-    if ($Task.Settings.StartWhenAvailable -ne $true) {
-        $Failures += "StartWhenAvailable must be True (saw: $($Task.Settings.StartWhenAvailable))"
+    if ($Task.Settings.StartWhenAvailable -ne $false) {
+        $Failures += "StartWhenAvailable must be False (saw: $($Task.Settings.StartWhenAvailable))"
     }
     if ($Task.Settings.WakeToRun -eq $true) { $Failures += "WakeToRun must not be True" }
 
@@ -80,10 +84,10 @@ if (-not $StaticOnly) {
     if ($stopIdle -ne $false) { $Failures += "StopOnIdleEnd must be false (saw: $stopIdle)" }
 
     $restart = $Task.Settings.RestartCount
-    if ([int]$restart -ne 2) { $Failures += "RestartCount must be 2 (saw: $restart)" }
+    if ([int]$restart -ne 0) { $Failures += "RestartCount must be 0 (saw: $restart)" }
 
     $triggers = @($Task.Triggers)
-    if ($triggers.Count -ne 6) { $Failures += "expected 6 triggers; saw $($triggers.Count)" }
+    if ($triggers.Count -ne 3) { $Failures += "expected 3 triggers (Mon/Wed/Fri 10:00); saw $($triggers.Count)" }
 
     $dayNames = @{}
     $times = New-Object System.Collections.Generic.HashSet[string]
@@ -122,9 +126,8 @@ if (-not $StaticOnly) {
     foreach ($need in @("Monday", "Wednesday", "Friday")) {
         if (-not $dayNames.ContainsKey($need)) { $Failures += "missing weekly day: $need" }
     }
-    foreach ($needTime in @("10:00", "12:00")) {
-        if (-not $times.Contains($needTime)) { $Failures += "missing trigger time: $needTime (saw: $($times -join ', '))" }
-    }
+    if (-not $times.Contains("10:00")) { $Failures += "missing trigger time: 10:00 (saw: $($times -join ', '))" }
+    if ($times.Contains("12:00")) { $Failures += "12:00 backup trigger must not be registered" }
     if ($Task.State -ne "Disabled" -and -not $Info.NextRunTime) { $Failures += "next run time is missing" }
     $legacy = Get-ScheduledTask -TaskName "Krishna Story Factory Daily" -ErrorAction SilentlyContinue
     if ($legacy -and $legacy.State -eq "Ready") {
