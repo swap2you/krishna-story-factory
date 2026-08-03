@@ -20,11 +20,12 @@ export function CollectionCard({
   const resolvedStatus = status ?? getCollectionStatus(slug);
   const cover = collectionCoverPath(slug) ?? collectionCoverPath("krishna-book");
   const art = getCollectionArt(slug);
+  // Focal positions via CSS vars only — avoid inline objectPosition so mobile
+  // media queries can apply --collection-focal-mobile.
   const mediaStyle = {
     ["--collection-focal" as string]: art.objectPositionDesktop,
     ["--collection-focal-mobile" as string]:
       art.objectPositionMobile ?? art.objectPositionDesktop,
-    objectPosition: art.objectPositionDesktop,
   } as CSSProperties;
   return (
     <Link
