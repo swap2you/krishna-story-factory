@@ -70,10 +70,13 @@ test.describe("Post-v4 navigation and footer", () => {
     await page.goto("/stories/001");
     const button = page.locator(".sidebar-how-to");
     await expect(button).toBeVisible();
-    const color = await button.evaluate((el) => getComputedStyle(el).color);
-    const background = await button.evaluate((el) => getComputedStyle(el).backgroundColor);
-    expect(color).not.toBe("rgba(0, 0, 0, 0)");
-    expect(background).not.toMatch(/rgba\(0,\s*0,\s*0,\s*0\)/);
+    const styles = await button.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { color: cs.color, backgroundImage: cs.backgroundImage, minHeight: cs.minHeight };
+    });
+    expect(styles.color).toMatch(/rgb\(\s*6,\s*22,\s*40\s*\)/);
+    expect(styles.backgroundImage).toMatch(/linear-gradient/i);
+    expect(Number.parseFloat(styles.minHeight)).toBeGreaterThanOrEqual(44);
     await expect(page.getByRole("link", { name: /How to use these stories/i })).toHaveCount(1);
   });
 
@@ -85,6 +88,7 @@ test.describe("Post-v4 navigation and footer", () => {
     await expect(footer.getByText(/Svarna Gauranga Das \(Swapnil Patil\)/)).toBeVisible();
     await expect(footer.getByRole("link", { name: "Home" })).toHaveCount(0);
     await footer.locator("summary", { hasText: "Version" }).click();
-    await expect(footer.getByText("Content")).toBeVisible();
+    await expect(footer.locator("dt", { hasText: /^Content$/ })).toBeVisible();
+    await expect(footer.locator("dd").filter({ hasText: /bhava-content|001-020|v4|unknown/i }).first()).toBeVisible();
   });
 });

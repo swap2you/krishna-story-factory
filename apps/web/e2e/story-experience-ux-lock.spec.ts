@@ -90,7 +90,15 @@ test.describe("Story experience UX lock", () => {
       { timeout: 8_000 },
     );
 
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.evaluate(() => {
+      const player =
+        document.querySelector(".audio-player") ||
+        document.querySelector("[data-audio-player]");
+      if (player) {
+        player.scrollIntoView({ block: "end" });
+      }
+      window.scrollBy(0, Math.max(window.innerHeight, 900));
+    });
     const miniPlayer = page.locator(".mini-player--floating");
     await expect(miniPlayer).toBeVisible({ timeout: 8_000 });
     await expect(miniPlayer.getByRole("slider", { name: "Seek narration" })).toBeVisible();
