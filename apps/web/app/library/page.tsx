@@ -4,6 +4,7 @@ import { CollectionCard } from "@/components/collection-card";
 import { getCollections, getStories, searchStories } from "@/lib/catalog";
 import { StoryGrid } from "@/components/story-grid";
 import { brandSrc, brandSrcSet } from "@/lib/brand-assets";
+import { getCollectionStatus } from "@/lib/collection-readiness";
 
 export const dynamic = "force-dynamic";
 
@@ -25,73 +26,84 @@ export default async function LibraryPage({
       slug: "krishna-book",
       title: collections[0]?.title ?? "Krishna Book Bedtime Stories",
       description: collections[0]?.description ?? `${stories.length || 7} stories indexed and ready.`,
-      status: "active" as const,
+      status: getCollectionStatus("krishna-book"),
     },
     {
       href: "/library/srimad-bhagavatam",
       slug: "srimad-bhagavatam",
       title: "Śrīmad-Bhāgavatam",
       description: "Cantos 1–12 — coming soon with editorial care.",
+      status: getCollectionStatus("srimad-bhagavatam"),
     },
     {
       href: "/library/bhagavad-gita",
       slug: "bhagavad-gita",
       title: "Bhagavad-gītā",
       description: "Verse-by-verse stories for young listeners.",
+      status: getCollectionStatus("bhagavad-gita"),
     },
     {
       href: "/library/ramayana",
       slug: "ramayana",
       title: "Rāmāyaṇa",
       description: "The journey of Lord Rāma retold for families.",
+      status: getCollectionStatus("ramayana"),
     },
     {
       href: "/library/rama-katha",
       slug: "rama-katha",
       title: "Rāma-kathā",
       description: "Supplementary Rāma narrations from Purāṇic sources.",
+      status: getCollectionStatus("rama-katha"),
     },
     {
       href: "/library/ramacaritamanasa",
       slug: "ramacaritamanasa",
       title: "Rāmacaritamānasa",
       description: "Tulasīdāsa's retelling, adapted for children.",
+      status: getCollectionStatus("ramacaritamanasa"),
     },
     {
       href: "/library/dasavatara",
       slug: "dasavatara",
       title: "Daśāvatāra",
       description: "Ten avatāras of Lord Viṣṇu in story form.",
+      status: getCollectionStatus("dasavatara"),
     },
     {
       href: "/library/caitanya-caritamrta",
       slug: "caitanya-caritamrta",
       title: "Caitanya-caritāmṛta",
       description: "The life and teachings of Śrī Caitanya Mahāprabhu.",
+      status: getCollectionStatus("caitanya-caritamrta"),
     },
     {
       href: "/library/caitanya-bhagavata",
       slug: "caitanya-bhagavata",
       title: "Caitanya-bhāgavata",
       description: "Vṛndāvana Dāsa Ṭhākura's account for young readers.",
+      status: getCollectionStatus("caitanya-bhagavata"),
     },
     {
       href: "/library/prayers-mantras",
       slug: "prayers-mantras",
       title: "Prayers & Mantras",
       description: "Morning prayers, key ślokas, and daily mantras.",
+      status: getCollectionStatus("prayers-mantras"),
     },
     {
       href: "/library/teacher-resources",
       slug: "teacher-resources",
       title: "Teacher Resources",
       description: "Lesson outlines and classroom helpers.",
+      status: getCollectionStatus("teacher-resources"),
     },
     {
       href: "/knowledge",
       slug: "knowledge",
       title: "Bhāva Knowledge Library",
       description: "Curated articles, Q&A, and practice pathways.",
+      status: getCollectionStatus("knowledge"),
     },
   ];
 
