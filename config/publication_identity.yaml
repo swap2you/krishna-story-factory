@@ -6,12 +6,16 @@ schema_version: "1.0"
 
 copyright_owner: "Svarna Gauranga Das"
 public_author_name: "Svarna Gauranga Das"
+# Concise public credit line for printables and website footer.
+public_display_credit: "Svarna Gauranga Das (Swapnil Patil)"
 publisher: "Dauji Publication"
 publisher_role: "publishing imprint"
 project: "Bhāva"
 location: "Harrisburg, Pennsylvania, USA"
+# Operator contact for Rights page only — never embed in public printables.
 contact_email: "svarnagaurangdas@gmail.com"
 phone: null
+embed_contact_in_printables: false
 
 # Website copyright year for the portal itself (not a story first-publication date).
 website_copyright_year: 2026

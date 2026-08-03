@@ -18,12 +18,16 @@ export function presentShloka(verse: Verse) {
     : reviewStatus === "reviewed"
       ? "Reviewed companion reference"
       : "Companion reference";
+  const chapterReferenceBadge =
+    !notApplicable && (!reference || !/\d+\.\d+\.\d+/.test(reference) || reviewStatus !== "reviewed");
   return {
     stateLabel,
     notApplicable,
     reference,
     explanation,
     url,
+    vedabaseLabel: url ? "Read this passage on Vedabase" : "",
+    chapterReferenceBadge,
     showSanskrit: Boolean(sanskrit),
     showTransliteration: Boolean(transliteration),
     showTranslation: Boolean(translation),
@@ -45,8 +49,20 @@ describe("Śloka panel presentation (D-01)", () => {
     expect(view.reference).toContain("SB 10.7");
     expect(view.explanation).toMatch(/whirlwind/i);
     expect(view.url).toContain("vedabase.io");
+    expect(view.vedabaseLabel).toBe("Read this passage on Vedabase");
+    expect(view.chapterReferenceBadge).toBe(true);
     expect(view.showSanskrit).toBe(false);
     expect(view.emDashFiller).toBe(false);
+  });
+
+  it("exact verse references do not show Chapter reference badge when reviewed", () => {
+    const view = presentShloka({
+      reference: "SB 10.12.1–10.12.44",
+      url: "https://vedabase.io/en/library/sb/10/12/",
+      review_status: "reviewed",
+      child_explanation: "Aghāsura pastime.",
+    });
+    expect(view.chapterReferenceBadge).toBe(false);
   });
 
   it("presents not_applicable honestly and never as REVIEWED", () => {

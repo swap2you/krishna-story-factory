@@ -77,6 +77,13 @@ def visual_brief_from_dict(data: dict[str, Any]) -> VisualBrief:
         poster_focus=str(data.get("poster_focus", "")),
         must_include=[str(x) for x in data.get("must_include", [])],
         must_avoid=[str(x) for x in data.get("must_avoid", [])],
+        tilaka_requirement=str(data.get("tilaka_requirement", "")),
+        tilaka_style=str(data.get("tilaka_style", "")),
+        tulasi_beads_requirement=str(data.get("tulasi_beads_requirement", "")),
+        character_devotional_identity=str(data.get("character_devotional_identity", "")),
+        must_show=[str(x) for x in data.get("must_show", [])],
+        cultural_context=str(data.get("cultural_context", "")),
+        reviewer_status=str(data.get("reviewer_status", "pending_review") or "pending_review"),
     )
 
 

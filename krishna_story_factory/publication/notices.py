@@ -16,14 +16,18 @@ def standard_visual_notice(
 ) -> str:
     ident = identity or get_identity()
     y = _year_prefix(year)
-    return (
-        f"Copyright © {y}{ident.copyright_owner}\n"
-        "All rights reserved.\n\n"
-        f"Published by {ident.publisher}\n"
-        f"A {ident.project} Project publication\n\n"
-        f"{ident.location}\n"
-        f"Contact: {ident.contact_email}"
-    )
+    lines = [
+        f"Copyright © {y}{ident.copyright_owner}",
+        "All rights reserved.",
+        "",
+        f"Published by {ident.publisher}",
+        f"A {ident.project} Project publication",
+        "",
+        ident.location,
+    ]
+    if ident.embed_contact_in_printables and ident.contact_email:
+        lines.append(f"Contact: {ident.contact_email}")
+    return "\n".join(lines)
 
 
 def compact_footer(
@@ -34,9 +38,15 @@ def compact_footer(
     ident = identity or get_identity()
     y = _year_prefix(year)
     return (
-        f"© {y}{ident.copyright_owner} · {ident.publisher} · "
-        f"A {ident.project} Project publication"
+        f"© {y}{ident.public_display_credit} · {ident.publisher} · {ident.project}"
     ).replace("©  ", "© ").strip()
+
+
+def website_footer_lines(*, identity: PublicationIdentity | None = None) -> list[str]:
+    ident = identity or get_identity()
+    return [
+        f"© {ident.website_copyright_year} {ident.public_display_credit} · {ident.publisher} · {ident.project}",
+    ]
 
 
 def image_credit_line(
@@ -87,14 +97,6 @@ def draft_watermark(*, identity: PublicationIdentity | None = None, year: int | 
         f"DRAFT — NOT FOR DISTRIBUTION\n"
         f"Copyright © {y}{ident.copyright_owner}".replace("©  ", "© ").strip()
     )
-
-
-def website_footer_lines(*, identity: PublicationIdentity | None = None) -> list[str]:
-    ident = identity or get_identity()
-    return [
-        f"© {ident.website_copyright_year} {ident.copyright_owner}. All rights reserved.",
-        f"Published by {ident.publisher} · A {ident.project} Project publication",
-    ]
 
 
 def rights_and_credits_markdown(

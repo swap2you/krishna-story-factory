@@ -35,7 +35,10 @@ def test_no_year_without_reviewed_first_publication() -> None:
     text = compact_footer(year=None)
     assert "© 20" not in text
     assert "Svarna Gauranga Das" in text
+    assert "Swapnil Patil" in text
     assert "Dauji Publication" in text
+    assert "Bhāva" in text
+    assert "A Bhāva Project publication" not in text
 
 
 def test_work_manifest_validation_and_sound_recording_gate() -> None:
@@ -80,8 +83,10 @@ def test_sitemap_includes_twenty_stories_rights_excludes_021() -> None:
 
 def test_website_footer_and_rights_page_exist() -> None:
     footer = (ROOT / "apps" / "web" / "components" / "site-footer.tsx").read_text(encoding="utf-8")
-    assert "© 2026 Svarna Gauranga Das" in footer
+    assert "© 2026 Svarna Gauranga Das (Swapnil Patil)" in footer
     assert "Dauji Publication" in footer
+    assert "Bhāva" in footer
+    assert "footer-version-details" in footer
     assert "/rights" in footer
     rights = ROOT / "apps" / "web" / "app" / "rights" / "page.tsx"
     assert rights.is_file()

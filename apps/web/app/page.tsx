@@ -2,75 +2,25 @@ import Link from "next/link";
 import { CollectionCard } from "@/components/collection-card";
 import { loadStories } from "@/lib/catalog";
 import { StoryGrid } from "@/components/story-grid";
+import { ContinueJourney } from "@/components/continue-journey";
+import { ACTIVE_AREAS, GROWING_NEXT } from "@/lib/collection-readiness";
 
 export const dynamic = "force-dynamic";
 
 const audiences = [
-  { title: "Little Listeners", ages: "ages 5–7", body: "Gentle stories, simple coloring, and short listen-alongs." },
-  { title: "Young Explorers", ages: "ages 8–12", body: "Richer Krishna Book chapters, activities, and family discussion." },
-  { title: "Teen Seekers", ages: "ages 13–15", body: "Scripture pathways, questions, and honest coming-soon learning routes." },
-  { title: "Youth Leaders", ages: "ages 16–20", body: "Teacher-ready packs, preaching outlines, and leadership practice." },
-  { title: "Families & Educators", ages: "homes & classrooms", body: "Printables, Sunday School planning, and reviewed source notes." },
+  { title: "Little Listeners", ages: "5–7" },
+  { title: "Young Explorers", ages: "8–12" },
+  { title: "Teen Seekers", ages: "13–15" },
+  { title: "Youth Leaders", ages: "16–20" },
+  { title: "Families & Educators", ages: "homes & classrooms" },
 ];
 
-/** Core areas use Library collection-card pattern (art + dark scrim) — never white text on transparent cream. */
-const areas = [
-  {
-    href: "/library/krishna-book",
-    slug: "krishna-book",
-    title: "Krishna Book Stories",
-    description: "Published bedtime packages with audio and printables.",
-    status: "active" as const,
-  },
-  {
-    href: "/knowledge",
-    slug: "knowledge",
-    title: "Knowledge Library",
-    description: "Governed pathways, questions, and reviewed guides.",
-    status: "active" as const,
-  },
-  {
-    href: "/library/prayers-mantras",
-    slug: "prayers-mantras",
-    title: "Prayers & Ślokas",
-    description: "Public prayer and mantra learning spaces.",
-    status: "active" as const,
-  },
-  {
-    href: "/sunday-school",
-    slug: "sunday-school",
-    title: "Sunday School",
-    description: "Weekly planning structure for age groups.",
-    status: "planned" as const,
-  },
-  {
-    href: "/teachers",
-    slug: "teacher-resources",
-    title: "Teacher Resources",
-    description: "Class packs and classroom pathways.",
-    status: "planned" as const,
-  },
-  {
-    href: "/printables",
-    slug: "printables",
-    title: "Printables",
-    description: "Posters, coloring, and activity sheets from real packages.",
-    status: "active" as const,
-  },
-  {
-    href: "/prabhupada-vani",
-    slug: "prabhupada-vani",
-    title: "Prabhupāda Vāṇī",
-    description: "Source-governed taxonomy for future reviewed records.",
-    status: "planned" as const,
-  },
-  {
-    href: "/library",
-    slug: "devotee-lives",
-    title: "Devotee Lives",
-    description: "Bhaktamāla / lives of devotees — planned with care.",
-    status: "planned" as const,
-  },
+const journeySteps = [
+  { title: "Listen", body: "Bedtime narration with a calm pace." },
+  { title: "Read", body: "The same canonical story text." },
+  { title: "Create", body: "Coloring pages and activity sheets." },
+  { title: "Read the source", body: "Reviewed Krishna Book & Vedabase links." },
+  { title: "Reflect and share", body: "Family notes and gentle discussion." },
 ];
 
 export default async function Home() {
@@ -78,11 +28,11 @@ export default async function Home() {
   const stories = state.status === "ok" ? state.stories : [];
   const catalogUnavailable = state.status === "unavailable";
   const latest = stories.slice(-3).reverse();
-  const featured = stories.find((story) => story.story_no === "001") ?? stories.find((story) => story.poster_url) ?? stories[0];
-  const latestStory = stories[stories.length - 1];
+  const latestStory = stories[stories.length - 1] ?? null;
 
   return (
     <>
+      {/* ── Hero ────────────────────────────────────────────── */}
       <section className="hero hero--platform">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -99,81 +49,35 @@ export default async function Home() {
           <p className="brand-kicker brand-display">Bhāva</p>
           <h1>Timeless devotion for growing hearts and minds.</h1>
           <p className="hero-copy-text">
-            Start with Krishna Book bedtime stories — listen, read, color, and print — while Knowledge and classroom libraries grow with honest planned labels.
+            One calm weekly journey: listen tonight, read and create tomorrow, then return to the reviewed source.
           </p>
-          <div className="actions" data-testid="home-story-primary-ctas">
-            <Link className="bhava-button bhava-button--accent" href="/library/krishna-book">
-              Start the Stories
-            </Link>
-            {latestStory ? (
-              <Link className="bhava-button bhava-button--quiet" href={`/stories/${latestStory.story_no}`}>
-                Listen to the Latest Story
-              </Link>
-            ) : null}
-            <Link className="bhava-button bhava-button--quiet" href="/printables">
-              Browse Activities
-            </Link>
-            <Link className="bhava-button bhava-button--quiet" href="/printables">
-              Print Coloring &amp; Worksheets
-            </Link>
-          </div>
-          <div className="actions actions--secondary">
-            <Link className="bhava-button bhava-button--quiet" href="/library">Explore the Library</Link>
-            <Link className="bhava-button bhava-button--quiet" href="/knowledge">Browse Knowledge</Link>
-            <Link className="bhava-button bhava-button--quiet" href="/learning/children-youth">Start Learning</Link>
-          </div>
+          <ContinueJourney latestStory={latestStory} />
         </div>
       </section>
 
-      <section className="section">
+      {/* ── Five gentle steps ───────────────────────────────── */}
+      <section className="section how-bhava-works" aria-labelledby="how-bhava-works-heading">
         <div className="container">
-          <p className="eyebrow">Who Bhāva serves</p>
-          <h2 className="section-heading">Age-aware pathways without infantilizing anyone</h2>
-          <div className="audience-grid">
-            {audiences.map((item) => (
-              <article key={item.title} className="audience-card">
-                <h3>{item.title}</h3>
-                <p className="hint">{item.ages}</p>
-                <p>{item.body}</p>
-              </article>
+          <p className="eyebrow">How Bhāva works</p>
+          <h2 id="how-bhava-works-heading" className="section-heading">
+            Five gentle steps each week
+          </h2>
+          <ol className="journey-strip">
+            {journeySteps.map((step, index) => (
+              <li key={step.title} className="journey-strip-step">
+                <span className="journey-strip-num" aria-hidden="true">
+                  {index + 1}
+                </span>
+                <JourneyStepIcon step={index} />
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <p className="eyebrow">Core areas</p>
-          <h2 className="section-heading">A complete devotional learning platform</h2>
-          <div className="collection-grid" data-testid="home-core-areas">
-            {areas.map((card) => (
-              <CollectionCard key={card.href + card.title} {...card} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {featured ? (
-        <section className="section featured-story-section">
-          <div className="container featured-story">
-            <div>
-              <p className="eyebrow">Featured story</p>
-              <h2 className="section-heading">{featured.title}</h2>
-              <p className="section-lead">
-                Preserve the dramatic Krishna Book artwork as a featured release — not as the entire platform identity.
-              </p>
-              <Link className="bhava-button bhava-button--accent" href={`/stories/${featured.story_no}`}>
-                Open Story {featured.story_no}
-              </Link>
-            </div>
-            {featured.poster_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={featured.poster_url} alt={`${featured.title} story poster`} width={720} height={900} />
-            ) : null}
-          </div>
-        </section>
-      ) : null}
-
+      {/* ── Latest releases ─────────────────────────────────── */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <p className="eyebrow">Latest releases</p>
@@ -188,6 +92,108 @@ export default async function Home() {
           />
         </div>
       </section>
+
+      {/* ── Ready-now active areas ──────────────────────────── */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <p className="eyebrow">Explore Bhāva</p>
+          <h2 className="section-heading">Start with what is ready today</h2>
+          <div className="collection-grid" data-testid="home-core-areas">
+            {ACTIVE_AREAS.map((card) => (
+              <CollectionCard key={card.href + card.title} {...card} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Audience chips ──────────────────────────────────── */}
+      <section className="section audience-compact-section">
+        <div className="container">
+          <p className="eyebrow">Who Bhāva serves</p>
+          <h2 className="section-heading">Age-aware pathways without infantilizing anyone</h2>
+          <p className="section-lead">
+            Gentle stories for little listeners, richer chapters for explorers, and classroom tools for families and educators.
+          </p>
+          <ul className="audience-chips" aria-label="Audience pathways">
+            {audiences.map((item) => (
+              <li key={item.title}>
+                <span className="audience-chip">
+                  <strong>{item.title}</strong>
+                  <span className="hint">{item.ages}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ── Growing next (planned) ──────────────────────────── */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <details className="growing-next">
+            <summary>Growing next</summary>
+            <p className="hint">Honest planned destinations — not yet equally ready for every family.</p>
+            <div className="collection-grid collection-grid--quiet">
+              {GROWING_NEXT.map((card) => (
+                <CollectionCard key={card.href + card.title} {...card} />
+              ))}
+            </div>
+          </details>
+        </div>
+      </section>
     </>
   );
+}
+
+function JourneyStepIcon({ step }: { step: number }) {
+  const common = {
+    width: 56,
+    height: 56,
+    viewBox: "0 0 56 56",
+    fill: "none",
+    "aria-hidden": true as const,
+    className: "journey-strip-icon",
+  };
+  switch (step) {
+    case 0:
+      return (
+        <svg {...common}>
+          <circle cx="28" cy="28" r="22" stroke="#c47a2c" strokeWidth="2.2" strokeDasharray="4 3" />
+          <path d="M22 18v20l16-10-16-10z" fill="#e8b84a" stroke="#8a4b12" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
+      );
+    case 1:
+      return (
+        <svg {...common}>
+          <rect x="14" y="12" width="28" height="32" rx="4" stroke="#3f6d4f" strokeWidth="2.2" fill="#f7f1e4" />
+          <path d="M20 22h16M20 28h14M20 34h10" stroke="#8a6a3a" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    case 2:
+      return (
+        <svg {...common}>
+          <path d="M16 38l8-22 8 10 8-16" stroke="#c47a2c" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="40" cy="14" r="3.5" fill="#e8b84a" stroke="#8a4b12" strokeWidth="1.2" />
+        </svg>
+      );
+    case 3:
+      return (
+        <svg {...common}>
+          <path d="M18 14h20v28H18z" stroke="#12375e" strokeWidth="2.2" fill="#eef3f8" />
+          <path d="M22 22h12M22 28h10M22 34h8" stroke="#5a7a9a" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...common}>
+          <path
+            d="M28 40s-12-7.5-12-16a7 7 0 0 1 12-4 7 7 0 0 1 12 4c0 8.5-12 16-12 16z"
+            fill="#f3c9c0"
+            stroke="#a14d3a"
+            strokeWidth="2"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+  }
 }

@@ -9,7 +9,7 @@ on:
       content_release_tag:
         description: Approved public content release
         required: true
-        default: bhava-content-001-020-v2
+        default: bhava-content-001-020-v4
 
 permissions:
   contents: read
@@ -53,7 +53,11 @@ jobs:
         env:
           RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
         run: |
-          docker build -f deploy/ionos/Dockerfile.web -t bhava-web:${RELEASE_SHA} .
+          docker build -f deploy/ionos/Dockerfile.web \
+            --build-arg RELEASE_SHA=${RELEASE_SHA} \
+            --build-arg BHAVA_WEB_VERSION=001-020-v4 \
+            --build-arg BHAVA_CONTENT_RELEASE="${{ inputs.content_release_tag }}" \
+            -t bhava-web:${RELEASE_SHA} .
           docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${RELEASE_SHA} .
           docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} \
             | gzip -9 > bhava-images-${RELEASE_SHA}.tar.gz

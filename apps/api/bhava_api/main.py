@@ -4,7 +4,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
@@ -226,20 +225,15 @@ def create_app() -> FastAPI:
     @app.get("/api/v1/version", include_in_schema=False)
     def version() -> dict[str, str | int]:
         short = settings.release_sha[:7] if settings.release_sha else "unknown"
-        content_tag = (
-            os.getenv("BHAVA_CONTENT_RELEASE", "").strip()
-            or os.getenv("BHAVA_CONTENT_TAG", "").strip()
-            or ""
-        )
         payload: dict[str, str | int] = {
             "service": "bhava-api",
+            "web_version": settings.web_version,
             "release_sha": settings.release_sha,
             "short_sha": short,
+            "content_tag": settings.content_tag,
             "environment": settings.environment,
             "public_story_max": settings.public_story_max,
         }
-        if content_tag:
-            payload["content_tag"] = content_tag
         try:
             with SessionLocal() as session:
                 snap = catalog_snapshot(session, settings)

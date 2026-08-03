@@ -62,8 +62,10 @@ def test_version_endpoint_contains_safe_release(monkeypatch, tmp_path):
     monkeypatch.setenv("BHAVA_OUTPUT_ROOT", str(tmp_path / "output"))
     monkeypatch.setenv("BHAVA_CATALOG_DB", str(tmp_path / "catalog.sqlite"))
     monkeypatch.setenv("BHAVA_ALLOWED_HOSTS", "testserver")
-    monkeypatch.setenv("BHAVA_RELEASE_SHA", "abc123")
+    monkeypatch.setenv("BHAVA_RELEASE_SHA", "abc123def456")
     monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "10")
+    monkeypatch.setenv("BHAVA_WEB_VERSION", "001-020-v3")
+    monkeypatch.setenv("BHAVA_CONTENT_RELEASE", "bhava-content-001-020-v3")
 
     import bhava_api.main
 
@@ -71,18 +73,21 @@ def test_version_endpoint_contains_safe_release(monkeypatch, tmp_path):
     with TestClient(app) as client:
         response = client.get("/api/v1/version")
     assert response.status_code == 200
-    body = response.json()
-    assert body["service"] == "bhava-api"
-    assert body["release_sha"] == "abc123"
-    assert body["short_sha"] == "abc123"
-    assert body["environment"] == os.getenv("BHAVA_ENVIRONMENT", "development")
-    assert body["public_story_max"] == 10
-    assert "indexed_story_count" in body
-    assert "discovered_package_count" in body
-    # Safe diagnostics only — never expose filesystem/db paths.
-    dumped = json.dumps(body)
-    assert "/app/" not in dumped
-    assert "sqlite" not in dumped.lower()
+    payload = response.json()
+    assert payload["service"] == "bhava-api"
+    assert payload["web_version"] == "001-020-v3"
+    assert payload["release_sha"] == "abc123def456"
+    assert payload["short_sha"] == "abc123d"
+    assert payload["content_tag"] == "bhava-content-001-020-v3"
+    assert payload["environment"] == os.getenv("BHAVA_ENVIRONMENT", "development")
+    assert payload["public_story_max"] == 10
+    assert "indexed_story_count" in payload
+    assert "discovered_package_count" in payload
+    forbidden = {"password", "token", "secret", "hostname", "ssh", "key"}
+    blob = json.dumps(payload).lower()
+    assert not any(word in blob for word in forbidden)
+    assert "/app/" not in blob
+    assert "sqlite" not in blob
 
 
 def test_default_allowed_hosts_reject_unknown_origin(monkeypatch, tmp_path):

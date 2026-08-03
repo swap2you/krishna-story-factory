@@ -47,6 +47,14 @@ class VisualBrief:
     poster_focus: str = ""
     must_include: list[str] = field(default_factory=list)
     must_avoid: list[str] = field(default_factory=list)
+    # Future Story 021+ Vaiṣṇava iconography fields (see docs/visual/BHAVA_VAISNAVA_CHARACTER_AND_ICONOGRAPHY_STANDARD.md)
+    tilaka_requirement: str = ""
+    tilaka_style: str = ""
+    tulasi_beads_requirement: str = ""
+    character_devotional_identity: str = ""
+    must_show: list[str] = field(default_factory=list)
+    cultural_context: str = ""
+    reviewer_status: str = "pending_review"
 
     def validate(self, *, story_no: str | None = None) -> list[str]:
         errors: list[str] = []
@@ -71,6 +79,24 @@ class VisualBrief:
                     must_avoid=avoid,
                 )
             )
+            try:
+                story_num = int(str(story_no).strip())
+            except ValueError:
+                story_num = 0
+            if story_num >= 21:
+                show = [str(x).strip() for x in self.must_show if str(x).strip()]
+                if not show:
+                    errors.append("Visual brief must_show cannot be empty for Story 021+.")
+                if not str(self.tilaka_requirement).strip():
+                    errors.append("Visual brief tilaka_requirement required for Story 021+.")
+                if not str(self.character_devotional_identity).strip():
+                    errors.append("Visual brief character_devotional_identity required for Story 021+.")
+                allowed_status = {"draft", "pending_review", "approved", "defer"}
+                if self.reviewer_status not in allowed_status:
+                    errors.append(
+                        "Visual brief reviewer_status must be one of: "
+                        + ", ".join(sorted(allowed_status))
+                    )
         return errors
 
     def to_dict(self) -> dict[str, Any]:
@@ -115,6 +141,13 @@ class VisualBrief:
             "poster_focus": self.poster_focus,
             "must_include": self.must_include,
             "must_avoid": self.must_avoid,
+            "tilaka_requirement": self.tilaka_requirement,
+            "tilaka_style": self.tilaka_style,
+            "tulasi_beads_requirement": self.tulasi_beads_requirement,
+            "character_devotional_identity": self.character_devotional_identity,
+            "must_show": self.must_show,
+            "cultural_context": self.cultural_context,
+            "reviewer_status": self.reviewer_status,
         }
 
 
