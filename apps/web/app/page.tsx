@@ -1,19 +1,11 @@
-import Link from "next/link";
 import { CollectionCard } from "@/components/collection-card";
 import { loadStories } from "@/lib/catalog";
 import { StoryGrid } from "@/components/story-grid";
 import { ContinueJourney } from "@/components/continue-journey";
+import { AudiencePathwayGrid } from "@/components/audience-pathway-grid";
 import { ACTIVE_AREAS, GROWING_NEXT } from "@/lib/collection-readiness";
 
 export const dynamic = "force-dynamic";
-
-const audiences = [
-  { title: "Little Listeners", ages: "5–7" },
-  { title: "Young Explorers", ages: "8–12" },
-  { title: "Teen Seekers", ages: "13–15" },
-  { title: "Youth Leaders", ages: "16–20" },
-  { title: "Families & Educators", ages: "homes & classrooms" },
-];
 
 const journeySteps = [
   { title: "Listen", body: "Bedtime narration with a calm pace." },
@@ -28,11 +20,9 @@ export default async function Home() {
   const stories = state.status === "ok" ? state.stories : [];
   const catalogUnavailable = state.status === "unavailable";
   const latest = stories.slice(-3).reverse();
-  const latestStory = stories[stories.length - 1] ?? null;
 
   return (
     <>
-      {/* ── Hero ────────────────────────────────────────────── */}
       <section className="hero hero--platform">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -51,11 +41,10 @@ export default async function Home() {
           <p className="hero-copy-text">
             One calm weekly journey: listen tonight, read and create tomorrow, then return to the reviewed source.
           </p>
-          <ContinueJourney latestStory={latestStory} />
+          <ContinueJourney />
         </div>
       </section>
 
-      {/* ── Five gentle steps ───────────────────────────────── */}
       <section className="section how-bhava-works" aria-labelledby="how-bhava-works-heading">
         <div className="container">
           <p className="eyebrow">How Bhāva works</p>
@@ -77,23 +66,21 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Latest releases ─────────────────────────────────── */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <p className="eyebrow">Latest releases</p>
-          <h2 className="section-heading">Published stories appear automatically</h2>
+          <h2 className="section-heading">Continue the Krishna Book journey</h2>
           <p className="section-lead">
-            Curated, source-reviewed, age-aware packages. No child accounts. Unreviewed sacred text is never published.
+            Newly released stories for listening, reading, coloring, and family learning.
           </p>
           <StoryGrid
             stories={latest.length ? latest : stories}
             unavailable={catalogUnavailable}
-            empty="Published stories will appear here when the catalog is ready."
+            empty="Stories will appear here as they are released for families."
           />
         </div>
       </section>
 
-      {/* ── Ready-now active areas ──────────────────────────── */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <p className="eyebrow">Explore Bhāva</p>
@@ -106,28 +93,17 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Audience chips ──────────────────────────────────── */}
       <section className="section audience-compact-section">
         <div className="container">
           <p className="eyebrow">Who Bhāva serves</p>
           <h2 className="section-heading">Age-aware pathways without infantilizing anyone</h2>
           <p className="section-lead">
-            Gentle stories for little listeners, richer chapters for explorers, and classroom tools for families and educators.
+            Educational pathways inspired by traditional age-stage language—used only as learning labels, not as claims about transcendental qualities.
           </p>
-          <ul className="audience-chips" aria-label="Audience pathways">
-            {audiences.map((item) => (
-              <li key={item.title}>
-                <span className="audience-chip">
-                  <strong>{item.title}</strong>
-                  <span className="hint">{item.ages}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
+          <AudiencePathwayGrid />
         </div>
       </section>
 
-      {/* ── Growing next (planned) ──────────────────────────── */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <details className="growing-next">
