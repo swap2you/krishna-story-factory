@@ -116,7 +116,14 @@ export function SiteHeader() {
     window.addEventListener("keydown", onKey);
     window.addEventListener("pointerdown", onPointer);
     return () => { window.removeEventListener("keydown", onKey); window.removeEventListener("pointerdown", onPointer); };
-  }, [library, learning]);
+  }, [
+    library.open,
+    learning.open,
+    library.close,
+    learning.close,
+    library.ref,
+    learning.ref,
+  ]);
 
   const onKeyDown = (dd: ReturnType<typeof useDropdown>) => (e: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); dd.toggle(); }

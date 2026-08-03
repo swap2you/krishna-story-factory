@@ -24,7 +24,7 @@ def test_stories_002_004_have_distinct_non_overlapping_ranges() -> None:
         assert "SB 10.1" in ref, story
         assert EXACT_RANGE_RE.search(ref), story
         refs.append(ref)
-    assert refs[0] != refs[1] != refs[2]
+    assert len(set(refs)) == 3
     assert "27" in refs[0] and "55" in refs[0]
     assert "56" in refs[1] and "61" in refs[1]
     assert "62" in refs[2] and "69" in refs[2]

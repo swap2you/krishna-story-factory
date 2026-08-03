@@ -14,7 +14,16 @@ test.describe("Home journey UX", () => {
 
   test("Continue CTA appears after visiting a story", async ({ page }) => {
     await page.goto("/stories/001");
-    await page.waitForTimeout(500);
+    await page.waitForFunction(() => {
+      try {
+        const raw = localStorage.getItem("bhava:last-story");
+        if (!raw) return false;
+        const parsed = JSON.parse(raw) as { storyNo?: string };
+        return parsed?.storyNo === "001";
+      } catch {
+        return false;
+      }
+    });
     await page.goto("/");
     const ctas = page.getByTestId("home-story-primary-ctas");
     await expect(ctas.getByRole("link", { name: /Continue Story 001/i })).toBeVisible();
