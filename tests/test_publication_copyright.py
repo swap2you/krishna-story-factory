@@ -88,6 +88,8 @@ def test_website_footer_and_rights_page_exist() -> None:
     assert "Bhāva" in footer
     assert "footer-version-details" in footer
     assert "/rights" in footer
+    assert "Children & Youth" not in footer
+    assert "Sunday School" not in footer
     rights = ROOT / "apps" / "web" / "app" / "rights" / "page.tsx"
     assert rights.is_file()
     body = rights.read_text(encoding="utf-8")

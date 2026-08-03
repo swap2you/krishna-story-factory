@@ -5,17 +5,7 @@ import { useEffect, useState } from "react";
 
 const LAST_STORY_KEY = "bhava:last-story";
 
-type LatestStory = {
-  story_no: string;
-  title: string;
-  poster_url?: string | null;
-};
-
-export function ContinueJourney({
-  latestStory,
-}: {
-  latestStory: LatestStory | null;
-}) {
+export function ContinueJourney() {
   const [lastStoryNo, setLastStoryNo] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -49,8 +39,6 @@ export function ContinueJourney({
   }, []);
 
   const hasProgress = mounted && !!lastStoryNo;
-  const showLatest =
-    latestStory && latestStory.story_no !== lastStoryNo;
 
   return (
     <div className="continue-journey-inner">
@@ -74,25 +62,32 @@ export function ContinueJourney({
           </Link>
         )}
         <Link
-          className="bhava-button bhava-button--quiet"
+          className="bhava-button bhava-button--quiet hero-secondary-cta"
           href="/library/krishna-book"
         >
           Browse all stories
         </Link>
       </div>
-      <p className="hero-text-link">
-        <Link href="/library/krishna-book/how-to-use">
-          How the weekly journey works
-        </Link>
-      </p>
-      {showLatest ? (
-        <p className="continue-journey-latest hint">
-          Latest published:{" "}
-          <Link href={`/stories/${latestStory.story_no}`}>
-            Story {latestStory.story_no} &mdash; {latestStory.title}
-          </Link>
-        </p>
-      ) : null}
+      <Link
+        href="/library/krishna-book/how-to-use"
+        className="hero-journey-chip"
+        data-testid="hero-journey-chip"
+      >
+        <span className="hero-journey-chip__icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M5 7h14M5 12h10M5 17h7"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+            />
+            <circle cx="18" cy="17" r="3" fill="currentColor" opacity="0.85" />
+          </svg>
+        </span>
+        <span className="hero-journey-chip__label">
+          See the five-step family journey
+        </span>
+      </Link>
     </div>
   );
 }

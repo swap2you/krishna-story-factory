@@ -90,7 +90,31 @@ test.describe("Story experience UX lock", () => {
       { timeout: 8_000 },
     );
 
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.evaluate(() => {
+      if (!document.getElementById("bhava-e2e-scroll-spacer")) {
+        const spacer = document.createElement("div");
+        spacer.id = "bhava-e2e-scroll-spacer";
+        spacer.style.height = "220vh";
+        spacer.setAttribute("aria-hidden", "true");
+        document.body.appendChild(spacer);
+      }
+    });
+    await page.locator(".persistent-player").scrollIntoViewIfNeeded();
+    await page.evaluate(() => {
+      const player = document.querySelector(".persistent-player");
+      if (player) {
+        const top = player.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo(0, top + window.innerHeight + 80);
+      } else {
+        window.scrollBy(0, window.innerHeight * 2);
+      }
+    });
+    await page.waitForFunction(() => {
+      const el = document.querySelector(".persistent-player");
+      if (!el) return false;
+      const rect = el.getBoundingClientRect();
+      return rect.bottom < 0 || rect.top > window.innerHeight;
+    }, undefined, { timeout: 8_000 });
     const miniPlayer = page.locator(".mini-player--floating");
     await expect(miniPlayer).toBeVisible({ timeout: 8_000 });
     await expect(miniPlayer.getByRole("slider", { name: "Seek narration" })).toBeVisible();

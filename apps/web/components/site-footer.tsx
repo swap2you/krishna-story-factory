@@ -1,36 +1,12 @@
 import Link from "next/link";
 import { getBhavaReleaseMeta } from "@/lib/release-meta";
 
-const groups = [
-  {
-    title: "Explore",
-    links: [
-      ["Home", "/"],
-      ["Library", "/library"],
-      ["Krishna Book", "/library/krishna-book"],
-      ["Knowledge", "/knowledge"],
-      ["Printables", "/printables"],
-    ],
-  },
-  {
-    title: "Learning",
-    links: [
-      ["Children & Youth", "/learning/children-youth"],
-      ["Sunday School", "/sunday-school"],
-      ["For Teachers", "/teachers"],
-      ["For Preachers", "/preachers"],
-    ],
-  },
-  {
-    title: "Trust & Contact",
-    links: [
-      ["About", "/about"],
-      ["Contact", "/contact"],
-      ["Copyright & Permissions", "/rights"],
-      ["Privacy", "/privacy"],
-      ["Accessibility", "/accessibility"],
-    ],
-  },
+const trustLinks = [
+  ["About", "/about"],
+  ["Contact", "/contact"],
+  ["Copyright", "/rights"],
+  ["Privacy", "/privacy"],
+  ["Accessibility", "/accessibility"],
 ] as const;
 
 export function SiteFooter() {
@@ -42,26 +18,30 @@ export function SiteFooter() {
     "development";
 
   return (
-    <footer className="site-footer">
-      <div className="container footer-grid footer-grid--compact">
-        <div className="footer-brand">
+    <footer className="site-footer site-footer--bar">
+      <div className="container footer-bar">
+        <div className="footer-bar__brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            className="brand-logo-footer"
+            className="brand-logo-footer brand-logo-footer--compact"
             src="/brand/logo-dark-bg.webp"
-            alt="Bhāva"
-            width={160}
-            height={61}
+            alt=""
+            width={96}
+            height={36}
+            aria-hidden="true"
           />
-          <p className="brand-display footer-wordmark">Bhāva</p>
-          <p>
-            Timeless devotion for growing hearts and minds.
-          </p>
-          <p className="hint footer-copyright">
+          <p className="footer-copyright footer-copyright--bar">
             © 2026 Svarna Gauranga Das (Swapnil Patil) · Dauji Publication · Bhāva
           </p>
-          <details className="footer-version-details">
-            <summary className="hint footer-version-toggle">Version</summary>
+        </div>
+        <nav className="footer-bar__links" aria-label="Trust and contact">
+          {trustLinks.map(([label, href]) => (
+            <Link key={href} href={href}>
+              {label}
+            </Link>
+          ))}
+          <details className="footer-version-details footer-version-details--bar">
+            <summary className="footer-version-toggle">Version</summary>
             <dl className="footer-version-dl hint">
               <div>
                 <dt>Env</dt>
@@ -81,17 +61,7 @@ export function SiteFooter() {
               </div>
             </dl>
           </details>
-        </div>
-        {groups.map((group) => (
-          <div key={group.title} className="footer-group">
-            <h2>{group.title}</h2>
-            <div className="footer-links">
-              {group.links.map(([label, href]) => (
-                <Link key={href} href={href}>{label}</Link>
-              ))}
-            </div>
-          </div>
-        ))}
+        </nav>
       </div>
     </footer>
   );
