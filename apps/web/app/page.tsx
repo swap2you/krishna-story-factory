@@ -2,6 +2,8 @@ import Link from "next/link";
 import { CollectionCard } from "@/components/collection-card";
 import { loadStories } from "@/lib/catalog";
 import { StoryGrid } from "@/components/story-grid";
+import { ContinueJourney } from "@/components/continue-journey";
+import { ACTIVE_AREAS, GROWING_NEXT } from "@/lib/collection-readiness";
 
 export const dynamic = "force-dynamic";
 
@@ -21,82 +23,16 @@ const journeySteps = [
   { title: "Reflect and share", body: "Family notes and gentle discussion." },
 ];
 
-const activeAreas = [
-  {
-    href: "/library/krishna-book",
-    slug: "krishna-book",
-    title: "Krishna Book Stories",
-    description: "Published bedtime packages with audio and printables.",
-    status: "active" as const,
-  },
-  {
-    href: "/knowledge",
-    slug: "knowledge",
-    title: "Knowledge Library",
-    description: "Governed pathways, questions, and reviewed guides.",
-    status: "active" as const,
-  },
-  {
-    href: "/library/prayers-mantras",
-    slug: "prayers-mantras",
-    title: "Prayers & Ślokas",
-    description: "Public prayer and mantra learning spaces.",
-    status: "active" as const,
-  },
-  {
-    href: "/printables",
-    slug: "printables",
-    title: "Printables",
-    description: "Posters, coloring, and activity sheets from real packages.",
-    status: "active" as const,
-  },
-];
-
-const growingNext = [
-  {
-    href: "/sunday-school",
-    slug: "sunday-school",
-    title: "Sunday School",
-    description: "Weekly planning structure for age groups.",
-    status: "planned" as const,
-  },
-  {
-    href: "/teachers",
-    slug: "teacher-resources",
-    title: "Teacher Resources",
-    description: "Class packs and classroom pathways.",
-    status: "planned" as const,
-  },
-  {
-    href: "/prabhupada-vani",
-    slug: "prabhupada-vani",
-    title: "Prabhupāda Vāṇī",
-    description: "Source-governed taxonomy for future reviewed records.",
-    status: "planned" as const,
-  },
-  {
-    href: "/library",
-    slug: "devotee-lives",
-    title: "Devotee Lives",
-    description: "Bhaktamāla / lives of devotees — planned with care.",
-    status: "planned" as const,
-  },
-];
-
 export default async function Home() {
   const state = await loadStories();
   const stories = state.status === "ok" ? state.stories : [];
   const catalogUnavailable = state.status === "unavailable";
   const latest = stories.slice(-3).reverse();
-  const featured = stories.find((story) => story.story_no === "001") ?? stories.find((story) => story.poster_url) ?? stories[0];
-  const latestStory = stories[stories.length - 1];
-  const previousStory =
-    latestStory && stories.length > 1
-      ? stories[stories.length - 2]
-      : null;
+  const latestStory = stories[stories.length - 1] ?? null;
 
   return (
     <>
+      {/* ── Hero ────────────────────────────────────────────── */}
       <section className="hero hero--platform">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -115,64 +51,11 @@ export default async function Home() {
           <p className="hero-copy-text">
             One calm weekly journey: listen tonight, read and create tomorrow, then return to the reviewed source.
           </p>
-          <div className="actions" data-testid="home-story-primary-ctas">
-            <Link className="bhava-button bhava-button--accent" href="/library/krishna-book">
-              Begin the Krishna Story Journey
-            </Link>
-            {latestStory ? (
-              <Link className="bhava-button bhava-button--quiet" href={`/stories/${latestStory.story_no}`}>
-                Continue with Story {latestStory.story_no}
-              </Link>
-            ) : null}
-          </div>
-          <p className="hero-text-link">
-            <Link href="/library/krishna-book/how-to-use">See how the weekly story journey works</Link>
-          </p>
+          <ContinueJourney latestStory={latestStory} />
         </div>
       </section>
 
-      {latestStory ? (
-        <section className="section continue-journey" aria-labelledby="continue-journey-heading">
-          <div className="container continue-journey-card">
-            <div>
-              <p className="eyebrow">Continue the journey</p>
-              <h2 id="continue-journey-heading" className="section-heading">
-                Story {latestStory.story_no}: {latestStory.title}
-              </h2>
-              <p className="section-lead">
-                {previousStory
-                  ? `After Story ${previousStory.story_no}, keep the rhythm with tonight’s listen and tomorrow’s create time.`
-                  : "Keep a gentle weekly rhythm with listening, reading, and creating."}
-              </p>
-              <div className="actions">
-                <Link className="bhava-button bhava-button--accent" href={`/stories/${latestStory.story_no}`}>
-                  Listen tonight
-                </Link>
-                <Link
-                  className="bhava-button bhava-button--quiet"
-                  href={`/stories/${latestStory.story_no}`}
-                >
-                  Read and create tomorrow
-                </Link>
-                <Link className="bhava-button bhava-button--quiet" href="/library/krishna-book/how-to-use">
-                  How to use guide
-                </Link>
-              </div>
-            </div>
-            {latestStory.poster_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={latestStory.poster_url}
-                alt=""
-                width={480}
-                height={600}
-                className="continue-journey-poster"
-              />
-            ) : null}
-          </div>
-        </section>
-      ) : null}
-
+      {/* ── Five gentle steps ───────────────────────────────── */}
       <section className="section how-bhava-works" aria-labelledby="how-bhava-works-heading">
         <div className="container">
           <p className="eyebrow">How Bhāva works</p>
@@ -194,28 +77,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <p className="eyebrow">Explore Bhāva</p>
-          <h2 className="section-heading">Start with what is ready today</h2>
-          <div className="collection-grid" data-testid="home-core-areas">
-            {activeAreas.map((card) => (
-              <CollectionCard key={card.href + card.title} {...card} />
-            ))}
-          </div>
-
-          <details className="growing-next">
-            <summary>Growing next</summary>
-            <p className="hint">Honest planned destinations — not yet equally ready for every family.</p>
-            <div className="collection-grid collection-grid--quiet">
-              {growingNext.map((card) => (
-                <CollectionCard key={card.href + card.title} {...card} />
-              ))}
-            </div>
-          </details>
-        </div>
-      </section>
-
+      {/* ── Latest releases ─────────────────────────────────── */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <p className="eyebrow">Latest releases</p>
@@ -231,6 +93,20 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ── Ready-now active areas ──────────────────────────── */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <p className="eyebrow">Explore Bhāva</p>
+          <h2 className="section-heading">Start with what is ready today</h2>
+          <div className="collection-grid" data-testid="home-core-areas">
+            {ACTIVE_AREAS.map((card) => (
+              <CollectionCard key={card.href + card.title} {...card} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Audience chips ──────────────────────────────────── */}
       <section className="section audience-compact-section">
         <div className="container">
           <p className="eyebrow">Who Bhāva serves</p>
@@ -251,26 +127,20 @@ export default async function Home() {
         </div>
       </section>
 
-      {featured && featured.story_no !== latestStory?.story_no ? (
-        <section className="section featured-story-section">
-          <div className="container featured-story">
-            <div>
-              <p className="eyebrow">Featured story</p>
-              <h2 className="section-heading">{featured.title}</h2>
-              <p className="section-lead">
-                Preserve the dramatic Krishna Book artwork as a featured release — not as the entire platform identity.
-              </p>
-              <Link className="bhava-button bhava-button--accent" href={`/stories/${featured.story_no}`}>
-                Open Story {featured.story_no}
-              </Link>
+      {/* ── Growing next (planned) ──────────────────────────── */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <details className="growing-next">
+            <summary>Growing next</summary>
+            <p className="hint">Honest planned destinations — not yet equally ready for every family.</p>
+            <div className="collection-grid collection-grid--quiet">
+              {GROWING_NEXT.map((card) => (
+                <CollectionCard key={card.href + card.title} {...card} />
+              ))}
             </div>
-            {featured.poster_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={featured.poster_url} alt={`${featured.title} story poster`} width={720} height={900} />
-            ) : null}
-          </div>
-        </section>
-      ) : null}
+          </details>
+        </div>
+      </section>
     </>
   );
 }

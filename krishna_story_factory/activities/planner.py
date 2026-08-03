@@ -70,6 +70,8 @@ class ActivityPlanner:
             })
 
     def _preferred_pack(self, plan: PlanRow) -> ActivityPack | None:
+        from .preferred_packs_010_020 import PREFERRED_PACKS_010_020
+
         builders = {
             "001": _pack_001,
             "002": _pack_002,
@@ -79,6 +81,7 @@ class ActivityPlanner:
             "006": _pack_006,
             "007": _pack_007,
             "009": _pack_009,
+            **PREFERRED_PACKS_010_020,
         }
         builder = builders.get(plan.chapter_no.strip().zfill(3))
         return builder(plan) if builder else None

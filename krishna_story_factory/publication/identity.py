@@ -15,6 +15,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 class PublicationIdentity:
     copyright_owner: str
     public_author_name: str
+    public_display_credit: str
     publisher: str
     publisher_role: str
     project: str
@@ -30,6 +31,7 @@ class PublicationIdentity:
     classroom_license_line: str
     claimable_elements: tuple[str, ...]
     excluded_categories: tuple[str, ...]
+    embed_contact_in_printables: bool
     raw: dict[str, Any]
 
     @property
@@ -53,14 +55,16 @@ def load_identity(root: Path | None = None) -> PublicationIdentity:
     if "Swarna" in owner or owner != "Svarna Gauranga Das":
         raise ValueError(f"Unexpected copyright_owner spelling: {owner!r}")
     email = str(data["contact_email"]).strip()
-    if email != "svarnagaurangdas@gmail.com":
+    if email and email != "svarnagaurangdas@gmail.com":
         raise ValueError(f"Unexpected contact_email: {email!r}")
     publisher = str(data["publisher"]).strip()
     if publisher != "Dauji Publication":
         raise ValueError(f"Unexpected publisher: {publisher!r}")
+    display = str(data.get("public_display_credit") or f"{owner} (Swapnil Patil)").strip()
     return PublicationIdentity(
         copyright_owner=owner,
         public_author_name=str(data.get("public_author_name") or owner).strip(),
+        public_display_credit=display,
         publisher=publisher,
         publisher_role=str(data.get("publisher_role") or "publishing imprint").strip(),
         project=str(data["project"]).strip(),
@@ -76,6 +80,7 @@ def load_identity(root: Path | None = None) -> PublicationIdentity:
         classroom_license_line=str(data.get("classroom_license_line") or "").strip(),
         claimable_elements=tuple(data.get("claimable_elements") or ()),
         excluded_categories=tuple(data.get("excluded_categories") or ()),
+        embed_contact_in_printables=bool(data.get("embed_contact_in_printables", False)),
         raw=data,
     )
 

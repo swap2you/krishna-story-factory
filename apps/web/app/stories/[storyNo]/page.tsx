@@ -146,6 +146,12 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
         <h2>{story.title}</h2>
         <p>{story.age_range ? `Suggested for ${story.age_range}` : "For children and families."}</p>
         <p>{story.source_reference}</p>
+        <Link
+          href="/library/krishna-book/how-to-use"
+          className="bhava-button bhava-button--quiet sidebar-how-to"
+        >
+          How to use these stories
+        </Link>
       </aside>
       <section className="story-main">
         <div className="story-top">

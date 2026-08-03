@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatFooterReleaseLine, getBhavaReleaseMeta } from "@/lib/release-meta";
+import { getBhavaReleaseMeta } from "@/lib/release-meta";
 
 const groups = [
   {
@@ -7,8 +7,9 @@ const groups = [
     links: [
       ["Home", "/"],
       ["Library", "/library"],
+      ["Krishna Book", "/library/krishna-book"],
       ["Knowledge", "/knowledge"],
-      ["Prabhupāda Vāṇī", "/prabhupada-vani"],
+      ["Printables", "/printables"],
     ],
   },
   {
@@ -18,23 +19,14 @@ const groups = [
       ["Sunday School", "/sunday-school"],
       ["For Teachers", "/teachers"],
       ["For Preachers", "/preachers"],
-      ["Printables", "/printables"],
     ],
   },
   {
-    title: "About & Contact",
+    title: "Trust & Contact",
     links: [
       ["About", "/about"],
       ["Contact", "/contact"],
-      ["FAQ", "/faq"],
-    ],
-  },
-  {
-    title: "Trust & Policies",
-    links: [
       ["Copyright & Permissions", "/rights"],
-      ["Sources & Permissions", "/source-permissions"],
-      ["Editorial Standards", "/knowledge/standards"],
       ["Privacy", "/privacy"],
       ["Accessibility", "/accessibility"],
     ],
@@ -42,10 +34,15 @@ const groups = [
 ] as const;
 
 export function SiteFooter() {
-  const releaseLine = formatFooterReleaseLine(getBhavaReleaseMeta());
+  const meta = getBhavaReleaseMeta();
+  const env =
+    process.env.NEXT_PUBLIC_BHAVA_ENV?.trim() ||
+    process.env.NODE_ENV ||
+    "development";
+
   return (
     <footer className="site-footer">
-      <div className="container footer-grid">
+      <div className="container footer-grid footer-grid--compact">
         <div className="footer-brand">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -57,18 +54,32 @@ export function SiteFooter() {
           />
           <p className="brand-display footer-wordmark">Bhāva</p>
           <p>
-            Timeless devotion for growing hearts and minds. Stories, scripture, practice, and learning paths for
-            children, youth, families, and teachers.
+            Timeless devotion for growing hearts and minds.
           </p>
-          <p className="hint">Stewarded with care by Svarna Gauranga Das · Harrisburg, Pennsylvania</p>
           <p className="hint footer-copyright">
-            © 2026 Svarna Gauranga Das. All rights reserved.
-            <br />
-            Published by Dauji Publication · A Bhāva Project publication
+            © 2026 Svarna Gauranga Das (Swapnil Patil) · Dauji Publication · Bhāva
           </p>
-          <p className="hint footer-release" aria-label={`Release metadata: ${releaseLine}`}>
-            {releaseLine}
-          </p>
+          <details className="footer-version-details">
+            <summary className="hint footer-version-toggle">Version</summary>
+            <dl className="footer-version-dl hint">
+              <div>
+                <dt>Env</dt>
+                <dd>{env}</dd>
+              </div>
+              <div>
+                <dt>Web</dt>
+                <dd>{meta.webVersion}</dd>
+              </div>
+              <div>
+                <dt>Content</dt>
+                <dd>{meta.contentRelease}</dd>
+              </div>
+              <div>
+                <dt>Build</dt>
+                <dd>{meta.shortSha}</dd>
+              </div>
+            </dl>
+          </details>
         </div>
         {groups.map((group) => (
           <div key={group.title} className="footer-group">

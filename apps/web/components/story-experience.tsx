@@ -9,6 +9,7 @@ import { AudioPlayer } from "@/components/audio-player";
 import { PdfJsViewer } from "@/components/pdf-js-viewer";
 import { lockBodyScroll } from "@/lib/body-scroll-lock";
 import { printSelectedImage } from "@/lib/print-selected-image";
+import { writeLastStory } from "@/components/continue-journey";
 
 type Mode = "default" | "sepia" | "dark";
 
@@ -519,6 +520,10 @@ export function StoryExperience({
   }, []);
 
   useEffect(() => {
+    writeLastStory(storyNo);
+  }, [storyNo]);
+
+  useEffect(() => {
     const el = playerContainerRef.current;
     if (!el || !audioEl) return;
     const observer = new IntersectionObserver(([entry]) => setShowMini(!entry.isIntersecting), { threshold: 0 });
@@ -697,9 +702,6 @@ export function StoryExperience({
 
       {/* Previous / Next story links */}
       <StoryNav storyNo={storyNo} maxReleased={maxReleased} />
-      <p className="story-help-link">
-        <Link href="/library/krishna-book/how-to-use">How to use Krishna Book stories</Link>
-      </p>
 
       <Tabs tabs={["Listen", "Read", "Activities", "Coloring", "Source", "Notes", "\u015Alok\u0101s"]}>
         {(active) => (
@@ -841,7 +843,13 @@ export function StoryExperience({
               <div className="source-grid">
                 <div className="source-card">
                   <h3>Reviewed source boundaries</h3>
-                  {sourceLinks && sourceLinks.length > 0 ? (
+                  {sourceLinks === null ? (
+                    <div className="skeleton-block" role="status" aria-label="Loading source references">
+                      <div className="skeleton-line" style={{ width: "80%" }} />
+                      <div className="skeleton-line" style={{ width: "60%" }} />
+                      <div className="skeleton-line" style={{ width: "70%" }} />
+                    </div>
+                  ) : sourceLinks.length > 0 ? (
                     <ul className="source-link-list" style={{ listStyle: "none", padding: 0, margin: "0 0 1rem" }}>
                       {sourceLinks.map((link, idx) => (
                         <li key={`${link.label ?? "ref"}-${idx}`} className="panel-card" style={{ marginBottom: "0.85rem", padding: "0.85rem 1rem" }}>
@@ -993,7 +1001,12 @@ export function StoryExperience({
                 <p className="eyebrow" style={{ color: "var(--bhava-saffron)" }}>
                   Companion scripture
                 </p>
-                {shlokaPayload?.shlokas?.length ? (
+                {shlokaPayload === null ? (
+                  <div className="skeleton-block" role="status" aria-label="Loading companion references">
+                    <div className="skeleton-line" style={{ width: "60%" }} />
+                    <div className="skeleton-line" style={{ width: "45%" }} />
+                  </div>
+                ) : shlokaPayload.shlokas?.length ? (
                   shlokaPayload.shlokas.map((verse, idx) => {
                     const reviewStatus = String(verse.review_status ?? "");
                     const notApplicable =

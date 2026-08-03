@@ -25,15 +25,23 @@ export function absoluteUrl(path = "/"): string {
   return new URL(path, CANONICAL_ORIGIN).toString();
 }
 
+export const DEFAULT_OG_IMAGE = "/og/bhava-share-1200x630.webp";
+export const DEFAULT_OG_WIDTH = 1200;
+export const DEFAULT_OG_HEIGHT = 630;
+
 export function pageMetadata(input: {
   title: string;
   description: string;
   path: string;
   image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   noIndex?: boolean;
 }): Metadata {
   const canonical = absoluteUrl(input.path);
-  const image = absoluteUrl(input.image || "/heroes/hero-text-free-master-1280w.webp");
+  const image = absoluteUrl(input.image || DEFAULT_OG_IMAGE);
+  const imgWidth = input.imageWidth ?? (input.image ? undefined : DEFAULT_OG_WIDTH);
+  const imgHeight = input.imageHeight ?? (input.image ? undefined : DEFAULT_OG_HEIGHT);
   return {
     title: input.title,
     description: input.description,
@@ -47,7 +55,7 @@ export function pageMetadata(input: {
       siteName: SITE_NAME,
       title: input.title,
       description: input.description,
-      images: [{ url: image, alt: input.title }],
+      images: [{ url: image, alt: input.title, width: imgWidth, height: imgHeight }],
     },
     twitter: {
       card: "summary_large_image",

@@ -1,15 +1,32 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Home journey UX", () => {
-  test("hero has one primary journey CTA and how-to link", async ({ page }) => {
+  test("hero shows device-aware CTA (Begin with Story 001 when no progress)", async ({ page }) => {
     await page.goto("/");
     const ctas = page.getByTestId("home-story-primary-ctas");
-    await expect(ctas.getByRole("link", { name: /Begin the Krishna Story Journey/i })).toBeVisible();
-    await expect(ctas.getByRole("link", { name: /Continue with Story/i })).toBeVisible();
+    await expect(ctas.getByRole("link", { name: /Begin with Story 001/i })).toBeVisible();
+    await expect(ctas.getByRole("link", { name: /Browse all stories/i })).toBeVisible();
     const primaryLinks = ctas.locator("a");
     expect(await primaryLinks.count()).toBeLessThanOrEqual(2);
-    await expect(page.getByRole("link", { name: /See how the weekly story journey works/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /How the weekly journey works/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Five gentle steps each week/i })).toBeVisible();
+  });
+
+  test("Continue CTA appears after visiting a story", async ({ page }) => {
+    await page.goto("/stories/001");
+    await page.waitForFunction(() => {
+      try {
+        const raw = localStorage.getItem("bhava:last-story");
+        if (!raw) return false;
+        const parsed = JSON.parse(raw) as { storyNo?: string };
+        return parsed?.storyNo === "001";
+      } catch {
+        return false;
+      }
+    });
+    await page.goto("/");
+    const ctas = page.getByTestId("home-story-primary-ctas");
+    await expect(ctas.getByRole("link", { name: /Continue Story 001/i })).toBeVisible();
   });
 
   test("how-to-use page renders five stages and sitemap entry", async ({ page, request }) => {
