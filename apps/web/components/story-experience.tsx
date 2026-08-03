@@ -8,6 +8,7 @@ import type { Story } from "@/lib/catalog";
 import { AudioPlayer } from "@/components/audio-player";
 import { PdfJsViewer } from "@/components/pdf-js-viewer";
 import { lockBodyScroll } from "@/lib/body-scroll-lock";
+import { printSelectedImage } from "@/lib/print-selected-image";
 
 type Mode = "default" | "sepia" | "dark";
 
@@ -145,10 +146,12 @@ function MiniPlayer({
   audioEl,
   title,
   geometry,
+  onDismiss,
 }: {
   audioEl: HTMLAudioElement;
   title: string;
   geometry: { top: number; left: number; width: number };
+  onDismiss: () => void;
 }) {
   const [playing, setPlaying] = useState(!audioEl.paused);
   const [current, setCurrent] = useState(audioEl.currentTime);
@@ -262,6 +265,14 @@ function MiniPlayer({
       <span className="mini-player-time">
         {formatTime(current)} / {formatTime(duration)}
       </span>
+      <button
+        type="button"
+        className="mini-player-dismiss"
+        onClick={onDismiss}
+        aria-label="Hide floating player"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>,
     document.body,
   );
@@ -311,6 +322,7 @@ export function StoryExperience({
   const [loadingMd, setLoadingMd] = useState(false);
   const [audioEl, setAudioEl] = useState<HTMLAudioElement | null>(null);
   const [showMini, setShowMini] = useState(false);
+  const [miniDismissed, setMiniDismissed] = useState(false);
   const [miniGeometry, setMiniGeometry] = useState({ top: 82, left: 16, width: 360 });
   const [syncData, setSyncData] = useState<SyncData | null>(null);
   const [audioTime, setAudioTime] = useState(0);
@@ -333,9 +345,23 @@ export function StoryExperience({
   const touchStartRef = useRef(0);
 
   const key = `bhava:notes:${storyNo}`;
+  const miniDismissKey = `bhava:mini-dismissed:${storyNo}`;
   const title = story?.title ?? `Krishna Book story ${storyNo}`;
   const dialogTitleId = useId();
   const readerSrc = story?.reader_url ?? (story ? `/api/v1/stories/${storyNo}/reader` : null);
+
+  const setMiniDismissedPersisted = useCallback(
+    (value: boolean) => {
+      setMiniDismissed(value);
+      try {
+        if (value) sessionStorage.setItem(miniDismissKey, "1");
+        else sessionStorage.removeItem(miniDismissKey);
+      } catch {
+        /* private mode / unavailable storage */
+      }
+    },
+    [miniDismissKey],
+  );
 
   /* ── Derived ──────────────────────────────────────────────── */
 
@@ -372,7 +398,12 @@ export function StoryExperience({
     setNotes(localStorage.getItem(key) ?? "");
     setNotesDirty(false);
     setNotesSaveState("idle");
-  }, [key]);
+    try {
+      setMiniDismissed(sessionStorage.getItem(miniDismissKey) === "1");
+    } catch {
+      setMiniDismissed(false);
+    }
+  }, [key, miniDismissKey]);
 
   useEffect(() => {
     if (!notesDirty) return;
@@ -602,6 +633,23 @@ export function StoryExperience({
     if (!w) showToast("Allow pop-ups to open the activity PDF.");
   };
 
+  const printCarouselImage = useCallback(async () => {
+    const selected = coloring[carouselIndex];
+    if (!selected?.url) return;
+    const result = await printSelectedImage({
+      imageUrl: selected.url,
+      title: `${title} — ${selected.label}`,
+      allowedUrls: coloring.map((item) => item.url),
+    });
+    if (!result.ok) {
+      showToast(
+        result.reason === "blocked_url"
+          ? "Print is limited to this story’s package images."
+          : "Could not open the print dialog. Try Download instead.",
+      );
+    }
+  }, [carouselIndex, coloring, showToast, title]);
+
   /* ── Render ───────────────────────────────────────────────── */
 
   return (
@@ -625,16 +673,33 @@ export function StoryExperience({
             onAudioMount={setAudioEl}
             recommendedPlaybackRate={recommendedPlaybackRate}
           />
+          {miniDismissed ? (
+            <button
+              type="button"
+              className="bhava-button bhava-button--quiet mini-player-restore"
+              onClick={() => setMiniDismissedPersisted(false)}
+            >
+              Show floating player
+            </button>
+          ) : null}
         </div>
       ) : null}
 
       {/* True floating mini-player when primary player scrolls away (hidden during image modal) */}
-      {showMini && audioEl && !carouselOpen ? (
-        <MiniPlayer audioEl={audioEl} title={title} geometry={miniGeometry} />
+      {showMini && audioEl && !carouselOpen && !miniDismissed ? (
+        <MiniPlayer
+          audioEl={audioEl}
+          title={title}
+          geometry={miniGeometry}
+          onDismiss={() => setMiniDismissedPersisted(true)}
+        />
       ) : null}
 
       {/* Previous / Next story links */}
       <StoryNav storyNo={storyNo} maxReleased={maxReleased} />
+      <p className="story-help-link">
+        <Link href="/library/krishna-book/how-to-use">How to use Krishna Book stories</Link>
+      </p>
 
       <Tabs tabs={["Listen", "Read", "Activities", "Coloring", "Source", "Notes", "\u015Alok\u0101s"]}>
         {(active) => (
@@ -952,15 +1017,34 @@ export function StoryExperience({
                         : reviewStatus === "pending"
                           ? "Pending review"
                           : "Companion reference";
+                    const chapterReference =
+                      !notApplicable &&
+                      (!reference || !/\d+\.\d+\.\d+/.test(reference) || reviewStatus !== "reviewed");
                     return (
                       <article key={`${reference || "shloka"}-${idx}`} className="shloka-entry" style={{ marginBottom: "1.25rem" }}>
-                        <p className="eyebrow" style={{ marginBottom: "0.35rem" }}>{stateLabel}</p>
+                        <div className="shloka-entry-meta">
+                          <p className="eyebrow" style={{ marginBottom: "0.35rem" }}>{stateLabel}</p>
+                          {chapterReference ? (
+                            <span className="shloka-badge" title="Exact verse range not yet verified">
+                              Chapter reference
+                            </span>
+                          ) : null}
+                        </div>
                         {reference ? <h3 style={{ marginTop: 0 }}>{reference}</h3> : null}
                         {explanation ? <p style={{ marginTop: "0.5rem" }}>{explanation}</p> : null}
                         {url ? (
-                          <p style={{ marginTop: "0.65rem" }}>
-                            <a href={url} target="_blank" rel="noreferrer">
-                              Read on Vedabase
+                          <p style={{ marginTop: "0.85rem" }}>
+                            <a
+                              className="bhava-button bhava-button--quiet vedabase-action"
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Read this passage on Vedabase
+                              <span className="vedabase-action-icon" aria-hidden="true">
+                                {" "}
+                                ↗
+                              </span>
                             </a>
                           </p>
                         ) : null}
@@ -1104,7 +1188,7 @@ export function StoryExperience({
                   <a className="bhava-button bhava-button--quiet" href={coloring[carouselIndex]?.url} download>
                     Download
                   </a>
-                  <Button variant="quiet" onClick={() => window.print()}>
+                  <Button variant="quiet" onClick={() => void printCarouselImage()}>
                     Print
                   </Button>
                   <Button variant="quiet" onClick={() => setCarouselOpen(false)}>

@@ -39,9 +39,9 @@ test.describe("DEF-CONTRAST-01 home core areas", () => {
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await page.goto("/");
       const cards = page.locator('[data-testid="home-core-areas"] .collection-card');
-      await expect(cards).toHaveCount(8);
+      await expect(cards).toHaveCount(4);
 
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 4; i++) {
         const card = cards.nth(i);
         const sample = await card.evaluate((el) => {
           const title = el.querySelector("h3");

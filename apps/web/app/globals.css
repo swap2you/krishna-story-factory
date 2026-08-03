@@ -641,13 +641,56 @@ main { flex: 1; }
   font-size: .75rem; font-variant-numeric: tabular-nums;
   white-space: nowrap; color: #d5e0ec; flex-shrink: 0;
 }
+.mini-player-dismiss {
+  width: 44px; height: 44px; min-width: 44px; min-height: 44px;
+  border: 0; border-radius: 50%; cursor: pointer; flex-shrink: 0;
+  background: rgba(255,255,255,.14); color: #fff;
+  font-size: 1.35rem; line-height: 1;
+  display: grid; place-items: center;
+  position: relative;
+  z-index: 2;
+}
+.mini-player-dismiss:hover { background: rgba(255,255,255,.26); }
+.mini-player-dismiss:focus-visible {
+  outline: 2px solid var(--bhava-gold);
+  outline-offset: 2px;
+}
+.mini-player-restore {
+  margin-top: 0.65rem;
+  min-height: 44px;
+}
+.story-help-link {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+}
+.story-help-link a { color: var(--bhava-midnight); text-decoration: underline; text-underline-offset: 0.18em; }
+.shloka-entry-meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem;
+  margin-bottom: 0.25rem;
+}
+.shloka-badge {
+  display: inline-flex; align-items: center; min-height: 28px;
+  padding: 0.2rem 0.65rem; border-radius: 999px;
+  background: rgba(18,55,94,.08); color: var(--bhava-midnight);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em;
+}
+.vedabase-action {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  min-height: 44px;
+}
+.vedabase-action:focus-visible {
+  outline: 2px solid var(--bhava-saffron);
+  outline-offset: 2px;
+}
+.vedabase-action-icon { font-size: 0.95em; opacity: 0.85; }
 @media (max-width: 640px) {
   .mini-player--floating {
     flex-wrap: wrap;
     row-gap: 0.35rem;
   }
-  .mini-player-title { max-width: none; flex: 1 1 calc(100% - 3.5rem); order: 1; }
+  .mini-player-title { max-width: none; flex: 1 1 calc(100% - 6.5rem); order: 1; }
   .mini-player-btn { order: 0; }
+  .mini-player-dismiss { order: 0; margin-left: auto; }
   .mini-player-skip,
   .mini-player-progress,
   .mini-player-time { order: 2; }
@@ -969,4 +1012,174 @@ main { flex: 1; }
   .story-shell { display: block !important; }
   .story-sidebar { display: none !important; }
   .story-main { padding: 0 !important; }
+  .how-to-print-note { display: none !important; }
+  .how-to-step { break-inside: avoid; page-break-inside: avoid; }
+  .how-to-storyboard { gap: 0.75rem !important; }
 }
+
+/* ── Journey UX: home + how-to-use ───────────────────────────── */
+.hero-text-link {
+  margin: 0.85rem 0 0;
+  font-size: 0.95rem;
+}
+.hero-text-link a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.continue-journey { padding-top: 1.5rem; }
+.continue-journey-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr);
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.35rem 1.5rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 252, 246, 0.95);
+  border: 1px solid rgba(20, 40, 70, 0.08);
+  box-shadow: var(--bhava-shadow-soft);
+}
+.continue-journey-poster {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  border-radius: 1rem;
+  justify-self: end;
+  object-fit: cover;
+}
+.journey-strip {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+.journey-strip-step {
+  padding: 1rem 0.9rem;
+  border-radius: 1.15rem;
+  background: rgba(255, 250, 242, 0.92);
+  border: 1px solid rgba(20, 40, 70, 0.07);
+  text-align: center;
+}
+.journey-strip-num {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: rgba(196, 122, 44, 0.15);
+  color: #8a4b12;
+  font-size: 0.78rem;
+  font-weight: 800;
+  margin-bottom: 0.35rem;
+}
+.journey-strip-icon { margin: 0.15rem auto 0.45rem; display: block; }
+.journey-strip-step h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  color: var(--bhava-midnight);
+}
+.journey-strip-step p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--bhava-muted);
+  line-height: 1.45;
+}
+.growing-next {
+  margin-top: 1.75rem;
+  padding: 1rem 1.15rem;
+  border-radius: 1.15rem;
+  background: rgba(18, 55, 94, 0.04);
+  border: 1px dashed rgba(18, 55, 94, 0.18);
+}
+.growing-next summary {
+  cursor: pointer;
+  font-weight: 750;
+  color: var(--bhava-midnight);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.growing-next[open] summary { margin-bottom: 0.65rem; }
+.collection-grid--quiet { opacity: 0.92; }
+.audience-chips {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+.audience-chip {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.95);
+  border: 1px solid rgba(20, 40, 70, 0.08);
+}
+.audience-chip strong { font-size: 0.9rem; color: var(--bhava-midnight); }
+.how-to-use .breadcrumb {
+  margin-bottom: 1rem;
+  font-size: 0.92rem;
+  color: var(--bhava-muted);
+}
+.how-to-lead { max-width: 42rem; }
+.how-to-storyboard {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+}
+.how-to-step {
+  display: grid;
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+  gap: 1.15rem;
+  align-items: center;
+  padding: 1.1rem 1.2rem;
+  border-radius: 1.35rem;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 232, 0.95), rgba(246, 234, 210, 0.92));
+  border: 1px solid rgba(201, 166, 107, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+.how-to-step:nth-child(even) {
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 180px);
+}
+.how-to-step:nth-child(even) .how-to-step-art { order: 2; }
+.how-to-step-num {
+  margin: 0 0 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8a4b12;
+}
+.how-to-step h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.25rem;
+  color: var(--bhava-midnight);
+}
+.how-to-step p { margin: 0 0 0.85rem; color: var(--bhava-muted); line-height: 1.55; }
+.how-to-print-note { margin-top: 2rem; }
+@media (max-width: 900px) {
+  .journey-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .continue-journey-card { grid-template-columns: 1fr; }
+  .continue-journey-poster { justify-self: start; max-width: 220px; }
+}
+@media (max-width: 640px) {
+  .journey-strip { grid-template-columns: 1fr; }
+  .how-to-step,
+  .how-to-step:nth-child(even) {
+    grid-template-columns: 1fr;
+  }
+  .how-to-step:nth-child(even) .how-to-step-art { order: 0; }
+  .how-to-step-art svg { width: 100%; max-width: 220px; height: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .journey-strip-step,
+  .how-to-step { transition: none; }
+}
+

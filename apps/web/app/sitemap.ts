@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/library",
     "/library/krishna-book",
+    "/library/krishna-book/how-to-use",
     "/library/srimad-bhagavatam",
     "/library/bhagavad-gita",
     "/library/ramayana",

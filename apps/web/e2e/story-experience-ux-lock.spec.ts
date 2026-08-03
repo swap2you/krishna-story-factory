@@ -95,13 +95,70 @@ test.describe("Story experience UX lock", () => {
     await expect(miniPlayer).toBeVisible({ timeout: 8_000 });
     await expect(miniPlayer.getByRole("slider", { name: "Seek narration" })).toBeVisible();
 
-    await selectStoryTab(page, /Coloring/i);
-    await page.locator(".asset-tile").first().click();
-    await expect(page.getByRole("dialog")).toBeVisible();
+    const hideFloating = miniPlayer.getByRole("button", { name: "Hide floating player" });
+    await expect(hideFloating).toBeVisible();
+    // Drive playback via the audio element so Playwright does not scroll the primary
+    // player into view (which would dismiss the floating mini-player via IntersectionObserver).
+    await page.locator("audio").evaluate(async (el) => {
+      const audio = el as HTMLAudioElement;
+      try {
+        await audio.play();
+      } catch {
+        /* autoplay policies may block; dismiss still must work while paused */
+      }
+    });
+    const timeBefore = await page.locator("audio").evaluate((el) => (el as HTMLAudioElement).currentTime);
+    await hideFloating.click({ force: true });
     await expect(miniPlayer).toHaveCount(0);
+    const timeAfter = await page.locator("audio").evaluate((el) => (el as HTMLAudioElement).currentTime);
+    expect(timeAfter).toBeGreaterThanOrEqual(timeBefore);
+    const restore = page.getByRole("button", { name: "Show floating player" });
+    await expect(restore).toBeVisible();
+    await restore.click({ force: true });
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect(page.locator(".mini-player--floating")).toBeVisible({ timeout: 8_000 });
+
+    await selectStoryTab(page, /Coloring/i);
+    await page.locator(".asset-tile").first().click({ force: true });
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await expect(page.locator(".mini-player--floating")).toHaveCount(0);
+
+    // Print uses isolated iframe document — not application DOM thumbnails.
+    await page.evaluate(() => {
+      const w = window as unknown as {
+        __BHAVA_SKIP_PRINT__?: boolean;
+        __BHAVA_LAST_PRINT_HTML__?: string;
+      };
+      w.__BHAVA_SKIP_PRINT__ = true;
+      w.__BHAVA_LAST_PRINT_HTML__ = "";
+    });
+    await page.getByRole("dialog").getByRole("button", { name: /^Print$/i }).click({ force: true });
+    await page.waitForFunction(
+      () => Boolean((window as unknown as { __BHAVA_LAST_PRINT_HTML__?: string }).__BHAVA_LAST_PRINT_HTML__),
+      undefined,
+      { timeout: 5_000 },
+    );
+    const printHtml = await page.evaluate(
+      () => (window as unknown as { __BHAVA_LAST_PRINT_HTML__?: string }).__BHAVA_LAST_PRINT_HTML__ || "",
+    );
+    expect(printHtml).toMatch(/<img\b/i);
+    expect(printHtml).not.toMatch(/carousel-thumb|asset-tile|site-header/i);
 
     await page.keyboard.press("Escape");
     await expectNoHorizontalOverflow(page);
+  });
+
+  test("Ślokas tab shows Vedabase button and chapter-reference honesty", async ({ page, request }) => {
+    const stories = await fetchStories(request);
+    const story = stories.find((item) => item.story_no === "011") ?? stories.find((item) => item.story_no === "020");
+    test.skip(!story, "Need a published story with Ślokas");
+    await page.goto(`/stories/${story!.story_no}`);
+    await selectStoryTab(page, /Ślok|Shlok/i);
+    const panel = page.getByRole("tabpanel");
+    await expect(panel).toBeVisible();
+    const vedabaseCount = await panel.getByRole("link", { name: /Read this passage on Vedabase/i }).count();
+    const honestyCount = await panel.getByText(/No separate verse|Companion reference|Chapter reference|Pending review/i).count();
+    expect(vedabaseCount + honestyCount).toBeGreaterThan(0);
   });
 
   test("Story 020 wallpaper uses a different poster than Story 001 when both are published", async ({
