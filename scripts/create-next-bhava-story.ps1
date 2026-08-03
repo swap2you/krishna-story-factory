@@ -34,6 +34,17 @@
   Sample-first opt-out (AUDIO_SAMPLE_FIRST_REQUIRED=0) is for legacy rebuild tools
   only — this create-next script always forces sample-first ON.
 
+  Future-story hard gates (Story 021+; never rewrite 001–020 here):
+    - Canonical story.md narrative ↔ TTS input semantic equivalence
+      (krishna_story_factory/content/story_tts_equivalence.py)
+    - Sample-first TTS + objective pace/pause vs 001–010 baseline
+    - Visual event-relevance / contact sheet before package approval
+      (krishna_story_factory/visuals/event_relevance.py)
+    - Pronunciation lexicon coverage for hard names
+      (input/audio_pronunciations.yaml)
+    - Exact-eight package; Drive only after all gates pass
+    - No automatic public_story_max bump; Story remains private until release PR
+
   Pipeline lock: acquired inside krishna_story_factory.pipeline.run_daily_story
   via acquire_pipeline_lock (.pipeline.lock). This wrapper refuses to start if a
   live lock file is already present (stale reclaim is handled by the pipeline).
