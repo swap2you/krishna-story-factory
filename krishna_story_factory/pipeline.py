@@ -397,7 +397,11 @@ def _run_once(
             stage = seed_state_from_recovery_artifacts(run_root, plan.chapter_no)
             ensure_package_layout(run_root)
             reuse_story_audio = stage.is_complete("story") and stage.is_complete("narration")
-            reuse_locked_story = stage.is_complete("story") and not stage.is_complete("narration")
+            reuse_locked_story = (
+                stage.is_complete("story")
+                and not stage.is_complete("narration")
+                and (run_root / "package" / "story.md").is_file()
+            )
             if reuse_story_audio and not production_recovery_enabled(cli_flag=enable_production_recovery):
                 raise PipelineError(
                     "Resumable Story artifacts found, but production recovery is not enabled. "

@@ -165,11 +165,17 @@ def find_latest_recovery_run(project_root: Path, story_id: str) -> Path | None:
     root = project_root / "work" / "stories" / story_id.zfill(3)
     if not root.is_dir():
         return None
-    candidates = [
-        p
-        for p in root.iterdir()
-        if p.is_dir() and not p.name.startswith("_") and not (p / "COMPLETED").is_file()
-    ]
+    candidates = []
+    for p in root.iterdir():
+        if not p.is_dir() or p.name.startswith("_"):
+            continue
+        if (p / "COMPLETED").is_file():
+            continue
+        # Require a real run layout: stage_state.json and/or package/story.md.
+        # Ignore sidecar folders such as evidence/reports.
+        if not (p / STATE_FILENAME).is_file() and not (p / "package" / "story.md").is_file():
+            continue
+        candidates.append(p)
     if not candidates:
         return None
     return sorted(candidates, key=lambda p: p.name)[-1]
