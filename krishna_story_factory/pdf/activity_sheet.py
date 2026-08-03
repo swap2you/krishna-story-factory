@@ -340,27 +340,27 @@ def _rendered_content_metrics(path: Path) -> tuple[float, float]:
 def _header(c: Canvas, plan: PlanRow, activity: ActivityPack, page: int, page_title: str = "") -> float:
     c.setStrokeColorRGB(0.15, 0.15, 0.15)
     c.setLineWidth(1.2)
-    c.roundRect(MARGIN, PAGE_H - 1.05 * inch, PAGE_W - 2 * MARGIN, 0.55 * inch, 8, stroke=1, fill=0)
+    c.roundRect(MARGIN, PAGE_H - 1.15 * inch, PAGE_W - 2 * MARGIN, 0.72 * inch, 8, stroke=1, fill=0)
     title = page_title or activity.activity_title
-    c.setFont(FONT_BOLD, 18 if len(title) > 42 else 21)
-    c.drawCentredString(PAGE_W / 2, PAGE_H - 0.7 * inch, title[:70])
-    c.setFont(FONT_REGULAR, 10.5)
-    c.drawCentredString(PAGE_W / 2, PAGE_H - 0.92 * inch, f"{plan.title}  |  {activity.estimated_minutes} minutes")
+    c.setFont(FONT_BOLD, 14 if len(title) > 48 else 18)
+    title_bottom = _wrapped(c, title, MARGIN + 0.15 * inch, PAGE_H - 0.55 * inch, PAGE_W - 2.3 * MARGIN, 14 if len(title) > 48 else 18, 17)
+    c.setFont(FONT_REGULAR, 10)
+    c.drawCentredString(PAGE_W / 2, min(title_bottom - 0.08 * inch, PAGE_H - 0.95 * inch), f"{plan.title}  |  {activity.estimated_minutes} minutes")
     _footer(c, plan, page)
-    return PAGE_H - 1.25 * inch
+    return PAGE_H - 1.35 * inch
 
 
 def _footer(c: Canvas, plan: PlanRow, page: int) -> None:
     from ..publication.notices import compact_footer
     from ..publication.work_manifest import first_publication_year
 
-    c.setFont(FONT_REGULAR, 9)
-    c.drawString(MARGIN, 0.48 * inch, plan.title[:72])
+    c.setFont(FONT_REGULAR, 8.5)
+    _wrapped(c, plan.title, MARGIN, 0.55 * inch, 4.6 * inch, 8.5, 10)
     c.drawRightString(PAGE_W - MARGIN, 0.48 * inch, f"Page {page}")
-    # Compact rights line inside printable bottom margin (future generators).
-    year = first_publication_year({})  # no year until reviewed first-publication
-    c.setFont(FONT_REGULAR, 8)
-    c.drawCentredString(PAGE_W / 2, 0.30 * inch, compact_footer(year=year)[:110])
+    year = first_publication_year({})
+    c.setFont(FONT_REGULAR, 7.5)
+    footer = compact_footer(year=year)
+    c.drawCentredString(PAGE_W / 2, 0.28 * inch, footer)
 
 
 def _apply_pdf_identity_metadata(canvas: Canvas, activity_title: str) -> None:
@@ -566,7 +566,6 @@ def _render_matching_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page
 def _render_role_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
     cards = [item for item in page.components if isinstance(item, RolePlayCard)]
     if not cards:
-        # Accept plain string components as complete paraphrase lines.
         cards = []
         for item in page.components:
             label = component_label(item).strip()
@@ -576,23 +575,30 @@ def _render_role_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: Ac
                 role, line = label.split(":", 1)
             else:
                 role, line = "Role", label
-            cards.append(RolePlayCard(role.strip()[:40], line.strip(), "Act the moment calmly.", "simple prop"))
+            cards.append(
+                RolePlayCard(
+                    role.strip(),
+                    line.strip(),
+                    "Speak your line gently for this pastime.",
+                    "Use a soft scarf or flower as a prop.",
+                )
+            )
     count = min(len(cards), 6)
-    card_h = 1.55 * inch if count <= 4 else 1.25 * inch
+    card_h = 1.55 * inch if count <= 4 else 1.28 * inch
     for index, card in enumerate(cards[:count]):
         row, col = divmod(index, 2)
         x = MARGIN + col * 3.65 * inch
         yy = 6.45 * inch - row * (card_h + 0.18 * inch)
         c.roundRect(x, yy, 3.35 * inch, card_h, 8, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 11)
-        c.drawString(x + 0.12 * inch, yy + card_h - 0.28 * inch, card.role[:40])
-        c.setFont(FONT_REGULAR, 9.5)
-        text_top = yy + card_h - 0.52 * inch
-        text_top = _wrapped(c, f"Line: {card.line}", x + 0.12 * inch, text_top, 3.05 * inch, 9.5, 11)
-        text_top -= 0.08 * inch
-        text_top = _wrapped(c, f"Action: {card.action}", x + 0.12 * inch, text_top, 3.05 * inch, 9.5, 11)
+        c.setFont(FONT_BOLD, 10.5)
+        role_bottom = _wrapped(c, card.role, x + 0.12 * inch, yy + card_h - 0.22 * inch, 3.05 * inch, 10.5, 12)
         c.setFont(FONT_REGULAR, 9)
-        c.drawString(x + 0.12 * inch, yy + 0.12 * inch, f"Prop: {card.prop}"[:52])
+        text_top = role_bottom - 0.06 * inch
+        text_top = _wrapped(c, f"Line: {card.line}", x + 0.12 * inch, text_top, 3.05 * inch, 9, 10.5)
+        text_top -= 0.04 * inch
+        text_top = _wrapped(c, f"Action: {card.action}", x + 0.12 * inch, text_top, 3.05 * inch, 9, 10.5)
+        text_top -= 0.04 * inch
+        _wrapped(c, f"Prop: {card.prop}", x + 0.12 * inch, max(yy + 0.18 * inch, text_top), 3.05 * inch, 8.5, 10)
 
 
 def _render_family_mission(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
@@ -747,10 +753,10 @@ def _render_generic_cards(
         x = MARGIN + col * 3.65 * inch
         yy = 5.75 * inch - row * 1.55 * inch
         c.roundRect(x, yy, 3.25 * inch, 1.18 * inch, 8, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 12)
-        c.drawString(x + 0.16 * inch, yy + 0.82 * inch, label[:34])
-        c.setFont(FONT_REGULAR, 10)
-        c.drawString(x + 0.16 * inch, yy + 0.5 * inch, prompt[:42])
+        c.setFont(FONT_BOLD, 11)
+        label_bottom = _wrapped(c, label, x + 0.16 * inch, yy + 0.9 * inch, 2.95 * inch, 11, 12.5)
+        c.setFont(FONT_REGULAR, 9.5)
+        _wrapped(c, prompt, x + 0.16 * inch, label_bottom - 0.08 * inch, 2.95 * inch, 9.5, 11)
     c.setDash()
 
 
