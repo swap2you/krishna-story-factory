@@ -177,13 +177,19 @@ export function SiteHeader() {
   }, [pathname, library.close, learning.close]);
 
   useEffect(() => {
-    if (!library.open && !learning.open) return;
+    const anyOpen =
+      library.open || learning.open || mobileLibraryOpen || mobileLearningOpen;
+    if (!anyOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        if (library.open) library.close(true);
-        if (learning.open) learning.close(true);
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      if (library.open) library.close(true);
+      if (learning.open) learning.close(true);
+      if (mobileLibraryOpen) {
+        setMobileLibraryOpen(false);
+        setMobileLibraryPanel(null);
       }
+      if (mobileLearningOpen) setMobileLearningOpen(false);
     };
     const onPointer = (e: PointerEvent) => {
       if (
@@ -208,6 +214,8 @@ export function SiteHeader() {
   }, [
     library.open,
     learning.open,
+    mobileLibraryOpen,
+    mobileLearningOpen,
     library.close,
     learning.close,
     library.ref,
@@ -488,21 +496,34 @@ export function SiteHeader() {
               className="nav-accordion__button"
               aria-expanded={mobileLearningOpen}
               aria-controls={`${learningId}-mobile`}
+              aria-haspopup="true"
               onClick={() => setMobileLearningOpen((v) => !v)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setMobileLearningOpen((v) => !v);
+                }
+              }}
             >
               Learning
             </button>
             <div
               id={`${learningId}-mobile`}
-              className="nav-accordion__panel"
+              className="nav-accordion__panel nav-learning__menu"
+              role="group"
+              aria-label="Learning links"
               hidden={!mobileLearningOpen}
+              data-state={mobileLearningOpen ? "open" : "closed"}
             >
               {learningLinks.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={() => {
+                    setMobileLearningOpen(false);
+                    setMobileOpen(false);
+                  }}
                 >
                   {item.label}
                 </Link>
