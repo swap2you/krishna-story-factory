@@ -1434,8 +1434,8 @@ main { flex: 1; }
   font-weight: 600;
 }
 @media (max-width: 720px) {
-  .nav-library--desktop,
-  .nav-learning--desktop { display: none; }
+  .nav-library--desktop.nav-dropdown,
+  .nav-learning--desktop.nav-dropdown { display: none; }
   .nav-library--mobile,
   .nav-learning--mobile { display: grid; width: 100%; }
   .nav-dropdown { width: 100%; display: grid; }
