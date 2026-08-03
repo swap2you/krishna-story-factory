@@ -345,9 +345,23 @@ export function StoryExperience({
   const touchStartRef = useRef(0);
 
   const key = `bhava:notes:${storyNo}`;
+  const miniDismissKey = `bhava:mini-dismissed:${storyNo}`;
   const title = story?.title ?? `Krishna Book story ${storyNo}`;
   const dialogTitleId = useId();
   const readerSrc = story?.reader_url ?? (story ? `/api/v1/stories/${storyNo}/reader` : null);
+
+  const setMiniDismissedPersisted = useCallback(
+    (value: boolean) => {
+      setMiniDismissed(value);
+      try {
+        if (value) sessionStorage.setItem(miniDismissKey, "1");
+        else sessionStorage.removeItem(miniDismissKey);
+      } catch {
+        /* private mode / unavailable storage */
+      }
+    },
+    [miniDismissKey],
+  );
 
   /* ── Derived ──────────────────────────────────────────────── */
 
@@ -384,8 +398,12 @@ export function StoryExperience({
     setNotes(localStorage.getItem(key) ?? "");
     setNotesDirty(false);
     setNotesSaveState("idle");
-    setMiniDismissed(false);
-  }, [key]);
+    try {
+      setMiniDismissed(sessionStorage.getItem(miniDismissKey) === "1");
+    } catch {
+      setMiniDismissed(false);
+    }
+  }, [key, miniDismissKey]);
 
   useEffect(() => {
     if (!notesDirty) return;
@@ -659,7 +677,7 @@ export function StoryExperience({
             <button
               type="button"
               className="bhava-button bhava-button--quiet mini-player-restore"
-              onClick={() => setMiniDismissed(false)}
+              onClick={() => setMiniDismissedPersisted(false)}
             >
               Show floating player
             </button>
@@ -673,7 +691,7 @@ export function StoryExperience({
           audioEl={audioEl}
           title={title}
           geometry={miniGeometry}
-          onDismiss={() => setMiniDismissed(true)}
+          onDismiss={() => setMiniDismissedPersisted(true)}
         />
       ) : null}
 

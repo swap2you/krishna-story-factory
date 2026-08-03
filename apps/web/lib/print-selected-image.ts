@@ -30,9 +30,18 @@ export function isAllowedPrintAssetUrl(imageUrl: string, allowedUrls: readonly s
   return allowedUrls.some((candidate) => normalizeAssetUrl(candidate) === target);
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function buildPrintDocumentHtml(imageUrl: string, title: string): string {
-  const safeTitle = title.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  const safeSrc = imageUrl.replace(/"/g, "&quot;");
+  const safeTitle = escapeHtml(title);
+  const safeSrc = escapeHtml(imageUrl);
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
