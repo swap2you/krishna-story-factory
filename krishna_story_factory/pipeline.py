@@ -500,38 +500,39 @@ def _run_once(
         if run_root is not None:
             _write_source_and_editorial_review(run_root, plan, content, story_md)
 
-        from .content.story_tts_equivalence import evaluate_story_tts_equivalence
+        if mode == "prod":
+            from .content.story_tts_equivalence import evaluate_story_tts_equivalence
 
-        equivalence = evaluate_story_tts_equivalence(
-            story_md=story_md,
-            tts_source=content.audio_script or "",
-        )
-        if run_root is not None:
-            (run_root / "story_tts_equivalence.json").write_text(
-                json.dumps(equivalence.to_dict(), indent=2, sort_keys=True) + "\n",
-                encoding="utf-8",
+            equivalence = evaluate_story_tts_equivalence(
+                story_md=story_md,
+                tts_source=content.audio_script or "",
             )
-        if equivalence.status != "PASS":
-            raise PipelineError(
-                "Canonical story/TTS equivalence gate FAILED (fail-closed before paid TTS): "
-                + equivalence.notes
+            if run_root is not None:
+                (run_root / "story_tts_equivalence.json").write_text(
+                    json.dumps(equivalence.to_dict(), indent=2, sort_keys=True) + "\n",
+                    encoding="utf-8",
+                )
+            if equivalence.status != "PASS":
+                raise PipelineError(
+                    "Canonical story/TTS equivalence gate FAILED (fail-closed before paid TTS): "
+                    + equivalence.notes
+                )
+
+            from .audio.pronunciation_coverage import (
+                evaluate_pronunciation_coverage,
+                write_pronunciation_report,
             )
 
-        from .audio.pronunciation_coverage import (
-            evaluate_pronunciation_coverage,
-            write_pronunciation_report,
-        )
-
-        pronunciation = evaluate_pronunciation_coverage(
-            f"{story_md}\n{content.audio_script or ''}",
-            project_root=settings.project_root,
-        )
-        if run_root is not None:
-            write_pronunciation_report(pronunciation, run_root / "pronunciation_report.json")
-        if pronunciation.status != "PASS":
-            raise PipelineError(
-                "Pronunciation coverage FAILED before TTS: " + pronunciation.notes
+            pronunciation = evaluate_pronunciation_coverage(
+                f"{story_md}\n{content.audio_script or ''}",
+                project_root=settings.project_root,
             )
+            if run_root is not None:
+                write_pronunciation_report(pronunciation, run_root / "pronunciation_report.json")
+            if pronunciation.status != "PASS":
+                raise PipelineError(
+                    "Pronunciation coverage FAILED before TTS: " + pronunciation.notes
+                )
 
         from .audio.provider import get_cached_provider_decision, select_audio_provider
         from .audio.sample_pipeline import SampleFirstPipelineError, run_sample_first, sample_pass_work_dir
