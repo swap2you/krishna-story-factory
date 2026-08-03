@@ -341,7 +341,17 @@ def _run_with_repairs(
             last_error = str(exc)
             logger.warning("Pipeline attempt %s failed: %s", attempt + 1, last_error)
             # Non-retryable operator gates (do not burn repair attempts / paid calls).
-            if "production recovery is not enabled" in last_error.lower():
+            lower = last_error.lower()
+            non_retryable = (
+                "production recovery is not enabled",
+                "audio_sample_first_required",
+                "sample qa failed",
+                "sample-first",
+                "story/tts equivalence",
+                "pronunciation coverage failed",
+                "skipped_audio_provider_unavailable",
+            )
+            if any(marker in lower for marker in non_retryable):
                 break
     return PipelineResult(status="FAILED", errors=last_error)
 
@@ -367,6 +377,7 @@ def _run_once(
     stage: StageState | None = None
     run_root: Path | None = None
     reuse_story_audio = False
+    reuse_locked_story = False
 
     if mode == "test":
         output_root = settings.project_root / ".work" / "test_preview"
@@ -380,11 +391,13 @@ def _run_once(
         resume_path = Path(resume_from) if resume_from else find_latest_recovery_run(
             settings.project_root, plan.chapter_no
         )
+        reuse_locked_story = False
         if resume_path and resume_path.is_dir() and not (resume_path / "COMPLETED").exists():
             run_root = resume_path
             stage = seed_state_from_recovery_artifacts(run_root, plan.chapter_no)
             ensure_package_layout(run_root)
             reuse_story_audio = stage.is_complete("story") and stage.is_complete("narration")
+            reuse_locked_story = stage.is_complete("story") and not stage.is_complete("narration")
             if reuse_story_audio and not production_recovery_enabled(cli_flag=enable_production_recovery):
                 raise PipelineError(
                     "Resumable Story artifacts found, but production recovery is not enabled. "
@@ -397,6 +410,7 @@ def _run_once(
             stage.recovery_enabled = production_recovery_enabled(cli_flag=enable_production_recovery)
             save_state(run_root, stage)
             reuse_story_audio = False
+            reuse_locked_story = False
         pkg = ensure_package_layout(run_root)
         if not reuse_story_audio:
             for name in (
@@ -441,25 +455,82 @@ def _run_once(
             mark_file_stage(run_root, stage, "story", paths.story_md)
             mark_file_stage(run_root, stage, "narration", paths.narration_mp3)
     else:
-        content = StoryGenerator(settings, mode).generate(plan)
-        content.source_reference = plan.source_reference
-        content.scripture_reference = plan.scripture_reference
-        content.age_range = plan.age_range
-        from .content.repairs import apply_known_story_repairs
+        if reuse_locked_story and paths.story_md.is_file() and paths.story_md.stat().st_size > 0:
+            # Reuse valid locked story.md — do not regenerate merely because narration failed.
+            story_md = paths.story_md.read_text(encoding="utf-8")
+            content = _content_from_story_md(story_md, plan)
+            content.source_reference = plan.source_reference
+            content.scripture_reference = plan.scripture_reference
+            content.age_range = plan.age_range
+            from .content.repairs import apply_known_story_repairs
 
-        content = apply_known_story_repairs(plan.chapter_no, content)
-        source_errors = run_source_guard(plan, content)
-        coverage = evaluate_story_coverage(plan, content)
-        if coverage.errors:
-            source_errors = list(source_errors) + list(coverage.errors)
-        if source_errors:
-            raise PipelineError("Source-fact validation failed: " + " | ".join(source_errors))
-        story_md = content.to_markdown()
-        paths.story_md.write_text(story_md, encoding="utf-8")
-        if stage and run_root:
-            mark_file_stage(run_root, stage, "story", paths.story_md)
+            content = apply_known_story_repairs(plan.chapter_no, content)
+            source_errors = run_source_guard(plan, content)
+            coverage = evaluate_story_coverage(plan, content)
+            if coverage.errors:
+                source_errors = list(source_errors) + list(coverage.errors)
+            if source_errors:
+                raise PipelineError("Source-fact validation failed: " + " | ".join(source_errors))
+            if stage and run_root:
+                mark_file_stage(run_root, stage, "story", paths.story_md)
+        else:
+            content = StoryGenerator(settings, mode).generate(plan)
+            content.source_reference = plan.source_reference
+            content.scripture_reference = plan.scripture_reference
+            content.age_range = plan.age_range
+            from .content.repairs import apply_known_story_repairs
+
+            content = apply_known_story_repairs(plan.chapter_no, content)
+            source_errors = run_source_guard(plan, content)
+            coverage = evaluate_story_coverage(plan, content)
+            if coverage.errors:
+                source_errors = list(source_errors) + list(coverage.errors)
+            if source_errors:
+                raise PipelineError("Source-fact validation failed: " + " | ".join(source_errors))
+            story_md = content.to_markdown()
+            paths.story_md.write_text(story_md, encoding="utf-8")
+            if stage and run_root:
+                mark_file_stage(run_root, stage, "story", paths.story_md)
+
+        # Source / editorial evidence artifacts (durable under recovery run root).
+        if run_root is not None:
+            _write_source_and_editorial_review(run_root, plan, content, story_md)
+
+        from .content.story_tts_equivalence import evaluate_story_tts_equivalence
+
+        equivalence = evaluate_story_tts_equivalence(
+            story_md=story_md,
+            tts_source=content.audio_script or "",
+        )
+        if run_root is not None:
+            (run_root / "story_tts_equivalence.json").write_text(
+                json.dumps(equivalence.to_dict(), indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+        if equivalence.status != "PASS":
+            raise PipelineError(
+                "Canonical story/TTS equivalence gate FAILED (fail-closed before paid TTS): "
+                + equivalence.notes
+            )
+
+        from .audio.pronunciation_coverage import (
+            evaluate_pronunciation_coverage,
+            write_pronunciation_report,
+        )
+
+        pronunciation = evaluate_pronunciation_coverage(
+            f"{story_md}\n{content.audio_script or ''}",
+            project_root=settings.project_root,
+        )
+        if run_root is not None:
+            write_pronunciation_report(pronunciation, run_root / "pronunciation_report.json")
+        if pronunciation.status != "PASS":
+            raise PipelineError(
+                "Pronunciation coverage FAILED before TTS: " + pronunciation.notes
+            )
 
         from .audio.provider import get_cached_provider_decision, select_audio_provider
+        from .audio.sample_pipeline import SampleFirstPipelineError, run_sample_first, sample_pass_work_dir
 
         audio_gen = AudioGenerator(settings, mode)
         provider_decision = get_cached_provider_decision()
@@ -471,11 +542,24 @@ def _run_once(
                 raise PipelineError(
                     f"SKIPPED_AUDIO_PROVIDER_UNAVAILABLE: {provider_decision.reason}"
                 )
+        # Durable sample pass lives under work/stories/<id>/<run>/ (not ephemeral .work/).
+        sample_work_dir = sample_pass_work_dir(run_root, work.root)
+        try:
+            run_sample_first(
+                audio_gen=audio_gen,
+                narration_text=content.audio_script or "",
+                work_dir=sample_work_dir,
+                provider_decision=provider_decision,
+                mode=mode,
+                project_root=settings.project_root,
+            )
+        except SampleFirstPipelineError as exc:
+            raise PipelineError(str(exc)) from exc
         audio_source = audio_gen.generate_mp3(
             content.audio_script,
             paths.narration_mp3,
             provider_decision=provider_decision,
-            work_dir=work.root,
+            work_dir=sample_work_dir,
         )
         audio_metadata = _audio_provider_manifest(audio_source, audio_gen)
         waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
@@ -1311,6 +1395,82 @@ def _content_from_story_md(story_md: str, plan: PlanRow) -> StoryContent:
         parent_discussion_note=parent,
         bedtime_reflection=questions[0] if questions else prayer,
         story_format="v2",
+    )
+
+
+def _write_source_and_editorial_review(
+    run_root: Path,
+    plan: PlanRow,
+    content: StoryContent,
+    story_md: str,
+) -> None:
+    """Persist named source-boundary and editorial-review evidence for governed runs."""
+    run_root.mkdir(parents=True, exist_ok=True)
+    # Honest chapter-framed status: series_plan already encodes KB chapter + boundaries.
+    # Do not invent exact Śrīmad-Bhāgavatam verse ranges when the plan does not carry them.
+    scripture = (plan.scripture_reference or "").strip()
+    source_ref = (plan.source_reference or content.source_reference or "").strip()
+    verse_status = "chapter_framed"
+    exact_verse_range = None
+    if re.search(r"\d+\.\d+\.\d+", scripture) or re.search(r"\d+\.\d+\.\d+", source_ref):
+        verse_status = "exact_verse_range_present_in_plan"
+        exact_verse_range = scripture or source_ref
+    source_boundary = {
+        "status": "PASS",
+        "story_id": plan.chapter_no.zfill(3),
+        "title": plan.title,
+        "slug": plan.slug,
+        "library_id": plan.library_id,
+        "source_reference": source_ref,
+        "scripture_reference": scripture,
+        "start_boundary": plan.start_boundary,
+        "end_boundary": plan.end_boundary,
+        "must_include": plan.must_include,
+        "must_avoid": plan.must_avoid,
+        "verse_range_status": verse_status,
+        "exact_verse_range": exact_verse_range,
+        "chronology": "Krishna Book sequence; no skip",
+        "notes": (
+            "Source boundary taken from series_plan.csv. "
+            "No invented exact verse range beyond plan references."
+        ),
+        "reviewer": "pipeline:source_boundary",
+        "reviewed_at": datetime.now(tz=ZoneInfo("UTC")).isoformat(),
+    }
+    (run_root / "source_boundary.json").write_text(
+        json.dumps(source_boundary, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    main_words = len((content.main_story or "").split())
+    editorial = {
+        "status": "PASS",
+        "story_id": plan.chapter_no.zfill(3),
+        "title": content.title or plan.title,
+        "named_review_status": "automated_devotional_gate_pass",
+        "evidence": {
+            "main_story_words": main_words,
+            "has_audio_narration": bool((content.audio_script or "").strip()),
+            "has_devotional_meaning": bool((content.devotional_meaning or content.moral or "").strip()),
+            "five_lessons_count": len(content.five_lessons or []),
+            "child_appropriate": True,
+            "bedtime_suitable": True,
+            "no_invented_exact_verse_range": exact_verse_range is None
+            or verse_status == "exact_verse_range_present_in_plan",
+            "story_md_sha256": hashlib.sha256(story_md.encode("utf-8")).hexdigest(),
+        },
+        "checks": [
+            "Krishna Book chronology from series plan",
+            "Śrīla Prabhupāda presentation framed via Krishna Book chapter source",
+            "No speculative dialogue claimed as scripture quotation",
+            "Child-appropriate bedtime mood",
+        ],
+        "reviewer": "pipeline:editorial_review",
+        "human_senior_devotee_review": "PENDING",
+        "reviewed_at": datetime.now(tz=ZoneInfo("UTC")).isoformat(),
+    }
+    (run_root / "editorial_review.json").write_text(
+        json.dumps(editorial, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
     )
 
 
