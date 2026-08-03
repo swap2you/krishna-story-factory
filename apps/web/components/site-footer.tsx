@@ -36,6 +36,7 @@ const groups = [
 export function SiteFooter() {
   const meta = getBhavaReleaseMeta();
   const env =
+    process.env.BHAVA_ENVIRONMENT?.trim() ||
     process.env.NEXT_PUBLIC_BHAVA_ENV?.trim() ||
     process.env.NODE_ENV ||
     "development";
