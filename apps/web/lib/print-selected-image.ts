@@ -148,7 +148,13 @@ export async function printSelectedImage(
         win.focus();
         // Playwright / automation can set this to avoid blocking on the system dialog.
         if ((window as unknown as { __BHAVA_SKIP_PRINT__?: boolean }).__BHAVA_SKIP_PRINT__) {
-          win.dispatchEvent(new Event("afterprint"));
+          const html = doc.documentElement.outerHTML;
+          (window as unknown as { __BHAVA_LAST_PRINT_HTML__?: string }).__BHAVA_LAST_PRINT_HTML__ = html;
+          (window as unknown as { __BHAVA_LAST_PRINT_URL__?: string }).__BHAVA_LAST_PRINT_URL__ = imageUrl;
+          // Keep the iframe briefly so DOM-contract assertions can observe it, then finish.
+          window.setTimeout(() => {
+            win.dispatchEvent(new Event("afterprint"));
+          }, 250);
         } else {
           win.print();
         }

@@ -125,19 +125,24 @@ test.describe("Story experience UX lock", () => {
 
     // Print uses isolated iframe document — not application DOM thumbnails.
     await page.evaluate(() => {
-      (window as unknown as { __BHAVA_SKIP_PRINT__?: boolean }).__BHAVA_SKIP_PRINT__ = true;
+      const w = window as unknown as {
+        __BHAVA_SKIP_PRINT__?: boolean;
+        __BHAVA_LAST_PRINT_HTML__?: string;
+      };
+      w.__BHAVA_SKIP_PRINT__ = true;
+      w.__BHAVA_LAST_PRINT_HTML__ = "";
     });
-    await page.getByRole("button", { name: /^Print$/i }).click({ force: true });
+    await page.getByRole("dialog").getByRole("button", { name: /^Print$/i }).click({ force: true });
     await page.waitForFunction(
-      () => {
-        const frame = document.querySelector('iframe[title="Print selected image"]') as HTMLIFrameElement | null;
-        if (!frame?.contentDocument) return false;
-        const html = frame.contentDocument.documentElement.outerHTML;
-        return /<img\b/i.test(html) && !/carousel-thumb|asset-tile|site-header/i.test(html);
-      },
+      () => Boolean((window as unknown as { __BHAVA_LAST_PRINT_HTML__?: string }).__BHAVA_LAST_PRINT_HTML__),
       undefined,
       { timeout: 5_000 },
     );
+    const printHtml = await page.evaluate(
+      () => (window as unknown as { __BHAVA_LAST_PRINT_HTML__?: string }).__BHAVA_LAST_PRINT_HTML__ || "",
+    );
+    expect(printHtml).toMatch(/<img\b/i);
+    expect(printHtml).not.toMatch(/carousel-thumb|asset-tile|site-header/i);
 
     await page.keyboard.press("Escape");
     await expectNoHorizontalOverflow(page);
