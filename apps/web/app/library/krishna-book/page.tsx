@@ -2,6 +2,7 @@ import { PageIntro } from "@/components/page-intro";
 import { StoryGrid } from "@/components/story-grid";
 import { loadStories } from "@/lib/catalog";
 import { pageMetadata } from "@/lib/seo";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,14 @@ export default async function KrishnaBookPage() {
         title={`Chapter timeline for ${range}.`}
         body="Each card opens listening, reading, activities, coloring, source references, and device-local notes. Incomplete factory packages stay out of this list until they pass the exact-eight publish gate."
       />
+      <section className="section" style={{ paddingBottom: 0 }}>
+        <div className="container">
+          <p>
+            New here?{" "}
+            <Link href="/library/krishna-book/how-to-use">See how the weekly Krishna story journey works</Link>.
+          </p>
+        </div>
+      </section>
       <section className="section">
         <div className="container">
           <StoryGrid
