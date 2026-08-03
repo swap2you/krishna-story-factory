@@ -12,7 +12,7 @@ on:
       content_release_tag:
         description: Public content release tag
         required: true
-        default: bhava-content-001-020-v3
+        default: bhava-content-001-020-v4
 
 permissions:
   contents: read
@@ -42,15 +42,14 @@ jobs:
           git fetch origin develop
           if [[ "$EVENT_NAME" == "push" ]]; then
             SHA="${GITHUB_SHA}"
-            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-020-v3}"
-            # push path ignores workflow_dispatch content input; pin from repo default until content tag bumps
-            CONTENT_TAG="bhava-content-001-020-v3"
+            # push path pins from committed RELEASE_CONTENT.json (immutable content tag)
+            CONTENT_TAG="bhava-content-001-020-v4"
             if [[ -f deploy/content/RELEASE_CONTENT.json ]]; then
               CONTENT_TAG="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["tag"])')"
             fi
           else
             SHA="${REQUESTED:-$(git rev-parse origin/develop)}"
-            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-020-v3}"
+            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-020-v4}"
           fi
           git cat-file -e "${SHA}^{commit}"
           git merge-base --is-ancestor "$SHA" origin/develop
@@ -73,11 +72,12 @@ jobs:
       - name: Build images
         env:
           RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+          CONTENT_TAG: ${{ needs.resolve.outputs.content_tag }}
         run: |
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${RELEASE_SHA} \
-            --build-arg BHAVA_WEB_VERSION=001-020-v3 \
-            --build-arg BHAVA_CONTENT_RELEASE=bhava-content-001-020-v3 \
+            --build-arg BHAVA_WEB_VERSION=001-020-v4 \
+            --build-arg BHAVA_CONTENT_RELEASE=${CONTENT_TAG} \
             -t bhava-web:${RELEASE_SHA} .
           docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${RELEASE_SHA} .
           docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} \
