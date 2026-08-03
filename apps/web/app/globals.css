@@ -647,6 +647,8 @@ main { flex: 1; }
   background: rgba(255,255,255,.14); color: #fff;
   font-size: 1.35rem; line-height: 1;
   display: grid; place-items: center;
+  position: relative;
+  z-index: 2;
 }
 .mini-player-dismiss:hover { background: rgba(255,255,255,.26); }
 .mini-player-dismiss:focus-visible {
