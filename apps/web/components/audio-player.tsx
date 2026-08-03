@@ -349,47 +349,18 @@ export function AudioPlayer({
     setPlaying(true);
   }, [resumeKey]);
 
-  // Prefetch blob when supported; otherwise warm native src.
+  // Warm the native src with metadata preload; blob prefetch deferred to first play.
   useEffect(() => {
     if (!src) return;
     const mediaSrc = absoluteUrl(src);
-    let cancelled = false;
     const audio = audioRef.current;
-
-    if (BLOB_UNSUPPORTED.has(mediaSrc)) {
-      if (audio && !/narration\.mp3/i.test(audio.src || "")) {
-        audio.src = mediaSrc;
-      }
-      setPath("idle");
-      setStatus(null);
-      return;
+    if (!audio) return;
+    if (!audio.src || (!audio.src.includes("narration.mp3") && !audio.src.startsWith("blob:"))) {
+      audio.src = mediaSrc;
     }
-
-    void ensureBlobUrl(mediaSrc)
-      .then((objectUrl) => {
-        if (cancelled) return;
-        if (BLOB_UNSUPPORTED.has(mediaSrc)) {
-          if (audio) audio.src = mediaSrc;
-          setPath("idle");
-          setStatus(null);
-          return;
-        }
-        objectUrlRef.current = objectUrl;
-        if (audio && audio.src !== objectUrl) {
-          audio.src = objectUrl;
-        }
-        setPath((prev) =>
-          prev === "idle" || prev === "blob_fetching" ? "blob_ready" : prev,
-        );
-        setStatus(null);
-      })
-      .catch(() => {
-        /* Play / native fallback will surface errors */
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [src, ensureBlobUrl]);
+    setPath("idle");
+    setStatus(null);
+  }, [src]);
 
   const playViaBlob = useCallback(async (audio: HTMLAudioElement, mediaSrc: string) => {
     if (BLOB_UNSUPPORTED.has(mediaSrc)) {
@@ -622,7 +593,7 @@ export function AudioPlayer({
     <div className="audio-player" aria-label={`Audio player for ${title}`} data-playback-path={path}>
       <audio
         ref={audioRef}
-        preload="none"
+        preload="metadata"
         onTimeUpdate={(event) => {
           const value = event.currentTarget.currentTime;
           setCurrent(value);

@@ -55,10 +55,10 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/heroes/hero-text-free-master-1280w.webp",
-        width: 1280,
-        height: 720,
-        alt: "Bhāva devotional learning portal",
+        url: "/og/bhava-share-1200x630.webp",
+        width: 1200,
+        height: 630,
+        alt: "Bhāva — Krishna stories, scripture and devotional learning",
       },
     ],
   },
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     title: "Bhāva — Krishna stories and devotional learning",
     description:
       "Stories, scripture, audio and learning resources for children, families and teachers.",
-    images: ["/heroes/hero-text-free-master-1280w.webp"],
+    images: ["/og/bhava-share-1200x630.webp"],
   },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
