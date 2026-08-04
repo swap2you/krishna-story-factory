@@ -10,9 +10,9 @@ on:
         required: false
         default: ""
       content_release_tag:
-        description: Public content release tag
-        required: true
-        default: bhava-content-001-020-v4
+        description: Staging content release tag (default from RELEASE_CONTENT_STAGING.json)
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -27,6 +27,7 @@ jobs:
     outputs:
       sha: ${{ steps.release.outputs.sha }}
       content_tag: ${{ steps.release.outputs.content_tag }}
+      public_max: ${{ steps.release.outputs.public_max }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -38,24 +39,50 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           REQUESTED: ${{ inputs.commit_sha }}
           CONTENT_TAG_INPUT: ${{ inputs.content_release_tag }}
+          GITHUB_SHA_ENV: ${{ github.sha }}
         run: |
+          set -euo pipefail
           git fetch origin develop
-          if [[ "$EVENT_NAME" == "push" ]]; then
-            SHA="${GITHUB_SHA}"
-            # push path pins from committed RELEASE_CONTENT.json (immutable content tag)
-            CONTENT_TAG="bhava-content-001-020-v4"
-            if [[ -f deploy/content/RELEASE_CONTENT.json ]]; then
-              CONTENT_TAG="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["tag"])')"
-            fi
-          else
-            SHA="${REQUESTED:-$(git rev-parse origin/develop)}"
-            CONTENT_TAG="${CONTENT_TAG_INPUT:-bhava-content-001-020-v4}"
-          fi
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+
+          staging_path = Path("deploy/content/RELEASE_CONTENT_STAGING.json")
+          prod_path = Path("deploy/content/RELEASE_CONTENT.json")
+          staging = json.loads(staging_path.read_text(encoding="utf-8")) if staging_path.is_file() else {}
+          prod = json.loads(prod_path.read_text(encoding="utf-8"))
+          assert int(prod["public_story_max"]) == 20, prod
+          assert str(prod["tag"]).startswith("bhava-content-001-020-"), prod
+
+          default_tag = staging.get("tag") or "bhava-content-001-022-staging-v1"
+          default_max = int(staging.get("public_story_max") or 22)
+          event = os.environ["EVENT_NAME"]
+          requested = (os.environ.get("REQUESTED") or "").strip()
+          content_input = (os.environ.get("CONTENT_TAG_INPUT") or "").strip()
+
+          if event == "push":
+              sha = os.environ["GITHUB_SHA_ENV"]
+              content_tag = default_tag
+          else:
+              sha = requested or subprocess.check_output(
+                  ["git", "rev-parse", "origin/develop"], text=True
+              ).strip()
+              content_tag = content_input or default_tag
+
+          public_max = default_max
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"sha={sha}\n")
+              handle.write(f"content_tag={content_tag}\n")
+              handle.write(f"public_max={public_max}\n")
+          print(f"Resolved staging deploy SHA={sha} content={content_tag} max={public_max}")
+          PY
+
+      - name: Verify resolved commit is on develop
+        env:
+          SHA: ${{ steps.release.outputs.sha }}
+        run: |
           git cat-file -e "${SHA}^{commit}"
           git merge-base --is-ancestor "$SHA" origin/develop
-          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-          echo "content_tag=$CONTENT_TAG" >> "$GITHUB_OUTPUT"
-          echo "Resolved staging deploy SHA=$SHA content=$CONTENT_TAG"
 
   deploy:
     needs: resolve
@@ -69,15 +96,27 @@ jobs:
         with:
           ref: ${{ needs.resolve.outputs.sha }}
 
+      - name: Guard production content pin unchanged
+        run: |
+          python3 - <<'PY'
+          import json
+          pin = json.load(open("deploy/content/RELEASE_CONTENT.json", encoding="utf-8"))
+          assert int(pin["public_story_max"]) == 20
+          assert pin["tag"].startswith("bhava-content-001-020-")
+          print("production pin OK", pin["tag"], pin["public_story_max"])
+          PY
+
       - name: Build images
         env:
           RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
           CONTENT_TAG: ${{ needs.resolve.outputs.content_tag }}
+          PUBLIC_MAX: ${{ needs.resolve.outputs.public_max }}
         run: |
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${RELEASE_SHA} \
-            --build-arg BHAVA_WEB_VERSION=001-020-v4 \
+            --build-arg BHAVA_WEB_VERSION=001-022-staging \
             --build-arg BHAVA_CONTENT_RELEASE=${CONTENT_TAG} \
+            --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${RELEASE_SHA} .
           docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${RELEASE_SHA} .
           docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} \
@@ -91,7 +130,7 @@ jobs:
             -C deploy/ionos \
             docker-compose.yml Caddyfile runtime.env.example scripts
 
-      - name: Download approved public content
+      - name: Download approved staging content
         env:
           GH_TOKEN: ${{ github.token }}
           CONTENT_TAG: ${{ needs.resolve.outputs.content_tag }}
@@ -101,6 +140,18 @@ jobs:
             --pattern "${CONTENT_TAG}.tar.gz" \
             --pattern "${CONTENT_TAG}.tar.gz.sha256"
           sha256sum --check "${CONTENT_TAG}.tar.gz.sha256"
+          if [[ -f deploy/content/RELEASE_CONTENT_STAGING.json ]]; then
+            python3 - <<'PY'
+          import hashlib, json
+          pin = json.load(open("deploy/content/RELEASE_CONTENT_STAGING.json", encoding="utf-8"))
+          tag = pin["tag"]
+          expected = pin["sha256"].lower()
+          actual = hashlib.sha256(open(f"{tag}.tar.gz", "rb").read()).hexdigest()
+          assert actual == expected, (actual, expected)
+          assert int(pin["public_story_max"]) == 22
+          print("staging content pin OK", tag, actual)
+          PY
+          fi
 
       - name: Configure pinned SSH
         uses: ./.github/actions/configure-pinned-ssh
@@ -130,13 +181,17 @@ jobs:
           USER: ${{ secrets.VPS_USER }}
           RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
           CONTENT_TAG: ${{ needs.resolve.outputs.content_tag }}
+          PUBLIC_MAX: ${{ needs.resolve.outputs.public_max }}
         run: |
           CONTENT_SHA="$(awk '{print $1}' "${CONTENT_TAG}.tar.gz.sha256")"
-          PUBLIC_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
           ssh -p "$PORT" "$USER@$HOST" \
             "mkdir -p /opt/bhava/config && \
              tar -xzf /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz -C /opt/bhava/config && \
              chmod +x /opt/bhava/config/scripts/*.sh && \
+             bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
+               BHAVA_CONTENT_RELEASE=${CONTENT_TAG} \
+               BHAVA_STAGING_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
+               BHAVA_WEB_VERSION=001-022-staging && \
              BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
              bash /opt/bhava/config/scripts/deploy-release.sh staging ${RELEASE_SHA} \

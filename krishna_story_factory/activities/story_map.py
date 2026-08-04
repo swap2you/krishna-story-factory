@@ -108,6 +108,27 @@ def _looks_truncated(text: str) -> bool:
     return False
 
 
+_WEAK_OPENERS = re.compile(r"(?i)^(But|Instead|Then|And)\b")
+_MOMENT_FRAGMENT = re.compile(r"(?i)not even a single moment went by")
+
+
+def _normalize_event_opener(sent: str) -> str:
+    """Drop context-dependent openers when the remainder is self-contained."""
+    cleaned = " ".join((sent or "").strip().split())
+    for prefix in ("Instead, ", "Instead ", "But ", "Then, ", "Then ", "And "):
+        if cleaned.startswith(prefix):
+            rest = cleaned[len(prefix) :].lstrip()
+            if not rest:
+                break
+            rest = rest[0].upper() + rest[1:]
+            if _is_complete_sentence(rest) and not _WEAK_OPENERS.match(rest):
+                # Require a named actor so the card is not pronoun-only residue.
+                if re.search(r"(?i)\b(Kṛṣṇa|Krishna|Brahmā|Brahma|Viṣṇu|Visnu|Lord)\b", rest):
+                    return rest
+            break
+    return cleaned
+
+
 def validate_event_list(events: list[str], *, required_chars: list[str] | None = None) -> list[str]:
     errors: list[str] = []
     if len(events) != 6:
@@ -120,6 +141,12 @@ def validate_event_list(events: list[str], *, required_chars: list[str] | None =
             errors.append(f"event {idx} is not a complete sentence")
         if _looks_truncated(event):
             errors.append(f"event {idx} appears truncated/mid-word: {event[-48:]!r}")
+        if _WEAK_OPENERS.match(event.strip()) and not re.search(
+            r"(?i)\b(Kṛṣṇa|Krishna|Brahmā|Brahma|Viṣṇu|Visnu|Lord)\b", event
+        ):
+            errors.append(f"event {idx} begins with a context-dependent conjunction")
+        if _MOMENT_FRAGMENT.search(event) and len(event.split()) <= 12:
+            errors.append(f"event {idx} is a context-free moment fragment")
         for pat in _PLACEHOLDER_PATTERNS:
             if pat.search(event):
                 errors.append(f"event {idx} contains placeholder language")
@@ -128,6 +155,26 @@ def validate_event_list(events: list[str], *, required_chars: list[str] | None =
         for name in required_chars:
             if name.lower() not in blob and _fold(name).lower() not in _fold(blob).lower():
                 errors.append(f"required character/token missing from sequence: {name}")
+    return errors
+
+
+def validate_story_022_sequence_beats(events: list[str]) -> list[str]:
+    """Story 022 must carry return + prayer beats, not only token presence."""
+    errors = validate_event_list(events, required_chars=["Brahmā", "Kṛṣṇa"])
+    blob = _fold(" ".join(events)).lower()
+    required = {
+        "hidden boys/calves": ("hid", "hidden", "stolen", "took"),
+        "krishna expansion": ("expanded", "exact forms", "every missing"),
+        "brahma returned": ("returned",),
+        "visnu revelation": ("visnu", "viṣṇu", "four-armed", "four armed"),
+        "bowing/humility": ("bowed", "bow", "descended", "swan"),
+        "prayers": ("pray", "prayer", "prayed", "forgiveness"),
+    }
+    for label, keys in required.items():
+        if not any(k in blob for k in keys):
+            errors.append(f"Story 022 beat missing: {label}")
+    if any(_MOMENT_FRAGMENT.search(e) and len(e.split()) <= 12 for e in events):
+        errors.append("Story 022 must not use the lone 'not even a single moment' fragment")
     return errors
 
 
@@ -171,12 +218,17 @@ def reconstruct_story_map_from_canonical(
         if not sent.endswith((".", "!", "?", "…", '"', "”", "'")):
             sent = f"{sent}."
         word_n = len(_WORD_RE.findall(sent))
-        if word_n < 8 or word_n > 42:
+        # Story 022 prayer/bow beats are naturally longer; return beat is short.
+        max_words = 55 if story_no.zfill(3) == "022" else 42
+        min_words = 6 if story_no.zfill(3) == "022" else 8
+        max_chars = 280 if story_no.zfill(3) == "022" else 220
+        if word_n < min_words or word_n > max_words:
             continue
         if not _is_complete_sentence(sent):
             continue
-        # Printable card budget: allow longer beat sentences when needed.
-        if len(sent) > 220:
+        if len(sent) > max_chars:
+            continue
+        if _MOMENT_FRAGMENT.search(sent) and word_n <= 12:
             continue
         sentences.append(sent)
     if len(sentences) < 6:
@@ -198,6 +250,16 @@ def reconstruct_story_map_from_canonical(
         raise ValueError(
             f"Cannot reconstruct ActivityStoryMap for {story_no}: "
             f"only {len(sentences)} usable complete sentences in Main Story."
+        )
+
+    # Normalize weak openers before selection so printable cards stay self-contained.
+    sentences = [_normalize_event_opener(s) for s in sentences]
+    # Re-filter after normalization (may shorten some lines).
+    sentences = [s for s in sentences if _is_complete_sentence(s) and not _looks_truncated(s)]
+    if len(sentences) < 6:
+        raise ValueError(
+            f"Cannot reconstruct ActivityStoryMap for {story_no}: "
+            f"only {len(sentences)} usable complete sentences after opener normalization."
         )
 
     n = len(sentences)
@@ -229,26 +291,56 @@ def reconstruct_story_map_from_canonical(
                 return sent
         return fallback
 
-    opening = picks[0]
-    problem = _prefer(sentences[1:], ("brahma", "stole", "steal", "hid", "gone", "missing", "took"), picks[1])
-    response = _prefer(sentences, ("don't worry", "find the calves", "walked", "search"), picks[2])
-    central = _prefer(
-        sentences,
-        ("expanded", "exact forms", "copies", "forms of all", "missing calves and boys"),
-        picks[3],
-    )
-    climax = _prefer(
-        sentences,
-        ("visnu", "viṣṇu", "four-armed", "realized", "amazed", "astonished"),
-        picks[4],
-    )
-    resolution = _prefer(
-        sentences,
-        ("prayer", "humble", "supremacy", "loving kindness", "understood", "bowed"),
-        picks[5],
-    )
+    chapter = story_no.zfill(3)
+    if chapter == "022":
+        # Prayer-of-Brahmā arc: hide → expand → return → Viṣṇu → bow → pray.
+        opening = _prefer(
+            sentences,
+            ("had hidden", "hid the", "left thinking", "taken away"),
+            picks[0],
+        )
+        problem = _prefer(
+            sentences,
+            ("expanded himself", "every missing", "exact forms", "mysterious ability"),
+            picks[1],
+        )
+        response = _prefer(sentences, ("brahma returned", "returned"), picks[2])
+        central = _prefer(
+            sentences,
+            ("four-armed", "visnu", "viṣṇu", "astonished gaze"),
+            picks[3],
+        )
+        climax = _prefer(
+            sentences,
+            ("descended", "white swan", "bowed all four", "lotus feet"),
+            picks[4],
+        )
+        resolution = _prefer(
+            sentences,
+            ("pray for", "prayed", "prayer", "forgiveness", "began to pray"),
+            picks[5],
+        )
+    else:
+        opening = picks[0]
+        problem = _prefer(sentences[1:], ("brahma", "stole", "steal", "hid", "gone", "missing", "took"), picks[1])
+        response = _prefer(sentences, ("don't worry", "find the calves", "walked", "search"), picks[2])
+        central = _prefer(
+            sentences,
+            ("expanded", "exact forms", "copies", "forms of all", "missing calves and boys"),
+            picks[3],
+        )
+        climax = _prefer(
+            sentences,
+            ("visnu", "viṣṇu", "four-armed", "realized", "amazed", "astonished"),
+            picks[4],
+        )
+        resolution = _prefer(
+            sentences,
+            ("prayer", "humble", "supremacy", "loving kindness", "understood", "bowed"),
+            picks[5],
+        )
 
-    events = [opening, problem, response, central, climax, resolution]
+    events = [_normalize_event_opener(e) for e in (opening, problem, response, central, climax, resolution)]
     # Ensure uniqueness while preserving chronological order of first occurrence.
     ordered_unique: list[str] = []
     for event in events:
