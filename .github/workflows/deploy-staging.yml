@@ -13,6 +13,10 @@ on:
         description: Staging content release tag (default from RELEASE_CONTENT_STAGING.json)
         required: false
         default: ""
+      ops_mode:
+        description: Leave empty for normal staging deploy. Set restore_prod_then_staging_022 for emergency host recovery.
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -22,7 +26,115 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  ops-recover:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.ops_mode == 'restore_prod_then_staging_022' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment:
+      name: staging
+      url: https://staging.bhava.me
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Configure pinned SSH
+        uses: ./.github/actions/configure-pinned-ssh
+        with:
+          ssh_key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
+
+      - name: Download content bundles
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download bhava-content-001-020-v4 \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "bhava-content-001-020-v4.tar.gz" \
+            --pattern "bhava-content-001-020-v4.tar.gz.sha256"
+          sha256sum --check bhava-content-001-020-v4.tar.gz.sha256
+          gh release download bhava-content-001-022-staging-v1 \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "bhava-content-001-022-staging-v1.tar.gz" \
+            --pattern "bhava-content-001-022-staging-v1.tar.gz.sha256"
+          sha256sum --check bhava-content-001-022-staging-v1.tar.gz.sha256
+
+      - name: Transfer bundles
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          scp -P "$PORT" \
+            bhava-content-001-020-v4.tar.gz \
+            bhava-content-001-020-v4.tar.gz.sha256 \
+            bhava-content-001-022-staging-v1.tar.gz \
+            bhava-content-001-022-staging-v1.tar.gz.sha256 \
+            "$USER@$HOST:/opt/bhava/incoming/"
+
+      - name: Recover shared host
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          V4_SHA="$(awk '{print $1}' bhava-content-001-020-v4.tar.gz.sha256)"
+          STG_SHA="$(awk '{print $1}' bhava-content-001-022-staging-v1.tar.gz.sha256)"
+          ssh -p "$PORT" "$USER@$HOST" \
+            "V4_SHA='${V4_SHA}' STG_SHA='${STG_SHA}' bash -s" <<'EOS'
+          set -Eeuo pipefail
+          cd /opt/bhava/config
+          docker compose --env-file runtime.env ps || true
+          docker compose --env-file runtime.env logs api-production --tail 80 || true
+          docker compose --env-file runtime.env stop web-staging api-staging || true
+          BHAVA_PUBLIC_STORY_MAX=20 BHAVA_RECREATE_CONTENT_MOUNTS=0 \
+            bash /opt/bhava/config/scripts/install-content-bundle.sh \
+            /opt/bhava/incoming/bhava-content-001-020-v4.tar.gz \
+            bhava-content-001-020-v4 "${V4_SHA}"
+          docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production web-production
+          sleep 10
+          docker compose --env-file runtime.env ps api-production || true
+          docker compose --env-file runtime.env logs api-production --tail 50 || true
+          bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
+            BHAVA_CONTENT_RELEASE=bhava-content-001-022-staging-v1 \
+            BHAVA_STAGING_PUBLIC_STORY_MAX=22 \
+            BHAVA_WEB_VERSION=001-022-staging
+          BHAVA_PUBLIC_STORY_MAX=22 BHAVA_RECREATE_CONTENT_MOUNTS=0 \
+            bash /opt/bhava/config/scripts/install-content-bundle.sh \
+            /opt/bhava/incoming/bhava-content-001-022-staging-v1.tar.gz \
+            bhava-content-001-022-staging-v1 "${STG_SHA}"
+          docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production
+          docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-staging web-staging
+          sleep 10
+          docker compose --env-file runtime.env ps || true
+          EOS
+
+      - name: Verify production restored
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            code="$(curl -sS -o /tmp/bhava_ver.json -w '%{http_code}' https://bhava.me/api/v1/version || true)"
+            if [[ "$code" == "200" ]]; then
+              cat /tmp/bhava_ver.json
+              curl -fsS https://bhava.me/stories/020 >/dev/null
+              code021="$(curl -sS -o /dev/null -w '%{http_code}' https://bhava.me/stories/021 || true)"
+              [[ "$code021" == "404" ]]
+              echo "production recovered"
+              exit 0
+            fi
+            echo "waiting production version HTTP ${code} (${i}/30)"
+            sleep 5
+          done
+          exit 1
+
+      - name: Verify staging restored
+        env:
+          STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
+          STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+        run: |
+          SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh \
+            https://staging.bhava.me 82b0e43ca56df473bf2a861f0937530154f7f4d5 staging
+
   resolve:
+    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.ops_mode == 'restore_prod_then_staging_022') }}
     runs-on: ubuntu-latest
     outputs:
       sha: ${{ steps.release.outputs.sha }}
