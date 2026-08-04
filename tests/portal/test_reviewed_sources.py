@@ -6,7 +6,21 @@ from bhava_api.web_assets.reviewed_sources import REVIEWED_SOURCES, source_links
 
 
 def test_reviewed_sources_cover_released_stories():
-    assert set(REVIEWED_SOURCES) == {f"{n:03d}" for n in range(1, 21)}
+    assert set(REVIEWED_SOURCES) == {f"{n:03d}" for n in range(1, 22)}
+
+
+def test_reviewed_shlokas_cover_001_021():
+    assert set(REVIEWED_SHLOKAS) == {f"{n:03d}" for n in range(1, 22)}
+    for story_no in REVIEWED_SHLOKAS:
+        payload = shlokas_payload_for_story(story_no)
+        assert payload["status"] == "reviewed"
+        assert payload["shlokas"]
+        for row in payload["shlokas"]:
+            assert row["review_status"] in {"reviewed", "not_applicable"}
+            assert row.get("sanskrit") in (None, "")
+            assert "translation" not in row or row["translation"] is None
+            note = str(row.get("note") or "").lower() + str(row.get("child_explanation") or "").lower()
+            assert "used with permission" not in note
 
 
 def test_reviewed_sources_have_verified_vedabase_urls():
@@ -52,7 +66,7 @@ def test_bona_fide_verse_ranges_only_where_series_plan_pins_them():
         secondary = REVIEWED_SOURCES[story_no]["scripture_secondary"]
         assert secondary["verse_start"] == start
         assert secondary["verse_end"] == end
-    for n in list(range(1, 2)) + list(range(5, 21)):
+    for n in list(range(1, 2)) + list(range(5, 22)):
         secondary = REVIEWED_SOURCES[f"{n:03d}"]["scripture_secondary"]
         assert secondary.get("verse_start") is None
         assert secondary.get("verse_end") is None
@@ -78,17 +92,3 @@ def test_unreviewed_story_does_not_invent_vedabase_url():
     assert links
     assert all(not item.get("vedabase_url") for item in links)
     assert all(item.get("review_status") == "needs_review" for item in links)
-
-
-def test_reviewed_shlokas_cover_001_020():
-    assert set(REVIEWED_SHLOKAS) == {f"{n:03d}" for n in range(1, 21)}
-    for story_no in REVIEWED_SHLOKAS:
-        payload = shlokas_payload_for_story(story_no)
-        assert payload["status"] == "reviewed"
-        assert payload["shlokas"]
-        for row in payload["shlokas"]:
-            assert row["review_status"] in {"reviewed", "not_applicable"}
-            assert row.get("sanskrit") in (None, "")
-            assert "translation" not in row or row["translation"] is None
-            note = str(row.get("note") or "").lower() + str(row.get("child_explanation") or "").lower()
-            assert "used with permission" not in note

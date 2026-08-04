@@ -33,15 +33,16 @@
 | Field | Value |
 | --- | --- |
 | provider | openai (ElevenLabs unavailable / insufficient at run time) |
-| model | `tts-1-hd` |
-| voice | `nova` (configured OpenAI voice) |
-| settings_hash | `BCFFBA1EF87F73799AE46B537DBEAF666E2FBA85627C5D031ADE00BFE842B3DB` |
+| initial wrong settings | `tts-1-hd` + `nova` @ `1.0` → ~261.7 s (too fast vs series template) |
+| repaired settings | `gpt-4o-mini-tts-2025-12-15` + `marin` @ `0.92` (series OpenAI template) |
+| settings_hash (repair) | `1EA485E1F314D085E0D6C5240E0692B137C5C995C8948A4AE9462BC8B468CDB4` |
 | narration_source_sha | `FF2BFDF42FBEA0F04F7C75252EECA4A9AD2489DB1AB1DF0DA59C931309214E3B` |
-| sample duration | 54.338 s |
+| sample duration (repair) | 58.658 s (retry once after first sample >60s) |
 | sample QA | objective PASS |
-| sample retry count | 0 |
-| full narration duration | 261.674 s |
+| sample retry count | 1 |
+| full narration duration | 356.21 s |
 | objective full audio QA | PASS |
+| Drive narration repair | UPLOADED (narration.mp3 + manifest.json) |
 | human listening status | NOT_CLAIMED |
 
 ## Gates
@@ -54,7 +55,8 @@
 | editorial_review.json | automated PASS; human senior devotee review PENDING |
 | visuals | poster_score=92, coloring_score=92 |
 | activity | deterministic pack after LLM STORY_MAP malform; package accepted |
-| web-assets | built for 021 under `data/web-assets/021` |
+| web-assets | rebuilt for 021 under `data/web-assets/021` (ślokas reviewed SB 10.13 companion; narration refreshed) |
+| ślokas tab | reviewed chapter-framed companion (not “not yet curated”) |
 
 ## Scheduler
 
