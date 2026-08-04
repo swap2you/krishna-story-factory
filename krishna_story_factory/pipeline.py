@@ -694,6 +694,9 @@ def _run_once(
     )
     if run_root is not None:
         write_activity_semantic_qa(semantic_qa, run_root / "activity_semantic_qa.json")
+    # Permanent gate: any STORY_SEQUENCE regeneration (including rebuilds of older
+    # chapters) must pass semantic QA. Historical packages already on Drive are
+    # untouched until explicitly rebuilt.
     if activity.activity_type == "STORY_SEQUENCE" and semantic_qa.result != "PASS":
         raise PipelineError(
             "Activity semantic QA FAILED: " + " | ".join(semantic_qa.failure_reasons)

@@ -1,4 +1,4 @@
-"""Hand-reviewed śloka / companion-verse records for Stories 001–021.
+"""Hand-reviewed śloka / companion-verse records for Stories 001–022.
 
 Rules:
 - Never invent Sanskrit, transliteration, BBT translation, or purport text.

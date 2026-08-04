@@ -43,13 +43,13 @@
 | full narration duration | 356.21 s |
 | objective full audio QA | PASS |
 | Drive narration repair | UPLOADED (narration.mp3 + manifest.json) |
-| human listening status | NOT_CLAIMED |
+| human listening status | HUMAN_REVIEW_PENDING (later accepted USER_LISTENED_AND_ACCEPTED_ON_2026-08-04) |
 
 ## Gates
 
 | Gate | Result |
 | --- | --- |
-| story/TTS equivalence | PASS (coverage≈62%, name_coverage≈75%) |
+| story/TTS equivalence | Historical note: earlier completion accepted fuzzy ~62% coverage; permanent gates in PR #47 now require exact-canonical Main Story ↔ TTS (fuzzy is fail-closed / legacy opt-in only) |
 | pronunciation coverage | PASS |
 | source_boundary.json | PASS (chapter-framed) |
 | editorial_review.json | automated PASS; human senior devotee review PENDING |

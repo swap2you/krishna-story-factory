@@ -1,4 +1,4 @@
-"""Temporary recommended playback rates for Stories 001–021.
+"""Temporary recommended playback rates for Stories 001–022.
 
 Derived from local narration metrics (no paid API calls). Target bedtime pace
 is ~150 WPM (AUDIO_NARRATION_STANDARD hard-fail band starts above 165 WPM).
