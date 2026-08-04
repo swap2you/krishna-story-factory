@@ -197,6 +197,7 @@ jobs:
           git merge-base --is-ancestor "$SHA" origin/develop
 
   deploy:
+    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.ops_mode == 'restore_prod_then_staging_022') }}
     needs: resolve
     runs-on: ubuntu-latest
     timeout-minutes: 50
