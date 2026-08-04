@@ -223,11 +223,18 @@ def _append_matching_coverage_errors(
     if activity is None:
         return None
     coverage_check = matching_coverage_from_pdf_text(activity, text_blob)
+    activity_type = (activity.activity_type or "").upper()
+    # Sequence/matching educational coverage must not pass on expected=0.
+    if activity_type == "STORY_SEQUENCE" and coverage_check.expected_pairs == 0:
+        errors.append("STORY_SEQUENCE coverage expected item count must be > 0")
+    if activity_type == "MATCHING_GAME" and coverage_check.expected_pairs == 0:
+        errors.append("MATCHING_GAME coverage expected pair count must be > 0")
     if not coverage_check.pass_:
+        label = "Sequence" if activity_type == "STORY_SEQUENCE" else "Matching"
         if coverage_check.missing_labels:
-            errors.append("Matching coverage missing labels: " + ", ".join(coverage_check.missing_labels[:8]))
+            errors.append(f"{label} coverage missing labels: " + ", ".join(coverage_check.missing_labels[:8]))
         if coverage_check.orphan_labels:
-            errors.append("Matching coverage orphans: " + "; ".join(coverage_check.orphan_labels[:6]))
+            errors.append(f"{label} coverage orphans: " + "; ".join(coverage_check.orphan_labels[:6]))
     try:
         chapter_guess = ""
         if render_dir and render_dir.parent:

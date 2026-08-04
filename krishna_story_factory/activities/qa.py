@@ -189,13 +189,30 @@ def semantic_activity_errors(pack: ActivityPack) -> list[str]:
 
 
 def matching_coverage_from_pdf_text(activity: ActivityPack, pdf_text: str) -> MatchingCoverageResult:
-    """Compare expected MatchingCard labels to extracted PDF text."""
+    """Compare expected MatchingCard labels to extracted PDF text.
+
+    For STORY_SEQUENCE packs, matching pairs are not applicable — run sequence
+    coverage instead. Vacuous expected_pairs=0/rendered_pairs=0 is never PASS
+    for a sequence activity.
+    """
+    if (activity.activity_type or "").upper() == "STORY_SEQUENCE":
+        return sequence_coverage_from_pdf_text(activity, pdf_text)
+
     pairs: list[MatchingCard] = []
     for page in activity.pages:
         if page.page_type in {"MATCHING_CARDS", "SORTING_CARDS"}:
             pairs.extend(item for item in page.components if isinstance(item, MatchingCard))
     if not pairs:
-        return MatchingCoverageResult(pass_=True)
+        # Matching coverage is N/A for non-matching / non-sequence packs.
+        return MatchingCoverageResult(
+            expected_pairs=0,
+            rendered_pairs=0,
+            missing_labels=[],
+            orphan_labels=[],
+            left_count=0,
+            right_count=0,
+            pass_=True,
+        )
 
     blob = " ".join((pdf_text or "").lower().split())
     lefts = [p.left.strip() for p in pairs]
@@ -205,7 +222,6 @@ def matching_coverage_from_pdf_text(activity: ActivityPack, pdf_text: str) -> Ma
         if not _label_in_blob(label, blob):
             missing.append(label)
 
-    # Orphans: PDF should not invent unmatched stub answers when counts differ after truncation.
     left_present = sum(1 for label in lefts if _label_in_blob(label, blob))
     right_present = sum(1 for label in rights if _label_in_blob(label, blob))
     orphans: list[str] = []
@@ -216,7 +232,7 @@ def matching_coverage_from_pdf_text(activity: ActivityPack, pdf_text: str) -> Ma
     if right_present < len(rights):
         orphans.append("incomplete right-column coverage")
 
-    result = MatchingCoverageResult(
+    return MatchingCoverageResult(
         expected_pairs=len(pairs),
         rendered_pairs=min(left_present, right_present),
         missing_labels=missing,
@@ -225,8 +241,38 @@ def matching_coverage_from_pdf_text(activity: ActivityPack, pdf_text: str) -> Ma
         right_count=right_present,
         pass_=not missing and not orphans and left_present == len(lefts) and right_present == len(rights),
     )
-    return result
 
+
+def sequence_coverage_from_pdf_text(activity: ActivityPack, pdf_text: str) -> MatchingCoverageResult:
+    """Require every sequence event label to appear intact in extracted PDF text."""
+    events: list[str] = []
+    for page in activity.pages:
+        if page.page_type == "STORY_SEQUENCE_CARDS":
+            for item in page.components:
+                if isinstance(item, SequenceCard):
+                    events.append(item.event.strip())
+    if not events:
+        return MatchingCoverageResult(
+            expected_pairs=0,
+            rendered_pairs=0,
+            missing_labels=["no_sequence_events"],
+            orphan_labels=["sequence_expected_zero"],
+            left_count=0,
+            right_count=0,
+            pass_=False,
+        )
+    blob = " ".join((pdf_text or "").lower().split())
+    missing = [event for event in events if not _label_in_blob(event, blob)]
+    rendered = len(events) - len(missing)
+    return MatchingCoverageResult(
+        expected_pairs=len(events),
+        rendered_pairs=rendered,
+        missing_labels=missing,
+        orphan_labels=[],
+        left_count=rendered,
+        right_count=rendered,
+        pass_=not missing and rendered == len(events) and len(events) > 0,
+    )
 
 def retain_matching_coverage_evidence(
     project_root: Path, *, chapter_no: str, coverage: MatchingCoverageResult, pdf_text: str

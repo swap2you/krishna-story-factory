@@ -202,13 +202,16 @@ def evaluate_story_tts_equivalence(
     min_audio_word_ratio: float = 0.70,
     max_audio_word_ratio: float = 1.35,
     min_name_coverage: float = 0.70,
+    require_exact_canonical: bool = True,
 ) -> StoryTtsGateResult:
-    """Fail-closed semantic gate for Story 021+ create-next.
+    """Fail-closed gate for Story 021+ create-next.
 
-    Compares Main Story (Read) to Audio Narration (TTS) allowing controlled
-    oral framing differences, but rejecting abridged-only audio, invented plots,
-    or missing central scenes via significant-token coverage and length ratio.
+    Default: Main Story must exactly equal TTS source after approved transforms.
+    Fuzzy token-coverage (e.g. 62%) is never a pass path when
+    ``require_exact_canonical`` is True (the create-next default).
     """
+    from .canonical_narration import evaluate_canonical_narration_exact
+
     main = extract_main_story_section(story_md)
     audio = (tts_source or "").strip()
     main_words = len(main.split())
@@ -232,7 +235,31 @@ def evaluate_story_tts_equivalence(
             notes="Audio Narration missing or too short for equivalence gate.",
         )
 
-    # Exact normalized Main Story match against a Main-Story-only TTS source.
+    if require_exact_canonical:
+        qa = evaluate_canonical_narration_exact(
+            story_no="000",
+            story_md=story_md if "## Main Story" in (story_md or "") else f"## Main Story\n{main}\n",
+            tts_source=audio,
+        )
+        if qa.result != "PASS":
+            return StoryTtsGateResult(
+                status="FAIL",
+                gate="story_tts_equivalence",
+                main_story_words=main_words,
+                audio_words=audio_words,
+                token_coverage=0.0,
+                notes="CANONICAL_EXACT_MATCH_FAIL: " + " | ".join(qa.failure_reasons),
+            )
+        return StoryTtsGateResult(
+            status="PASS",
+            gate="story_tts_equivalence",
+            main_story_words=main_words,
+            audio_words=audio_words,
+            token_coverage=1.0,
+            notes="Canonical Main Story exactly matches TTS source after approved transforms.",
+        )
+
+    # Legacy audit path only (explicit opt-in). Not used by create-next.
     exact = compare_canonical_to_tts(
         story_md=f"## Main Story\n{main}\n",
         tts_source=audio,
@@ -259,7 +286,6 @@ def evaluate_story_tts_equivalence(
             notes="No significant Main Story tokens to compare.",
         )
     coverage = len(main_tokens & audio_tokens) / float(len(main_tokens))
-    # Proper-name / diacritic tokens must largely survive oral rewriting.
     name_tokens = {
         t
         for t in re.findall(
@@ -309,8 +335,7 @@ def evaluate_story_tts_equivalence(
         audio_words=audio_words,
         token_coverage=round(coverage, 4),
         notes=(
-            "Main Story and Audio Narration are semantically equivalent within "
-            "permitted oral/framing differences "
+            "LEGACY_FUZZY_PASS: Main Story and Audio Narration within oral/framing band "
             f"(coverage={coverage:.0%}, name_coverage={name_coverage:.0%}, word_ratio={ratio:.2f})."
         ),
     )

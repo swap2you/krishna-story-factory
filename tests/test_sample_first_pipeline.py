@@ -238,13 +238,21 @@ def test_sample_qa_failure_blocks_pass_write(
     assert load_sample_pass(tmp_path) is None
 
 
-def test_story_021_equivalence_gate_on_existing_package() -> None:
-    story = ROOT / "work/stories/021/20260803-100015-d7bfea/package/story.md"
+def test_story_021_legacy_independent_audio_fails_exact_gate() -> None:
+    """The original Story 021 package had a rewritten Audio Narration (~62% fuzzy).
+
+    Exact-canonical gate must FAIL that package; syncing Audio=Main Story must PASS.
+    """
+    story = ROOT / "output/021_the-stealing-of-the-boys-and-calves-by-brahma/story.md"
     if not story.is_file():
-        pytest.skip("Story 021 work package not present in this checkout")
+        pytest.skip("Story 021 package not present in this checkout")
     text = story.read_text(encoding="utf-8")
     from krishna_story_factory.pipeline import _content_from_story_md
     from krishna_story_factory.models import PlanRow
+    from krishna_story_factory.content.canonical_narration import (
+        extract_main_story,
+        sync_audio_narration_from_main_story,
+    )
     import csv
 
     with (ROOT / "input/series_plan.csv").open(encoding="utf-8") as fh:
@@ -271,8 +279,21 @@ def test_story_021_equivalence_gate_on_existing_package() -> None:
         end_boundary=row.get("end_boundary", ""),
     )
     content = _content_from_story_md(text, plan)
-    result = evaluate_story_tts_equivalence(story_md=text, tts_source=content.audio_script or "")
-    assert result.status == "PASS", result.notes
+    legacy = evaluate_story_tts_equivalence(
+        story_md=text,
+        tts_source=content.audio_script or "",
+        require_exact_canonical=True,
+    )
+    assert legacy.status == "FAIL", legacy.notes
+
+    synced = sync_audio_narration_from_main_story(text)
+    main = extract_main_story(synced)
+    repaired = evaluate_story_tts_equivalence(
+        story_md=synced,
+        tts_source=main,
+        require_exact_canonical=True,
+    )
+    assert repaired.status == "PASS", repaired.notes
 
 
 def test_public_story_max_remains_020() -> None:
