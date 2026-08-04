@@ -162,7 +162,7 @@ def build_sample_excerpt(
             break
         selected.append(sentence)
         word_count += next_words
-        if '"' in sentence or "'" in sentence or "“" in sentence or "”" in sentence:
+        if '"' in sentence or "“" in sentence or "”" in sentence:
             has_dialogue = True
         if name_hint.search(sentence):
             has_name = True
@@ -305,10 +305,15 @@ def run_sample_first(
     model_id = (decision.model_id if decision else "") or (
         audio_gen.settings.elevenlabs_model_id if provider == "elevenlabs" else audio_gen.settings.openai_tts_model
     )
+    # Gate binding must match AudioGenerator.generate_mp3, which always sanitizes
+    # with settings.elevenlabs_model_id before assert_full_tts_allowed.
+    gate_model_id = (
+        getattr(audio_gen.settings, "elevenlabs_model_id", "") or "eleven_v3"
+    )
     prepared = prepare_narration_text(
         narration_text,
         project_root=project_root,
-        model_id=str(model_id or ""),
+        model_id=str(gate_model_id or ""),
     )
     intended = audio_gen._intended_tts_binding(provider, model=str(model_id or "") or None)
     binding = build_tts_settings_binding(

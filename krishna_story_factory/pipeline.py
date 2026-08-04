@@ -475,6 +475,9 @@ def _run_once(
                 source_errors = list(source_errors) + list(coverage.errors)
             if source_errors:
                 raise PipelineError("Source-fact validation failed: " + " | ".join(source_errors))
+            # Keep packaged story.md aligned with repaired/sanitized content fields.
+            story_md = content.to_markdown()
+            paths.story_md.write_text(story_md, encoding="utf-8")
             if stage and run_root:
                 mark_file_stage(run_root, stage, "story", paths.story_md)
         else:
