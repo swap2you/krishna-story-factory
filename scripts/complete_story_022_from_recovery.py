@@ -249,7 +249,31 @@ def main() -> int:
     manifest["activity"]["layout_qa"] = layout["result"]
     manifest.setdefault("metrics", {})
     manifest["metrics"]["measured_wpm"] = pace.measured_wpm
+    # Recovery packages must be internally publishable for local preview indexing.
+    # Never leave publishable=false after a complete verified PASS package.
+    if not bool(manifest.get("publishable")):
+        from krishna_story_factory.manifest import _is_publishable
+
+        audio_block = manifest.get("audio") if isinstance(manifest.get("audio"), dict) else {}
+        forced = _is_publishable(
+            mode="prod",
+            quality_status=str((manifest.get("quality") or {}).get("status") or "PASS"),
+            quality_errors=list((manifest.get("quality") or {}).get("errors") or []),
+            audio_metadata=audio_block,
+            narration_source_sha=str(manifest.get("narration_source_sha") or ""),
+            audio_source=str(manifest.get("audio_source") or audio_block.get("provider") or ""),
+            package_dir=PKG,
+        )
+        if not forced:
+            raise SystemExit(
+                "Recovery package failed publishable gate after write_manifest; "
+                "refusing to ship a non-indexable private package."
+            )
+        manifest["publishable"] = True
     paths.manifest.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if not json.loads(paths.manifest.read_text(encoding="utf-8")).get("publishable"):
+        raise SystemExit("publishable must be true for recovery-completed Story 022")
+
 
     missing = validate_exact_eight_files(PKG)
     if missing:

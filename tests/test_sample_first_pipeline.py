@@ -245,9 +245,7 @@ def test_story_021_legacy_independent_audio_fails_exact_gate() -> None:
         sync_audio_narration_from_main_story,
     )
 
-    story = ROOT / "output/021_the-stealing-of-the-boys-and-calves-by-brahma/story.md"
-    if not story.is_file():
-        pytest.skip("Story 021 package not present in this checkout")
+    story = ROOT / "tests/fixtures/story_021/story.md"
     text = story.read_text(encoding="utf-8")
     main = extract_main_story(text)
     # Simulate the original defect: independent unpunctuated oral rewrite.

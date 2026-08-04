@@ -115,18 +115,21 @@ def test_story_021_missing_brahma_or_central_fails() -> None:
 
 
 def test_story_021_canonical_rebuild_passes_semantic_shape() -> None:
-    root = Path(__file__).resolve().parents[1]
-    story = (root / "output" / "021_the-stealing-of-the-boys-and-calves-by-brahma" / "story.md").read_text(
-        encoding="utf-8"
-    )
+    """Hermetic: committed fixture only — never reads developer package trees."""
+    fixture = Path(__file__).resolve().parent / "fixtures" / "story_021" / "story.md"
+    story = fixture.read_text(encoding="utf-8")
     story_map = reconstruct_story_map_from_canonical(
         story_no="021",
         title="The Stealing of the Boys and Calves by Brahma",
         story_md=story,
     )
     events = story_map.sequence_events()
+    assert len(events) == 6
     errors = validate_event_list(events, required_chars=["Brahmā", "Kṛṣṇa"])
     assert not errors, errors
+    blob = " ".join(events).lower()
+    assert "brahm" in blob.replace("ā", "a")
+    assert any(token in blob for token in ("expanded", "viṣṇu", "visnu", "prayer", "humble"))
     qa = evaluate_activity_semantic_qa(
         activity_type="STORY_SEQUENCE",
         events=events,
