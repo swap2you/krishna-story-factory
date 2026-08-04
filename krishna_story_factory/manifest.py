@@ -37,10 +37,15 @@ def _is_publishable(
     if not sha_ok or not audio_sha_ok:
         return False
     if package_dir is not None:
-        from .package_swap import validate_exact_eight_files
+        from .outputs import FINAL_OUTPUT_FILES
 
-        if validate_exact_eight_files(package_dir):
-            return False
+        # Publishable requires the eight final files present and non-empty.
+        # Do not use exact-set equality here: staging dirs may temporarily hold
+        # sidecar evidence files; exact-eight remains enforced at package swap.
+        for name in FINAL_OUTPUT_FILES:
+            path = package_dir / name
+            if not path.is_file() or path.stat().st_size <= 0:
+                return False
     return (
         mode != "test"
         and quality_status == "PASS"

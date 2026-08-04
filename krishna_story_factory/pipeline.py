@@ -454,7 +454,9 @@ def _run_once(
             "audio_stale": False,
             "reused": True,
         }
-        waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=False)
+        waveform_metrics = _validate_audio(
+            paths.narration_mp3, settings, mode, low_credit=False, narration_text=content.audio_script or ""
+        )
         if stage and run_root:
             mark_file_stage(run_root, stage, "story", paths.story_md)
             mark_file_stage(run_root, stage, "narration", paths.narration_mp3)
@@ -504,11 +506,63 @@ def _run_once(
             _write_source_and_editorial_review(run_root, plan, content, story_md)
 
         if mode == "prod":
+            from .content.canonical_narration import (
+                evaluate_canonical_narration_exact,
+                extract_main_story,
+                write_canonical_narration_qa,
+            )
             from .content.story_tts_equivalence import evaluate_story_tts_equivalence
+            from .audio.punctuation_gate import evaluate_punctuation_gate
+
+            # Permanent contract: TTS source is the Main Story (canonical), not a second script.
+            main_body = extract_main_story(story_md) or (content.main_story or "").strip()
+            if main_body:
+                content.audio_script = main_body
+                # Keep packaged story.md Audio Narration in sync (deterministic; no LLM).
+                from .content.canonical_narration import sync_audio_narration_from_main_story
+
+                story_md = sync_audio_narration_from_main_story(story_md)
+                paths.story_md.write_text(story_md, encoding="utf-8")
+
+            canonical_qa = evaluate_canonical_narration_exact(
+                story_no=plan.chapter_no,
+                story_md=story_md,
+                tts_source=content.audio_script or "",
+            )
+            if run_root is not None:
+                write_canonical_narration_qa(canonical_qa, run_root / "canonical_narration_qa.json")
+            if canonical_qa.result != "PASS":
+                raise PipelineError(
+                    "Canonical narration exact-match FAILED (fail-closed before paid TTS): "
+                    + " | ".join(canonical_qa.failure_reasons)
+                )
+
+            punct = evaluate_punctuation_gate(content.audio_script or "")
+            if run_root is not None:
+                (run_root / "punctuation_gate.json").write_text(
+                    json.dumps(
+                        {
+                            "status": punct.status,
+                            "sentence_count": punct.sentence_count,
+                            "max_sentence_words": punct.max_sentence_words,
+                            "warnings": list(punct.warnings),
+                            "failures": list(punct.failures),
+                            "detail": punct.detail,
+                        },
+                        indent=2,
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+            if punct.status != "PASS":
+                raise PipelineError(
+                    "Punctuation/sentence-boundary gate FAILED before paid TTS: " + punct.detail
+                )
 
             equivalence = evaluate_story_tts_equivalence(
                 story_md=story_md,
                 tts_source=content.audio_script or "",
+                require_exact_canonical=True,
             )
             if run_root is not None:
                 (run_root / "story_tts_equivalence.json").write_text(
@@ -570,7 +624,13 @@ def _run_once(
             work_dir=sample_work_dir,
         )
         audio_metadata = _audio_provider_manifest(audio_source, audio_gen)
-        waveform_metrics = _validate_audio(paths.narration_mp3, settings, mode, low_credit=audio_gen.low_credit_mode)
+        waveform_metrics = _validate_audio(
+            paths.narration_mp3,
+            settings,
+            mode,
+            low_credit=audio_gen.low_credit_mode,
+            narration_text=content.audio_script or "",
+        )
         if stage and run_root:
             mark_file_stage(run_root, stage, "narration", paths.narration_mp3)
 
@@ -612,6 +672,35 @@ def _run_once(
 
     activity_planner = ActivityPlanner(settings.project_root / "tracking" / "activity_history.csv", settings=settings)
     activity = activity_planner.plan(plan, story_md)
+    from .activities.models import SequenceCard
+    from .activities.story_map import evaluate_activity_semantic_qa, write_activity_semantic_qa
+    from .content.canonical_narration import extract_main_story
+
+    seq_events = []
+    for page in activity.pages:
+        if page.page_type == "STORY_SEQUENCE_CARDS":
+            seq_events.extend(
+                item.event for item in page.components if isinstance(item, SequenceCard)
+            )
+    required_tokens = None
+    if plan.chapter_no.zfill(3) == "021":
+        required_tokens = ["Brahmā", "Kṛṣṇa"]
+    semantic_qa = evaluate_activity_semantic_qa(
+        activity_type=activity.activity_type,
+        events=seq_events if activity.activity_type == "STORY_SEQUENCE" else [],
+        parent_answer_events=list(activity.answer_key or []) if activity.activity_type == "STORY_SEQUENCE" else None,
+        required_tokens=required_tokens,
+        canonical_story=extract_main_story(story_md),
+    )
+    if run_root is not None:
+        write_activity_semantic_qa(semantic_qa, run_root / "activity_semantic_qa.json")
+    # Permanent gate: any STORY_SEQUENCE regeneration (including rebuilds of older
+    # chapters) must pass semantic QA. Historical packages already on Drive are
+    # untouched until explicitly rebuilt.
+    if activity.activity_type == "STORY_SEQUENCE" and semantic_qa.result != "PASS":
+        raise PipelineError(
+            "Activity semantic QA FAILED: " + " | ".join(semantic_qa.failure_reasons)
+        )
     pdf_check = ActivitySheetGenerator().generate(plan, activity, paths.activity_sheet)
     render_dir = work.root / "activity_pages"
     pdf_check = validate_activity_pdf(paths.activity_sheet, render_dir, activity=activity)
@@ -1031,7 +1120,7 @@ def _audio_provider_manifest(audio_source: str, audio_gen: AudioGenerator) -> di
 
 
 def _validate_audio(
-    path: Path, settings: Settings, mode: str, *, low_credit: bool = False
+    path: Path, settings: Settings, mode: str, *, low_credit: bool = False, narration_text: str = ""
 ) -> WaveformMetrics | None:
     if mode == "test":
         return None
@@ -1042,10 +1131,26 @@ def _validate_audio(
         from mutagen.mp3 import MP3
 
         duration = float(MP3(path).info.length)
-        min_seconds = 150 if low_credit else 180  # 2.5 min only in low-credit mode
-        if duration < min_seconds or duration > 360:
-            window = "2.5–6" if low_credit else "3–6"
-            raise PipelineError(f"Audio duration {duration:.0f}s outside {window} minute window.")
+        from .audio.pace import evaluate_pace_qa, expected_duration_window
+
+        if narration_text:
+            min_seconds, max_seconds = expected_duration_window(len(narration_text.split()))
+            # Allow long bedtime stories; keep a hard ceiling against runaway files.
+            max_seconds = max(max_seconds, 540.0 if not low_credit else 480.0)
+            if duration < min_seconds or duration > max_seconds:
+                raise PipelineError(
+                    f"Audio duration {duration:.0f}s outside bedtime window "
+                    f"{min_seconds:.0f}–{max_seconds:.0f}s for this narration length."
+                )
+            pace = evaluate_pace_qa(narration_text=narration_text, duration_seconds=duration)
+            if pace.status != "PASS":
+                raise PipelineError(f"Bedtime pace QA failed: {pace.detail}")
+        else:
+            min_seconds = 150 if low_credit else 180
+            max_seconds = 540
+            if duration < min_seconds or duration > max_seconds:
+                window = "2.5–9" if low_credit else "3–9"
+                raise PipelineError(f"Audio duration {duration:.0f}s outside {window} minute window.")
     except ImportError:
         pass
 

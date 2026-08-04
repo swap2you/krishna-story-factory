@@ -52,9 +52,30 @@ $saved = @{
   BHAVA_WEB_URL = $env:BHAVA_WEB_URL
   BHAVA_WEB_ORIGINS = $env:BHAVA_WEB_ORIGINS
   BHAVA_CATALOG_DB = $env:BHAVA_CATALOG_DB
+  BHAVA_PUBLIC_STORY_MAX = $env:BHAVA_PUBLIC_STORY_MAX
+  NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX = $env:NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX
   PORT = $env:PORT
   BHAVA_INSTANCE = $env:BHAVA_INSTANCE
 }
+
+# Local-only: raise the public ceiling to the highest complete package under output/
+# so private next stories (e.g. 021) can be previewed without changing production pins.
+$localStoryMax = 20
+Get-ChildItem -Path (Join-Path $ProjectRoot "output") -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+  if ($_.Name -match '^(\d{3})_') {
+    $n = [int]$Matches[1]
+    $pkg = $_.FullName
+    $required = @(
+      "story.md", "narration.mp3", "story_poster.png", "coloring_page.png",
+      "simple_coloring_page.png", "activity_sheet.pdf", "whatsapp_caption.txt", "manifest.json"
+    )
+    $complete = ($required | ForEach-Object { Test-Path (Join-Path $pkg $_) }) -notcontains $false
+    if ($complete -and $n -gt $localStoryMax) { $localStoryMax = $n }
+  }
+}
+$env:BHAVA_PUBLIC_STORY_MAX = "$localStoryMax"
+$env:NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX = "$localStoryMax"
+Write-Output "Local public_story_max preview ceiling: $localStoryMax (production pin remains 20 unless explicitly released)."
 
 $env:BHAVA_API_ORIGIN = $apiUrl
 $env:BHAVA_API_URL = "$apiUrl/api/v1"

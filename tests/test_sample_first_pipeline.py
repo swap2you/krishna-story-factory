@@ -238,41 +238,35 @@ def test_sample_qa_failure_blocks_pass_write(
     assert load_sample_pass(tmp_path) is None
 
 
-def test_story_021_equivalence_gate_on_existing_package() -> None:
-    story = ROOT / "work/stories/021/20260803-100015-d7bfea/package/story.md"
-    if not story.is_file():
-        pytest.skip("Story 021 work package not present in this checkout")
-    text = story.read_text(encoding="utf-8")
-    from krishna_story_factory.pipeline import _content_from_story_md
-    from krishna_story_factory.models import PlanRow
-    import csv
-
-    with (ROOT / "input/series_plan.csv").open(encoding="utf-8") as fh:
-        row = next(r for r in csv.DictReader(fh) if r["chapter_no"].zfill(3) == "021")
-    plan = PlanRow(
-        chapter_no="021",
-        slug=row["slug"],
-        title=row["title"],
-        project=row.get("project", ""),
-        library_id=row.get("library_id", ""),
-        source_reference=row.get("source_reference", ""),
-        scripture_reference=row.get("scripture_reference", ""),
-        summary_seed=row.get("summary_seed", ""),
-        age_range=row.get("age_range", ""),
-        package_type=row.get("package_type", ""),
-        send_date=row.get("send_date", ""),
-        status=row.get("status", ""),
-        created_at=row.get("created_at", ""),
-        updated_at=row.get("updated_at", ""),
-        notes=row.get("notes", ""),
-        must_include=row.get("must_include", ""),
-        must_avoid=row.get("must_avoid", ""),
-        start_boundary=row.get("start_boundary", ""),
-        end_boundary=row.get("end_boundary", ""),
+def test_story_021_legacy_independent_audio_fails_exact_gate() -> None:
+    """Independent rewritten Audio Narration must FAIL exact-canonical gate."""
+    from krishna_story_factory.content.canonical_narration import (
+        extract_main_story,
+        sync_audio_narration_from_main_story,
     )
-    content = _content_from_story_md(text, plan)
-    result = evaluate_story_tts_equivalence(story_md=text, tts_source=content.audio_script or "")
-    assert result.status == "PASS", result.notes
+
+    story = ROOT / "tests/fixtures/story_021/story.md"
+    text = story.read_text(encoding="utf-8")
+    main = extract_main_story(text)
+    # Simulate the original defect: independent unpunctuated oral rewrite.
+    legacy_audio = (
+        "Hare Krishna dear children Tonight Brahmā tested Kṛṣṇa while the boys "
+        "played near the calves under the trees and then Kṛṣṇa expanded Himself."
+    )
+    legacy = evaluate_story_tts_equivalence(
+        story_md=text,
+        tts_source=legacy_audio,
+        require_exact_canonical=True,
+    )
+    assert legacy.status == "FAIL", legacy.notes
+
+    synced = sync_audio_narration_from_main_story(text)
+    repaired = evaluate_story_tts_equivalence(
+        story_md=synced,
+        tts_source=extract_main_story(synced) or main,
+        require_exact_canonical=True,
+    )
+    assert repaired.status == "PASS", repaired.notes
 
 
 def test_public_story_max_remains_020() -> None:

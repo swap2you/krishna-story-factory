@@ -1,4 +1,4 @@
-"""Hand-reviewed śloka / companion-verse records for Stories 001–020.
+"""Hand-reviewed śloka / companion-verse records for Stories 001–022.
 
 Rules:
 - Never invent Sanskrit, transliteration, BBT translation, or purport text.
@@ -17,6 +17,8 @@ from .reviewed_sources import REVIEWER
 REVIEWED_DATE = "2026-07-23"
 REVIEWED_DATE_008_009 = "2026-07-27"
 REVIEWED_DATE_010_020 = "2026-08-01"
+REVIEWED_DATE_021 = "2026-08-03"
+REVIEWED_DATE_022 = "2026-08-03"
 
 _CHAPTER_NOTE = (
     "Reviewed chapter-framed companion reference. Exact verse start/end deferred — "
@@ -369,6 +371,36 @@ REVIEWED_SHLOKAS: dict[str, dict[str, Any]] = {
                     "Kṛṣṇa enters and protects everyone in a gentle, child-safe way."
                 ),
                 reviewed_date=REVIEWED_DATE_010_020,
+            )
+        ],
+    },
+    "021": {
+        "status": "reviewed",
+        "shlokas": [
+            _chapter_row(
+                reference="SB 10.13 — Brahmā steals the boys and calves",
+                url="https://vedabase.io/en/library/sb/10/13/",
+                child_explanation=(
+                    "Lord Brahmā hides the cowherd boys and calves to test Kṛṣṇa. "
+                    "Kṛṣṇa expands Himself into their forms, protects every family, "
+                    "and gently shows Brahmā His loving supremacy."
+                ),
+                reviewed_date=REVIEWED_DATE_021,
+            )
+        ],
+    },
+    "022": {
+        "status": "reviewed",
+        "shlokas": [
+            _chapter_row(
+                reference="SB 10.14 — Prayers offered by Lord Brahmā",
+                url="https://vedabase.io/en/library/sb/10/14/",
+                child_explanation=(
+                    "After seeing Kṛṣṇa’s glory, Lord Brahmā offers humble prayers. "
+                    "He asks forgiveness for his pride and glorifies Kṛṣṇa’s sweet, "
+                    "unlimited loving pastimes."
+                ),
+                reviewed_date=REVIEWED_DATE_022,
             )
         ],
     },
