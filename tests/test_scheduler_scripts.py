@@ -21,10 +21,14 @@ def test_scheduler_is_unattended_and_non_overlapping() -> None:
     assert '$env:WHATSAPP_SEND_ENABLED = "false"' in runner
     assert '$env:TELEGRAM_SEND_ENABLED = "false"' in runner
     assert '$env:GOOGLE_DRIVE_UPLOAD_ENABLED = "true"' in runner
+    assert '$env:AUDIO_SAMPLE_FIRST_REQUIRED = "1"' in runner
+    assert '$env:BHAVA_WEB_ASSETS_UI_GATE = "1"' in runner
     assert 'PrimaryTime = "10:00"' in mwf
-    assert 'BackupTime = "12:00"' in mwf
+    assert "BackupTime" not in mwf
+    assert "12:00" not in mwf
     assert "Hours 4" in mwf
-    assert "StartWhenAvailable = $true" in mwf
+    assert "StartWhenAvailable = $false" in mwf
+    assert "StartWhenAvailable = $true" not in mwf
     assert "WakeToRun = $false" in mwf
     assert ("StopOnIdleEnd = $false" in mwf) or ("DontStopOnIdleEnd" in mwf)
     assert "-DaysOfWeek Monday" in mwf
@@ -32,9 +36,7 @@ def test_scheduler_is_unattended_and_non_overlapping() -> None:
     assert "-DaysOfWeek Friday" in mwf
     assert "Krishna Story Factory MWF" in mwf
     assert "MultipleInstances IgnoreNew" in mwf
-    assert "RestartCount 2" in mwf
-    assert "Minutes 30" in mwf
-    assert "StartWhenAvailable = $false" not in mwf
+    assert "RestartCount 0" in mwf
     assert "Minutes 60" not in mwf
     assert "Disable-ScheduledTask" in daily
     legacy = (ROOT / "scripts" / "create_task_scheduler_job.ps1").read_text(encoding="utf-8")

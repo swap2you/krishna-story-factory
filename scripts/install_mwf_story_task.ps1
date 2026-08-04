@@ -1,7 +1,6 @@
 param(
     [string]$TaskName = "Krishna Story Factory MWF",
     [string]$PrimaryTime = "10:00",
-    [string]$BackupTime = "12:00",
     [switch]$Enable,
     [switch]$RemoveLegacyDaily
 )
@@ -17,22 +16,19 @@ $Action = New-ScheduledTaskAction -Execute $PowerShell `
     -Argument "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$Runner`" -ProjectRoot `"$ProjectRoot`"" `
     -WorkingDirectory $ProjectRoot
 
-# Six weekly triggers: Mon/Wed/Fri at primary (10:00) and noon backup (12:00).
-# StartWhenAvailable=true so a missed window can catch up when the machine returns.
-# WakeToRun=false: do not wake the PC for generation (accepted V1.7.1 policy).
+# Mon/Wed/Fri at primary (10:00) only — no noon backup retry loop.
+# StartWhenAvailable=false so enabling does not immediately catch up a missed window.
+# WakeToRun=false: do not wake the PC for generation.
 $Triggers = @(
     (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At $PrimaryTime),
-    (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At $BackupTime),
     (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Wednesday -At $PrimaryTime),
-    (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Wednesday -At $BackupTime),
-    (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Friday -At $PrimaryTime),
-    (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Friday -At $BackupTime)
+    (New-ScheduledTaskTrigger -Weekly -DaysOfWeek Friday -At $PrimaryTime)
 )
 
 $Settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew `
-    -ExecutionTimeLimit (New-TimeSpan -Hours 4) -RestartCount 2 -RestartInterval (New-TimeSpan -Minutes 30) `
+    -ExecutionTimeLimit (New-TimeSpan -Hours 4) -RestartCount 0 `
     -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -DontStopOnIdleEnd
-$Settings.StartWhenAvailable = $true
+$Settings.StartWhenAvailable = $false
 $Settings.WakeToRun = $false
 if ($null -ne $Settings.IdleSettings) {
     $Settings.IdleSettings.StopOnIdleEnd = $false
@@ -41,7 +37,7 @@ if ($null -ne $Settings.IdleSettings) {
 $Principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive -RunLevel Limited
 Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Triggers -Settings $Settings `
     -Principal $Principal `
-    -Description "Generate and upload the next Krishna Story package Mon/Wed/Fri at $PrimaryTime with $BackupTime backup; same-day guard; WhatsApp/Telegram disabled; Drive enabled." `
+    -Description "Generate and upload the next Krishna Story package Mon/Wed/Fri at $PrimaryTime only; no noon backup; no StartWhenAvailable catch-up; same-day guard; WhatsApp/Telegram disabled; Drive enabled." `
     -Force | Out-Null
 
 if ($Enable) {
@@ -61,4 +57,4 @@ if ($RemoveLegacyDaily -or $Enable) {
 }
 
 & (Join-Path $ProjectRoot "scripts\test_mwf_story_task.ps1") -TaskName $TaskName
-Write-Output "Installed $TaskName (Enabled=$Enable; Primary=$PrimaryTime; Backup=$BackupTime; triggers=6; ExecutionTimeLimit=PT4H; StartWhenAvailable=true)"
+Write-Output "Installed $TaskName (Enabled=$Enable; Primary=$PrimaryTime; triggers=3 Mon/Wed/Fri; RestartCount=0; StartWhenAvailable=false; ExecutionTimeLimit=PT4H)"
