@@ -1,0 +1,8 @@
+{
+  "tag": "bhava-content-001-022-staging-v1",
+  "bundle": "bhava-content-001-022-staging-v1.tar.gz",
+  "sha256": "87799736d1446ae6ea972ee3d06fa2b2b7b52ddd092c78e92d3fc1166362f53c",
+  "public_story_max": 22,
+  "note": "Staging-only Stories 001-022 content. Production RELEASE_CONTENT.json remains pinned to bhava-content-001-020-v4 / public_story_max=20.",
+  "base_content": "bhava-content-001-020-v4"
+}

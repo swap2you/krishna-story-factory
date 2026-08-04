@@ -8,6 +8,7 @@ from reportlab.lib.units import inch
 from krishna_story_factory.pdf.activity_sheet import (
     PAGE_H,
     ActivitySheetGenerator,
+    _HEADER_MIN_CLEARANCE_PT,
     _HEADER_TITLE_BOX_GAP,
     measure_header_layout,
     validate_activity_pdf,
@@ -77,6 +78,7 @@ def _sequence_pack(page1_title: str, page2_title: str, story_title: str) -> Acti
 def test_title_box_separation_sequence_heading() -> None:
     layout = measure_header_layout("Story sequence cards", "The Stealing of the Boys and Calves by Brahma")
     assert layout.title_box_gap >= _HEADER_TITLE_BOX_GAP - 1e-6
+    assert (layout.title_box_gap / inch) * 72 >= _HEADER_MIN_CLEARANCE_PT
     # Title baseline must sit above the box top (title entirely above the border).
     assert layout.title_baseline_y > layout.box_top
     # Subtitle sits inside the box.

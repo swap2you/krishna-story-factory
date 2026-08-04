@@ -347,11 +347,12 @@ def _rendered_content_metrics(path: Path) -> tuple[float, float]:
 # Header geometry: title lives in a dedicated band ABOVE the rounded meta box.
 # Glyphs must never cross the box stroke (prior defect: title baseline too close to
 # box top so 18pt ascenders overlapped the border).
-_HEADER_TITLE_TOP = PAGE_H - 0.42 * inch
-_HEADER_TITLE_BOX_GAP = 0.14 * inch  # minimum space from title baseline to box top
+_HEADER_TITLE_TOP = PAGE_H - 0.38 * inch
+_HEADER_TITLE_BOX_GAP = 0.42 * inch  # >=30pt clear between title band and box stroke
 _HEADER_BOX_HEIGHT = 0.62 * inch
-_HEADER_BOX_TOP = PAGE_H - 0.95 * inch
-_HEADER_CONTENT_TOP = PAGE_H - 1.28 * inch
+_HEADER_BOX_TOP = PAGE_H - 1.05 * inch
+_HEADER_CONTENT_TOP = PAGE_H - 1.38 * inch
+_HEADER_MIN_CLEARANCE_PT = 30.0
 
 
 @dataclass(frozen=True, slots=True)
