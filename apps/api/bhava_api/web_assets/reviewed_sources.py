@@ -13,6 +13,7 @@ REVIEWER = "Svarna Gauranga Das"
 REVIEWED_DATE = "2026-07-23"
 REVIEWED_DATE_010_020 = "2026-08-01"
 REVIEWED_DATE_021 = "2026-08-03"
+REVIEWED_DATE_022 = "2026-08-03"
 
 # Vedabase URLs — same host/path pattern as Stories 001–009.
 KB_1 = "https://vedabase.io/en/library/kb/1/"
@@ -28,6 +29,7 @@ KB_10 = "https://vedabase.io/en/library/kb/10/"
 KB_11 = "https://vedabase.io/en/library/kb/11/"
 KB_12 = "https://vedabase.io/en/library/kb/12/"
 KB_13 = "https://vedabase.io/en/library/kb/13/"
+KB_14 = "https://vedabase.io/en/library/kb/14/"
 SB_10_1 = "https://vedabase.io/en/library/sb/10/1/"
 SB_10_2 = "https://vedabase.io/en/library/sb/10/2/"
 SB_10_3 = "https://vedabase.io/en/library/sb/10/3/"
@@ -41,6 +43,7 @@ SB_10_10 = "https://vedabase.io/en/library/sb/10/10/"
 SB_10_11 = "https://vedabase.io/en/library/sb/10/11/"
 SB_10_12 = "https://vedabase.io/en/library/sb/10/12/"
 SB_10_13 = "https://vedabase.io/en/library/sb/10/13/"
+SB_10_14 = "https://vedabase.io/en/library/sb/10/14/"
 
 _WORK_KB = "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)"
 _AUTHOR = "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda"
@@ -528,6 +531,27 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         "review_status": "reviewed",
         "reviewer": REVIEWER,
         "reviewed_date": REVIEWED_DATE_021,
+        "permissions_note": _PERMS_NOTE_CHAPTER_DEFERRED,
+    },
+    "022": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 14,
+        "chapter_title": "Prayers Offered by Lord Brahmā to Lord Kṛṣṇa",
+        "passage_start": "Opening of Krishna Book Chapter 14",
+        "passage_end": "Conclusion of Krishna Book Chapter 14",
+        "vedabase_url": KB_14,
+        "scripture_secondary": _sb_companion(
+            chapter=14,
+            vedabase_url=SB_10_14,
+            central_event="Brahmā offers prayers to Kṛṣṇa",
+        ),
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_022,
         "permissions_note": _PERMS_NOTE_CHAPTER_DEFERRED,
     },
 }

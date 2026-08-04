@@ -6,11 +6,11 @@ from bhava_api.web_assets.reviewed_sources import REVIEWED_SOURCES, source_links
 
 
 def test_reviewed_sources_cover_released_stories():
-    assert set(REVIEWED_SOURCES) == {f"{n:03d}" for n in range(1, 22)}
+    assert set(REVIEWED_SOURCES) == {f"{n:03d}" for n in range(1, 23)}
 
 
-def test_reviewed_shlokas_cover_001_021():
-    assert set(REVIEWED_SHLOKAS) == {f"{n:03d}" for n in range(1, 22)}
+def test_reviewed_shlokas_cover_001_022():
+    assert set(REVIEWED_SHLOKAS) == {f"{n:03d}" for n in range(1, 23)}
     for story_no in REVIEWED_SHLOKAS:
         payload = shlokas_payload_for_story(story_no)
         assert payload["status"] == "reviewed"
@@ -66,7 +66,7 @@ def test_bona_fide_verse_ranges_only_where_series_plan_pins_them():
         secondary = REVIEWED_SOURCES[story_no]["scripture_secondary"]
         assert secondary["verse_start"] == start
         assert secondary["verse_end"] == end
-    for n in list(range(1, 2)) + list(range(5, 22)):
+    for n in list(range(1, 2)) + list(range(5, 23)):
         secondary = REVIEWED_SOURCES[f"{n:03d}"]["scripture_secondary"]
         assert secondary.get("verse_start") is None
         assert secondary.get("verse_end") is None

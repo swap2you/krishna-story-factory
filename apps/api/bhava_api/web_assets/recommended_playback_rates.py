@@ -31,8 +31,9 @@ RECOMMENDED_PLAYBACK_RATES: dict[str, float] = {
     "018": 0.75,
     "019": 0.75,
     "020": 0.75,
-    # 021 bedtime target uses marin @ 0.92 synthesis; keep player at 1.0.
+    # 021/022 bedtime target uses marin @ ~0.90 synthesis; keep player at 1.0.
     "021": 1.0,
+    "022": 1.0,
 }
 
 

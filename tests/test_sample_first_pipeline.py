@@ -239,58 +239,33 @@ def test_sample_qa_failure_blocks_pass_write(
 
 
 def test_story_021_legacy_independent_audio_fails_exact_gate() -> None:
-    """The original Story 021 package had a rewritten Audio Narration (~62% fuzzy).
-
-    Exact-canonical gate must FAIL that package; syncing Audio=Main Story must PASS.
-    """
-    story = ROOT / "output/021_the-stealing-of-the-boys-and-calves-by-brahma/story.md"
-    if not story.is_file():
-        pytest.skip("Story 021 package not present in this checkout")
-    text = story.read_text(encoding="utf-8")
-    from krishna_story_factory.pipeline import _content_from_story_md
-    from krishna_story_factory.models import PlanRow
+    """Independent rewritten Audio Narration must FAIL exact-canonical gate."""
     from krishna_story_factory.content.canonical_narration import (
         extract_main_story,
         sync_audio_narration_from_main_story,
     )
-    import csv
 
-    with (ROOT / "input/series_plan.csv").open(encoding="utf-8") as fh:
-        row = next(r for r in csv.DictReader(fh) if r["chapter_no"].zfill(3) == "021")
-    plan = PlanRow(
-        chapter_no="021",
-        slug=row["slug"],
-        title=row["title"],
-        project=row.get("project", ""),
-        library_id=row.get("library_id", ""),
-        source_reference=row.get("source_reference", ""),
-        scripture_reference=row.get("scripture_reference", ""),
-        summary_seed=row.get("summary_seed", ""),
-        age_range=row.get("age_range", ""),
-        package_type=row.get("package_type", ""),
-        send_date=row.get("send_date", ""),
-        status=row.get("status", ""),
-        created_at=row.get("created_at", ""),
-        updated_at=row.get("updated_at", ""),
-        notes=row.get("notes", ""),
-        must_include=row.get("must_include", ""),
-        must_avoid=row.get("must_avoid", ""),
-        start_boundary=row.get("start_boundary", ""),
-        end_boundary=row.get("end_boundary", ""),
+    story = ROOT / "output/021_the-stealing-of-the-boys-and-calves-by-brahma/story.md"
+    if not story.is_file():
+        pytest.skip("Story 021 package not present in this checkout")
+    text = story.read_text(encoding="utf-8")
+    main = extract_main_story(text)
+    # Simulate the original defect: independent unpunctuated oral rewrite.
+    legacy_audio = (
+        "Hare Krishna dear children Tonight Brahmā tested Kṛṣṇa while the boys "
+        "played near the calves under the trees and then Kṛṣṇa expanded Himself."
     )
-    content = _content_from_story_md(text, plan)
     legacy = evaluate_story_tts_equivalence(
         story_md=text,
-        tts_source=content.audio_script or "",
+        tts_source=legacy_audio,
         require_exact_canonical=True,
     )
     assert legacy.status == "FAIL", legacy.notes
 
     synced = sync_audio_narration_from_main_story(text)
-    main = extract_main_story(synced)
     repaired = evaluate_story_tts_equivalence(
         story_md=synced,
-        tts_source=main,
+        tts_source=extract_main_story(synced) or main,
         require_exact_canonical=True,
     )
     assert repaired.status == "PASS", repaired.notes

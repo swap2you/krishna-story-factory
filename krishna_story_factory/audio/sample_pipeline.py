@@ -43,6 +43,8 @@ _TARGET_SAMPLE_SECONDS = 52.0
 _BEDTIME_WPM = 132.0
 _WORDS_PER_SECOND = _BEDTIME_WPM / 60.0
 _TARGET_WORDS = int(_TARGET_SAMPLE_SECONDS * _WORDS_PER_SECOND)  # ~114
+# Hard ceiling so bedtime (slower) voices stay inside the 60s sample window.
+_SAMPLE_WORD_CEILING = 120
 _MAX_SAMPLE_RETRIES = 1  # one initial + one corrected retry
 
 
@@ -97,8 +99,8 @@ def build_sample_excerpt(
     narration_text: str,
     *,
     target_words: int = _TARGET_WORDS,
-    min_words: int = 100,
-    max_words: int = 180,
+    min_words: int = 90,
+    max_words: int = _SAMPLE_WORD_CEILING,
 ) -> str:
     """Build a representative 45–60s excerpt from canonical narration.
 
@@ -157,6 +159,11 @@ def build_sample_excerpt(
 
     for idx, sentence in enumerate(sentences):
         next_words = len(sentence.split())
+        # Never let a single oversized sentence blow past the sample budget.
+        if not selected and next_words > max_words:
+            selected.append(" ".join(sentence.split()[:max_words]).rstrip(",;:") + ".")
+            word_count = max_words
+            break
         if selected and word_count + next_words > max_words and word_count >= min_words:
             break
         selected.append(sentence)
@@ -375,18 +382,29 @@ def run_sample_first(
             measured = max(1.0, float(qa.duration_seconds or 1.0))
             # Scale word count toward the midpoint of the 45–60s window.
             scale = _TARGET_SAMPLE_SECONDS / measured
-            # Always move by at least ±20 words so retries are not no-ops on sentence boundaries.
-            delta = 20 if scale >= 1.0 else -20
+            # Always move by at least ±25 words so retries are not no-ops on sentence boundaries.
+            delta = 25 if scale >= 1.0 else -25
             tentative = int(round(words * scale))
-            if abs(tentative - words) < 20:
+            if abs(tentative - words) < 25:
                 tentative = words + delta
-            new_target = int(max(80, min(280, tentative)))
+            new_target = int(max(70, min(_SAMPLE_WORD_CEILING, tentative)))
             excerpt = build_sample_excerpt(
                 prepared,
                 target_words=new_target,
-                min_words=max(60, new_target - 30),
-                max_words=min(300, new_target + 40),
+                min_words=max(55, new_target - 25),
+                max_words=min(_SAMPLE_WORD_CEILING, new_target + 10),
             )
+            # Hard guarantee the retry excerpt changes length when duration failed.
+            if len(excerpt.split()) == words and scale < 1.0:
+                cut = max(70, min(_SAMPLE_WORD_CEILING, words + delta))
+                excerpt = " ".join(prepared.split()[:cut]).rstrip(",;:") + "."
+            elif len(excerpt.split()) == words and scale >= 1.0:
+                extra = " ".join(prepared.split()[words : words + delta])
+                if extra:
+                    excerpt = (excerpt + " " + extra).strip()
+            # Final clamp into sample word ceiling for slow bedtime voices.
+            if len(excerpt.split()) > _SAMPLE_WORD_CEILING:
+                excerpt = " ".join(excerpt.split()[:_SAMPLE_WORD_CEILING]).rstrip(",;:") + "."
             logger.warning(
                 "Sample QA failed (%s); retrying once with adjusted excerpt (%s -> %s words).",
                 qa.detail,
