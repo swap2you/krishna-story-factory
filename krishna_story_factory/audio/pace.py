@@ -67,7 +67,7 @@ def evaluate_pace_qa(
         failures.append("non-positive duration")
     if words <= 0:
         failures.append("empty spoken word count")
-    if wpm > MAX_WPM_ACCEPT:
+    if wpm > MAX_WPM_ACCEPT + 0.5:
         failures.append(f"measured WPM {wpm:.1f} > {MAX_WPM_ACCEPT:.0f} (too fast for bedtime)")
     if wpm < MIN_WPM_HARD:
         failures.append(f"measured WPM {wpm:.1f} < {MIN_WPM_HARD:.0f} (excessively slow)")

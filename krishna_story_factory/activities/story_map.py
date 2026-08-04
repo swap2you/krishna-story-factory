@@ -170,11 +170,30 @@ def reconstruct_story_map_from_canonical(
         sent = raw.strip()
         if not sent.endswith((".", "!", "?", "…", '"', "”", "'")):
             sent = f"{sent}."
-        if len(_WORD_RE.findall(sent)) < 6:
+        word_n = len(_WORD_RE.findall(sent))
+        if word_n < 8 or word_n > 42:
             continue
         if not _is_complete_sentence(sent):
             continue
+        # Printable card budget: allow longer beat sentences when needed.
+        if len(sent) > 220:
+            continue
         sentences.append(sent)
+    if len(sentences) < 6:
+        # Fallback: allow slightly longer complete sentences, still capped.
+        sentences = []
+        for raw in raw_sentences:
+            sent = raw.strip()
+            if not sent.endswith((".", "!", "?", "…", '"', "”", "'")):
+                sent = f"{sent}."
+            word_n = len(_WORD_RE.findall(sent))
+            if word_n < 8 or word_n > 50:
+                continue
+            if not _is_complete_sentence(sent):
+                continue
+            if len(sent) > 260:
+                continue
+            sentences.append(sent)
     if len(sentences) < 6:
         raise ValueError(
             f"Cannot reconstruct ActivityStoryMap for {story_no}: "

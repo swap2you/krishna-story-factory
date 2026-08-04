@@ -397,7 +397,7 @@ def _wrapped(c: Canvas, text: str, x: float, y: float, width: float, size: float
     return y
 
 
-def _wrapped_font(c: Canvas, text: str, x: float, y: float, width: float, *, font: str, size: float, leading: float) -> float:
+def _wrapped_font(c: Canvas, text: str, x: float, y: float, width: float, *, font: str, size: float, leading: float, max_lines: int = 3) -> float:
     words, lines, current = text.split(), [], ""
     c.setFont(font, size)
     for word in words:
@@ -410,7 +410,7 @@ def _wrapped_font(c: Canvas, text: str, x: float, y: float, width: float, *, fon
             current = word
     if current:
         lines.append(current)
-    for line in lines[:3]:
+    for line in lines[: max(1, int(max_lines))]:
         c.drawString(x, y, line)
         y -= leading
     return y
@@ -722,17 +722,28 @@ def _render_sequence_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page
         y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
         y -= 0.04 * inch
     c.setDash(4, 3)
+    card_h = 1.7 * inch
     for i, label in enumerate(labels[:6]):
         row, col = divmod(i, 2)
         x = MARGIN + col * 3.65 * inch
-        yy = 6.0 * inch - row * 1.55 * inch
-        c.roundRect(x, yy, 3.25 * inch, 1.25 * inch, 8, stroke=1, fill=0)
+        yy = 6.15 * inch - row * 1.95 * inch
+        c.roundRect(x, yy, 3.25 * inch, card_h, 8, stroke=1, fill=0)
         c.setDash()
-        c.rect(x + 0.12 * inch, yy + 0.7 * inch, 0.36 * inch, 0.36 * inch, stroke=1, fill=0)
-        _wrapped_font(c, label, x + 0.6 * inch, yy + 0.88 * inch, 2.5 * inch,
-                      font=FONT_BOLD, size=9.5, leading=11)
-        c.setFont(FONT_REGULAR, 9.5)
-        c.drawString(x + 0.6 * inch, yy + 0.45 * inch, "Number + draw one detail")
+        c.rect(x + 0.12 * inch, yy + card_h - 0.48 * inch, 0.32 * inch, 0.32 * inch, stroke=1, fill=0)
+        # Draw the complete event sentence (no 3-line clip).
+        _wrapped_font(
+            c,
+            label,
+            x + 0.52 * inch,
+            yy + card_h - 0.28 * inch,
+            2.6 * inch,
+            font=FONT_BOLD,
+            size=8.5,
+            leading=10,
+            max_lines=10,
+        )
+        c.setFont(FONT_REGULAR, 8.5)
+        c.drawString(x + 0.52 * inch, yy + 0.16 * inch, "Number + draw one detail")
         c.setDash(4, 3)
     c.setDash()
 
@@ -755,15 +766,17 @@ def _render_generic_cards(
         y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
         y -= 0.04 * inch
     c.setDash(4, 3)
+    # Taller cards so complete-sentence events wrap inside the box.
+    card_h = 1.55 * inch
     for i, label in enumerate(labels):
         row, col = divmod(i, 2)
         x = MARGIN + col * 3.65 * inch
-        yy = 5.75 * inch - row * 1.55 * inch
-        c.roundRect(x, yy, 3.25 * inch, 1.18 * inch, 8, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 11)
-        label_bottom = _wrapped(c, label, x + 0.16 * inch, yy + 0.9 * inch, 2.95 * inch, 11, 12.5)
-        c.setFont(FONT_REGULAR, 9.5)
-        _wrapped(c, prompt, x + 0.16 * inch, label_bottom - 0.08 * inch, 2.95 * inch, 9.5, 11)
+        yy = 6.05 * inch - row * 1.85 * inch
+        c.roundRect(x, yy, 3.25 * inch, card_h, 8, stroke=1, fill=0)
+        c.setFont(FONT_BOLD, 10)
+        label_bottom = _wrapped(c, label, x + 0.12 * inch, yy + card_h - 0.22 * inch, 3.0 * inch, 10, 12)
+        c.setFont(FONT_REGULAR, 8.5)
+        _wrapped(c, prompt, x + 0.12 * inch, max(yy + 0.14 * inch, label_bottom - 0.06 * inch), 3.0 * inch, 8.5, 10)
     c.setDash()
 
 

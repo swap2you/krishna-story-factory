@@ -301,7 +301,31 @@ def _label_in_blob(label: str, blob: str) -> bool:
     if not normalized:
         return False
     # Allow soft hyphen / wrapping noise by checking contiguous normalized form.
-    return normalized in blob
+    if normalized in blob:
+        return True
+    # Unicode dash / quote normalization for PDF extractors.
+    folded_label = (
+        normalized.replace("—", "-")
+        .replace("–", "-")
+        .replace("“", '"')
+        .replace("”", '"')
+        .replace("’", "'")
+    )
+    folded_blob = (
+        blob.replace("—", "-")
+        .replace("–", "-")
+        .replace("“", '"')
+        .replace("”", '"')
+        .replace("’", "'")
+    )
+    if folded_label in folded_blob:
+        return True
+    # Substantial token overlap for long wrapped sequence cards.
+    tokens = [t for t in re.findall(r"[a-z0-9\u0100-\u024F\u1E00-\u1EFF']{4,}", folded_label)]
+    if len(tokens) >= 8:
+        hits = sum(1 for t in tokens if t in folded_blob)
+        return (hits / len(tokens)) >= 0.85
+    return False
 
 
 def _is_generic_placeholder(label: str) -> bool:
