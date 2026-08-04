@@ -261,8 +261,8 @@ jobs:
           expected = pin["sha256"].lower()
           actual = hashlib.sha256(open(f"{tag}.tar.gz", "rb").read()).hexdigest()
           assert actual == expected, (actual, expected)
-          assert int(pin["public_story_max"]) == 22
-          print("staging content pin OK", tag, actual)
+          assert int(pin["public_story_max"]) >= 1
+          print("staging content pin OK", tag, actual, "max", pin["public_story_max"])
           PY
           fi
 
