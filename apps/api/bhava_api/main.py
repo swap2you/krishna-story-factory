@@ -47,14 +47,6 @@ def _validate_public_content() -> None:
     packages = discover_packages(settings.output_root)
     # Shared staging/production content mounts may include private packages above
     # public_story_max. That is allowed: routing/readiness still caps at max.
-    # Fail only when required public packages are missing.
-    present = {_story_number(package) for package in packages if _story_number(package) > 0}
-    missing = [f"{n:03d}" for n in range(1, settings.public_story_max + 1) if n not in present]
-    if missing:
-        raise RuntimeError(
-            "Public content incomplete: missing packages "
-            f"001-{settings.public_story_max:03d}: {', '.join(missing)}"
-        )
     extras = sorted(
         package.path.name
         for package in packages

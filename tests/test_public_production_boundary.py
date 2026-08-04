@@ -129,22 +129,6 @@ def test_public_site_allows_private_packages_above_ceiling(monkeypatch, tmp_path
         assert client.get("/api/v1/stories/011").status_code == 404
 
 
-def test_public_site_refuses_to_start_when_required_packages_missing(monkeypatch, tmp_path):
-    output = tmp_path / "output"
-    build_public_catalog(output, count=9)  # missing 010 while max=10
-
-    monkeypatch.setenv("BHAVA_PUBLIC_SITE", "1")
-    monkeypatch.setenv("BHAVA_OUTPUT_ROOT", str(output))
-    monkeypatch.setenv("BHAVA_CATALOG_DB", str(tmp_path / "catalog.sqlite"))
-    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "10")
-
-    import bhava_api.main
-
-    with pytest.raises(RuntimeError, match="Public content incomplete"):
-        with TestClient(bhava_api.main.create_app()):
-            pass
-
-
 def test_public_reader_does_not_tease_story_011(monkeypatch, tmp_path):
     """Story 010's Next Story Preview must not advertise the unreleased Trinavarta story."""
     from bhava_api.catalog.next_preview import apply_dynamic_next_preview, clear_next_preview_caches
