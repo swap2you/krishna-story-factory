@@ -19,7 +19,9 @@ LOCKED = (
     "simple_coloring_page.png",
     "whatsapp_caption.txt",
 )
-EVIDENCE = (
+EVIDENCE = ROOT / "work" / "tmp" / "final-uat-blockers-021-022" / "022_activity"
+# Optional operator sync target (symlink or copy); never required for regen success.
+DROPBOX_EVIDENCE = (
     Path.home()
     / "MyPilotDropbox"
     / "bhava-production-ops"
@@ -115,6 +117,11 @@ def main() -> int:
     if pdf_check.errors:
         raise SystemExit("PDF FAIL: " + " | ".join(pdf_check.errors))
     shutil.copy2(paths.activity_sheet, EVIDENCE / "pdf" / "022_activity_sheet.pdf")
+    if DROPBOX_EVIDENCE.exists():
+        DROPBOX_EVIDENCE.mkdir(parents=True, exist_ok=True)
+        (DROPBOX_EVIDENCE / "pdf").mkdir(parents=True, exist_ok=True)
+        shutil.copy2(paths.activity_sheet, DROPBOX_EVIDENCE / "pdf" / "022_activity_sheet.pdf")
+        shutil.copy2(EVIDENCE / "022_activity_semantic_qa.json", DROPBOX_EVIDENCE / "022_activity_semantic_qa.json")
 
     after = {n: _sha(paths.root / n) for n in LOCKED}
     if after != before:

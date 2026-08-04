@@ -9,15 +9,16 @@ ROOT = Path(__file__).resolve().parents[1]
 TESTS = ROOT / "tests"
 
 # Path-like literals that indicate a hermeticity violation.
+# Applied to AST string *values* (no surrounding quotes) and raw source scans.
 _FORBIDDEN_LITERAL = re.compile(
     r"""(?x)
     (?:^|[\s\"'`=(])output/[A-Za-z0-9_.-]
     |(?:^|[\s\"'`=(])work/(?:stories|tmp|runs)/
     |MyPilotDropbox
-    |(?:[\"'])C:\\\\Development
-    |(?:[\"'])C:/Development
-    |(?:[\"'])/Users/[A-Za-z]
-    |(?:[\"'])/home/[A-Za-z]
+    |(?:^|[\s\"'`=(])C:\\Development
+    |(?:^|[\s\"'`=(])C:/Development
+    |(?:^|[\s\"'`=(])/Users/[A-Za-z]
+    |(?:^|[\s\"'`=(])/home/[A-Za-z]
     """,
 )
 
@@ -160,3 +161,15 @@ def test_ast_guard_detects_output_and_work_compositions() -> None:
         tree = ast.parse(src)
         hits = _find_path_composition_violations(tree)
         assert hits, f"Expected AST violation for {label}, got none"
+
+
+def test_forbidden_literal_matches_absolute_ast_values() -> None:
+    """Absolute developer paths must match AST string values (no surrounding quotes)."""
+    for value in (
+        r"C:\Development\Workspace\example",
+        "C:/Development/Workspace/example",
+        "/Users/example/project",
+        "/home/example/project",
+        "MyPilotDropbox/bhava-production-ops",
+    ):
+        assert _FORBIDDEN_LITERAL.search(value), value

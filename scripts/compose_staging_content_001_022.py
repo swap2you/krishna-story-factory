@@ -25,10 +25,17 @@ def sha256(path: Path) -> str:
 
 
 def main() -> int:
+    web_assets_src = EXTRACT / "web-assets"
+    if not web_assets_src.is_dir():
+        raise SystemExit(
+            f"Missing extracted v4 web-assets at {web_assets_src}. "
+            "Download/extract bhava-content-001-020-v4 into "
+            "work/tmp/content-staging-compose/extract first."
+        )
     web_dest = ROOT / "data" / "web-assets"
     web_dest.mkdir(parents=True, exist_ok=True)
     # Restore 001-020 web assets from approved v4 extract (do not overwrite 021/022).
-    for story_dir in sorted((EXTRACT / "web-assets").iterdir()):
+    for story_dir in sorted(web_assets_src.iterdir()):
         if not story_dir.is_dir():
             continue
         if story_dir.name in {"021", "022"}:
