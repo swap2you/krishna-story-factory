@@ -71,7 +71,7 @@ def main() -> int:
             debug=args.debug,
             archive=True,
         )
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        _print_json(result)
         return 0 if result.get("status") == "SUCCESS" else 1
 
     rebuild_components = {item.strip() for item in (args.rebuild_components or "").split(",") if item.strip()}
@@ -89,7 +89,7 @@ def main() -> int:
         resume_from=args.resume_from,
         enable_production_recovery=bool(args.enable_production_recovery),
     )
-    print(json.dumps(result, indent=2, ensure_ascii=False))
+    _print_json(result)
     return 0 if result.get("status") in {
         "SUCCESS",
         "NO_PENDING_STORY",
@@ -97,6 +97,26 @@ def main() -> int:
         "ALREADY_DONE",
         "SKIPPED_AUDIO_PROVIDER_UNAVAILABLE",
     } else 1
+
+
+def _print_json(payload: dict) -> None:
+    """Print JSON without crashing Windows cp1252 consoles on diacritics."""
+    import sys
+
+    text = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+    stream = sys.stdout
+    try:
+        stream.write(text)
+        return
+    except UnicodeEncodeError:
+        pass
+    encoding = getattr(stream, "encoding", None) or "utf-8"
+    buffer = getattr(stream, "buffer", None)
+    if buffer is not None:
+        buffer.write(text.encode(encoding, errors="replace"))
+        buffer.flush()
+        return
+    stream.write(text.encode(encoding, errors="replace").decode(encoding, errors="replace"))
 
 
 if __name__ == "__main__":
