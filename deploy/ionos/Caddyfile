@@ -50,9 +50,10 @@ bhava.me {
 
 	# Production-only defense-in-depth: private reader projections must never
 	# reach the API for stories above the public HTML boundary (021+).
-	# Staging keeps /api reader access for authenticated review of 021/022.
+	# Staging keeps /api reader access for authenticated review of private stories.
+	# Stories 021–022 are public after bhava-content-001-022-v1; deny starts at 023+.
 	# Use handle blocks (first-match) so they win over handle /api/*.
-	@private_reader_api path_regexp private_reader_api ^/api/v1/stories/0*(2[1-9]|[3-9][0-9]|[1-9][0-9]{2,})/reader(\.txt)?/?$
+	@private_reader_api path_regexp private_reader_api ^/api/v1/stories/0*(2[3-9]|[3-9][0-9]|[1-9][0-9]{2,})/reader(\.txt)?/?$
 	handle @private_reader_api {
 		respond 404
 	}

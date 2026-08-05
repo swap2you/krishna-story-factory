@@ -1,7 +1,7 @@
 {
-  "tag": "bhava-content-001-020-v4",
-  "bundle": "bhava-content-001-020-v4.tar.gz",
-  "sha256": "83c312930f3547930d2113b4a93a4ae77096099cbb6590ea05bff709a16ff8ff",
-  "public_story_max": 20,
-  "note": "Immutable public Stories 001-020 content v4: story-specific activity sheets for 010-020, compact printable attribution (no personal email), prior v3 audio/poster/coloring preserved. Story 021+ remains private. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes."
+  "tag": "bhava-content-001-022-v1",
+  "bundle": "bhava-content-001-022-v1.tar.gz",
+  "sha256": "399c265073915b766b5a2ad58b1237d51aed7a7b6a5c2b745a8235c6189643a6",
+  "public_story_max": 22,
+  "note": "Immutable public Stories 001-022 content v1: accepted packages for 021-022 promoted without regeneration; Stories 001-020 preserved from prior v4 lineage. Story 023+ remains private. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes."
 }
