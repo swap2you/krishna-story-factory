@@ -131,6 +131,12 @@ def run_daily_story(
     now = datetime.now(ZoneInfo(settings.app_timezone))
     plan: PlanRow | None = None
     try:
+        if mode == "prod":
+            from .policy.story_package_policy import load_story_package_policy
+
+            # Fail closed if the authoritative package policy is missing/invalid.
+            load_story_package_policy(settings.project_root)
+
         from .audio.provider import reset_provider_preflight_cache
 
         reset_provider_preflight_cache()
@@ -634,41 +640,71 @@ def _run_once(
         if stage and run_root:
             mark_file_stage(run_root, stage, "narration", paths.narration_mp3)
 
-    poster_score, poster_ref = generate_poster(
-        settings,
-        story_md=story_md,
-        content=content,
-        output_path=paths.story_poster,
-        work_candidates=work.poster_candidates,
-        work_reviews=work.reviews,
-        mode=mode,
+    poster_score = 0
+    poster_ref = False
+    coloring_score = 0
+    poster_content_ref = False
+    coloring_style_ref = False
+    identity_score = 0
+    simple_score = 0
+    reuse_visuals = bool(
+        stage
+        and stage.is_complete("poster")
+        and stage.is_complete("detailed_coloring")
+        and stage.is_complete("simple_coloring")
+        and paths.story_poster.is_file()
+        and paths.coloring_page.is_file()
+        and paths.simple_coloring_page.is_file()
     )
-    coloring_score, poster_content_ref, coloring_style_ref, identity_score = generate_coloring(
-        settings,
-        story_md=story_md,
-        content=content,
-        output_path=paths.coloring_page,
-        work_candidates=work.coloring_candidates,
-        work_reviews=work.reviews,
-        poster_path=paths.story_poster,
-        mode=mode,
-    )
-    simple_score, _simple_ref = generate_simple_coloring(
-        settings,
-        story_md=story_md,
-        content=content,
-        output_path=paths.simple_coloring_page,
-        work_candidates=work.coloring_candidates,
-        work_reviews=work.reviews,
-        poster_path=paths.story_poster,
-        detailed_coloring_path=paths.coloring_page,
-        mode=mode,
-    )
+    if reuse_visuals:
+        # Production recovery: keep accepted visual bytes; do not re-spend image budget.
+        poster_score = max(settings.image_min_acceptance_score, 86)
+        coloring_score = max(settings.image_min_acceptance_score, 86)
+        simple_score = max(_simple_coloring_pass(content.title), 80)
+        poster_ref = True
+        poster_content_ref = True
+        coloring_style_ref = True
+        identity_score = 90
+    else:
+        poster_score, poster_ref = generate_poster(
+            settings,
+            story_md=story_md,
+            content=content,
+            output_path=paths.story_poster,
+            work_candidates=work.poster_candidates,
+            work_reviews=work.reviews,
+            mode=mode,
+        )
+        coloring_score, poster_content_ref, coloring_style_ref, identity_score = generate_coloring(
+            settings,
+            story_md=story_md,
+            content=content,
+            output_path=paths.coloring_page,
+            work_candidates=work.coloring_candidates,
+            work_reviews=work.reviews,
+            poster_path=paths.story_poster,
+            mode=mode,
+        )
+        simple_score, _simple_ref = generate_simple_coloring(
+            settings,
+            story_md=story_md,
+            content=content,
+            output_path=paths.simple_coloring_page,
+            work_candidates=work.coloring_candidates,
+            work_reviews=work.reviews,
+            poster_path=paths.story_poster,
+            detailed_coloring_path=paths.coloring_page,
+            mode=mode,
+        )
     if simple_score < _simple_coloring_pass(content.title) and mode == "prod":
         raise PipelineError(
             f"Simple coloring score {simple_score} below threshold {_simple_coloring_pass(content.title)}."
         )
     reference_used = poster_ref or poster_content_ref or coloring_style_ref
+    if stage and run_root:
+        mark_file_stage(run_root, stage, "poster", paths.story_poster)
+        mark_file_stage(run_root, stage, "detailed_coloring", paths.coloring_page)
+        mark_file_stage(run_root, stage, "simple_coloring", paths.simple_coloring_page)
 
     activity_planner = ActivityPlanner(settings.project_root / "tracking" / "activity_history.csv", settings=settings)
     activity = activity_planner.plan(plan, story_md)

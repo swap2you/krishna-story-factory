@@ -150,10 +150,13 @@ class ActivityPlanner:
                 map_errors = validate_event_list(events)
                 if map_errors:
                     raise ValueError("ActivityStoryMap failed semantic checks: " + " | ".join(map_errors))
-            except ValueError:
-                # Fail closed for sequence: do not ship opening-fragment cards.
-                # Prefer a non-sequence pack only when a semantic map cannot be built.
-                kind = "FAMILY_MISSION"
+            except ValueError as exc:
+                # Fail closed: never convert a broken StoryMap into a generic pack.
+                raise ValueError(
+                    "HOLD: ActivityStoryMap required for STORY_SEQUENCE; "
+                    "quality-blind FAMILY_MISSION soft-fallback is prohibited. "
+                    f"Detail: {exc}"
+                ) from exc
             else:
                 cards = [
                     SequenceCard(
@@ -195,7 +198,10 @@ class ActivityPlanner:
                     answer_key=[card.event for card in sorted(cards, key=lambda item: item.source_order)],
                 )
         if kind == "STORY_SEQUENCE":
-            kind = "FAMILY_MISSION"
+            raise ValueError(
+                "HOLD: STORY_SEQUENCE pack could not be built from ActivityStoryMap; "
+                "quality-blind FAMILY_MISSION soft-fallback is prohibited."
+            )
         if kind == "MATCHING_GAME":
             return ActivityPack(
                 activity_title=f"Match Clues from {title}",

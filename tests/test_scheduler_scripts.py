@@ -23,6 +23,8 @@ def test_scheduler_is_unattended_and_non_overlapping() -> None:
     assert '$env:GOOGLE_DRIVE_UPLOAD_ENABLED = "true"' in runner
     assert '$env:AUDIO_SAMPLE_FIRST_REQUIRED = "1"' in runner
     assert '$env:BHAVA_WEB_ASSETS_UI_GATE = "1"' in runner
+    assert "scheduler_status.json" in runner
+    assert "public_web_exposed" in runner
     assert 'PrimaryTime = "10:00"' in mwf
     assert "BackupTime" not in mwf
     assert "12:00" not in mwf

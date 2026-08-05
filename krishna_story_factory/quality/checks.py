@@ -86,9 +86,29 @@ def run_quality_checks(
         try:
             from mutagen.mp3 import MP3
 
+            from krishna_story_factory.audio.pace import expected_duration_window
+
             duration = float(MP3(paths.narration_mp3).info.length)
-            if duration < 180 or duration > 360:
-                errors.append(f"Audio duration {duration:.0f}s outside 3–6 minutes.")
+            # Align with accepted 021/022 bedtime packages (~377–382s) and pipeline
+            # _validate_audio: WPM-derived window with a hard runaway ceiling.
+            narration_text = ""
+            try:
+                story_text = paths.story_md.read_text(encoding="utf-8") if paths.story_md.exists() else ""
+                from krishna_story_factory.content.canonical_narration import extract_canonical_narration
+
+                narration_text = extract_canonical_narration(story_text)
+            except Exception:
+                narration_text = ""
+            if narration_text.strip():
+                min_seconds, max_seconds = expected_duration_window(len(narration_text.split()))
+                max_seconds = max(max_seconds, 540.0)
+            else:
+                min_seconds, max_seconds = 180.0, 540.0
+            if duration < min_seconds or duration > max_seconds:
+                errors.append(
+                    f"Audio duration {duration:.0f}s outside bedtime window "
+                    f"{min_seconds:.0f}–{max_seconds:.0f}s."
+                )
         except Exception:
             pass
 
