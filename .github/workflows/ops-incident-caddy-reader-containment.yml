@@ -7,8 +7,12 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: apply_deny | verify_only
+        description: apply_deny or verify_only
         required: true
+        type: choice
+        options:
+          - apply_deny
+          - verify_only
         default: apply_deny
 
 permissions:
@@ -24,7 +28,7 @@ jobs:
     timeout-minutes: 15
     environment:
       name: staging
-      url: https://staging.bhava.me
+      url: https://bhava.me
     steps:
       - uses: actions/checkout@v6
 
@@ -42,7 +46,30 @@ jobs:
           MODE: ${{ inputs.mode }}
         run: |
           set -euo pipefail
-          ssh -p "$PORT" "$USER@$HOST" "MODE='${MODE}' bash -s" <<'EOS'
+          cat > /tmp/incident_caddy_patch.py <<'PY'
+          from pathlib import Path
+          import os
+          path = Path("/opt/bhava/config/Caddyfile")
+          text = path.read_text(encoding="utf-8")
+          marker = "# INCIDENT_PRIVATE_READER_DENY_V1"
+          if marker in text:
+              print("incident deny already present")
+              raise SystemExit(0)
+          block = (
+              "\n"
+              "\t# INCIDENT_PRIVATE_READER_DENY_V1 temporary production-only containment\n"
+              "\t@incident_private_reader path /api/v1/stories/021/reader /api/v1/stories/021/reader.txt /api/v1/stories/022/reader /api/v1/stories/022/reader.txt\n"
+              "\trespond @incident_private_reader 404\n"
+          )
+          needle = "bhava.me {\n\timport common_security\n"
+          if needle not in text:
+              raise SystemExit("bhava.me block not found for incident insert")
+          path.write_text(text.replace(needle, needle + block, 1), encoding="utf-8")
+          print("caddy_incident_block_inserted")
+          PY
+          scp -P "$PORT" /tmp/incident_caddy_patch.py "$USER@$HOST:/tmp/incident_caddy_patch.py"
+          ssh -p "$PORT" "$USER@$HOST" \
+            "MODE=$(printf %q "$MODE") bash -s" <<'EOS'
           set -Eeuo pipefail
           CADDY=/opt/bhava/config/Caddyfile
           BACKUP="/opt/bhava/config/Caddyfile.incident-reader-backup.$(date -u +%Y%m%dT%H%M%SZ)"
@@ -55,31 +82,13 @@ jobs:
             if ! grep -q "$MARKER" "$CADDY"; then
               cp -a "$CADDY" "$BACKUP"
               echo "backed_up=$BACKUP"
-              python3 - <<'PY'
-          from pathlib import Path
-          path = Path("/opt/bhava/config/Caddyfile")
-          text = path.read_text(encoding="utf-8")
-          marker = "# INCIDENT_PRIVATE_READER_DENY_V1"
-          if marker in text:
-              raise SystemExit(0)
-          block = """
-          \t# INCIDENT_PRIVATE_READER_DENY_V1 temporary production-only containment
-          \t@incident_private_reader path /api/v1/stories/021/reader /api/v1/stories/021/reader.txt /api/v1/stories/022/reader /api/v1/stories/022/reader.txt
-          \trespond @incident_private_reader 404
-          """
-          needle = "bhava.me {\n\timport common_security\n"
-          if needle not in text:
-              raise SystemExit("bhava.me block not found for incident insert")
-          path.write_text(text.replace(needle, needle + block, 1), encoding="utf-8")
-          print("caddy_incident_block_inserted")
-          PY
+              python3 /tmp/incident_caddy_patch.py
             else
               echo "incident deny already present"
             fi
             cd /opt/bhava/config
             docker compose --env-file runtime.env exec -T caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile \
               || docker compose --env-file runtime.env exec -T caddy caddy validate --config /etc/caddy/Caddyfile
-            # Reload by recreating caddy with updated bind-mounted Caddyfile.
             docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps caddy
             sleep 4
             docker compose --env-file runtime.env ps caddy
