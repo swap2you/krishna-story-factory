@@ -1,0 +1,120 @@
+name: Ops Incident Caddy Reader Containment
+
+# P0 temporary containment: deny production private reader projections at the
+# edge while the permanent API catalog-first fix is merged and deployed.
+# Uses staging SSH credentials (shared host). Does not touch staging.bhava.me.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: apply_deny or verify_only
+        required: true
+        type: choice
+        options:
+          - apply_deny
+          - verify_only
+        default: apply_deny
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bhava-incident-caddy
+  cancel-in-progress: false
+
+jobs:
+  contain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      # Shared VPS SSH credentials live on the staging GitHub Environment.
+      # This job still only mutates the bhava.me (production) Caddy site block.
+      name: staging
+      url: https://bhava.me
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Configure pinned SSH
+        uses: ./.github/actions/configure-pinned-ssh
+        with:
+          ssh_key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
+
+      - name: Apply or verify production reader deny
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/incident_caddy_patch.py <<'PY'
+          from pathlib import Path
+          import os
+          path = Path("/opt/bhava/config/Caddyfile")
+          text = path.read_text(encoding="utf-8")
+          marker = "# INCIDENT_PRIVATE_READER_DENY_V1"
+          if marker in text:
+              print("incident deny already present")
+              raise SystemExit(0)
+          block = (
+              "\n"
+              "\t# INCIDENT_PRIVATE_READER_DENY_V1 temporary production-only containment\n"
+              "\t@incident_private_reader path /api/v1/stories/021/reader /api/v1/stories/021/reader.txt /api/v1/stories/022/reader /api/v1/stories/022/reader.txt\n"
+              "\trespond @incident_private_reader 404\n"
+          )
+          needle = "bhava.me {\n\timport common_security\n"
+          if needle not in text:
+              raise SystemExit("bhava.me block not found for incident insert")
+          path.write_text(text.replace(needle, needle + block, 1), encoding="utf-8")
+          print("caddy_incident_block_inserted")
+          PY
+          scp -P "$PORT" /tmp/incident_caddy_patch.py "$USER@$HOST:/tmp/incident_caddy_patch.py"
+          MODE_Q="$(printf '%q' "$MODE")"
+          ssh -p "$PORT" "$USER@$HOST" "MODE=${MODE_Q} bash -s" <<'EOS'
+          set -Eeuo pipefail
+          CADDY=/opt/bhava/config/Caddyfile
+          BACKUP="/opt/bhava/config/Caddyfile.incident-reader-backup.$(date -u +%Y%m%dT%H%M%SZ)"
+          MARKER="# INCIDENT_PRIVATE_READER_DENY_V1"
+          if [[ ! -f "$CADDY" ]]; then
+            echo "missing Caddyfile" >&2
+            exit 1
+          fi
+          if [[ "$MODE" == "apply_deny" ]]; then
+            if ! grep -q "$MARKER" "$CADDY"; then
+              cp -a "$CADDY" "$BACKUP"
+              echo "backed_up=$BACKUP"
+              python3 /tmp/incident_caddy_patch.py
+            else
+              echo "incident deny already present"
+            fi
+            cd /opt/bhava/config
+            docker compose --env-file runtime.env exec -T caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile \
+              || docker compose --env-file runtime.env exec -T caddy caddy validate --config /etc/caddy/Caddyfile
+            docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps caddy
+            sleep 4
+            docker compose --env-file runtime.env ps caddy
+          else
+            echo "verify_only mode"
+          fi
+          EOS
+
+      - name: Verify public containment
+        run: |
+          set -euo pipefail
+          for path in \
+            /api/v1/stories/021/reader \
+            /api/v1/stories/021/reader.txt \
+            /api/v1/stories/022/reader \
+            /api/v1/stories/022/reader.txt
+          do
+            code="$(curl -sS -o /tmp/body.bin -w '%{http_code}' "https://bhava.me${path}" || true)"
+            len="$(wc -c </tmp/body.bin | tr -d ' ')"
+            sha="$(sha256sum /tmp/body.bin | awk '{print $1}')"
+            echo "url=https://bhava.me${path} status=${code} length=${len} sha256=${sha}"
+            [[ "$code" == "404" ]]
+          done
+          code020="$(curl -sS -o /dev/null -w '%{http_code}' https://bhava.me/api/v1/stories/020/reader || true)"
+          echo "url=https://bhava.me/api/v1/stories/020/reader status=${code020}"
+          [[ "$code020" == "200" ]]
+          echo "containment_verified"
