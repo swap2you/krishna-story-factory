@@ -27,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
+      # Shared VPS SSH credentials live on the staging GitHub Environment.
+      # This job still only mutates the bhava.me (production) Caddy site block.
       name: staging
       url: https://bhava.me
     steps:
@@ -68,8 +70,8 @@ jobs:
           print("caddy_incident_block_inserted")
           PY
           scp -P "$PORT" /tmp/incident_caddy_patch.py "$USER@$HOST:/tmp/incident_caddy_patch.py"
-          ssh -p "$PORT" "$USER@$HOST" \
-            "MODE=$(printf %q "$MODE") bash -s" <<'EOS'
+          MODE_Q="$(printf '%q' "$MODE")"
+          ssh -p "$PORT" "$USER@$HOST" "MODE=${MODE_Q} bash -s" <<'EOS'
           set -Eeuo pipefail
           CADDY=/opt/bhava/config/Caddyfile
           BACKUP="/opt/bhava/config/Caddyfile.incident-reader-backup.$(date -u +%Y%m%dT%H%M%SZ)"
