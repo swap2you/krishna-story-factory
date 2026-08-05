@@ -108,59 +108,57 @@ def _read_web_json(story: Story, filename: str) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _resolve_reader_body(story: Story, *, markdown: bool) -> str:
+    """Load reader body only after catalog visibility has already succeeded.
+
+    Public deployments must never treat web-assets filesystem presence as
+    authorization. Stories outside the indexed catalog raise 404 from
+    ``_get_story_record`` before this helper runs.
+    """
+    padded = story.story_no.zfill(3)
+    filename = "reader.md" if markdown else "reader.txt"
+
+    asset = _web_asset_path(padded, filename)
+    if asset is not None:
+        body = asset.read_text(encoding="utf-8")
+        return apply_dynamic_next_preview(body, padded)
+
+    if not _can_write_web_assets():
+        raise _missing_web_asset_error(filename)
+
+    try:
+        ensure_web_assets(story)
+        asset = _web_asset_path(padded, filename)
+        if asset is not None:
+            body = asset.read_text(encoding="utf-8")
+            return apply_dynamic_next_preview(body, padded)
+    except HTTPException:
+        pass
+    md, txt = _parse_on_the_fly(story)
+    body = md if markdown else txt
+    return apply_dynamic_next_preview(body, padded)
+
+
 @router.get("/{story_no}/reader", response_class=PlainTextResponse)
 def reader_md(story_no: str, session: Session = Depends(get_session)) -> PlainTextResponse:
     """Clean reader markdown — no internal production blocks."""
-    padded = story_no.zfill(3)
-
-    asset = _web_asset_path(padded, "reader.md")
-    if asset is not None:
-        md = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
-        return PlainTextResponse(md, media_type="text/markdown")
-
-    if not _can_write_web_assets():
-        raise _missing_web_asset_error("reader.md")
-
+    # Catalog visibility first: never serve filesystem reader assets for private stories.
     story = _get_story_record(session, story_no)
-    try:
-        ensure_web_assets(story)
-        asset = _web_asset_path(padded, "reader.md")
-        if asset is not None:
-            md = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
-            return PlainTextResponse(md, media_type="text/markdown")
-    except HTTPException:
-        pass
-    md, _ = _parse_on_the_fly(story)
-    md = apply_dynamic_next_preview(md, padded)
-    return PlainTextResponse(md, media_type="text/markdown")
+    return PlainTextResponse(
+        _resolve_reader_body(story, markdown=True),
+        media_type="text/markdown",
+    )
 
 
 @router.get("/{story_no}/reader.txt", response_class=PlainTextResponse)
 def reader_txt(story_no: str, session: Session = Depends(get_session)) -> PlainTextResponse:
     """Plain-text reader download — no internal production blocks."""
-    padded = story_no.zfill(3)
-
-    asset = _web_asset_path(padded, "reader.txt")
-    if asset is not None:
-        txt = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
-        return PlainTextResponse(txt, media_type="text/plain")
-
-    if not _can_write_web_assets():
-        raise _missing_web_asset_error("reader.txt")
-
+    # Catalog visibility first: never serve filesystem reader assets for private stories.
     story = _get_story_record(session, story_no)
-    try:
-        ensure_web_assets(story)
-        asset = _web_asset_path(padded, "reader.txt")
-        if asset is not None:
-            txt = apply_dynamic_next_preview(asset.read_text(encoding="utf-8"), padded)
-            return PlainTextResponse(txt, media_type="text/plain")
-    except HTTPException:
-        pass
-    _, txt = _parse_on_the_fly(story)
-    txt = apply_dynamic_next_preview(txt, padded)
-    return PlainTextResponse(txt, media_type="text/plain")
-
+    return PlainTextResponse(
+        _resolve_reader_body(story, markdown=False),
+        media_type="text/plain",
+    )
 
 @router.get("/{story_no}/sync")
 def story_sync(story_no: str, session: Session = Depends(get_session)) -> JSONResponse:

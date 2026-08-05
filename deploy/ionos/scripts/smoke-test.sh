@@ -174,4 +174,50 @@ for n in 001 002 003 004 005 006 007 008 009; do
   curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${n}" >/dev/null
 done
 
+# Production confidentiality gate for private Stories 021/022 reader projections.
+# discovered_package_count may exceed public_story_max on shared mounts; that is OK.
+if [[ "${ENVIRONMENT}" == "production" ]]; then
+  if [[ "${PUBLIC_MAX}" != "20" ]]; then
+    echo "Production public_story_max must be 20, got ${PUBLIC_MAX}." >&2
+    exit 1
+  fi
+  indexed="$(printf '%s' "${version}" | python -c 'import json,sys; print(int(json.load(sys.stdin)["indexed_story_count"]))')"
+  if [[ "${indexed}" != "20" ]]; then
+    echo "Production indexed_story_count must be 20, got ${indexed}." >&2
+    exit 1
+  fi
+  for path in \
+    /stories/020 \
+    /api/v1/stories/020/reader \
+    /api/v1/stories/020/reader.txt
+  do
+    code="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}${path}")"
+    if [[ "${code}" != "200" ]]; then
+      echo "Production path ${path} returned ${code}, expected 200." >&2
+      exit 1
+    fi
+  done
+  for path in \
+    /stories/021 \
+    /api/v1/stories/021 \
+    /api/v1/stories/021/reader \
+    /api/v1/stories/021/reader.txt \
+    /stories/022 \
+    /api/v1/stories/022 \
+    /api/v1/stories/022/reader \
+    /api/v1/stories/022/reader.txt
+  do
+    code="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}${path}")"
+    if [[ "${code}" != "404" ]]; then
+      echo "Production private path ${path} returned ${code}, expected 404." >&2
+      exit 1
+    fi
+  done
+  sitemap="$(curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml")"
+  if printf '%s' "${sitemap}" | grep -E '/stories/021|/stories/022' >/dev/null; then
+    echo "Production sitemap includes private Stories 021/022." >&2
+    exit 1
+  fi
+fi
+
 echo "Smoke test passed for ${BASE_URL} (${ENVIRONMENT}) at ${EXPECTED_SHA} public_max=${PUBLIC_MAX}"
