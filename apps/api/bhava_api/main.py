@@ -45,11 +45,18 @@ def _validate_public_content() -> None:
     if not settings.public_site:
         return
     packages = discover_packages(settings.output_root)
-    invalid = [package.path.name for package in packages if _story_number(package) > settings.public_story_max]
-    if invalid:
-        raise RuntimeError(
-            "Public content boundary violation: packages above "
-            f"{settings.public_story_max:03d}: {', '.join(invalid)}"
+    # Shared staging/production content mounts may include private packages above
+    # public_story_max. That is allowed: routing/readiness still caps at max.
+    extras = sorted(
+        package.path.name
+        for package in packages
+        if _story_number(package) > settings.public_story_max
+    )
+    if extras:
+        logger.warning(
+            "Public content mount includes packages above %03d (not served): %s",
+            settings.public_story_max,
+            ", ".join(extras),
         )
 
 

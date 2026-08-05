@@ -50,6 +50,11 @@ def _normalize_story_no(chapter_no: object) -> str | None:
     return story_no
 
 
+def _package_story_number(package) -> int:
+    story_no = _normalize_story_no(package.manifest.get("chapter_no"))
+    return int(story_no) if story_no else 0
+
+
 def index_packages(session: Session) -> IndexResult:
     collection = session.scalar(select(Collection).where(Collection.slug == COLLECTION_SLUG))
     if collection is None:
@@ -63,7 +68,17 @@ def index_packages(session: Session) -> IndexResult:
 
     settings = get_settings()
     packages = discover_packages(settings.output_root)
-    publishable_packages = [package for package in packages if is_publicly_publishable(package)]
+    # Public sites may share a content mount with private packages above max.
+    # Index only stories within public_story_max so readiness stays hermetic.
+    publishable_packages = [
+        package
+        for package in packages
+        if is_publicly_publishable(package)
+        and (
+            not settings.public_site
+            or _package_story_number(package) <= settings.public_story_max
+        )
+    ]
     try:
         assert_public_scan_complete(len(publishable_packages), settings)
     except CatalogReadinessError:

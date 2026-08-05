@@ -101,11 +101,14 @@ jobs:
           docker compose --env-file runtime.env logs api-production --tail 40 || true
           if [[ "${MODE}" == "restore_prod_then_staging_022" && -n "${STG_SHA}" ]]; then
             # Shared content tree can include 021/022; production max stays 20.
-            BHAVA_PUBLIC_STORY_MAX=22 BHAVA_RECREATE_CONTENT_MOUNTS=0 \
-              bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
-                BHAVA_CONTENT_RELEASE=bhava-content-001-022-staging-v1 \
-                BHAVA_STAGING_PUBLIC_STORY_MAX=22 \
-                BHAVA_WEB_VERSION=001-022-staging
+            bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
+              BHAVA_PROD_WEB_VERSION=001-020-v4 \
+              BHAVA_PROD_CONTENT_RELEASE=bhava-content-001-020-v4 \
+              BHAVA_WEB_VERSION=001-020-v4 \
+              BHAVA_CONTENT_RELEASE=bhava-content-001-020-v4 \
+              BHAVA_STAGING_CONTENT_RELEASE=bhava-content-001-022-staging-v1 \
+              BHAVA_STAGING_PUBLIC_STORY_MAX=22 \
+              BHAVA_STAGING_WEB_VERSION=001-022-staging
             BHAVA_PUBLIC_STORY_MAX=22 BHAVA_RECREATE_CONTENT_MOUNTS=0 \
               bash /opt/bhava/config/scripts/install-content-bundle.sh \
               /opt/bhava/incoming/bhava-content-001-022-staging-v1.tar.gz \
@@ -141,7 +144,16 @@ jobs:
         env:
           STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
           STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
-          RELEASE_SHA: 82b0e43ca56df473bf2a861f0937530154f7f4d5
         run: |
-          SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh \
-            https://staging.bhava.me "${RELEASE_SHA}" staging
+          AUTH=(-u "${STAGING_BASIC_AUTH_USER}:${STAGING_BASIC_AUTH_PASSWORD}")
+          curl -fsS "${AUTH[@]}" https://staging.bhava.me/api/v1/version | tee /tmp/stg_ver.json
+          python3 - <<'PY'
+          import json
+          data = json.load(open("/tmp/stg_ver.json", encoding="utf-8"))
+          assert int(data.get("public_story_max") or 0) == 22, data
+          assert data.get("environment") == "staging", data
+          PY
+          code021="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' https://staging.bhava.me/stories/021 || true)"
+          code022="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' https://staging.bhava.me/stories/022 || true)"
+          code023="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' https://staging.bhava.me/stories/023 || true)"
+          [[ "$code021" == "200" && "$code022" == "200" && "$code023" == "404" ]]

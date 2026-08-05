@@ -14,7 +14,7 @@ on:
         required: false
         default: ""
       ops_mode:
-        description: Leave empty for normal staging deploy. Set restore_prod_then_staging_022 for emergency host recovery.
+        description: Empty=normal deploy. restore_prod_v4_only=emergency production restore. restore_prod_then_staging_022=v4 then shared 022 content.
         required: false
         default: ""
 
@@ -27,9 +27,9 @@ concurrency:
 
 jobs:
   ops-recover:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.ops_mode == 'restore_prod_then_staging_022' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.ops_mode == 'restore_prod_then_staging_022' || inputs.ops_mode == 'restore_prod_v4_only') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 50
     environment:
       name: staging
       url: https://staging.bhava.me
@@ -42,99 +42,145 @@ jobs:
           ssh_key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           known_hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
 
+      - name: Build production API hotfix image
+        # Allows shared content mounts to include private 021+ packages while production max stays 20.
+        run: |
+          PROD_SHA=c25973d29c200e7a4911c61b4c8d6b652cda0076
+          docker build -f deploy/ionos/Dockerfile.api -t "bhava-api:${PROD_SHA}" .
+          docker save "bhava-api:${PROD_SHA}" | gzip -9 > "bhava-api-${PROD_SHA}.tar.gz"
+
       - name: Download content bundles
         env:
           GH_TOKEN: ${{ github.token }}
+          OPS_MODE: ${{ inputs.ops_mode }}
         run: |
           gh release download bhava-content-001-020-v4 \
             --repo "${GITHUB_REPOSITORY}" \
             --pattern "bhava-content-001-020-v4.tar.gz" \
             --pattern "bhava-content-001-020-v4.tar.gz.sha256"
           sha256sum --check bhava-content-001-020-v4.tar.gz.sha256
-          gh release download bhava-content-001-022-staging-v1 \
-            --repo "${GITHUB_REPOSITORY}" \
-            --pattern "bhava-content-001-022-staging-v1.tar.gz" \
-            --pattern "bhava-content-001-022-staging-v1.tar.gz.sha256"
-          sha256sum --check bhava-content-001-022-staging-v1.tar.gz.sha256
+          if [[ "$OPS_MODE" == "restore_prod_then_staging_022" ]]; then
+            gh release download bhava-content-001-022-staging-v1 \
+              --repo "${GITHUB_REPOSITORY}" \
+              --pattern "bhava-content-001-022-staging-v1.tar.gz" \
+              --pattern "bhava-content-001-022-staging-v1.tar.gz.sha256"
+            sha256sum --check bhava-content-001-022-staging-v1.tar.gz.sha256
+          fi
 
-      - name: Transfer bundles
+      - name: Transfer artifacts
         env:
           HOST: ${{ secrets.VPS_HOST }}
           PORT: ${{ secrets.VPS_PORT }}
           USER: ${{ secrets.VPS_USER }}
+          OPS_MODE: ${{ inputs.ops_mode }}
         run: |
+          PROD_SHA=c25973d29c200e7a4911c61b4c8d6b652cda0076
           scp -P "$PORT" \
+            "bhava-api-${PROD_SHA}.tar.gz" \
             bhava-content-001-020-v4.tar.gz \
             bhava-content-001-020-v4.tar.gz.sha256 \
-            bhava-content-001-022-staging-v1.tar.gz \
-            bhava-content-001-022-staging-v1.tar.gz.sha256 \
             "$USER@$HOST:/opt/bhava/incoming/"
+          if [[ "$OPS_MODE" == "restore_prod_then_staging_022" ]]; then
+            scp -P "$PORT" \
+              bhava-content-001-022-staging-v1.tar.gz \
+              bhava-content-001-022-staging-v1.tar.gz.sha256 \
+              "$USER@$HOST:/opt/bhava/incoming/"
+          fi
 
       - name: Recover shared host
         env:
           HOST: ${{ secrets.VPS_HOST }}
           PORT: ${{ secrets.VPS_PORT }}
           USER: ${{ secrets.VPS_USER }}
+          OPS_MODE: ${{ inputs.ops_mode }}
         run: |
+          PROD_SHA=c25973d29c200e7a4911c61b4c8d6b652cda0076
           V4_SHA="$(awk '{print $1}' bhava-content-001-020-v4.tar.gz.sha256)"
-          STG_SHA="$(awk '{print $1}' bhava-content-001-022-staging-v1.tar.gz.sha256)"
+          STG_SHA=""
+          if [[ -f bhava-content-001-022-staging-v1.tar.gz.sha256 ]]; then
+            STG_SHA="$(awk '{print $1}' bhava-content-001-022-staging-v1.tar.gz.sha256)"
+          fi
           ssh -p "$PORT" "$USER@$HOST" \
-            "V4_SHA='${V4_SHA}' STG_SHA='${STG_SHA}' bash -s" <<'EOS'
+            "OPS_MODE='${OPS_MODE}' PROD_SHA='${PROD_SHA}' V4_SHA='${V4_SHA}' STG_SHA='${STG_SHA}' bash -s" <<'EOS'
           set -Eeuo pipefail
           cd /opt/bhava/config
-          docker compose --env-file runtime.env ps || true
-          docker compose --env-file runtime.env logs api-production --tail 80 || true
           docker compose --env-file runtime.env stop web-staging api-staging || true
+          docker load -i "/opt/bhava/incoming/bhava-api-${PROD_SHA}.tar.gz"
           BHAVA_PUBLIC_STORY_MAX=20 BHAVA_RECREATE_CONTENT_MOUNTS=0 \
             bash /opt/bhava/config/scripts/install-content-bundle.sh \
             /opt/bhava/incoming/bhava-content-001-020-v4.tar.gz \
             bhava-content-001-020-v4 "${V4_SHA}"
           docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production web-production
-          sleep 10
-          docker compose --env-file runtime.env ps api-production || true
-          docker compose --env-file runtime.env logs api-production --tail 50 || true
-          bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
-            BHAVA_CONTENT_RELEASE=bhava-content-001-022-staging-v1 \
-            BHAVA_STAGING_PUBLIC_STORY_MAX=22 \
-            BHAVA_WEB_VERSION=001-022-staging
-          BHAVA_PUBLIC_STORY_MAX=22 BHAVA_RECREATE_CONTENT_MOUNTS=0 \
-            bash /opt/bhava/config/scripts/install-content-bundle.sh \
-            /opt/bhava/incoming/bhava-content-001-022-staging-v1.tar.gz \
-            bhava-content-001-022-staging-v1 "${STG_SHA}"
-          docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production
-          docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-staging web-staging
-          sleep 10
+          sleep 12
+          docker compose --env-file runtime.env ps api-production
+          docker compose --env-file runtime.env logs api-production --tail 40 || true
+          if [[ "${OPS_MODE}" == "restore_prod_then_staging_022" && -n "${STG_SHA}" ]]; then
+            bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
+              BHAVA_PROD_WEB_VERSION=001-020-v4 \
+              BHAVA_PROD_CONTENT_RELEASE=bhava-content-001-020-v4 \
+              BHAVA_WEB_VERSION=001-020-v4 \
+              BHAVA_CONTENT_RELEASE=bhava-content-001-020-v4 \
+              BHAVA_STAGING_CONTENT_RELEASE=bhava-content-001-022-staging-v1 \
+              BHAVA_STAGING_PUBLIC_STORY_MAX=22 \
+              BHAVA_STAGING_WEB_VERSION=001-022-staging
+            BHAVA_PUBLIC_STORY_MAX=22 BHAVA_RECREATE_CONTENT_MOUNTS=0 \
+              bash /opt/bhava/config/scripts/install-content-bundle.sh \
+              /opt/bhava/incoming/bhava-content-001-022-staging-v1.tar.gz \
+              bhava-content-001-022-staging-v1 "${STG_SHA}"
+            docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production
+            docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-staging web-staging
+            sleep 12
+          fi
           docker compose --env-file runtime.env ps || true
           EOS
 
       - name: Verify production restored
         run: |
           set -euo pipefail
-          for i in $(seq 1 30); do
+          for i in $(seq 1 36); do
             code="$(curl -sS -o /tmp/bhava_ver.json -w '%{http_code}' https://bhava.me/api/v1/version || true)"
             if [[ "$code" == "200" ]]; then
               cat /tmp/bhava_ver.json
+              python3 - <<'PY'
+          import json
+          data = json.load(open("/tmp/bhava_ver.json", encoding="utf-8"))
+          assert int(data.get("public_story_max") or 0) == 20, data
+          assert data.get("environment") == "production", data
+          PY
               curl -fsS https://bhava.me/stories/020 >/dev/null
               code021="$(curl -sS -o /dev/null -w '%{http_code}' https://bhava.me/stories/021 || true)"
               [[ "$code021" == "404" ]]
               echo "production recovered"
               exit 0
             fi
-            echo "waiting production version HTTP ${code} (${i}/30)"
+            echo "waiting production version HTTP ${code} (${i}/36)"
             sleep 5
           done
           exit 1
 
       - name: Verify staging restored
+        if: ${{ inputs.ops_mode == 'restore_prod_then_staging_022' }}
         env:
           STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
           STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
         run: |
-          SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh \
-            https://staging.bhava.me 82b0e43ca56df473bf2a861f0937530154f7f4d5 staging
+          # Ops recovery only restores content/API hotfix; staging web SHA may already differ.
+          # Confirm staging serves 022 and reports max 22 without requiring a specific web SHA.
+          AUTH=(-u "${STAGING_BASIC_AUTH_USER}:${STAGING_BASIC_AUTH_PASSWORD}")
+          curl -fsS "${AUTH[@]}" https://staging.bhava.me/api/v1/version | tee /tmp/stg_ver.json
+          python3 - <<'PY'
+          import json
+          data = json.load(open("/tmp/stg_ver.json", encoding="utf-8"))
+          assert int(data.get("public_story_max") or 0) == 22, data
+          assert data.get("environment") == "staging", data
+          PY
+          code021="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' https://staging.bhava.me/stories/021 || true)"
+          code022="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' https://staging.bhava.me/stories/022 || true)"
+          code023="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' https://staging.bhava.me/stories/023 || true)"
+          [[ "$code021" == "200" && "$code022" == "200" && "$code023" == "404" ]]
 
   resolve:
-    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.ops_mode == 'restore_prod_then_staging_022') }}
+    if: ${{ !(github.event_name == 'workflow_dispatch' && (inputs.ops_mode == 'restore_prod_then_staging_022' || inputs.ops_mode == 'restore_prod_v4_only')) }}
     runs-on: ubuntu-latest
     outputs:
       sha: ${{ steps.release.outputs.sha }}
@@ -197,7 +243,7 @@ jobs:
           git merge-base --is-ancestor "$SHA" origin/develop
 
   deploy:
-    if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.ops_mode == 'restore_prod_then_staging_022') }}
+    if: ${{ !(github.event_name == 'workflow_dispatch' && (inputs.ops_mode == 'restore_prod_then_staging_022' || inputs.ops_mode == 'restore_prod_v4_only')) }}
     needs: resolve
     runs-on: ubuntu-latest
     timeout-minutes: 50
@@ -225,6 +271,7 @@ jobs:
           CONTENT_TAG: ${{ needs.resolve.outputs.content_tag }}
           PUBLIC_MAX: ${{ needs.resolve.outputs.public_max }}
         run: |
+          PROD_SHA=c25973d29c200e7a4911c61b4c8d6b652cda0076
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${RELEASE_SHA} \
             --build-arg BHAVA_WEB_VERSION=001-022-staging \
@@ -232,7 +279,10 @@ jobs:
             --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${RELEASE_SHA} .
           docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${RELEASE_SHA} .
-          docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} \
+          # Shared content mounts may include private 021+ packages. Production must run
+          # the shared-mount-safe API while keeping the production image tag pinned.
+          docker tag "bhava-api:${RELEASE_SHA}" "bhava-api:${PROD_SHA}"
+          docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} "bhava-api:${PROD_SHA}" \
             | gzip -9 > bhava-images-${RELEASE_SHA}.tar.gz
 
       - name: Package deployment configuration
@@ -297,19 +347,29 @@ jobs:
           PUBLIC_MAX: ${{ needs.resolve.outputs.public_max }}
         run: |
           CONTENT_SHA="$(awk '{print $1}' "${CONTENT_TAG}.tar.gz.sha256")"
+          PROD_SHA=c25973d29c200e7a4911c61b4c8d6b652cda0076
           ssh -p "$PORT" "$USER@$HOST" \
             "mkdir -p /opt/bhava/config && \
              tar -xzf /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz -C /opt/bhava/config && \
              chmod +x /opt/bhava/config/scripts/*.sh && \
+             docker load -i /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz && \
              bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
-               BHAVA_CONTENT_RELEASE=${CONTENT_TAG} \
+               BHAVA_PROD_WEB_VERSION=001-020-v4 \
+               BHAVA_PROD_CONTENT_RELEASE=bhava-content-001-020-v4 \
+               BHAVA_WEB_VERSION=001-020-v4 \
+               BHAVA_CONTENT_RELEASE=bhava-content-001-020-v4 \
+               BHAVA_STAGING_CONTENT_RELEASE=${CONTENT_TAG} \
                BHAVA_STAGING_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
-               BHAVA_WEB_VERSION=001-022-staging && \
+               BHAVA_STAGING_WEB_VERSION=001-022-staging && \
+             cd /opt/bhava/config && \
+             docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production && \
+             sleep 8 && \
              BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
              bash /opt/bhava/config/scripts/deploy-release.sh staging ${RELEASE_SHA} \
                /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz \
-               /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz"
+               /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz && \
+             docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production"
 
       - name: Staging TLS readiness
         env:
