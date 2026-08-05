@@ -103,14 +103,20 @@ def _print_json(payload: dict) -> None:
     """Print JSON without crashing Windows cp1252 consoles on diacritics."""
     import sys
 
-    text = json.dumps(payload, indent=2, ensure_ascii=False)
+    text = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
     stream = sys.stdout
-    encoding = getattr(stream, "encoding", None) or "utf-8"
     try:
-        stream.write(text + "\n")
+        stream.write(text)
+        return
     except UnicodeEncodeError:
-        stream.buffer.write((text + "\n").encode(encoding, errors="replace"))
-        stream.buffer.flush()
+        pass
+    encoding = getattr(stream, "encoding", None) or "utf-8"
+    buffer = getattr(stream, "buffer", None)
+    if buffer is not None:
+        buffer.write(text.encode(encoding, errors="replace"))
+        buffer.flush()
+        return
+    stream.write(text.encode(encoding, errors="replace").decode(encoding, errors="replace"))
 
 
 if __name__ == "__main__":

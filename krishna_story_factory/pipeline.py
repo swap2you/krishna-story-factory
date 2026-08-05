@@ -656,6 +656,22 @@ def _run_once(
         and paths.coloring_page.is_file()
         and paths.simple_coloring_page.is_file()
     )
+    if reuse_visuals and stage is not None:
+        import hashlib
+
+        expected = {
+            "poster": paths.story_poster,
+            "detailed_coloring": paths.coloring_page,
+            "simple_coloring": paths.simple_coloring_page,
+        }
+        for stage_name, path in expected.items():
+            recorded = str((stage.checksums or {}).get(stage_name) or "").strip().lower()
+            if not recorded:
+                continue
+            actual = hashlib.sha256(path.read_bytes()).hexdigest().lower()
+            if recorded != actual:
+                reuse_visuals = False
+                break
     if reuse_visuals:
         # Production recovery: keep accepted visual bytes; do not re-spend image budget.
         poster_score = max(settings.image_min_acceptance_score, 86)

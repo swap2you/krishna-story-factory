@@ -25,6 +25,7 @@ def test_scheduler_is_unattended_and_non_overlapping() -> None:
     assert '$env:BHAVA_WEB_ASSETS_UI_GATE = "1"' in runner
     assert "scheduler_status.json" in runner
     assert "public_web_exposed" in runner
+    assert "project_root" not in runner.split("Write-SchedulerStatus")[1].split("function ")[0] or "project_root =" not in runner
     assert 'PrimaryTime = "10:00"' in mwf
     assert "BackupTime" not in mwf
     assert "12:00" not in mwf

@@ -94,10 +94,12 @@ function Write-SchedulerStatus {
     $nextRun = $null
     try {
         $info = Get-ScheduledTaskInfo -TaskName "Krishna Story Factory MWF" -ErrorAction SilentlyContinue
-        if ($info) { $nextRun = $info.NextRunTime.ToString("o") }
+        if ($info -and $info.NextRunTime) {
+            $nextRun = ([DateTime]$info.NextRunTime).ToUniversalTime().ToString("o")
+        }
     } catch { }
     $payload = [ordered]@{
-        last_invocation = (Get-Date).ToString("o")
+        last_invocation = (Get-Date).ToUniversalTime().ToString("o")
         last_result = $LastResult
         story_number_attempted = $StoryNumber
         pipeline_stage_reached = $PipelineStage
@@ -106,7 +108,6 @@ function Write-SchedulerStatus {
         queue_before_hash = $QueueBefore
         queue_after_hash = $QueueAfter
         mode = $Mode
-        project_root = $ProjectRoot
         public_web_exposed = $false
         note = "Internal scheduler status only; not served by the website."
     }

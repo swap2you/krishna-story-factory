@@ -50,11 +50,14 @@ def require_sample_first(policy: dict[str, Any] | None = None) -> bool:
 def bedtime_wpm_bounds(policy: dict[str, Any] | None = None) -> tuple[float, float, float]:
     data = policy or load_story_package_policy()
     band = data.get("bedtime_wpm") or {}
-    return (
-        float(band["minimum_hard"]),
-        float(band["minimum_accept"]),
-        float(band["maximum_accept"]),
-    )
+    try:
+        return (
+            float(band["minimum_hard"]),
+            float(band["minimum_accept"]),
+            float(band["maximum_accept"]),
+        )
+    except (KeyError, TypeError, ValueError) as exc:
+        raise StoryPackagePolicyError(f"Invalid bedtime_wpm bounds in policy: {exc}") from exc
 
 
 __all__ = [
