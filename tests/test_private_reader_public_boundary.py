@@ -79,15 +79,19 @@ def test_reader_handlers_require_story_record_before_filesystem() -> None:
     }
     assert set(handlers) == {"reader_md", "reader_txt"}
     for name, node in handlers.items():
-        # Collect top-level call names in source order within the function body.
-        ordered: list[str] = []
+        # Sort by source location; ast.walk() alone is not source-order stable.
+        calls: list[tuple[int, int, str]] = []
         for child in ast.walk(node):
             if isinstance(child, ast.Call):
                 func = child.func
                 if isinstance(func, ast.Name):
-                    ordered.append(func.id)
+                    label = func.id
                 elif isinstance(func, ast.Attribute):
-                    ordered.append(func.attr)
+                    label = func.attr
+                else:
+                    continue
+                calls.append((child.lineno, child.col_offset, label))
+        ordered = [label for _, _, label in sorted(calls)]
         assert "_get_story_record" in ordered, f"{name} must call _get_story_record"
         assert "_resolve_reader_body" in ordered, f"{name} must use shared resolver"
         assert ordered.index("_get_story_record") < ordered.index("_resolve_reader_body"), name
