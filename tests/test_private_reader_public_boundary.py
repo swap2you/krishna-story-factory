@@ -156,3 +156,4 @@ def test_caddyfile_production_only_private_reader_deny() -> None:
     assert "private_reader_api" in prod
     assert "private_reader_api" not in staging
     assert "@private_reader_api" in prod
+    assert "handle @private_reader_api" in prod

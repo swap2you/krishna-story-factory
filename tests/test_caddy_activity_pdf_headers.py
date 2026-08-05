@@ -39,5 +39,6 @@ def test_caddyfile_production_blocks_private_reader_api() -> None:
     prod = text.split("bhava.me {", 1)[1].split("www.bhava.me", 1)[0]
     staging = text.split("staging.bhava.me {", 1)[1]
     assert "@private_reader_api" in prod
-    assert "respond @private_reader_api 404" in prod
+    assert "handle @private_reader_api" in prod
+    assert "respond 404" in prod
     assert "@private_reader_api" not in staging
