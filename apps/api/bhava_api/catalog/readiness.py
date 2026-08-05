@@ -25,15 +25,27 @@ class CatalogSnapshot:
     last_story: str | None
 
 
-def count_publishable_packages(output_root=None) -> tuple[int, int]:
-    """Return (discovered_complete_packages, publishable_packages)."""
+def count_publishable_packages(output_root=None, public_story_max: int | None = None) -> tuple[int, int]:
+    """Return (discovered_complete_packages, publishable_packages within public max)."""
     packages = discover_packages(output_root)
-    publishable = sum(1 for package in packages if is_publicly_publishable(package))
+    max_story = public_story_max
+    publishable = 0
+    for package in packages:
+        if not is_publicly_publishable(package):
+            continue
+        if max_story is not None:
+            digits = "".join(ch for ch in str(package.manifest.get("chapter_no") or "") if ch.isdigit())
+            if not digits or int(digits) > max_story:
+                continue
+        publishable += 1
     return len(packages), publishable
 
 
 def catalog_snapshot(session: Session, settings: Settings) -> CatalogSnapshot:
-    discovered, publishable = count_publishable_packages(settings.output_root)
+    max_for_count = settings.public_story_max if settings.public_site else None
+    discovered, publishable = count_publishable_packages(
+        settings.output_root, public_story_max=max_for_count
+    )
     indexed = int(session.scalar(select(func.count()).select_from(Story)) or 0)
     first = session.scalar(select(Story.story_no).order_by(Story.story_no))
     last = session.scalar(select(Story.story_no).order_by(Story.story_no.desc()))

@@ -148,8 +148,11 @@ export default async function StoryPage({ params }: { params: Promise<{ storyNo:
         <p>{story.source_reference}</p>
         <Link
           href="/library/krishna-book/how-to-use"
-          className="bhava-button bhava-button--quiet sidebar-how-to"
+          className="sidebar-how-to"
         >
+          <span className="sidebar-how-to__icon" aria-hidden="true">
+            ✦
+          </span>
           How to use these stories
         </Link>
       </aside>

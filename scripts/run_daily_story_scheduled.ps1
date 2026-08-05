@@ -278,6 +278,9 @@ if (-not $SimulateProduction) {
     $env:WHATSAPP_SEND_ENABLED = "false"
     $env:TELEGRAM_SEND_ENABLED = "false"
     $env:GOOGLE_DRIVE_UPLOAD_ENABLED = "true"
+    $env:AUDIO_SAMPLE_FIRST_REQUIRED = "1"
+    $env:BHAVA_WEB_ASSETS_UI_GATE = "1"
+    $env:PYTHONPATH = (Join-Path $ProjectRoot "apps\api")
 }
 
 $ExitCode = 1

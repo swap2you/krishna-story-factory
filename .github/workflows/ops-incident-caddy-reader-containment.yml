@@ -29,6 +29,7 @@ jobs:
     environment:
       # Shared VPS SSH credentials live on the staging GitHub Environment.
       # This job still only mutates the bhava.me (production) Caddy site block.
+      # Dispatch with --ref develop (staging env allows develop).
       name: staging
       url: https://bhava.me
     steps:
@@ -48,51 +49,75 @@ jobs:
           MODE: ${{ inputs.mode }}
         run: |
           set -euo pipefail
-          cat > /tmp/incident_caddy_patch.py <<'PY'
+          python3 - <<'PY' > /tmp/incident_caddy_patch.py
           from pathlib import Path
-          import os
+          print(Path("deploy/ionos/scripts/incident_caddy_reader_deny_patch.py").read_text(encoding="utf-8"))
+          PY
+          # Prefer committed patch helper when present; otherwise embed inline.
+          if [[ -f deploy/ionos/scripts/incident_caddy_reader_deny_patch.py ]]; then
+            cp deploy/ionos/scripts/incident_caddy_reader_deny_patch.py /tmp/incident_caddy_patch.py
+          else
+            cat > /tmp/incident_caddy_patch.py <<'PY'
+          from pathlib import Path
+          import re
           path = Path("/opt/bhava/config/Caddyfile")
           text = path.read_text(encoding="utf-8")
-          marker = "# INCIDENT_PRIVATE_READER_DENY_V1"
-          if marker in text:
-              print("incident deny already present")
-              raise SystemExit(0)
-          block = (
-              "\n"
-              "\t# INCIDENT_PRIVATE_READER_DENY_V1 temporary production-only containment\n"
-              "\t@incident_private_reader path /api/v1/stories/021/reader /api/v1/stories/021/reader.txt /api/v1/stories/022/reader /api/v1/stories/022/reader.txt\n"
-              "\trespond @incident_private_reader 404\n"
+          marker = "INCIDENT_PRIVATE_READER_DENY_V2"
+          block = """
+          \t# INCIDENT_PRIVATE_READER_DENY_V2 temporary production-only containment
+          \thandle /api/v1/stories/021/reader {
+          \t\trespond 404
+          \t}
+          \thandle /api/v1/stories/021/reader.txt {
+          \t\trespond 404
+          \t}
+          \thandle /api/v1/stories/022/reader {
+          \t\trespond 404
+          \t}
+          \thandle /api/v1/stories/022/reader.txt {
+          \t\trespond 404
+          \t}
+          """
+          # Remove any prior V1/V2 incident blocks.
+          text = re.sub(
+              r"\n\t# INCIDENT_PRIVATE_READER_DENY_V[12].*?(?=\n\thandle |\n\t@|\n})",
+              "\n",
+              text,
+              count=1,
+              flags=re.S,
           )
-          needle = "bhava.me {\n\timport common_security\n"
-          if needle not in text:
-              raise SystemExit("bhava.me block not found for incident insert")
-          path.write_text(text.replace(needle, needle + block, 1), encoding="utf-8")
-          print("caddy_incident_block_inserted")
+          needle = "\thandle /api/* {\n\t\treverse_proxy api-production:8000\n\t}"
+          # Scope replacement to bhava.me site only.
+          parts = text.split("bhava.me {", 1)
+          if len(parts) != 2:
+              raise SystemExit("bhava.me site block missing")
+          head, rest = parts
+          site, tail = rest.split("\n}", 1)
+          if needle not in site:
+              raise SystemExit("production api handle block missing")
+          site = site.replace(needle, block + "\n" + needle, 1)
+          path.write_text(head + "bhava.me {" + site + "\n}" + tail, encoding="utf-8")
+          print("caddy_incident_handle_deny_applied")
           PY
+          fi
           scp -P "$PORT" /tmp/incident_caddy_patch.py "$USER@$HOST:/tmp/incident_caddy_patch.py"
           MODE_Q="$(printf '%q' "$MODE")"
           ssh -p "$PORT" "$USER@$HOST" "MODE=${MODE_Q} bash -s" <<'EOS'
           set -Eeuo pipefail
           CADDY=/opt/bhava/config/Caddyfile
           BACKUP="/opt/bhava/config/Caddyfile.incident-reader-backup.$(date -u +%Y%m%dT%H%M%SZ)"
-          MARKER="# INCIDENT_PRIVATE_READER_DENY_V1"
           if [[ ! -f "$CADDY" ]]; then
             echo "missing Caddyfile" >&2
             exit 1
           fi
           if [[ "$MODE" == "apply_deny" ]]; then
-            if ! grep -q "$MARKER" "$CADDY"; then
-              cp -a "$CADDY" "$BACKUP"
-              echo "backed_up=$BACKUP"
-              python3 /tmp/incident_caddy_patch.py
-            else
-              echo "incident deny already present"
-            fi
+            cp -a "$CADDY" "$BACKUP"
+            echo "backed_up=$BACKUP"
+            python3 /tmp/incident_caddy_patch.py
             cd /opt/bhava/config
-            docker compose --env-file runtime.env exec -T caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile \
-              || docker compose --env-file runtime.env exec -T caddy caddy validate --config /etc/caddy/Caddyfile
+            docker compose --env-file runtime.env exec -T caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
             docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps caddy
-            sleep 4
+            sleep 5
             docker compose --env-file runtime.env ps caddy
           else
             echo "verify_only mode"

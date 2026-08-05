@@ -109,7 +109,8 @@ def test_default_allowed_hosts_reject_unknown_origin(monkeypatch, tmp_path):
         assert client.get("/api/v1/stories", headers={"host": "testserver"}).status_code == 400
 
 
-def test_public_site_refuses_to_start_above_story_ceiling(monkeypatch, tmp_path):
+def test_public_site_allows_private_packages_above_ceiling(monkeypatch, tmp_path):
+    """Shared content mounts may include private packages above max; they are not served."""
     output = tmp_path / "output"
     build_public_catalog(output, count=10)
     write_package(output, "011")
@@ -121,9 +122,11 @@ def test_public_site_refuses_to_start_above_story_ceiling(monkeypatch, tmp_path)
 
     import bhava_api.main
 
-    with pytest.raises(RuntimeError, match="Public content boundary violation"):
-        with TestClient(bhava_api.main.create_app()):
-            pass
+    with TestClient(bhava_api.main.create_app()) as client:
+        stories = client.get("/api/v1/stories").json()
+        assert len(stories) == 10
+        assert client.get("/api/v1/stories/010").status_code == 200
+        assert client.get("/api/v1/stories/011").status_code == 404
 
 
 def test_public_reader_does_not_tease_story_011(monkeypatch, tmp_path):

@@ -223,11 +223,18 @@ def _append_matching_coverage_errors(
     if activity is None:
         return None
     coverage_check = matching_coverage_from_pdf_text(activity, text_blob)
+    activity_type = (activity.activity_type or "").upper()
+    # Sequence/matching educational coverage must not pass on expected=0.
+    if activity_type == "STORY_SEQUENCE" and coverage_check.expected_pairs == 0:
+        errors.append("STORY_SEQUENCE coverage expected item count must be > 0")
+    if activity_type == "MATCHING_GAME" and coverage_check.expected_pairs == 0:
+        errors.append("MATCHING_GAME coverage expected pair count must be > 0")
     if not coverage_check.pass_:
+        label = "Sequence" if activity_type == "STORY_SEQUENCE" else "Matching"
         if coverage_check.missing_labels:
-            errors.append("Matching coverage missing labels: " + ", ".join(coverage_check.missing_labels[:8]))
+            errors.append(f"{label} coverage missing labels: " + ", ".join(coverage_check.missing_labels[:8]))
         if coverage_check.orphan_labels:
-            errors.append("Matching coverage orphans: " + "; ".join(coverage_check.orphan_labels[:6]))
+            errors.append(f"{label} coverage orphans: " + "; ".join(coverage_check.orphan_labels[:6]))
     try:
         chapter_guess = ""
         if render_dir and render_dir.parent:
@@ -337,17 +344,99 @@ def _rendered_content_metrics(path: Path) -> tuple[float, float]:
     return round(bbox_area / total, 3), ink_pixels / total
 
 
+# Header geometry: title lives in a dedicated band ABOVE the rounded meta box.
+# Glyphs must never cross the box stroke (prior defect: title baseline too close to
+# box top so 18pt ascenders overlapped the border).
+_HEADER_TITLE_TOP = PAGE_H - 0.38 * inch
+_HEADER_TITLE_BOX_GAP = 0.42 * inch  # >=30pt clear between title band and box stroke
+_HEADER_BOX_HEIGHT = 0.62 * inch
+_HEADER_BOX_TOP = PAGE_H - 1.05 * inch
+_HEADER_CONTENT_TOP = PAGE_H - 1.38 * inch
+_HEADER_MIN_CLEARANCE_PT = 30.0
+
+
+@dataclass(frozen=True, slots=True)
+class HeaderLayout:
+    """Measured header regions for layout regression tests."""
+
+    title_baseline_y: float
+    title_font_size: float
+    box_bottom: float
+    box_top: float
+    box_left: float
+    box_right: float
+    subtitle_y: float
+    content_top_y: float
+
+    @property
+    def title_box_gap(self) -> float:
+        """Distance from title baseline to the top stroke of the rounded box."""
+        return self.title_baseline_y - self.box_top
+
+
+def measure_header_layout(page_title: str, story_title: str = "") -> HeaderLayout:
+    """Compute header geometry without drawing — used by layout regression tests."""
+    title = page_title or "Activity"
+    title_size = 13 if len(title) > 48 or len(story_title) > 52 else 16
+    # Approximate wrap: one line unless very long.
+    approx_width = PAGE_W - 2.3 * MARGIN
+    avg_char = title_size * 0.52
+    lines = max(1, int((len(title) * avg_char) // approx_width) + 1)
+    title_baseline = _HEADER_TITLE_TOP - (lines - 1) * (title_size + 2)
+    box_top = min(_HEADER_BOX_TOP, title_baseline - _HEADER_TITLE_BOX_GAP)
+    box_bottom = box_top - _HEADER_BOX_HEIGHT
+    subtitle_y = box_top - 0.32 * inch
+    content_top = box_bottom - 0.18 * inch
+    return HeaderLayout(
+        title_baseline_y=title_baseline,
+        title_font_size=title_size,
+        box_bottom=box_bottom,
+        box_top=box_top,
+        box_left=MARGIN,
+        box_right=PAGE_W - MARGIN,
+        subtitle_y=subtitle_y,
+        content_top_y=content_top,
+    )
+
+
 def _header(c: Canvas, plan: PlanRow, activity: ActivityPack, page: int, page_title: str = "") -> float:
+    """Draw title entirely above the rounded meta box with a fixed inset gap."""
+    title = page_title or activity.activity_title
+    layout = measure_header_layout(title, plan.title or "")
+    c.setFont(FONT_BOLD, layout.title_font_size)
+    # Draw title in the dedicated band above the box (never inside / across stroke).
+    title_bottom = _wrapped(
+        c,
+        title,
+        MARGIN + 0.12 * inch,
+        layout.title_baseline_y,
+        PAGE_W - 2.3 * MARGIN,
+        layout.title_font_size,
+        layout.title_font_size + 2,
+    )
+    # Recompute box so multi-line titles still clear the border.
+    box_top = min(layout.box_top, title_bottom - _HEADER_TITLE_BOX_GAP)
+    box_bottom = box_top - _HEADER_BOX_HEIGHT
     c.setStrokeColorRGB(0.15, 0.15, 0.15)
     c.setLineWidth(1.2)
-    c.roundRect(MARGIN, PAGE_H - 1.15 * inch, PAGE_W - 2 * MARGIN, 0.72 * inch, 8, stroke=1, fill=0)
-    title = page_title or activity.activity_title
-    c.setFont(FONT_BOLD, 14 if len(title) > 48 else 18)
-    title_bottom = _wrapped(c, title, MARGIN + 0.15 * inch, PAGE_H - 0.55 * inch, PAGE_W - 2.3 * MARGIN, 14 if len(title) > 48 else 18, 17)
+    c.roundRect(MARGIN, box_bottom, PAGE_W - 2 * MARGIN, _HEADER_BOX_HEIGHT, 8, stroke=1, fill=0)
     c.setFont(FONT_REGULAR, 10)
-    c.drawCentredString(PAGE_W / 2, min(title_bottom - 0.08 * inch, PAGE_H - 0.95 * inch), f"{plan.title}  |  {activity.estimated_minutes} minutes")
+    subtitle = f"{plan.title}  |  {activity.estimated_minutes} minutes"
+    # Keep subtitle fully inside the box with vertical inset from both strokes.
+    subtitle_y = box_top - 0.34 * inch
+    if subtitle_y < box_bottom + 0.16 * inch:
+        subtitle_y = box_bottom + 0.22 * inch
+    _wrapped(
+        c,
+        subtitle,
+        MARGIN + 0.15 * inch,
+        subtitle_y,
+        PAGE_W - 2.3 * MARGIN,
+        10,
+        12,
+    )
     _footer(c, plan, page)
-    return PAGE_H - 1.35 * inch
+    return box_bottom - 0.18 * inch
 
 
 def _footer(c: Canvas, plan: PlanRow, page: int) -> None:
@@ -390,7 +479,7 @@ def _wrapped(c: Canvas, text: str, x: float, y: float, width: float, size: float
     return y
 
 
-def _wrapped_font(c: Canvas, text: str, x: float, y: float, width: float, *, font: str, size: float, leading: float) -> float:
+def _wrapped_font(c: Canvas, text: str, x: float, y: float, width: float, *, font: str, size: float, leading: float, max_lines: int = 3) -> float:
     words, lines, current = text.split(), [], ""
     c.setFont(font, size)
     for word in words:
@@ -403,7 +492,7 @@ def _wrapped_font(c: Canvas, text: str, x: float, y: float, width: float, *, fon
             current = word
     if current:
         lines.append(current)
-    for line in lines[:3]:
+    for line in lines[: max(1, int(max_lines))]:
         c.drawString(x, y, line)
         y -= leading
     return y
@@ -715,17 +804,28 @@ def _render_sequence_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page
         y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
         y -= 0.04 * inch
     c.setDash(4, 3)
+    card_h = 1.7 * inch
     for i, label in enumerate(labels[:6]):
         row, col = divmod(i, 2)
         x = MARGIN + col * 3.65 * inch
-        yy = 6.0 * inch - row * 1.55 * inch
-        c.roundRect(x, yy, 3.25 * inch, 1.25 * inch, 8, stroke=1, fill=0)
+        yy = 6.15 * inch - row * 1.95 * inch
+        c.roundRect(x, yy, 3.25 * inch, card_h, 8, stroke=1, fill=0)
         c.setDash()
-        c.rect(x + 0.12 * inch, yy + 0.7 * inch, 0.36 * inch, 0.36 * inch, stroke=1, fill=0)
-        _wrapped_font(c, label, x + 0.6 * inch, yy + 0.88 * inch, 2.5 * inch,
-                      font=FONT_BOLD, size=9.5, leading=11)
-        c.setFont(FONT_REGULAR, 9.5)
-        c.drawString(x + 0.6 * inch, yy + 0.45 * inch, "Number + draw one detail")
+        c.rect(x + 0.12 * inch, yy + card_h - 0.48 * inch, 0.32 * inch, 0.32 * inch, stroke=1, fill=0)
+        # Draw the complete event sentence (no 3-line clip).
+        _wrapped_font(
+            c,
+            label,
+            x + 0.52 * inch,
+            yy + card_h - 0.28 * inch,
+            2.6 * inch,
+            font=FONT_BOLD,
+            size=8.5,
+            leading=10,
+            max_lines=10,
+        )
+        c.setFont(FONT_REGULAR, 8.5)
+        c.drawString(x + 0.52 * inch, yy + 0.16 * inch, "Number + draw one detail")
         c.setDash(4, 3)
     c.setDash()
 
@@ -748,15 +848,17 @@ def _render_generic_cards(
         y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
         y -= 0.04 * inch
     c.setDash(4, 3)
+    # Taller cards so complete-sentence events wrap inside the box.
+    card_h = 1.55 * inch
     for i, label in enumerate(labels):
         row, col = divmod(i, 2)
         x = MARGIN + col * 3.65 * inch
-        yy = 5.75 * inch - row * 1.55 * inch
-        c.roundRect(x, yy, 3.25 * inch, 1.18 * inch, 8, stroke=1, fill=0)
-        c.setFont(FONT_BOLD, 11)
-        label_bottom = _wrapped(c, label, x + 0.16 * inch, yy + 0.9 * inch, 2.95 * inch, 11, 12.5)
-        c.setFont(FONT_REGULAR, 9.5)
-        _wrapped(c, prompt, x + 0.16 * inch, label_bottom - 0.08 * inch, 2.95 * inch, 9.5, 11)
+        yy = 6.05 * inch - row * 1.85 * inch
+        c.roundRect(x, yy, 3.25 * inch, card_h, 8, stroke=1, fill=0)
+        c.setFont(FONT_BOLD, 10)
+        label_bottom = _wrapped(c, label, x + 0.12 * inch, yy + card_h - 0.22 * inch, 3.0 * inch, 10, 12)
+        c.setFont(FONT_REGULAR, 8.5)
+        _wrapped(c, prompt, x + 0.12 * inch, max(yy + 0.14 * inch, label_bottom - 0.06 * inch), 3.0 * inch, 8.5, 10)
     c.setDash()
 
 

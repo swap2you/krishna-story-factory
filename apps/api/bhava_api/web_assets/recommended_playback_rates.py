@@ -1,9 +1,10 @@
-"""Temporary recommended playback rates for Stories 001–020.
+"""Temporary recommended playback rates for Stories 001–022.
 
 Derived from local narration metrics (no paid API calls). Target bedtime pace
 is ~150 WPM (AUDIO_NARRATION_STANDARD hard-fail band starts above 165 WPM).
 Stories at or below the band keep 1.0; faster retained 011–020 narrations
 recommend 0.75 while preserving pitch and user speed control.
+Story 021 uses marin @ 0.92 synthesis, so player rate stays 1.0.
 """
 from __future__ import annotations
 
@@ -30,6 +31,9 @@ RECOMMENDED_PLAYBACK_RATES: dict[str, float] = {
     "018": 0.75,
     "019": 0.75,
     "020": 0.75,
+    # 021/022 bedtime target uses marin @ ~0.90 synthesis; keep player at 1.0.
+    "021": 1.0,
+    "022": 1.0,
 }
 
 

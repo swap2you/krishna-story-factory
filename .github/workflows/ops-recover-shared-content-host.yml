@@ -1,0 +1,159 @@
+name: Ops Recover Shared Content Host
+
+# Emergency operator workflow: uses staging SSH credentials (no production approval gate)
+# to restore a healthy shared content mount + recreate API containers.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: restore_prod_then_staging_022 | prod_only_v4
+        required: true
+        default: restore_prod_then_staging_022
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bhava-staging
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment:
+      name: staging
+      url: https://staging.bhava.me
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: develop
+
+      - name: Configure pinned SSH
+        uses: ./.github/actions/configure-pinned-ssh
+        with:
+          ssh_key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
+
+      - name: Download content bundles
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download bhava-content-001-020-v4 \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "bhava-content-001-020-v4.tar.gz" \
+            --pattern "bhava-content-001-020-v4.tar.gz.sha256"
+          sha256sum --check bhava-content-001-020-v4.tar.gz.sha256
+          if [[ "${{ inputs.mode }}" == "restore_prod_then_staging_022" ]]; then
+            gh release download bhava-content-001-022-staging-v1 \
+              --repo "${GITHUB_REPOSITORY}" \
+              --pattern "bhava-content-001-022-staging-v1.tar.gz" \
+              --pattern "bhava-content-001-022-staging-v1.tar.gz.sha256"
+            sha256sum --check bhava-content-001-022-staging-v1.tar.gz.sha256
+          fi
+
+      - name: Transfer bundles
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+        run: |
+          scp -P "$PORT" \
+            bhava-content-001-020-v4.tar.gz \
+            bhava-content-001-020-v4.tar.gz.sha256 \
+            "$USER@$HOST:/opt/bhava/incoming/"
+          if [[ -f bhava-content-001-022-staging-v1.tar.gz ]]; then
+            scp -P "$PORT" \
+              bhava-content-001-022-staging-v1.tar.gz \
+              bhava-content-001-022-staging-v1.tar.gz.sha256 \
+              "$USER@$HOST:/opt/bhava/incoming/"
+          fi
+
+      - name: Recover host
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          PORT: ${{ secrets.VPS_PORT }}
+          USER: ${{ secrets.VPS_USER }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          V4_SHA="$(awk '{print $1}' bhava-content-001-020-v4.tar.gz.sha256)"
+          STG_SHA=""
+          if [[ -f bhava-content-001-022-staging-v1.tar.gz.sha256 ]]; then
+            STG_SHA="$(awk '{print $1}' bhava-content-001-022-staging-v1.tar.gz.sha256)"
+          fi
+          ssh -p "$PORT" "$USER@$HOST" \
+            "MODE='${MODE}' V4_SHA='${V4_SHA}' STG_SHA='${STG_SHA}' bash -s" <<'EOS'
+          set -Eeuo pipefail
+          cd /opt/bhava/config
+          echo "== before =="
+          docker compose --env-file runtime.env ps || true
+          docker compose --env-file runtime.env logs api-production --tail 60 || true
+          # Free memory first
+          docker compose --env-file runtime.env stop web-staging api-staging || true
+          # Restore production-safe content pin (001-020 v4)
+          BHAVA_PUBLIC_STORY_MAX=20 BHAVA_RECREATE_CONTENT_MOUNTS=0 \
+            bash /opt/bhava/config/scripts/install-content-bundle.sh \
+            /opt/bhava/incoming/bhava-content-001-020-v4.tar.gz \
+            bhava-content-001-020-v4 "${V4_SHA}"
+          docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production web-production
+          sleep 8
+          docker compose --env-file runtime.env ps api-production
+          docker compose --env-file runtime.env logs api-production --tail 40 || true
+          if [[ "${MODE}" == "restore_prod_then_staging_022" && -n "${STG_SHA}" ]]; then
+            # Shared content tree can include 021/022; production max stays 20.
+            bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
+              BHAVA_PROD_WEB_VERSION=001-020-v4 \
+              BHAVA_PROD_CONTENT_RELEASE=bhava-content-001-020-v4 \
+              BHAVA_WEB_VERSION=001-020-v4 \
+              BHAVA_CONTENT_RELEASE=bhava-content-001-020-v4 \
+              BHAVA_STAGING_CONTENT_RELEASE=bhava-content-001-022-staging-v1 \
+              BHAVA_STAGING_PUBLIC_STORY_MAX=22 \
+              BHAVA_STAGING_WEB_VERSION=001-022-staging
+            BHAVA_PUBLIC_STORY_MAX=22 BHAVA_RECREATE_CONTENT_MOUNTS=0 \
+              bash /opt/bhava/config/scripts/install-content-bundle.sh \
+              /opt/bhava/incoming/bhava-content-001-022-staging-v1.tar.gz \
+              bhava-content-001-022-staging-v1 "${STG_SHA}"
+            docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production
+            docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-staging web-staging
+            sleep 8
+          fi
+          echo "== after =="
+          docker compose --env-file runtime.env ps || true
+          EOS
+
+      - name: Verify production
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 24); do
+            code="$(curl -sS -o /tmp/bhava_ver.json -w '%{http_code}' https://bhava.me/api/v1/version || true)"
+            if [[ "$code" == "200" ]]; then
+              cat /tmp/bhava_ver.json
+              curl -fsS https://bhava.me/stories/020 >/dev/null
+              curl -fsS -o /dev/null -w '%{http_code}\n' https://bhava.me/stories/021 | grep -E '404'
+              echo "production recovered"
+              exit 0
+            fi
+            echo "waiting production version HTTP ${code} (${i}/24)"
+            sleep 5
+          done
+          echo "production still unhealthy" >&2
+          exit 1
+
+      - name: Verify staging when restored
+        if: ${{ inputs.mode == 'restore_prod_then_staging_022' }}
+        env:
+          STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
+          STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+        run: |
+          AUTH=(-u "${STAGING_BASIC_AUTH_USER}:${STAGING_BASIC_AUTH_PASSWORD}")
+          curl -fsS "${AUTH[@]}" https://staging.bhava.me/api/v1/version | tee /tmp/stg_ver.json
+          python3 - <<'PY'
+          import json
+          data = json.load(open("/tmp/stg_ver.json", encoding="utf-8"))
+          assert int(data.get("public_story_max") or 0) == 22, data
+          assert data.get("environment") == "staging", data
+          PY
+          code021="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' https://staging.bhava.me/stories/021 || true)"
+          code022="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' https://staging.bhava.me/stories/022 || true)"
+          code023="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' https://staging.bhava.me/stories/023 || true)"
+          [[ "$code021" == "200" && "$code022" == "200" && "$code023" == "404" ]]

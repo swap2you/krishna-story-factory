@@ -103,10 +103,12 @@ EXPECTED_LOCAL_ARCHIVE = {
 # Needs tracking/queue_state.csv: mutable scheduler state owned by the operator
 # workstation. Equivalent logic is covered deterministically by
 # test_coverage_non_skipping.py::test_next_pending_is_cart_breaking.
+# Also includes private 021/022 package lock drift checks against local output/.
 EXPECTED_LOCAL_RUNTIME = {
     "tests/portal/test_queue_guard.py::test_queue_001_020_done_and_021_pending",
     "tests/portal/test_v11_safety_baseline.py::test_queue_021_pending_after_020_release",
     "tests/test_coverage_non_skipping.py::test_live_queue_next_pending_is_brahma_stealing",
+    "tests/test_private_story_lock_021_022.py::test_private_lock_ledger_matches_local_packages_when_present",
     "tests/test_unicode_printable_copyright.py::test_queue_pending_holds_at_story_021",
 }
 

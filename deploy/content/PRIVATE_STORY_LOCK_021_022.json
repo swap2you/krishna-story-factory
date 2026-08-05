@@ -1,0 +1,65 @@
+{
+  "schema": "bhava-private-story-lock-v1",
+  "note": "Governed private Stories 021–022 lock. Does not alter the production 001–020 release lock contract.",
+  "public_story_max_production": 20,
+  "stories": {
+    "021": {
+      "slug": "the-stealing-of-the-boys-and-calves-by-brahma",
+      "human_listening_status": "USER_LISTENED_AND_ACCEPTED_ON_2026-08-04",
+      "audio_sha256": "96173B03F9E168FB577E42E2CC9230665671F48D46DD2FF916755541AECBF05C",
+      "audio_duration_seconds": 377.4,
+      "measured_wpm": 145.3,
+      "model_id": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "speed": 0.88,
+      "narration_source_sha": "7FEC37EA8C6D8B8CE83AA4B579E70F01ED7197067C1265A60A35A598484A3C55",
+      "exact_eight": {
+        "story.md": "8310320EE3D83E2FC91EB36AE870D6B9195B4DE5EDCC116A8528DFA33470C037",
+        "narration.mp3": "96173B03F9E168FB577E42E2CC9230665671F48D46DD2FF916755541AECBF05C",
+        "story_poster.png": "244985FDBA253171FAE0CAB5E91C93C36D21DD21283CD11DC35E0584DDADAAD8",
+        "coloring_page.png": "105138ED3E530E9E56446DDA9B6F8C66D6C33CE010C1CD728564F225AB4F6D03",
+        "simple_coloring_page.png": "C49261BE77ED90E47BB133BF55C80008F97732ECB3AAC110A5E711FAF10EBB14",
+        "activity_sheet.pdf": "A7A0045B76B14B8FFD5B43CA883C76733B9D4030E392658101969F5231F8D7D6",
+        "whatsapp_caption.txt": "D32DCFF22A2137762E0F5CE654DA00FC0C20AE1E774F243E93BF95A398DD2BF4",
+        "manifest.json": "50952BBF95A080BC99D450162EDF0C4BAE797CD2DE6AC891F08461ACB9BE052B"
+      },
+      "immutable_without_approval": [
+        "story.md",
+        "narration.mp3",
+        "story_poster.png",
+        "coloring_page.png",
+        "simple_coloring_page.png",
+        "whatsapp_caption.txt"
+      ]
+    },
+    "022": {
+      "slug": "prayers-offered-by-lord-brahma-to-lord-krishna",
+      "human_listening_status": "USER_LISTENED_AND_ACCEPTED_ON_2026-08-04",
+      "audio_sha256": "8F231D2E4B90C79D837B5DC2CE4053A681EDDD06148C4D0F0260206CEC2D45F8",
+      "audio_duration_seconds": 382.0,
+      "measured_wpm": 140.26,
+      "model_id": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "speed": 0.9,
+      "narration_source_sha": "CE00D416044C5DDB26B5BF34A4EB37AA25DE5DD6D3540FD5B5CDE8FDF3B149EF",
+      "exact_eight": {
+        "story.md": "99AC1E453A70573ED6131994C7168F9208474B7575F0DBBBCF7DB18729D08B87",
+        "narration.mp3": "8F231D2E4B90C79D837B5DC2CE4053A681EDDD06148C4D0F0260206CEC2D45F8",
+        "story_poster.png": "54A35BF2195B1ED2D226ACD394B71AD48C3D278074EA486168966CA39BCF2023",
+        "coloring_page.png": "620ED23A3B1CD663C022D14CCDEB9B5CA785A681E9619097978538723A4F60CA",
+        "simple_coloring_page.png": "EF5A851E5F580EAF91BD977BE761BF7173E5FD56EAEEF48CEEFA824732CA6C86",
+        "activity_sheet.pdf": "59192739C12C5280F8A9211DFD65F86600DC35A287AE2D74729493AAB35509C2",
+        "whatsapp_caption.txt": "4774BC7089512D57E09FC3358E0054CFD5DCCEC2B9571D96BC56A6FC6A215CFF",
+        "manifest.json": "36A9D08CCF28E7570B3C8A0C2F2ADBE0E45B5DD265CAE7463BC4DC2A38386BED"
+      },
+      "immutable_without_approval": [
+        "story.md",
+        "narration.mp3",
+        "story_poster.png",
+        "coloring_page.png",
+        "simple_coloring_page.png",
+        "whatsapp_caption.txt"
+      ]
+    }
+  }
+}

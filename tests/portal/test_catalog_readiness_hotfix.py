@@ -173,6 +173,10 @@ def test_story_021_stays_private(monkeypatch, tmp_path):
     web = tmp_path / "web-assets"
     _write_web_assets(web, 20)
     db = tmp_path / "catalog.sqlite"
-    with pytest.raises(RuntimeError, match="Public content boundary"):
-        with TestClient(_reload_app(monkeypatch, output, db, web, public=True, story_max=20)):
-            pass
+    app = _reload_app(monkeypatch, output, db, web, public=True, story_max=20)
+    with TestClient(app) as client:
+        assert client.get("/api/v1/stories/020").status_code == 200
+        assert client.get("/api/v1/stories/021").status_code == 404
+        stories = client.get("/api/v1/stories").json()
+        assert len(stories) == 20
+        assert all(item["story_no"] != "021" for item in stories)

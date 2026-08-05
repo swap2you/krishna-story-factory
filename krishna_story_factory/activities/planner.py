@@ -138,13 +138,29 @@ class ActivityPlanner:
         seed = (plan.summary_seed or title).strip()
         if kind == "STORY_SEQUENCE":
             try:
-                events = _extract_event_labels(story_text, seed)
+                from .story_map import reconstruct_story_map_from_canonical, validate_event_list
+
+                story_map = reconstruct_story_map_from_canonical(
+                    story_no=plan.chapter_no,
+                    title=title,
+                    story_md=story_text,
+                    age_band=plan.age_range or "6-12",
+                )
+                events = story_map.sequence_events()
+                map_errors = validate_event_list(events)
+                if map_errors:
+                    raise ValueError("ActivityStoryMap failed semantic checks: " + " | ".join(map_errors))
             except ValueError:
-                # Do not invent metadata/generic sequence cards; use a non-sequence pack instead.
+                # Fail closed for sequence: do not ship opening-fragment cards.
+                # Prefer a non-sequence pack only when a semantic map cannot be built.
                 kind = "FAMILY_MISSION"
             else:
                 cards = [
-                    SequenceCard(event=label, drawing_prompt=f"Draw one detail from: {label}", source_order=index + 1)
+                    SequenceCard(
+                        event=label,
+                        drawing_prompt=f"Draw one detail from: {label}",
+                        source_order=index + 1,
+                    )
                     for index, label in enumerate(events)
                 ]
                 printed = _shuffled_sequence_cards(cards, seed)

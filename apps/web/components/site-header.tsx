@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
 import {
   getCollectionStatus,
   LIBRARY_MENU_BOOKS,
@@ -29,7 +36,16 @@ const trailing = [
   { label: "Contact", href: "/contact" },
 ] as const;
 
-const HOVER_CLOSE_DELAY_MS = 150;
+type LibraryCategory = "home" | "books" | "practice" | "educator";
+
+const LIBRARY_CATEGORIES: { id: LibraryCategory; label: string }[] = [
+  { id: "home", label: "Library Home" },
+  { id: "books", label: "Books & Stories" },
+  { id: "practice", label: "Prayer & Practice" },
+  { id: "educator", label: "Educator Resources" },
+];
+
+const HOVER_CLOSE_DELAY_MS = 160;
 const HOVER_OPEN_DELAY_MS = 220;
 
 function isActive(pathname: string, href: string) {
@@ -50,15 +66,24 @@ function useDropdown() {
   const hoverOpen = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearTimers = useCallback(() => {
-    if (hoverClose.current) { clearTimeout(hoverClose.current); hoverClose.current = null; }
-    if (hoverOpen.current) { clearTimeout(hoverOpen.current); hoverOpen.current = null; }
+    if (hoverClose.current) {
+      clearTimeout(hoverClose.current);
+      hoverClose.current = null;
+    }
+    if (hoverOpen.current) {
+      clearTimeout(hoverOpen.current);
+      hoverOpen.current = null;
+    }
   }, []);
 
-  const close = useCallback((restoreFocus = false) => {
-    clearTimers();
-    setOpen(false);
-    if (restoreFocus) buttonRef.current?.focus();
-  }, [clearTimers]);
+  const close = useCallback(
+    (restoreFocus = false) => {
+      clearTimers();
+      setOpen(false);
+      if (restoreFocus) buttonRef.current?.focus();
+    },
+    [clearTimers],
+  );
 
   const toggle = useCallback(() => {
     clearTimers();
@@ -82,59 +107,168 @@ function useDropdown() {
 
   useEffect(() => () => clearTimers(), [clearTimers]);
 
-  return { open, setOpen, ref, buttonRef, close, toggle, onMouseEnter, onMouseLeave, clearTimers };
+  return {
+    open,
+    setOpen,
+    ref,
+    buttonRef,
+    close,
+    toggle,
+    onMouseEnter,
+    onMouseLeave,
+    clearTimers,
+  };
+}
+
+function MenuLinks({
+  items,
+  pathname,
+  onNavigate,
+}: {
+  items: readonly { slug: string; href: string; label: string }[];
+  pathname: string;
+  onNavigate: () => void;
+}) {
+  return (
+    <>
+      {items.map((item) => {
+        const status = getCollectionStatus(item.slug);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={isActive(pathname, item.href) ? "page" : undefined}
+            onClick={onNavigate}
+          >
+            {item.label}
+            {status === "planned" ? (
+              <span className="nav-planned-badge">Planned</span>
+            ) : null}
+          </Link>
+        );
+      })}
+    </>
+  );
 }
 
 export function SiteHeader() {
   const pathname = usePathname() || "/";
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [libraryCategory, setLibraryCategory] =
+    useState<LibraryCategory>("books");
+  const [mobileLibraryOpen, setMobileLibraryOpen] = useState(false);
+  const [mobileLearningOpen, setMobileLearningOpen] = useState(false);
+  const [mobileLibraryPanel, setMobileLibraryPanel] =
+    useState<LibraryCategory | null>(null);
 
   const library = useDropdown();
   const learning = useDropdown();
   const libraryId = useId();
   const learningId = useId();
+  const categoryPanelId = useId();
 
   useEffect(() => {
     setMobileOpen(false);
+    setMobileLibraryOpen(false);
+    setMobileLearningOpen(false);
+    setMobileLibraryPanel(null);
     library.close(false);
     learning.close(false);
   }, [pathname, library.close, learning.close]);
 
   useEffect(() => {
-    if (!library.open && !learning.open) return;
+    const anyOpen =
+      library.open || learning.open || mobileLibraryOpen || mobileLearningOpen;
+    if (!anyOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        if (library.open) library.close(true);
-        if (learning.open) learning.close(true);
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      if (library.open) library.close(true);
+      if (learning.open) learning.close(true);
+      if (mobileLibraryOpen) {
+        setMobileLibraryOpen(false);
+        setMobileLibraryPanel(null);
       }
+      if (mobileLearningOpen) setMobileLearningOpen(false);
     };
     const onPointer = (e: PointerEvent) => {
-      if (library.open && !library.ref.current?.contains(e.target as Node)) library.close(false);
-      if (learning.open && !learning.ref.current?.contains(e.target as Node)) learning.close(false);
+      if (
+        library.open &&
+        !library.ref.current?.contains(e.target as Node)
+      ) {
+        library.close(false);
+      }
+      if (
+        learning.open &&
+        !learning.ref.current?.contains(e.target as Node)
+      ) {
+        learning.close(false);
+      }
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("pointerdown", onPointer);
-    return () => { window.removeEventListener("keydown", onKey); window.removeEventListener("pointerdown", onPointer); };
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onPointer);
+    };
   }, [
     library.open,
     learning.open,
+    mobileLibraryOpen,
+    mobileLearningOpen,
     library.close,
     learning.close,
     library.ref,
     learning.ref,
   ]);
 
-  const onKeyDown = (dd: ReturnType<typeof useDropdown>) => (e: ReactKeyboardEvent<HTMLButtonElement>) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); dd.toggle(); }
+  const onLibraryKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      library.toggle();
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      library.setOpen(true);
+      requestAnimationFrame(() => {
+        const first = library.ref.current?.querySelector<HTMLElement>(
+          "[data-library-category]",
+        );
+        first?.focus();
+      });
+    }
   };
+
+  const onLearningKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      learning.toggle();
+    }
+  };
+
+  const panelItems =
+    libraryCategory === "books"
+      ? LIBRARY_MENU_BOOKS
+      : libraryCategory === "practice"
+        ? LIBRARY_MENU_PRACTICE
+        : libraryCategory === "educator"
+          ? LIBRARY_MENU_EDUCATOR
+          : null;
 
   return (
     <header className="site-header">
       <div className="container header-inner">
         <Link href="/" className="brand-lockup" aria-label="Bhāva home">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="brand-mark" src="/brand/logo-icon-only.webp" alt="" width={44} height={44} aria-hidden="true" />
+          <img
+            className="brand-mark"
+            src="/brand/logo-icon-only.webp"
+            alt=""
+            width={44}
+            height={44}
+            aria-hidden="true"
+          />
           <span className="brand-text">
             <span className="wordmark brand-display">Bhāva</span>
             <span className="brand-sub">Devotional learning</span>
@@ -151,16 +285,24 @@ export function SiteHeader() {
           Menu
         </button>
 
-        <nav id="primary-nav" className={`nav ${mobileOpen ? "nav--open" : ""}`} aria-label="Primary navigation">
+        <nav
+          id="primary-nav"
+          className={`nav ${mobileOpen ? "nav--open" : ""}`}
+          aria-label="Primary navigation"
+        >
           {primary.map((item) => (
-            <Link key={item.href} href={item.href} aria-current={isActive(pathname, item.href) ? "page" : undefined}>
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isActive(pathname, item.href) ? "page" : undefined}
+            >
               {item.label}
             </Link>
           ))}
 
-          {/* ── Library mega-menu ──────────────────────── */}
+          {/* Desktop Library two-panel menu */}
           <div
-            className="nav-dropdown nav-library"
+            className="nav-dropdown nav-library nav-library--desktop"
             ref={library.ref}
             data-state={library.open ? "open" : "closed"}
             onMouseEnter={library.onMouseEnter}
@@ -175,84 +317,140 @@ export function SiteHeader() {
               aria-controls={libraryId}
               aria-haspopup="true"
               onClick={library.toggle}
-              onKeyDown={onKeyDown(library)}
+              onKeyDown={onLibraryKeyDown}
             >
               Library
             </button>
             <div
               id={libraryId}
-              className="nav-dropdown__menu nav-library__menu"
+              className="nav-dropdown__menu nav-library__menu nav-library__menu--two-panel"
               data-state={library.open ? "open" : "closed"}
               role="group"
-              aria-label="Library links"
+              aria-label="Library categories"
             >
-              <div className="nav-mega-group">
-                <Link
-                  href="/library"
-                  className="nav-mega-home"
-                  aria-current={pathname === "/library" ? "page" : undefined}
-                  onClick={() => library.close(false)}
-                >
-                  Library Home
-                </Link>
-              </div>
-              <div className="nav-mega-group">
-                <span className="nav-mega-label">Books &amp; Stories</span>
-                {LIBRARY_MENU_BOOKS.map((item) => {
-                  const status = getCollectionStatus(item.slug);
-                  return (
+              <div className="nav-library-panel nav-library-panel--categories" role="presentation">
+                {LIBRARY_CATEGORIES.map((cat) =>
+                  cat.id === "home" ? (
                     <Link
-                      key={item.href}
-                      href={item.href}
-                      aria-current={isActive(pathname, item.href) ? "page" : undefined}
+                      key={cat.id}
+                      href="/library"
+                      className="nav-library-category"
+                      data-library-category=""
+                      aria-current={pathname === "/library" ? "page" : undefined}
                       onClick={() => library.close(false)}
+                      onFocus={() => setLibraryCategory("home")}
+                      onMouseEnter={() => setLibraryCategory("home")}
                     >
-                      {item.label}
-                      {status === "planned" ? <span className="nav-planned-badge">Planned</span> : null}
+                      {cat.label}
                     </Link>
-                  );
-                })}
+                  ) : (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      className="nav-library-category"
+                      data-library-category=""
+                      data-active={libraryCategory === cat.id ? "true" : "false"}
+                      aria-controls={categoryPanelId}
+                      aria-pressed={libraryCategory === cat.id}
+                      onMouseEnter={() => setLibraryCategory(cat.id)}
+                      onFocus={() => setLibraryCategory(cat.id)}
+                      onClick={() => setLibraryCategory(cat.id)}
+                    >
+                      {cat.label}
+                    </button>
+                  ),
+                )}
               </div>
-              <div className="nav-mega-group">
-                <span className="nav-mega-label">Prayer &amp; Practice</span>
-                {LIBRARY_MENU_PRACTICE.map((item) => {
-                  const status = getCollectionStatus(item.slug);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                      onClick={() => library.close(false)}
-                    >
-                      {item.label}
-                      {status === "planned" ? <span className="nav-planned-badge">Planned</span> : null}
-                    </Link>
-                  );
-                })}
-              </div>
-              <div className="nav-mega-group">
-                <span className="nav-mega-label">Educator Resources</span>
-                {LIBRARY_MENU_EDUCATOR.map((item) => {
-                  const status = getCollectionStatus(item.slug);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                      onClick={() => library.close(false)}
-                    >
-                      {item.label}
-                      {status === "planned" ? <span className="nav-planned-badge">Planned</span> : null}
-                    </Link>
-                  );
-                })}
+              <div
+                id={categoryPanelId}
+                className="nav-library-panel nav-library-panel--items"
+                role="group"
+                aria-label={
+                  LIBRARY_CATEGORIES.find((c) => c.id === libraryCategory)
+                    ?.label ?? "Library links"
+                }
+              >
+                {libraryCategory === "home" ? (
+                  <Link
+                    href="/library"
+                    onClick={() => library.close(false)}
+                    aria-current={pathname === "/library" ? "page" : undefined}
+                  >
+                    Browse all collections
+                  </Link>
+                ) : panelItems ? (
+                  <MenuLinks
+                    items={panelItems}
+                    pathname={pathname}
+                    onNavigate={() => library.close(false)}
+                  />
+                ) : null}
               </div>
             </div>
           </div>
 
-          {/* ── Learning mega-menu ──────────────────────── */}
+          {/* Mobile Library accordion */}
+          <div className="nav-accordion nav-library--mobile">
+            <button
+              type="button"
+              className="nav-accordion__button"
+              aria-expanded={mobileLibraryOpen}
+              aria-controls={`${libraryId}-mobile`}
+              onClick={() => setMobileLibraryOpen((v) => !v)}
+            >
+              Library
+            </button>
+            <div
+              id={`${libraryId}-mobile`}
+              className="nav-accordion__panel"
+              hidden={!mobileLibraryOpen}
+            >
+              <Link href="/library" className="nav-mega-home">
+                Library Home
+              </Link>
+              {LIBRARY_CATEGORIES.filter((c) => c.id !== "home").map((cat) => {
+                const open = mobileLibraryPanel === cat.id;
+                const items =
+                  cat.id === "books"
+                    ? LIBRARY_MENU_BOOKS
+                    : cat.id === "practice"
+                      ? LIBRARY_MENU_PRACTICE
+                      : LIBRARY_MENU_EDUCATOR;
+                return (
+                  <div key={cat.id} className="nav-accordion-sub">
+                    <button
+                      type="button"
+                      className="nav-accordion-sub__button"
+                      aria-expanded={open}
+                      aria-controls={`${libraryId}-${cat.id}`}
+                      onClick={() =>
+                        setMobileLibraryPanel((prev) =>
+                          prev === cat.id ? null : cat.id,
+                        )
+                      }
+                    >
+                      {cat.label}
+                    </button>
+                    <div
+                      id={`${libraryId}-${cat.id}`}
+                      className="nav-accordion-sub__panel"
+                      hidden={!open}
+                    >
+                      <MenuLinks
+                        items={items}
+                        pathname={pathname}
+                        onNavigate={() => setMobileOpen(false)}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Learning desktop */}
           <div
-            className="nav-dropdown nav-learning"
+            className="nav-dropdown nav-learning nav-learning--desktop"
             ref={learning.ref}
             data-state={learning.open ? "open" : "closed"}
             onMouseEnter={learning.onMouseEnter}
@@ -267,7 +465,7 @@ export function SiteHeader() {
               aria-controls={learningId}
               aria-haspopup="true"
               onClick={learning.toggle}
-              onKeyDown={onKeyDown(learning)}
+              onKeyDown={onLearningKeyDown}
             >
               Learning
             </button>
@@ -291,8 +489,54 @@ export function SiteHeader() {
             </div>
           </div>
 
+          {/* Learning mobile accordion */}
+          <div className="nav-accordion nav-learning--mobile">
+            <button
+              type="button"
+              className="nav-accordion__button"
+              aria-expanded={mobileLearningOpen}
+              aria-controls={`${learningId}-mobile`}
+              aria-haspopup="true"
+              onClick={() => setMobileLearningOpen((v) => !v)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setMobileLearningOpen((v) => !v);
+                }
+              }}
+            >
+              Learning
+            </button>
+            <div
+              id={`${learningId}-mobile`}
+              className="nav-accordion__panel nav-learning__menu"
+              role="group"
+              aria-label="Learning links"
+              hidden={!mobileLearningOpen}
+              data-state={mobileLearningOpen ? "open" : "closed"}
+            >
+              {learningLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive(pathname, item.href) ? "page" : undefined}
+                  onClick={() => {
+                    setMobileLearningOpen(false);
+                    setMobileOpen(false);
+                  }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
           {trailing.map((item) => (
-            <Link key={item.href} href={item.href} aria-current={isActive(pathname, item.href) ? "page" : undefined}>
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isActive(pathname, item.href) ? "page" : undefined}
+            >
               {item.label}
             </Link>
           ))}
