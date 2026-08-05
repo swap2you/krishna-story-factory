@@ -27,6 +27,16 @@ ceiling on the shared content mount.
 Catalog-first resolution for both reader handlers; production-only Caddy
 defense-in-depth for private reader API paths; production smoke hardening.
 
+## Temporary containment
+
+| Item | Value |
+|------|--------|
+| Pre-containment | Four private reader routes HTTP **200** (2026-08-05T17:54:28Z) |
+| Containment run | https://github.com/swap2you/krishna-story-factory/actions/runs/31036248800 |
+| Method | Production-only Caddy `handle` denies (V2) before `handle /api/*` |
+| Post-containment | 021/022 reader(+.txt) → **404**; 020 reader → **200** |
+| Staging | Unaffected |
+
 ## P2 follow-up (not in this P0)
 
 Story 021 `narration_source_sha` metadata discrepancy vs shipped audio — do not
