@@ -49,7 +49,7 @@ bhava.me {
 	import common_security
 
 	# Production-only defense-in-depth: private reader projections must never
-	# reach the API for stories above the public HTML boundary (021+).
+	# reach the API for stories above the public HTML boundary (023+).
 	# Staging keeps /api reader access for authenticated review of private stories.
 	# Stories 021–022 are public after bhava-content-001-022-v1; deny starts at 023+.
 	# Use handle blocks (first-match) so they win over handle /api/*.
