@@ -41,4 +41,6 @@ def test_caddyfile_production_blocks_private_reader_api() -> None:
     assert "@private_reader_api" in prod
     assert "handle @private_reader_api" in prod
     assert "respond 404" in prod
+    assert "2[3-9]" in prod  # deny starts at Story 023 after 001-022 public release
+    assert "2[1-9]" not in prod.split("@private_reader_api", 1)[1].split("handle @private_reader_api", 1)[0]
     assert "@private_reader_api" not in staging

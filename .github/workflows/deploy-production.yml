@@ -9,7 +9,7 @@ on:
       content_release_tag:
         description: Approved public content release
         required: true
-        default: bhava-content-001-020-v4
+        default: bhava-content-001-022-v1
 
 permissions:
   contents: read
@@ -53,10 +53,12 @@ jobs:
         env:
           RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
         run: |
+          PUBLIC_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${RELEASE_SHA} \
-            --build-arg BHAVA_WEB_VERSION=001-020-v4 \
+            --build-arg BHAVA_WEB_VERSION=001-022-v1 \
             --build-arg BHAVA_CONTENT_RELEASE="${{ inputs.content_release_tag }}" \
+            --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${RELEASE_SHA} .
           docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${RELEASE_SHA} .
           docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} \

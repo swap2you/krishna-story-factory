@@ -95,7 +95,7 @@ def test_recovery_completed_manifest_must_be_publishable() -> None:
     )
 
 
-def test_production_defaults_do_not_inherit_local_preview_override(monkeypatch) -> None:
+def test_production_defaults_follow_release_pin(monkeypatch) -> None:
     monkeypatch.delenv("BHAVA_PUBLIC_STORY_MAX", raising=False)
     monkeypatch.setenv("BHAVA_PUBLIC_SITE", "1")
     pin = json.loads(
@@ -103,9 +103,11 @@ def test_production_defaults_do_not_inherit_local_preview_override(monkeypatch) 
             encoding="utf-8"
         )
     )
-    assert int(pin["public_story_max"]) == 20
-    # Production pin file is the release source of truth and must not drift with
-    # operator local preview ceilings (22) used only by start_bhava_local.ps1.
-    assert int(pin["public_story_max"]) != 22
+    assert int(pin["public_story_max"]) == 22
+    # Production deploy injects BHAVA_PUBLIC_STORY_MAX from the release pin.
+    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", str(pin["public_story_max"]))
     settings = get_settings()
-    assert settings.public_story_max == 20
+    assert settings.public_story_max == 22
+    assert _within_ceiling("021", settings)
+    assert _within_ceiling("022", settings)
+    assert not _within_ceiling("023", settings)
