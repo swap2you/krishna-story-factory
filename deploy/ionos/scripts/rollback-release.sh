@@ -75,6 +75,14 @@ PY
 cd "${CONFIG_ROOT}"
 chmod +x "${CONFIG_ROOT}/scripts/"*.sh 2>/dev/null || true
 docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml up -d --no-build "${SERVICES[@]}"
+if docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml \
+    exec -T caddy caddy reload --config /etc/caddy/Caddyfile; then
+  echo "Caddy config reloaded after rollback"
+else
+  echo "Caddy reload failed after rollback; force-recreating caddy once" >&2
+  docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml \
+    up -d --no-build --force-recreate caddy
+fi
 mkdir -p /opt/bhava/backups
 echo "${TARGET_SHA}" >"${CURRENT_FILE}"
 printf '%s\t%s\t%s\trollback\n' "$(date -u +%FT%TZ)" "${ENVIRONMENT}" "${TARGET_SHA}" \
