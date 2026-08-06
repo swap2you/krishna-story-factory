@@ -129,8 +129,10 @@ def test_image_credit_strip_unicode_and_no_duplicate() -> None:
 
 
 @pytest.mark.content_release
-def test_story_021_absent_from_public_content() -> None:
-    assert not list((ROOT / "output").glob("021_*"))
+def test_story_023_absent_from_public_content() -> None:
+    assert list((ROOT / "output").glob("021_*")), "Story 021 must be present in public content 001-022"
+    assert list((ROOT / "output").glob("022_*")), "Story 022 must be present in public content 001-022"
+    assert not list((ROOT / "output").glob("023_*")), "Story 023 must remain private / excluded from public content"
 
 
 @pytest.mark.local_runtime
