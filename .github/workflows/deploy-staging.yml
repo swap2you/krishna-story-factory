@@ -209,8 +209,14 @@ jobs:
           prod_path = Path("deploy/content/RELEASE_CONTENT.json")
           staging = json.loads(staging_path.read_text(encoding="utf-8")) if staging_path.is_file() else {}
           prod = json.loads(prod_path.read_text(encoding="utf-8"))
-          assert int(prod["public_story_max"]) == 20, prod
-          assert str(prod["tag"]).startswith("bhava-content-001-020-"), prod
+          # develop may already pin the upcoming 001-022 production release while
+          # live production remains on 001-020 until the promote deploy.
+          assert int(prod["public_story_max"]) in (20, 22), prod
+          assert str(prod["tag"]).startswith("bhava-content-001-0"), prod
+          if int(prod["public_story_max"]) == 22:
+              assert str(prod["tag"]).startswith("bhava-content-001-022-"), prod
+          else:
+              assert str(prod["tag"]).startswith("bhava-content-001-020-"), prod
 
           default_tag = staging.get("tag") or "bhava-content-001-022-staging-v1"
           default_max = int(staging.get("public_story_max") or 22)
@@ -255,13 +261,17 @@ jobs:
         with:
           ref: ${{ needs.resolve.outputs.sha }}
 
-      - name: Guard production content pin unchanged
+      - name: Guard production content pin is governed
         run: |
           python3 - <<'PY'
           import json
           pin = json.load(open("deploy/content/RELEASE_CONTENT.json", encoding="utf-8"))
-          assert int(pin["public_story_max"]) == 20
-          assert pin["tag"].startswith("bhava-content-001-020-")
+          assert int(pin["public_story_max"]) in (20, 22), pin
+          assert pin["tag"].startswith("bhava-content-001-0"), pin
+          if int(pin["public_story_max"]) == 22:
+              assert pin["tag"].startswith("bhava-content-001-022-"), pin
+          else:
+              assert pin["tag"].startswith("bhava-content-001-020-"), pin
           print("production pin OK", pin["tag"], pin["public_story_max"])
           PY
 
@@ -271,7 +281,8 @@ jobs:
           CONTENT_TAG: ${{ needs.resolve.outputs.content_tag }}
           PUBLIC_MAX: ${{ needs.resolve.outputs.public_max }}
         run: |
-          PROD_SHA=c25973d29c200e7a4911c61b4c8d6b652cda0076
+          git fetch origin main
+          PROD_SHA="$(git rev-parse origin/main)"
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${RELEASE_SHA} \
             --build-arg BHAVA_WEB_VERSION=001-022-staging \
@@ -279,8 +290,9 @@ jobs:
             --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${RELEASE_SHA} .
           docker build -f deploy/ionos/Dockerfile.api -t bhava-api:${RELEASE_SHA} .
-          # Shared content mounts may include private 021+ packages. Production must run
-          # the shared-mount-safe API while keeping the production image tag pinned.
+          # Shared content mounts may include private packages above the live
+          # production ceiling. Keep production's running image tag pinned to
+          # origin/main while refreshing the API binary from this develop SHA.
           docker tag "bhava-api:${RELEASE_SHA}" "bhava-api:${PROD_SHA}"
           docker save bhava-web:${RELEASE_SHA} bhava-api:${RELEASE_SHA} "bhava-api:${PROD_SHA}" \
             | gzip -9 > bhava-images-${RELEASE_SHA}.tar.gz
@@ -347,13 +359,19 @@ jobs:
           PUBLIC_MAX: ${{ needs.resolve.outputs.public_max }}
         run: |
           CONTENT_SHA="$(awk '{print $1}' "${CONTENT_TAG}.tar.gz.sha256")"
-          PROD_SHA=c25973d29c200e7a4911c61b4c8d6b652cda0076
+          git fetch origin main
+          PROD_SHA="$(git rev-parse origin/main)"
+          # Live production remains on 001-020 / max 20 until the formal promote.
+          # Shared mounts will briefly point at staging 001-022 content; the
+          # production ceiling must stay 20 so 021/022 stay private on bhava.me.
           ssh -p "$PORT" "$USER@$HOST" \
             "mkdir -p /opt/bhava/config && \
              tar -xzf /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz -C /opt/bhava/config && \
              chmod +x /opt/bhava/config/scripts/*.sh && \
              docker load -i /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz && \
              bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
+               BHAVA_PROD_RELEASE_SHA=${PROD_SHA} \
+               BHAVA_PROD_PUBLIC_STORY_MAX=20 \
                BHAVA_PROD_WEB_VERSION=001-020-v4 \
                BHAVA_PROD_CONTENT_RELEASE=bhava-content-001-020-v4 \
                BHAVA_WEB_VERSION=001-020-v4 \

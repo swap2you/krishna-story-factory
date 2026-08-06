@@ -104,6 +104,12 @@ jobs:
             "mkdir -p /opt/bhava/config && \
              tar -xzf /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz -C /opt/bhava/config && \
              chmod +x /opt/bhava/config/scripts/*.sh && \
+             bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
+               BHAVA_PROD_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
+               BHAVA_PROD_WEB_VERSION=001-022-v1 \
+               BHAVA_PROD_CONTENT_RELEASE=${CONTENT_TAG} \
+               BHAVA_WEB_VERSION=001-022-v1 \
+               BHAVA_CONTENT_RELEASE=${CONTENT_TAG} && \
              BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
              bash /opt/bhava/config/scripts/deploy-release.sh production ${RELEASE_SHA} \
