@@ -1,0 +1,108 @@
+{
+  "policy_version": "story_package_policy_v1",
+  "locked_to_accepted_standard": "021_022",
+  "canonical_source_hierarchy": [
+    "input/series_plan.csv",
+    "Krishna Book chapter framing",
+    "Śrīmad-Bhāgavatam companion review (no invented exact verse ranges)"
+  ],
+  "krishna_book_sequence_plan_source": "input/series_plan.csv",
+  "story_age_group": "6-12",
+  "canonical_story_structure": "Story Format V2 (CONTENT_STANDARD.md)",
+  "narration_equivalence_mode": "exact",
+  "bedtime_wpm": {
+    "minimum_hard": 105.0,
+    "minimum_accept": 115.0,
+    "maximum_accept": 150.0,
+    "preferred_low": 130.0,
+    "preferred_high": 140.0
+  },
+  "punctuation_requirements": {
+    "proper_sentence_boundaries": true,
+    "no_fragment_after_full_stop": true,
+    "no_malformed_punctuation": true
+  },
+  "sample_first_tts_required": true,
+  "approved_tts": {
+    "primary_provider": "elevenlabs",
+    "primary_voice": "Renee",
+    "fallback_provider": "openai",
+    "fallback_model": "gpt-4o-mini-tts-2025-12-15",
+    "fallback_voice": "marin",
+    "accepted_021_022_model": "gpt-4o-mini-tts-2025-12-15",
+    "accepted_021_022_voice": "marin",
+    "speed_range": [0.85, 0.95],
+    "fallback_requires_visible_hold": true,
+    "silent_fallback_forbidden": true
+  },
+  "image": {
+    "model": "gpt-image-2",
+    "quality": "high",
+    "poster_size": "1024x1536",
+    "reference_image_continuity_required": true,
+    "reference_series": "accepted_021_022_visual_series"
+  },
+  "poster_composition": {
+    "main_characters_readable_at_crops": [
+      "full_poster",
+      "library_card",
+      "sidebar",
+      "mobile",
+      "og"
+    ],
+    "no_malformed_anatomy": true,
+    "no_baked_accidental_text": true,
+    "no_title_clipping": true,
+    "no_unrelated_scenery_dominating": true
+  },
+  "devotional_marks": {
+    "krishna_vaisnava_tilaka_required": true,
+    "devotee_tilaka_when_contextually_correct": true,
+    "tulasi_neck_beads_when_contextually_correct": true,
+    "brahma_one_body_four_readable_heads_when_required": true
+  },
+  "activity": {
+    "require_structured_story_map": true,
+    "prohibit_generic_role_card_fallback": true,
+    "prohibit_quality_blind_family_mission_soft_fallback": true,
+    "sequence_beats_required": 6,
+    "central_pastime_explicitly_present": true,
+    "full_sentences_required": true,
+    "no_mid_word_clipping": true,
+    "no_overlapping_title_border": true,
+    "render_dpi": 150,
+    "two_page_layout_validation": true,
+    "age_appropriate_instructions": true,
+    "source_faithful_devotional_lesson": true,
+    "compact_copyright_line_only": true
+  },
+  "exact_eight_files": [
+    "story.md",
+    "narration.mp3",
+    "story_poster.png",
+    "coloring_page.png",
+    "simple_coloring_page.png",
+    "activity_sheet.pdf",
+    "whatsapp_caption.txt",
+    "manifest.json"
+  ],
+  "copyright_footer_format": "compact printable attribution (no personal email)",
+  "source_shloka_evidence_required": true,
+  "publication": {
+    "private_by_default": true,
+    "public_release_requires_human_approval": true,
+    "drive_upload_and_readback_required": true,
+    "queue_advance_only_after_all_gates_pass": true
+  },
+  "fail_closed": {
+    "on_gate_failure": [
+      "mark_package_HOLD",
+      "leave_queue_recoverable",
+      "stop_further_provider_calls",
+      "prevent_drive_finalization",
+      "prevent_content_tagging",
+      "prevent_deployment",
+      "produce_specific_error_report"
+    ]
+  }
+}

@@ -172,6 +172,9 @@ def _child_safe_divergent_title(title: str) -> bool:
             "aghasura",
             "bakasura",
             "vatsasura",
+            "dhenukasura",
+            "dhenukāsura",
+            "protects everyone from dhenuka",
             "binds",
             "damodara",
             "dāmodara",
@@ -317,12 +320,24 @@ def _identity_constraints(title: str) -> str:
             "Do not show awake/alert guards. Reduce excessive chain clutter. Do not show baby Krishna visible inside Devakī's womb. "
             "Hands, faces, chains, and prison structures must be anatomically coherent. Simple coloring stays gentle for ages 4–8."
         )
-    if any(token in title for token in ("Tṛṇāvarta", "Trinavarta", "Whirlwind", "Aghasura", "Bakasura", "Vatsasura")) or "Demon" in title:
+    if any(
+        token in title
+        for token in (
+            "Tṛṇāvarta",
+            "Trinavarta",
+            "Whirlwind",
+            "Aghasura",
+            "Bakasura",
+            "Vatsasura",
+            "Dhenukasura",
+            "Dhenukāsura",
+        )
+    ) or "Demon" in title or "Protects Everyone from Dhenuka" in title:
         return (
             universal
-            + " Child-safe bedtime tone: emphasize baby Kṛṣṇa’s protection, Mother Yaśodā’s love, and joyful relief after danger has passed. "
-            "Do not depict graphic struggle, choking, injury, corpses, scary demon faces, or violent combat. "
-            "If a defeated asura is implied, keep it abstract/distant or omit the body entirely; prefer the peaceful reunion scene."
+            + " Child-safe bedtime tone: emphasize Kṛṣṇa’s protection, joyful cowherd friendship, and peaceful fruit-sharing after danger has passed. "
+            "Do not depict graphic struggle, injury, corpses, scary demon faces, charging combat, spinning bodies, or violent hooves. "
+            "If a defeated asura is implied, keep it abstract/distant or omit the body entirely; prefer the peaceful Tālavana celebration scene."
         )
     if any(token in title for token in ("Binds", "Damodara", "Dāmodara", "Mother Yasoda", "Mother Yaśodā")):
         return (

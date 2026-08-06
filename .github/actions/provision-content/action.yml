@@ -47,10 +47,18 @@ runs:
       run: |
         tar -xzf "$RUNNER_TEMP/bhava-content/${{ steps.pin.outputs.bundle }}" -C "$GITHUB_WORKSPACE"
         test -d output/020_krishna-protects-everyone-from-the-aghasura-demon
-        test ! -d output/021_the-stealing-of-the-boys-and-calves-by-brahma
+        test -d output/021_the-stealing-of-the-boys-and-calves-by-brahma
+        test -d output/022_prayers-offered-by-lord-brahma-to-lord-krishna
+        test ! -d output/023_krishna-protects-everyone-from-dhenukasura
         test -d web-assets/001
+        test -d web-assets/021
+        test -d web-assets/022
+        test ! -d web-assets/023
         mkdir -p data
         rm -rf data/web-assets
         mv web-assets data/web-assets
         test -f data/web-assets/001/web_manifest.json
         test -f data/web-assets/020/web_manifest.json
+        test -f data/web-assets/021/web_manifest.json
+        test -f data/web-assets/022/web_manifest.json
+        test ! -f data/web-assets/023/web_manifest.json

@@ -182,7 +182,7 @@ def find_latest_recovery_run(project_root: Path, story_id: str) -> Path | None:
 
 
 def seed_state_from_recovery_artifacts(run_root: Path, story_id: str) -> StageState:
-    """Build or refresh stage state from preserved story/narration files."""
+    """Build or refresh stage state from preserved package artifacts."""
     existing = load_state(run_root)
     state = existing or StageState(story_id=story_id.zfill(3), run_id=run_root.name)
     pkg = package_dir(run_root)
@@ -193,6 +193,18 @@ def seed_state_from_recovery_artifacts(run_root: Path, story_id: str) -> StageSt
         state.mark("story", STATUS_COMPLETE, checksum=_sha256(story))
     if narration.is_file():
         state.mark("narration", STATUS_COMPLETE, checksum=_sha256(narration))
+    artifact_stages = (
+        ("poster", "story_poster.png"),
+        ("detailed_coloring", "coloring_page.png"),
+        ("simple_coloring", "simple_coloring_page.png"),
+        ("activity_pdf", "activity_sheet.pdf"),
+        ("whatsapp_caption", "whatsapp_caption.txt"),
+        ("manifest", "manifest.json"),
+    )
+    for stage_name, filename in artifact_stages:
+        path = pkg / filename
+        if path.is_file() and path.stat().st_size > 0:
+            state.mark(stage_name, STATUS_COMPLETE, checksum=_sha256(path))
     save_state(run_root, state)
     return state
 

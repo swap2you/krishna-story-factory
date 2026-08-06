@@ -20,6 +20,7 @@ $QueuePath = Join-Path $ProjectRoot "tracking\queue_state.csv"
 $LockPath = Join-Path $ProjectRoot ".pipeline.lock"
 $ValidateLockPath = Join-Path $ProjectRoot ".pipeline.validate.lock"
 $HealthPath = Join-Path $ProjectRoot "tracking\scheduler_health.json"
+$StatusPath = Join-Path $ProjectRoot "tracking\scheduler_status.json"
 
 function Get-Sha256Hex {
     param([string]$LiteralPath)
@@ -78,6 +79,39 @@ function Write-SchedulerHealth {
     param([hashtable]$Fields)
     $Fields["updated_at"] = (Get-Date).ToUniversalTime().ToString("o")
     ($Fields | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $HealthPath -Encoding utf8
+}
+
+function Write-SchedulerStatus {
+    param(
+        [string]$LastResult,
+        [string]$StoryNumber = "",
+        [string]$PipelineStage = "",
+        [string]$ProviderCalls = "0",
+        [string]$QueueBefore = "",
+        [string]$QueueAfter = "",
+        [string]$Mode = ""
+    )
+    $nextRun = $null
+    try {
+        $info = Get-ScheduledTaskInfo -TaskName "Krishna Story Factory MWF" -ErrorAction SilentlyContinue
+        if ($info -and $info.NextRunTime) {
+            $nextRun = ([DateTime]$info.NextRunTime).ToUniversalTime().ToString("o")
+        }
+    } catch { }
+    $payload = [ordered]@{
+        last_invocation = (Get-Date).ToUniversalTime().ToString("o")
+        last_result = $LastResult
+        story_number_attempted = $StoryNumber
+        pipeline_stage_reached = $PipelineStage
+        next_scheduled_run = $nextRun
+        provider_calls = $ProviderCalls
+        queue_before_hash = $QueueBefore
+        queue_after_hash = $QueueAfter
+        mode = $Mode
+        public_web_exposed = $false
+        note = "Internal scheduler status only; not served by the website."
+    }
+    ($payload | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $StatusPath -Encoding utf8
 }
 
 function Invoke-IsolatedPython {
@@ -258,6 +292,9 @@ if ($ValidateScheduler) {
         "note=Validation mode never invokes --mode prod, providers, Drive upload, or Story 009 generation."
     ) -join "`n"
     Set-Content -LiteralPath $Log -Value $body -Encoding utf8
+    Write-SchedulerStatus -LastResult $(if ($ExitCode -eq 0) { "VALIDATE_PASS" } else { "VALIDATE_FAIL" }) `
+        -StoryNumber "" -PipelineStage "validate" -ProviderCalls "0" `
+        -QueueBefore $queueBefore -QueueAfter $queueAfter -Mode "validate-scheduler"
     Write-Output $body
     exit $ExitCode
 }
@@ -354,5 +391,10 @@ if (-not (Test-Path -LiteralPath $History)) {
 } else {
     $Row | Export-Csv -LiteralPath $History -NoTypeInformation -Append
 }
+Write-SchedulerStatus -LastResult $Row.status `
+    -StoryNumber $(if ($Row.chapter_no) { $Row.chapter_no } else { "auto" }) `
+    -PipelineStage $(if ($ExitCode -eq 0) { "complete" } else { "failed" }) `
+    -ProviderCalls $(if ($SimulateProduction) { "0" } else { "see-log" }) `
+    -QueueBefore $queueBefore -QueueAfter $queueAfter -Mode $ModeName
 exit $ExitCode
 

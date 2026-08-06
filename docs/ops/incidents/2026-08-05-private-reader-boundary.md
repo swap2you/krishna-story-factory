@@ -37,6 +37,44 @@ defense-in-depth for private reader API paths; production smoke hardening.
 | Post-containment | 021/022 reader(+.txt) → **404**; 020 reader → **200** |
 | Staging | Unaffected |
 
+## Permanent production closure
+
+| Item | Value |
+|------|-------|
+| Hotfix PR | https://github.com/swap2you/krishna-story-factory/pull/52 |
+| Hotfix commit | `55babab819d4a7055d91cdedb3022a8092105374` |
+| Develop merge | `76adbd777aed72bb981f8bb3a0df15cba45f55ba` (later tip `134c130…` after sync) |
+| Promote PR | https://github.com/swap2you/krishna-story-factory/pull/56 |
+| Main merge / LKG | `72eb171991102831da5d3993b5e2ad48447556d7` |
+| Staging deploy | https://github.com/swap2you/krishna-story-factory/actions/runs/31038086192 (`76adbd7…`) |
+| Production deploy | https://github.com/swap2you/krishna-story-factory/actions/runs/31042276803 (`72eb171…`) |
+| CoWork verdict | PASS WITH NON-BLOCKING FINDINGS |
+
+Post-production `/api/v1/version`: `environment=production`, `release_sha=72eb171…`,
+`content_tag=bhava-content-001-020-v4`, `public_story_max=20`, `indexed_story_count=20`.
+
+Post-production reader matrix: 020 md/txt **200**; 021/022/023 md/txt **404**;
+pages 021/022/023 **404**; assets 021/022 **404**; sitemap excludes 021/022.
+
+Re-verified 2026-08-05 evening (pre Story 023 recovery / 001–022 publish work):
+021/022/023 page+API+reader+assets remain **404**; sitemap excludes 021–023;
+`release_sha` still `72eb171…`; content still `bhava-content-001-020-v4` / max 20.
+
+Committed production Caddy `@private_reader_api` handle deny is live with this
+release (defense-in-depth). Temporary server-only incident patch is superseded
+by committed config — do not leave undocumented server-only denies.
+
+**New last-known-good baseline:** `72eb171…` (not `24a4904`; that target is
+incompatible with the shared-content architecture).
+
+## Related scheduler miss (Wed 2026-08-05)
+
+Task **did run** at 10:00 AM local (`LastTaskResult=1`). Root cause: pronunciation
+coverage FAIL before TTS — missing lexicon entry for **Tālavana**
+(`logs/scheduler/daily_20260805_100002.log`). No paid full narration charged.
+Story 023 remains pending with locked `story.md` under
+`work/stories/023/20260805-100013-744694`.
+
 ## P2 follow-up (not in this P0)
 
 Story 021 `narration_source_sha` metadata discrepancy vs shipped audio — do not
