@@ -95,6 +95,20 @@ if ((${#other[@]})); then
     up -d --no-build "${other[@]}"
 fi
 
+# Bind-mounted Caddyfile updates do not apply until Caddy reloads. Prefer reload
+# over force-recreate to avoid TLS/ACME disruption; fall back to recreate only
+# if reload fails.
+if printf '%s\n' "${SERVICES[@]}" | grep -qx caddy; then
+  if docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml \
+      exec -T caddy caddy reload --config /etc/caddy/Caddyfile; then
+    echo "Caddy config reloaded"
+  else
+    echo "Caddy reload failed; force-recreating caddy once" >&2
+    docker compose --env-file "${RUNTIME_ENV}" -f docker-compose.yml \
+      up -d --no-build --force-recreate caddy
+  fi
+fi
+
 mkdir -p /opt/bhava/backups
 echo "${RELEASE_SHA}" >"${CURRENT_FILE}"
 printf '%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "${ENVIRONMENT}" "${RELEASE_SHA}" \
