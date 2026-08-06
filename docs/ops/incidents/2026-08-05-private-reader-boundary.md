@@ -72,10 +72,35 @@ incompatible with the shared-content architecture).
 Task **did run** at 10:00 AM local (`LastTaskResult=1`). Root cause: pronunciation
 coverage FAIL before TTS — missing lexicon entry for **Tālavana**
 (`logs/scheduler/daily_20260805_100002.log`). No paid full narration charged.
-Story 023 remains pending with locked `story.md` under
-`work/stories/023/20260805-100013-744694`.
+Secondary: Windows cp1252 `UnicodeEncodeError` when printing result JSON.
+Story 023 was later generated once via governed recovery and remains **private**.
+
+## Formal Stories 001–022 production publish (2026-08-06)
+
+| Item | Value |
+|------|-------|
+| Content tag | `bhava-content-001-022-v1` |
+| Content sha256 | `399c265073915b766b5a2ad58b1237d51aed7a7b6a5c2b745a8235c6189643a6` |
+| Production promote | https://github.com/swap2you/krishna-story-factory/pull/61 |
+| Caddy reload hotfix | https://github.com/swap2you/krishna-story-factory/pull/63 |
+| Production deploy (PASS) | https://github.com/swap2you/krishna-story-factory/actions/runs/31062967050 |
+| Main SHA | `a9970be4fe22fc2e93780b91f087c787e89e62dd` |
+| `public_story_max` | **22** |
+| Story 023 | remains **404** / unpublished |
+
+Post-publish matrix: 001–022 pages/API/readers/assets **200**; 023–024 **404**;
+sitemap includes 021–022 and excludes 023+.
+
+Caddy private-reader deny now starts at **023+** (committed). First promote
+attempt failed smoke because bind-mounted Caddyfile updates were not reloaded;
+fixed by reload-on-deploy and redeployed successfully.
+
+**Current production LKG:** `a9970be…` / `bhava-content-001-022-v1` / max 22.
 
 ## P2 follow-up (not in this P0)
 
 Story 021 `narration_source_sha` metadata discrepancy vs shipped audio — do not
-modify locked package manifests during this incident.
+modify locked package manifests during this incident. Story 023 sample
+`narration_source_sha` may similarly drift from final package audio binding —
+human listening remains pending; do not claim soothing pronunciation from
+waveform checks alone.
