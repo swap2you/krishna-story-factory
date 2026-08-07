@@ -1,0 +1,10 @@
+{
+  "package_version": "1.0.0-fixture",
+  "schema": "knowledge_record_package.schema.json",
+  "record_sha256": "4f4c26d138d0259d8d19b38ad624f9a309259179695c5174694ae8e8e886c6ae",
+  "content_sha256": "bcae49178b7e2d2c25dfc3f6a1748affc2605598752619621b05fb750834483b",
+  "canonical_text_hash": "3b43cac007fbafb71c9491a69cbf069ed221b29d548eaedb5a729b93b3146e9f",
+  "created_for": "P01C engineering foundation",
+  "production_scripture": false,
+  "production_artwork": false
+}

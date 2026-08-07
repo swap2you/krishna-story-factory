@@ -1,0 +1,69 @@
+{
+  "blocks": [
+    {
+      "block_id": "purpose",
+      "block_type": "purpose",
+      "ord": 0,
+      "body": "Purpose sentence for engineering preview. TEST FIXTURE — NOT APPROVED DEVOTIONAL CONTENT"
+    },
+    {
+      "block_id": "st-1",
+      "block_type": "stanza",
+      "ord": 1,
+      "devanagari": "परीक्षण श्लोक एक — TEST FIXTURE",
+      "iast": "parīkṣaṇa śloka eka — TEST FIXTURE",
+      "translation_en": "Structural stanza one. TEST FIXTURE — NOT APPROVED DEVOTIONAL CONTENT",
+      "translator": "TEST FIXTURE — not a real translator",
+      "edition": "Synthetic structural fixture v1",
+      "exact_locator": "fixture://KF-P01C-FIXTURE-001/st-1",
+      "word_meanings": [
+        {
+          "term": "parīkṣaṇa",
+          "meaning": "TEST FIXTURE gloss — not doctrinal"
+        }
+      ],
+      "lens_explanations": {
+        "little_learner": "One short idea: this is a TEST FIXTURE placeholder.",
+        "explorer": "Explorer note: TEST FIXTURE — practice finding Devanāgarī, IAST, and English.",
+        "teen": "Teen note: TEST FIXTURE scaffolding only; no doctrinal claim.",
+        "study": "Study note: TEST FIXTURE for schema/export/hash verification."
+      },
+      "asset_refs": [
+        "asset-placeholder-1"
+      ]
+    },
+    {
+      "block_id": "st-2",
+      "block_type": "stanza",
+      "ord": 2,
+      "devanagari": "परीक्षण श्लोक द्वि — TEST FIXTURE",
+      "iast": "parīkṣaṇa śloka dvi — TEST FIXTURE",
+      "translation_en": "Structural stanza two. TEST FIXTURE — NOT APPROVED DEVOTIONAL CONTENT",
+      "translator": "TEST FIXTURE — not a real translator",
+      "edition": "Synthetic structural fixture v1",
+      "exact_locator": "fixture://KF-P01C-FIXTURE-001/st-2",
+      "word_meanings": [],
+      "lens_explanations": {
+        "little_learner": "Next idea: TEST FIXTURE only.",
+        "explorer": "Explorer: second TEST FIXTURE stanza.",
+        "teen": "Teen: TEST FIXTURE reflection prompt placeholder.",
+        "study": "Study: TEST FIXTURE citation slot empty by design."
+      },
+      "asset_refs": [
+        "asset-placeholder-2"
+      ]
+    },
+    {
+      "block_id": "context",
+      "block_type": "context",
+      "ord": 80,
+      "body": "Context slot empty of real lore. TEST FIXTURE — NOT APPROVED DEVOTIONAL CONTENT"
+    },
+    {
+      "block_id": "practice",
+      "block_type": "practice",
+      "ord": 90,
+      "body": "Practice prompt placeholder. TEST FIXTURE — NOT APPROVED DEVOTIONAL CONTENT"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "assets": [
+    {
+      "asset_id": "asset-placeholder-1",
+      "role": "decorative",
+      "status": "placeholder",
+      "alt_text": "",
+      "decorative": true,
+      "board": "B_editorial_gouache",
+      "notes": "Governed placeholder slot \u2014 no production artwork"
+    },
+    {
+      "asset_id": "asset-placeholder-2",
+      "role": "decorative",
+      "status": "placeholder",
+      "alt_text": "",
+      "decorative": true,
+      "board": "B_editorial_gouache",
+      "notes": "Governed placeholder slot \u2014 no production artwork"
+    }
+  ]
+}

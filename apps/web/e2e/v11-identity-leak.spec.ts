@@ -1,11 +1,14 @@
 import { expect, test } from "@playwright/test";
 
-// Civil surname alone was previously forbidden; user-approved public credit now includes
-// "Svarna Gauranga Das (Swapnil Patil)" on the compact copyright line.
-// Still forbid username/profile leakage.
-const FORBIDDEN = [/swapnilpatil/i, /linkedin\.com\/in\//i, /github\.com\/swap/i];
-const APPROVED_CIVIL_CREDIT =
-  /Svarna Gauranga Das \(Swapnil Patil\) · Dauji Publication · Bhāva/;
+// Public footer uses approved Bhāva/Dauji brand identity without civil name (OD-08).
+// Still forbid username/profile leakage and civil-name footer credit.
+const FORBIDDEN = [
+  /swapnilpatil/i,
+  /Swapnil Patil/i,
+  /linkedin\.com\/in\//i,
+  /github\.com\/swap/i,
+];
+const APPROVED_FOOTER_CREDIT = /Svarna Gauranga Das · Dauji Publication · Bhāva/;
 const LEAK = [
   /Audio Narration/i,
   /Poster Visual Brief/i,
@@ -41,8 +44,9 @@ test.describe("v1.1 identity and route smoke", () => {
       for (const pattern of FORBIDDEN) {
         expect(body).not.toMatch(pattern);
       }
-      if (/Swapnil/i.test(body)) {
-        expect(body).toMatch(APPROVED_CIVIL_CREDIT);
+      expect(body).not.toMatch(/Swapnil Patil/i);
+      if (/Svarna Gauranga Das/i.test(body) && /Dauji Publication/i.test(body)) {
+        expect(body).toMatch(APPROVED_FOOTER_CREDIT);
       }
     });
   }
