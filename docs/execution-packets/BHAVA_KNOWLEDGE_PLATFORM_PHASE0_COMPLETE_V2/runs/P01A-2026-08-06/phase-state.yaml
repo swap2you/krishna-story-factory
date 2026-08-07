@@ -1,0 +1,40 @@
+schema_version: "1.0.0"
+program: "BHAVA_KNOWLEDGE_PLATFORM"
+package: "BHAVA_KNOWLEDGE_PLATFORM_PHASE0_COMPLETE_V2"
+package_sha256: "3955E964FEE420436842E7C93C22D33BDEEA808B31A961057CCCEF24346C56DC"
+run_id: "P01A-2026-08-06"
+current_phase:
+  id: "P01A"
+  name: "Discovery and baseline"
+  state: "OWNER_REVIEW_REQUIRED"
+  completed_at_local: "2026-08-06"
+next_authorized:
+  id: "P01B"
+  name: "Requirements, UX, architecture, tests, implementation plan"
+  authorized_scope: "NONE"
+  precondition: "Owner accepts P01A discovery package and authorizes specification work"
+approvals:
+  phase0_package_intake: true
+  phase1_discovery: false
+  phase1_specification: false
+  phase1_build: false
+  branch_creation: false
+  push_or_pr: false
+  merge_to_develop: false
+  staging: false
+  production: false
+  public_content: false
+  scheduler: false
+  paid_provider_calls: false
+repository:
+  name: "swap2you/krishna-story-factory"
+  branch: "develop"
+  sha: "d6159e9af6b7033d1876141eae31944ec93fffc0"
+  upstream: "origin/develop"
+  ahead_behind: "0 0"
+  open_prs: 0
+  feature_branch_created: false
+hard_stops_triggered: false
+notes: >
+  Phase 1A discovery complete. No application code, content, branch, dependency,
+  scheduler, staging, production, or paid-provider changes were made.

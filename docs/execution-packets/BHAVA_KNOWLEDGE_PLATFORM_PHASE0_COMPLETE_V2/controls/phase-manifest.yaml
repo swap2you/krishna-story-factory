@@ -1,0 +1,52 @@
+schema_version: "1.0.0"
+program: "BHAVA_KNOWLEDGE_PLATFORM"
+package: "BHAVA_KNOWLEDGE_PLATFORM_PHASE0_COMPLETE_V2"
+prepared_at_utc: "2026-08-06T00:00:00Z"
+current_phase:
+  id: "P00"
+  name: "Program control and prompt library"
+  state: "OWNER_REVIEW_REQUIRED"
+next_phase:
+  id: "P01"
+  name: "Governed visual learning-page pilot"
+  authorized_scope: "NONE"
+approvals:
+  phase0_acceptance: false
+  phase1_discovery: false
+  phase1_specification: false
+  phase1_build: false
+  branch_creation: false
+  push_or_pr: false
+  merge_to_develop: false
+  staging: false
+  production: false
+  public_content: false
+  scheduler: false
+  paid_provider_calls: false
+locks:
+  preserve_story_factory: true
+  preserve_public_story_boundary: true
+  private_corpus_originals_public: false
+  ai_auto_approval: false
+  ai_auto_publication: false
+  framework_migration: false
+  audio_in_phase1: false
+  podcast_in_phase1: false
+  three_d_in_phase1: false
+repositories:
+  public_platform: "swap2you/krishna-story-factory"
+  source_corpus: "swap2you/bhava-library"
+  publishing: "swap2you/bhava-publishing-studio"
+branch_policy:
+  base: "develop"
+  proposed_phase1: "feature/kf-p01-visual-learning-pilot"
+  target: "develop"
+  main_changes_allowed: false
+pilot:
+  golden_pages: 1
+  confirmation_pages: 4
+  visibility: "PRIVATE_PREVIEW"
+batch_scale:
+  after_pilot: 25
+  after_controlled_batch: 50
+

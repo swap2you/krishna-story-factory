@@ -1,0 +1,2 @@
+asset_id,record_id,stanza_or_block_id,asset_type,title,path_or_private_id,sha256,width,height,aspect_ratio,tool_or_creator,model_and_version,prompt_or_brief_path,reference_provenance,rights_holder,license_or_permission,allowed_uses,alt_text,decorative,long_description_path,iconographic_review,age_review,accessibility_review,status,reviewer,review_date,supersedes
+AST-001,,,,,,,,,,,,,,,,,,,false,,,,DRAFT,,,
