@@ -1,30 +1,22 @@
-# SECURITY_REVIEW — P01C
+# SECURITY_REVIEW — P01C (PR #70 remediation)
 
-## Specialist reviewers (read-only)
+## Changes since first draft
 
-1. UX/accessibility — findings remediated (radiogroup focus steal, heading hierarchy, source details, print/reduced-motion polish)
-2. Architecture/security — findings partially remediated (see residual)
-3. Export/content-governance — PDF Unicode font + test no-op fixed; python-docx pinned; export gates added
+- Vendored SIL-OFL Noto Sans + Noto Sans Devanagari with `CHECKSUMS.sha256`; export fails closed on missing/mismatch
+- Loopback Host parsing supports `localhost`, `127.x`, `::1`, `[::1]:port`, IPv4-mapped IPv6; positive/negative unit tests
+- Signed studio session cookies retain expiry; forgeable `X-Bhava-Studio: 1` alone still rejected
+- Studio capability copy no longer overclaims mutations/workflows
+- Review ZIP removed from Git history on the feature branch (local-only handoff artifact)
 
-## Remediations applied
+## Residual risks
 
-- Signed studio session cookies with HMAC + expiry (`role.nonce.exp.sig`)
-- Forgeable `X-Bhava-Studio: 1` alone rejected on private Knowledge API
-- Loopback Host gate; forwarded headers accepted only if every hop is loopback
-- Export rejects `visibility=public`; stderr not echoed; tempdir cleaned
-- Non-fixture `SOURCE_BLOCKED` bodies suppressed in UI; export `assert_export_allowed`
-- Dual-font PDF (Noto Latin + Nirmala Devanāgarī); fail closed if fonts missing
-- `python-docx==1.2.0`
-
-## Residual risks (documented, not claimed fixed)
-
-| ID | Risk | Mitigation / limit |
+| ID | Risk | Status |
 |---|---|---|
-| R-SEC-01 | Host header alone is forgeable if Next binds `0.0.0.0` | Bind studio to `127.0.0.1`; set `BHAVA_PUBLIC_SITE=0`; require bootstrap token in production |
-| R-SEC-02 | Default local bootstrap token when env unset (non-production) | Production throws if unset; local default documented |
-| R-SEC-03 | `/gates/evaluate` and `/postgres-ddl` remain unauthenticated API surfaces | Pre-existing; lock down in later packet |
-| R-SEC-04 | PDF/UA not claimed | Explicit false in manifests |
+| R-SEC-01 | Public bind + Host forgery | Mitigate by binding studio to `127.0.0.1` + `BHAVA_PUBLIC_SITE=0` |
+| R-SEC-02 | Default local bootstrap token outside production | Documented; production requires env |
+| R-SEC-03 | Unauthenticated `/gates/evaluate` and `/postgres-ddl` | Pre-existing; not expanded |
+| R-SEC-04 | Docker image build not validated on this workstation | Rely on Production CI after push |
 
-## Secrets scan (manual)
+## Secrets
 
-No API keys, `.env`, or private corpus binaries in the feature commits or review bundle.
+No secrets in remediations. Fonts/OFL are public SIL-licensed files. Manual review of fixture JSON: no private paths.

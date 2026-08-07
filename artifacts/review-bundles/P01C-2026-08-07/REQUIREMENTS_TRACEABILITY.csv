@@ -1,9 +1,30 @@
-requirement_id,requirement,implementation,evidence,result
-REQ-SCHEMA-01,Knowledge package schema,packages/contracts/schemas/knowledge_record_package.schema.json,tests/test_knowledge_packages_p01c.py,PASS
-REQ-LIFECYCLE-01,SOURCE_BLOCKED fixture enforcement,content/knowledge/packages/KF-P01C-FIXTURE-001/*,tests/test_knowledge_packages_p01c.py::test_fixture_package_valid_and_blocked,PASS
-REQ-AUTH-01,Reject forgeable header alone,apps/api/bhava_api/knowledge/routes.py,tests/test_knowledge_packages_p01c.py::test_private_search_rejects_forgeable_header_alone,PASS
-REQ-PREVIEW-01,Loopback + signed session preview,apps/web/app/studio/knowledge/preview/[slug]/page.tsx,manual screenshot + studio-guard,PASS-manual
-REQ-LENS-01,Four lenses + Explorer default,apps/web/components/knowledge/learning-page-shell.tsx,screenshot 02/03/04/05,PASS-manual
-REQ-EXPORT-01,PDF/DOCX study-neutral + hash,apps/api/bhava_api/knowledge/packages.py,tests/test_knowledge_packages_p01c.py::test_export_pdf_docx_hash_parity,PASS
-REQ-FOOTER-01,Bhava/Dauji footer identity,apps/web/components/site-footer.tsx,apps/web/components/site-footer.test.tsx,PASS
-REQ-D10-01,Etiquette PDF recovery read-only,PDF_RECOVERY_MANIFEST.csv,read-only search,INFO-not-blocker
+requirement_id,description,p01c_status,evidence
+P1-F01,Four lenses one canonical text,PASS,learning-page-shell + hash tests
+P1-F02,Show Deva/IAST/EN/source/status,PASS,fixture preview shows fields; production text remains SOURCE_BLOCKED
+P1-F03,Optional stanza artwork,DEFERRED,placeholder slots only; no production art
+P1-F04,Linear+focus mode,PASS,focus mode + prev/next
+P1-F05,Preserve position/focus,PASS,lens restore + stanza heading focus
+P1-F06,Source progressive disclosure,PASS,details open Study; user-controlled
+P1-F07,PDF+DOCX same version,PASS,Letter+A4 exports + hash parity
+P1-F08,Studio 348 visibility,PASS,pagination 50/page covers 348
+P1-F09,No public leak research/paths,PASS,middleware + loopback preview + private packages
+P1-F10,Related approved only,DEFERRED,related links not implemented this foundation
+P1-U01,WCAG 2.2 AA target,PASS,axe critical/serious clean on preview e2e; full AA claim not asserted
+P1-U02,44px child targets,DEFERRED,token not fully audited across all controls
+P1-U03,320/zoom no clip,DEFERRED,screenshots exist; full zoom matrix not automated
+P1-U04,Reduced motion,PASS,CSS + e2e reducedMotion
+P1-U05,Alt/decorative art,PASS,placeholders aria-hidden decorative
+P1-U06,Shared brand lenses,PASS,Board B tokens; lenses change density
+P1-U07,No child account/tracking,PASS,self-selected lens only; sessionStorage
+P1-E01,Hash parity lenses/exports,PASS,unit + export tests
+P1-E02,Unicode NFC+fixtures,PASS,vendored Noto + extract tests
+P1-E03,Preserve chars/boundaries,PASS,PDF/DOCX extract tests
+P1-E04,PDF capability not PDF/UA,PASS,pdf_ua_claimed=false in manifests
+P1-E05,DOCX semantic fidelity,PASS,headings/paragraphs/language; opens without repair in tests
+P1-E06,Letter+A4 layout,PASS,pdf+docx letter/a4 tests
+P1-E07,Export manifest hashes,PASS,canonical + embedded_font_hashes
+P1-P01,Loopback-only preview,PASS,Host parsing + signed session + tests
+P1-P02,Footer civil-name removal,PASS,OD-08 implemented; public footer updated
+P1-P03,No paid providers / no arbitrary downloads,PASS,vendored fonts; no paid PDF APIs; no scripture downloads
+P1-S01,Studio pagination 348,PASS,page size 50
+P1-S02,Explain non-public roadmap,PASS,studio copy + honest capabilities

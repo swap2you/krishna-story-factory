@@ -20,7 +20,9 @@ test.describe("P01C knowledge studio foundation", () => {
     await studioLogin(page);
     await expect(page.getByText(/Page 1 of/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /P01C Structural Learning-Page Fixture/i })).toBeVisible();
-    await expect(page.getByText(/mutations\/reviewer workflows are not implemented/i)).toBeVisible();
+    await expect(
+      page.getByText(/mutations, reviewer workflows, scheduling, and publication actions are not implemented/i),
+    ).toBeVisible();
   });
 
   test("private preview renders lenses, keyboard radiogroup, and blocked banner", async ({ page }) => {

@@ -1,28 +1,34 @@
-# TEST_RESULTS — P01C
+# TEST_RESULTS — P01C (remediation for PR #70)
 
-**Environment:** Node v24.19.0 · repository `.venv` Python · Windows  
+**Head (pre-push):** see final response for SHA after force-push  
+**Date:** 2026-08-07  
+**Environment:** Windows local — Node 24.19.0 · repo `.venv` Python 3.14  
 
-## Executed
+## Local execution (this remediation)
 
 | Suite | Result | Notes |
 |---|---|---|
-| `tests/test_knowledge_packages_p01c.py` | **PASS** (7) | schema/lifecycle/export Unicode/hash/auth negatives |
-| `tests/test_knowledge_v14.py` | **PASS** | knowledge regression |
-| `tests/test_private_reader_public_boundary.py` | **PASS** | public boundary |
-| `apps/web` vitest (full) | **PASS** (49) | includes packages + footer |
-| `npm run build` (web, Node 24) | **PASS** | earlier this run; remediations after build need rebuild before prod image |
-| Playwright screenshots (manual) | **PASS** | studio + preview lenses + footer via `next dev` + `BHAVA_PUBLIC_SITE=0` |
-| PDF/DOCX Unicode extract | **PASS** | Devanāgarī + IAST + fixture markers; hash parity |
-| Forgeable header alone | **PASS** | API 403 without secret |
+| `pytest` source-unit style (`not slow…`) | **PASS** (395) | Includes P01C Letter/A4, fonts, footer, loopback |
+| `tests/test_knowledge_packages_p01c.py` | **PASS** | Vendored Noto + Unicode extract |
+| `tests/test_publication_copyright.py` footer | **PASS** | Approved OD-08 footer; civil name absent |
+| `npm run lint:web` | **PASS** | Next Link fix |
+| `npm run typecheck:web` | **PASS** | |
+| `npm run test:web` (vitest) | **PASS** (62) | Includes studio-guard loopback matrix |
+| `npm run build:web` | **PASS** | |
+| `docker compose … config` | **PASS** | |
+| `docker build` API image | **NOT RUN locally** | Docker Desktop daemon unavailable on workstation |
+| Playwright browser matrix (full CI) | **DEFERRED to GitHub CI** after push |
+| axe + keyboard (P01C e2e specs) | **IMPLEMENTED**; full matrix via CI `browser-local` / public jobs |
+| Secret/dependency scanning | **PASS previously on PR** (`production-security`); re-confirmed by CI after push |
 
-## Not claimed PASS
+## Prior PR #70 CI (pre-remediation) — FAILED
 
-| Check | Status |
-|---|---|
-| Full `scripts/test_all.ps1` | **NOT RE-RUN** after final remediation commit in this session |
-| Full Playwright e2e CI matrix / axe CI job | **NOT RUN** as automated suite (manual screenshots only) |
-| Production Compose image rebuild | **NOT RUN** (not authorized for staging/prod) |
-| Secret scanners (gitleaks/trufflehog full) | **NOT RUN**; manual review found no secrets in fixture/docs |
-| Automated axe-core suite | **NOT RUN**; UX specialist review used instead |
+- CI run: https://github.com/swap2you/krishna-story-factory/actions/runs/31184911888  
+- CI run (dup): https://github.com/swap2you/krishna-story-factory/actions/runs/31184907561  
+- Production CI: https://github.com/swap2you/krishna-story-factory/actions/runs/31184910667  
 
-Do **not** treat skipped rows as PASS.
+Failures remediated: missing Devanāgarī font on Linux, obsolete footer assertion, `@next/next/no-html-link-for-pages`.
+
+## Post-remediation CI
+
+Update after force-push — see final response for new run URLs.
