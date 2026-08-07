@@ -83,7 +83,9 @@ def test_sitemap_includes_twenty_stories_rights_excludes_021() -> None:
 
 def test_website_footer_and_rights_page_exist() -> None:
     footer = (ROOT / "apps" / "web" / "components" / "site-footer.tsx").read_text(encoding="utf-8")
-    assert "© 2026 Svarna Gauranga Das (Swapnil Patil)" in footer
+    # Approved public footer identity (OD-08) — no civil name.
+    assert "© 2026 Svarna Gauranga Das · Dauji Publication · Bhāva" in footer
+    assert "Swapnil Patil" not in footer
     assert "Dauji Publication" in footer
     assert "Bhāva" in footer
     assert "footer-version-details" in footer
@@ -96,6 +98,11 @@ def test_website_footer_and_rights_page_exist() -> None:
     assert "contact.public_email" in body
     assert "not the same as formal" in body
     assert "Dauji Publication" in body or "contact.publisher" in body
+    # Legal/manifest identity surfaces may still reference steward civil name where required.
+    identity = ROOT / "krishna_story_factory" / "publication" / "identity.py"
+    assert identity.is_file()
+    identity_text = identity.read_text(encoding="utf-8")
+    assert "Swapnil Patil" in identity_text or "public_display_credit" in identity_text
 
 
 @pytest.mark.content_release

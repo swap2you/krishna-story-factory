@@ -1,0 +1,8 @@
+{
+  "decision": "SOURCE_BLOCKED",
+  "summary": "No authorized production edition attached. Synthetic fixture only.",
+  "sources": [],
+  "gaps": [
+    "Authorized golden edition pending OD-14"
+  ]
+}

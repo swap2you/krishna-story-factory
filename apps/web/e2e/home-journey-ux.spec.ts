@@ -85,7 +85,8 @@ test.describe("Post-v4 navigation and footer", () => {
     const footer = page.locator("footer.site-footer");
     await expect(footer.getByRole("link", { name: "About" })).toBeVisible();
     await expect(footer.getByRole("link", { name: "Copyright" })).toBeVisible();
-    await expect(footer.getByText(/Svarna Gauranga Das \(Swapnil Patil\)/)).toBeVisible();
+    await expect(footer.getByText(/Svarna Gauranga Das · Dauji Publication · Bhāva/)).toBeVisible();
+    await expect(footer.getByText(/Swapnil Patil/)).toHaveCount(0);
     await expect(footer.getByRole("link", { name: "Home" })).toHaveCount(0);
     await footer.locator("summary", { hasText: "Version" }).click();
     await expect(footer.locator("dt", { hasText: /^Content$/ })).toBeVisible();

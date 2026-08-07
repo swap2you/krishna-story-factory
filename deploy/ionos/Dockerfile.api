@@ -17,6 +17,8 @@ RUN useradd --system --uid 10002 --create-home bhava-api \
  && chown -R bhava-api:bhava-api /app
 COPY --from=builder /python-packages /usr/local/lib/python3.14/site-packages
 COPY --chown=bhava-api:bhava-api apps/api /app/apps/api
+COPY --chown=bhava-api:bhava-api assets/fonts/noto /app/assets/fonts/noto
+COPY --chown=bhava-api:bhava-api content/knowledge /app/content/knowledge
 USER 10002
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
