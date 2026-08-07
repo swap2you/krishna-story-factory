@@ -61,15 +61,32 @@ export function isStudioAuthed(jar: ReadonlyRequestCookies): boolean {
 }
 
 /**
- * Phase 1 loopback gate: trust only Host/localhost style signals.
- * Do NOT honor client-controlled X-Forwarded-For / X-Real-IP (forgeable).
- * Presence of forwarded headers indicates a proxied/non-direct request — reject.
- * Operators must bind the studio web process to 127.0.0.1 (see KNOWN_LIMITATIONS).
+ * Phase 1 loopback gate.
+ * - Host must be localhost / 127.0.0.1 / ::1
+ * - Do not treat arbitrary X-Forwarded-* as proof of loopback
+ * - If forwarded headers are present, every hop must itself be loopback
+ *   (Next may attach X-Forwarded-For=127.0.0.1 on local requests)
+ * Operators should still bind the studio web process to 127.0.0.1.
  */
 export function isLoopbackRequest(hdrs: Headers): boolean {
-  if (hdrs.get("x-forwarded-for") || hdrs.get("x-forwarded-host") || hdrs.get("x-real-ip")) {
+  const host = (hdrs.get("host") || "").split(":")[0].toLowerCase();
+  if (!(host === "localhost" || host === "127.0.0.1" || host === "::1")) {
     return false;
   }
-  const host = (hdrs.get("host") || "").split(":")[0].toLowerCase();
-  return host === "localhost" || host === "127.0.0.1" || host === "::1";
+  const forwardedHost = (hdrs.get("x-forwarded-host") || "").split(",")[0].trim().split(":")[0].toLowerCase();
+  if (forwardedHost && !(forwardedHost === "localhost" || forwardedHost === "127.0.0.1" || forwardedHost === "::1")) {
+    return false;
+  }
+  const xff = (hdrs.get("x-forwarded-for") || "").trim();
+  if (xff) {
+    const hops = xff.split(",").map((h) => h.trim().toLowerCase());
+    const loopbackHop = (h: string) =>
+      h === "127.0.0.1" || h === "::1" || h === "localhost" || h === "::ffff:127.0.0.1";
+    if (!hops.every(loopbackHop)) return false;
+  }
+  const realIp = (hdrs.get("x-real-ip") || "").trim().toLowerCase();
+  if (realIp && !(realIp === "127.0.0.1" || realIp === "::1" || realIp === "::ffff:127.0.0.1")) {
+    return false;
+  }
+  return true;
 }

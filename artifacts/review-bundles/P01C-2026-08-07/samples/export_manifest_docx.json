@@ -1,0 +1,26 @@
+{
+  "record_id": "KF-P01C-FIXTURE-001",
+  "record_version": "1.0.0-fixture",
+  "template_id": "knowledge-docx-v1",
+  "template_version": "1.0.0",
+  "scripture_hash": "53cf168c55555d2b309ffbb90bdab7ed4c62901b9a863e3942541d0b2c9feaff",
+  "translation_hash": "9a64a4605bd685ef5d9f00644d9e7e1fe7d0e9126b79d16759108368d0c586a3",
+  "canonical_content_hash": "3b43cac007fbafb71c9491a69cbf069ed221b29d548eaedb5a729b93b3146e9f",
+  "asset_hashes": [],
+  "page_sizes": [
+    "letter"
+  ],
+  "generators": {
+    "pdf": "reportlab",
+    "docx": "python-docx"
+  },
+  "generated_at": "2026-08-07T13:48:34.364792+00:00",
+  "validation": {
+    "unicode": "pass",
+    "study_neutral": true,
+    "pdf_ua_claimed": false
+  },
+  "artifact_sha256": "ab8e8d297f42f0c9af778f1d3d9d75faef5889b55b316f6069cc48c4ba61d7be",
+  "format": "docx",
+  "fixture": true
+}

@@ -1,0 +1,9 @@
+requirement_id,requirement,implementation,evidence,result
+REQ-SCHEMA-01,Knowledge package schema,packages/contracts/schemas/knowledge_record_package.schema.json,tests/test_knowledge_packages_p01c.py,PASS
+REQ-LIFECYCLE-01,SOURCE_BLOCKED fixture enforcement,content/knowledge/packages/KF-P01C-FIXTURE-001/*,tests/test_knowledge_packages_p01c.py::test_fixture_package_valid_and_blocked,PASS
+REQ-AUTH-01,Reject forgeable header alone,apps/api/bhava_api/knowledge/routes.py,tests/test_knowledge_packages_p01c.py::test_private_search_rejects_forgeable_header_alone,PASS
+REQ-PREVIEW-01,Loopback + signed session preview,apps/web/app/studio/knowledge/preview/[slug]/page.tsx,manual screenshot + studio-guard,PASS-manual
+REQ-LENS-01,Four lenses + Explorer default,apps/web/components/knowledge/learning-page-shell.tsx,screenshot 02/03/04/05,PASS-manual
+REQ-EXPORT-01,PDF/DOCX study-neutral + hash,apps/api/bhava_api/knowledge/packages.py,tests/test_knowledge_packages_p01c.py::test_export_pdf_docx_hash_parity,PASS
+REQ-FOOTER-01,Bhava/Dauji footer identity,apps/web/components/site-footer.tsx,apps/web/components/site-footer.test.tsx,PASS
+REQ-D10-01,Etiquette PDF recovery read-only,PDF_RECOVERY_MANIFEST.csv,read-only search,INFO-not-blocker
