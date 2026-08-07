@@ -18,7 +18,6 @@ const SESSION_TTL_SECONDS = 60 * 60 * 12;
 export function studioToken(): string {
   const configured = (process.env.BHAVA_STUDIO_BOOTSTRAP_TOKEN || "").trim();
   if (configured) return configured;
-  // Default only allowed outside production; production must set the env.
   if (process.env.NODE_ENV === "production") {
     throw new Error("BHAVA_STUDIO_BOOTSTRAP_TOKEN must be set in production");
   }
@@ -35,7 +34,6 @@ export function signStudioSession(role: string, nonce: string, expEpochSec?: num
 export function verifyStudioSessionCookie(value: string | undefined): { ok: boolean; role?: string } {
   if (!value) return { ok: false };
   const parts = value.split(".");
-  // role.nonce.exp.sig
   if (parts.length !== 4) return { ok: false };
   const [role, nonce, exp, sig] = parts;
   if (!ROLES.has(role) || !nonce || !exp || !sig) return { ok: false };
@@ -60,33 +58,55 @@ export function isStudioAuthed(jar: ReadonlyRequestCookies): boolean {
   return roleCookie === verified.role;
 }
 
+/** Parse Host / X-Forwarded-Host into a bare hostname (no port). */
+export function parseHostName(hostHeader: string | null | undefined): string {
+  const raw = (hostHeader || "").trim().toLowerCase();
+  if (!raw) return "";
+  if (raw.startsWith("[")) {
+    const end = raw.indexOf("]");
+    if (end > 0) return raw.slice(1, end);
+    return raw.replace(/^\[|\]$/g, "");
+  }
+  const colonCount = (raw.match(/:/g) || []).length;
+  // IPv6 without brackets (rare in Host) — keep whole string.
+  if (colonCount > 1) return raw;
+  return raw.split(":")[0] || "";
+}
+
+export function isLoopbackHostName(host: string): boolean {
+  const h = (host || "").trim().toLowerCase().replace(/^\[|\]$/g, "");
+  if (!h) return false;
+  if (h === "localhost" || h === "::1") return true;
+  if (/^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(h)) return true;
+  // IPv4-mapped IPv6
+  if (h.startsWith("::ffff:")) {
+    const mapped = h.slice("::ffff:".length);
+    if (/^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(mapped)) return true;
+    if (mapped === "127.0.0.1") return true;
+  }
+  return false;
+}
+
 /**
  * Phase 1 loopback gate.
- * - Host must be localhost / 127.0.0.1 / ::1
- * - Do not treat arbitrary X-Forwarded-* as proof of loopback
- * - If forwarded headers are present, every hop must itself be loopback
- *   (Next may attach X-Forwarded-For=127.0.0.1 on local requests)
+ * Host must be loopback. Forwarded headers, when present, must also be loopback-only.
  * Operators should still bind the studio web process to 127.0.0.1.
  */
 export function isLoopbackRequest(hdrs: Headers): boolean {
-  const host = (hdrs.get("host") || "").split(":")[0].toLowerCase();
-  if (!(host === "localhost" || host === "127.0.0.1" || host === "::1")) {
-    return false;
-  }
-  const forwardedHost = (hdrs.get("x-forwarded-host") || "").split(",")[0].trim().split(":")[0].toLowerCase();
-  if (forwardedHost && !(forwardedHost === "localhost" || forwardedHost === "127.0.0.1" || forwardedHost === "::1")) {
-    return false;
-  }
+  const host = parseHostName(hdrs.get("host"));
+  if (!isLoopbackHostName(host)) return false;
+
+  const forwardedHost = parseHostName((hdrs.get("x-forwarded-host") || "").split(",")[0]);
+  if (forwardedHost && !isLoopbackHostName(forwardedHost)) return false;
+
   const xff = (hdrs.get("x-forwarded-for") || "").trim();
   if (xff) {
-    const hops = xff.split(",").map((h) => h.trim().toLowerCase());
-    const loopbackHop = (h: string) =>
-      h === "127.0.0.1" || h === "::1" || h === "localhost" || h === "::ffff:127.0.0.1";
-    if (!hops.every(loopbackHop)) return false;
+    const hops = xff.split(",").map((part) => part.trim().toLowerCase());
+    if (!hops.every((hop) => isLoopbackHostName(hop))) return false;
   }
+
   const realIp = (hdrs.get("x-real-ip") || "").trim().toLowerCase();
-  if (realIp && !(realIp === "127.0.0.1" || realIp === "::1" || realIp === "::ffff:127.0.0.1")) {
-    return false;
-  }
+  if (realIp && !isLoopbackHostName(realIp)) return false;
+
   return true;
 }

@@ -70,3 +70,7 @@ portal-bootstrap/
 /work/
 .pipeline.lock
 
+
+# P01C review zips stay local for ChatGPT handoff; do not commit
+artifacts/review-bundles/**/P01C_REVIEW_BUNDLE.zip
+

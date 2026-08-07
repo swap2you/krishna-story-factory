@@ -182,9 +182,10 @@ export default async function KnowledgeStudioPage({
                 ))}
               </ul>
               <p className="hint" style={{ marginTop: "1.5rem" }}>
-                Capabilities: create/edit metadata, Markdown preview, citation/source panel, rights/confidentiality,
-                reviewer assignment, comments, revisions, approval/rejection, scheduling, rollback/archive,
-                taxonomy, duplicate detection, broken-link review, audit history. Production mutations stay disabled unless factory actions are explicitly enabled.
+                This foundation provides a read-only roadmap/package queue, authenticated
+                loopback private preview, and synthetic study-neutral PDF/DOCX exports.
+                Create/edit mutations, reviewer workflows, scheduling, and publication actions
+                are not implemented in P01C.
               </p>
               <p><Link href="/knowledge">Public Knowledge home</Link></p>
             </>

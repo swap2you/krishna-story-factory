@@ -166,18 +166,85 @@ def get_package(slug_or_id: str) -> dict[str, Any] | None:
 def is_loopback_host(host: str | None) -> bool:
     if not host:
         return False
-    h = host.split("%")[0].lower().strip("[]")
+    h = host.split("%")[0].lower().strip().strip("[]")
+    # Strip :port for IPv4 / hostname; keep IPv6.
+    if h.count(":") == 1 and not h.startswith(":"):
+        h = h.split(":", 1)[0]
     if h in {"127.0.0.1", "::1", "localhost"}:
         return True
     # Starlette/FastAPI TestClient presents as "testclient".
     if h == "testclient":
         return True
-    if h.startswith("127."):
+    if h.startswith("127.") and all(part.isdigit() for part in h.split(".")):
         return True
+    if h.startswith("::ffff:"):
+        mapped = h[7:]
+        if mapped.startswith("127.") and all(part.isdigit() for part in mapped.split(".")):
+            return True
     return False
 
 
-def export_manifest(pkg: dict[str, Any], *, format_name: str, artifact_sha256: str, page_size: str) -> dict[str, Any]:
+VENDORED_FONT_DIR_NAMES = ("assets", "fonts", "noto")
+VENDORED_LATIN = "NotoSans-Regular.ttf"
+VENDORED_DEVA = "NotoSansDevanagari-Regular.ttf"
+
+
+def _vendored_font_dirs() -> list[Path]:
+    return [
+        repo_root().joinpath(*VENDORED_FONT_DIR_NAMES),
+        Path("/app").joinpath(*VENDORED_FONT_DIR_NAMES),
+        Path(__file__).resolve().parents[4].joinpath(*VENDORED_FONT_DIR_NAMES),
+    ]
+
+
+def _load_expected_font_checksums(font_dir: Path) -> dict[str, str]:
+    checksums_path = font_dir / "CHECKSUMS.sha256"
+    if not checksums_path.exists():
+        raise RuntimeError(f"Missing font checksums at {checksums_path}")
+    expected: dict[str, str] = {}
+    for line in checksums_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        digest, name = line.split(maxsplit=1)
+        expected[name.strip()] = digest.strip()
+    return expected
+
+
+def resolve_vendored_fonts() -> tuple[Path, Path, dict[str, str]]:
+    """Return (latin_path, deva_path, sha256_by_filename). Fail closed on mismatch/missing."""
+    errors: list[str] = []
+    for font_dir in _vendored_font_dirs():
+        latin = font_dir / VENDORED_LATIN
+        deva = font_dir / VENDORED_DEVA
+        if not latin.exists() or not deva.exists():
+            errors.append(f"missing fonts under {font_dir}")
+            continue
+        expected = _load_expected_font_checksums(font_dir)
+        for name, path in ((VENDORED_LATIN, latin), (VENDORED_DEVA, deva)):
+            if name not in expected:
+                raise RuntimeError(f"Checksum missing for {name}")
+            actual = sha256_hex(path.read_bytes())
+            if actual != expected[name]:
+                raise RuntimeError(f"Checksum mismatch for {name}: {actual} != {expected[name]}")
+        return latin, deva, {
+            VENDORED_LATIN: expected[VENDORED_LATIN],
+            VENDORED_DEVA: expected[VENDORED_DEVA],
+        }
+    raise RuntimeError(
+        "Vendored Noto fonts unavailable; PDF export refuses silent glyph fallback. "
+        + "; ".join(errors)
+    )
+
+
+def export_manifest(
+    pkg: dict[str, Any],
+    *,
+    format_name: str,
+    artifact_sha256: str,
+    page_size: str,
+    font_hashes: dict[str, str] | None = None,
+) -> dict[str, Any]:
     content = pkg["content"]
     record = pkg["record"]
     return {
@@ -189,6 +256,7 @@ def export_manifest(pkg: dict[str, Any], *, format_name: str, artifact_sha256: s
         "translation_hash": translation_hash(content),
         "canonical_content_hash": canonical_text_hash(content),
         "asset_hashes": [],
+        "embedded_font_hashes": font_hashes or {},
         "page_sizes": [page_size],
         "generators": {
             "pdf": "reportlab",
@@ -215,55 +283,17 @@ def _xml_escape(value: str) -> str:
     )
 
 
-def _register_unicode_fonts() -> tuple[str, str]:
-    """Return (latin_font, devanagari_font). Fail closed if unavailable."""
+def _register_unicode_fonts() -> tuple[str, str, dict[str, str]]:
+    """Register vendored Noto fonts only. Fail closed — no system-font fallback."""
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
 
-    def register(name: str, path: Path, *, subfont_index: int | None = None) -> bool:
-        if name in pdfmetrics.getRegisteredFontNames():
-            return True
-        if not path.exists():
-            return False
-        try:
-            if subfont_index is None:
-                pdfmetrics.registerFont(TTFont(name, str(path)))
-            else:
-                pdfmetrics.registerFont(TTFont(name, str(path), subfontIndex=subfont_index))
-            return True
-        except Exception:
-            return False
-
-    latin_candidates = [
-        Path(r"C:\Windows\Fonts\NotoSans-Regular.ttf"),
-        Path(r"C:\Windows\Fonts\arial.ttf"),
-        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
-        Path("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf"),
-    ]
-    deva_candidates = [
-        (Path(r"C:\Windows\Fonts\Nirmala.ttc"), 0),
-        (Path(r"C:\Windows\Fonts\Nirmala.ttf"), None),
-        (Path("/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf"), None),
-    ]
-
-    latin = None
-    for cand in latin_candidates:
-        if register("BhavaLatin", cand):
-            latin = "BhavaLatin"
-            break
-    if not latin:
-        raise RuntimeError("Latin Unicode PDF font unavailable (need Noto Sans or DejaVu)")
-
-    deva = None
-    for cand, idx in deva_candidates:
-        if register("BhavaDeva", cand, subfont_index=idx):
-            deva = "BhavaDeva"
-            break
-    if not deva:
-        # Fall back to latin font if it can still carry ASCII markers; Devanāgarī may box.
-        # Prefer hard fail for Phase 1 export quality.
-        raise RuntimeError("Devanāgarī PDF font unavailable (need Nirmala or Noto Sans Devanagari)")
-    return latin, deva
+    latin_path, deva_path, hashes = resolve_vendored_fonts()
+    if "BhavaLatin" not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont("BhavaLatin", str(latin_path)))
+    if "BhavaDeva" not in pdfmetrics.getRegisteredFontNames():
+        pdfmetrics.registerFont(TTFont("BhavaDeva", str(deva_path)))
+    return "BhavaLatin", "BhavaDeva", hashes
 
 
 def assert_export_allowed(pkg: dict[str, Any]) -> None:
@@ -284,10 +314,13 @@ def render_pdf(pkg: dict[str, Any], *, page_size: str = "letter") -> tuple[bytes
     from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
     assert_export_allowed(pkg)
-    latin_font, deva_font = _register_unicode_fonts()
+    latin_font, deva_font, font_hashes = _register_unicode_fonts()
+    size_key = page_size.lower().strip()
+    if size_key not in {"letter", "a4"}:
+        raise ValueError("page_size must be letter or a4")
+    pagesize = letter if size_key == "letter" else A4
 
     buf = BytesIO()
-    pagesize = letter if page_size.lower() == "letter" else A4
     doc = SimpleDocTemplate(buf, pagesize=pagesize, title=pkg["record"]["title"])
     styles = getSampleStyleSheet()
     title_style = ParagraphStyle("KTitle", parent=styles["Heading1"], fontName=latin_font, fontSize=16, leading=20)
@@ -302,6 +335,7 @@ def render_pdf(pkg: dict[str, Any], *, page_size: str = "letter") -> tuple[bytes
             body,
         )
     )
+    story.append(Paragraph(_xml_escape(f"Page size: {size_key}"), body))
     story.append(Spacer(1, 12))
     for block in sorted(stanza_blocks(pkg["content"]), key=lambda b: int(b.get("ord", 0))):
         story.append(Paragraph(f"<b>Stanza {block.get('ord')}</b>", body))
@@ -312,15 +346,36 @@ def render_pdf(pkg: dict[str, Any], *, page_size: str = "letter") -> tuple[bytes
     story.append(Paragraph("Export is study-neutral (canonical text only). PDF/UA is not claimed.", body))
     doc.build(story)
     data = buf.getvalue()
-    return data, export_manifest(pkg, format_name="pdf", artifact_sha256=sha256_hex(data), page_size=page_size)
+    return data, export_manifest(
+        pkg,
+        format_name="pdf",
+        artifact_sha256=sha256_hex(data),
+        page_size=size_key,
+        font_hashes=font_hashes,
+    )
 
 
-def render_docx(pkg: dict[str, Any]) -> tuple[bytes, dict[str, Any]]:
+def render_docx(pkg: dict[str, Any], *, page_size: str = "letter") -> tuple[bytes, dict[str, Any]]:
     from docx import Document
     from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+    from docx.shared import Inches, Mm
 
     assert_export_allowed(pkg)
+    size_key = page_size.lower().strip()
+    if size_key not in {"letter", "a4"}:
+        raise ValueError("page_size must be letter or a4")
+    # Fonts are embedded in PDF; for DOCX record the same vendored hashes used by the pilot.
+    _, _, font_hashes = resolve_vendored_fonts()
+
     document = Document()
+    section = document.sections[0]
+    if size_key == "a4":
+        section.page_width = Mm(210)
+        section.page_height = Mm(297)
+    else:
+        section.page_width = Inches(8.5)
+        section.page_height = Inches(11)
+
     record = pkg["record"]
     document.core_properties.title = record["title"]
     document.core_properties.language = "en"
@@ -329,6 +384,7 @@ def render_docx(pkg: dict[str, Any]) -> tuple[bytes, dict[str, Any]]:
     document.add_paragraph(f"Status: {record.get('source_status')}")
     if record.get("fixture_label"):
         document.add_paragraph(record["fixture_label"])
+    document.add_paragraph(f"Page size: {size_key}")
     for block in sorted(stanza_blocks(pkg["content"]), key=lambda b: int(b.get("ord", 0))):
         document.add_heading(f"Stanza {block.get('ord')}", level=2)
         p = document.add_paragraph(nfc(block.get("devanagari") or ""))
@@ -339,4 +395,10 @@ def render_docx(pkg: dict[str, Any]) -> tuple[bytes, dict[str, Any]]:
     buf = BytesIO()
     document.save(buf)
     data = buf.getvalue()
-    return data, export_manifest(pkg, format_name="docx", artifact_sha256=sha256_hex(data), page_size="letter")
+    return data, export_manifest(
+        pkg,
+        format_name="docx",
+        artifact_sha256=sha256_hex(data),
+        page_size=size_key,
+        font_hashes=font_hashes,
+    )

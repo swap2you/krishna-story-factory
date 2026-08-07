@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { KnowledgePackage, LensId } from "@/lib/knowledge/package-types";
 import { DEFAULT_LENS, LENSES, parseLens } from "@/lib/knowledge/package-types";
@@ -292,7 +293,7 @@ export function LearningPageShell({ pkg, initialLens, initialFocus, initialStanz
             </div>
           </dl>
           <p>
-            <a href="/knowledge/corrections">Request a correction</a>
+            <Link href="/knowledge/corrections">Request a correction</Link>
           </p>
         </details>
       </section>
