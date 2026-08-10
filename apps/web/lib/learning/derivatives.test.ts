@@ -2,7 +2,9 @@
 import { describe, expect, it } from "vitest";
 import {
   getDerivativeBySlug,
+  listDerivativeMetas,
   listDerivatives,
+  listPublicDerivativeMetas,
   listPublicDerivatives,
 } from "@/lib/learning/derivatives";
 
@@ -26,10 +28,24 @@ describe("learning derivatives visibility", () => {
     }
   });
 
+  it("exposes a metadata-only listing without requiring bodies for hub/sitemap", () => {
+    const metas = listPublicDerivativeMetas();
+    expect(metas.map((d) => d.slug).sort()).toEqual(EXPECTED_PUBLIC);
+    expect(metas.every((m) => !("body_md" in m))).toBe(true);
+    expect(listDerivativeMetas(false).length).toBe(metas.length);
+  });
+
   it("loads a derivative by slug only when public", () => {
     const lesson = getDerivativeBySlug("what-is-bhava-lesson-plan");
     expect(lesson?.title).toContain("What is Bhāva");
     expect(lesson?.canonical_record_version.record_slug).toBe("what-is-bhava");
+  });
+
+  it("rejects path-escape and unsafe slug values", () => {
+    expect(getDerivativeBySlug("..")).toBeNull();
+    expect(getDerivativeBySlug("../secrets")).toBeNull();
+    expect(getDerivativeBySlug("what-is-bhava-lesson-plan/../../etc")).toBeNull();
+    expect(getDerivativeBySlug("UPPER")).toBeNull();
   });
 
   it("keeps private drafts out of the public list when present", () => {
@@ -37,9 +53,9 @@ describe("learning derivatives visibility", () => {
     const publicSlugs = new Set(listPublicDerivatives().map((d) => d.slug));
     for (const d of all) {
       if (!publicSlugs.has(d.slug)) {
-        expect(d.visibility === "public" && ["approved", "published"].includes(d.review_state)).toBe(
-          false,
-        );
+        expect(
+          d.visibility === "public" && ["approved", "published"].includes(d.review_state),
+        ).toBe(false);
       }
     }
   });
