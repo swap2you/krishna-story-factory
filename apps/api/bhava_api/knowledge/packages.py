@@ -244,10 +244,16 @@ def export_manifest(
     artifact_sha256: str,
     page_size: str,
     font_hashes: dict[str, str] | None = None,
+    fonts_embedded: bool | None = None,
 ) -> dict[str, Any]:
     content = pkg["content"]
     record = pkg["record"]
-    return {
+    hashes = font_hashes or {}
+    # PDF genuinely embeds TTFs via reportlab. DOCX only references resource hashes;
+    # OOXML font embedding is deferred (no font table parts/relationships yet).
+    if fonts_embedded is None:
+        fonts_embedded = format_name == "pdf"
+    manifest: dict[str, Any] = {
         "record_id": record["record_id"],
         "record_version": record["record_version"],
         "template_id": f"knowledge-{format_name}-v1",
@@ -256,7 +262,6 @@ def export_manifest(
         "translation_hash": translation_hash(content),
         "canonical_content_hash": canonical_text_hash(content),
         "asset_hashes": [],
-        "embedded_font_hashes": font_hashes or {},
         "page_sizes": [page_size],
         "generators": {
             "pdf": "reportlab",
@@ -271,7 +276,18 @@ def export_manifest(
         "artifact_sha256": artifact_sha256,
         "format": format_name,
         "fixture": bool(record.get("fixture")),
+        "fonts_embedded": fonts_embedded,
     }
+    if fonts_embedded:
+        manifest["embedded_font_hashes"] = hashes
+    else:
+        manifest["font_resource_hashes"] = hashes
+        manifest["fonts_embedding_status"] = "deferred"
+        manifest["docx_font_families"] = {
+            "latin": "Noto Sans",
+            "devanagari": "Noto Sans Devanagari",
+        }
+    return manifest
 
 
 def _xml_escape(value: str) -> str:
@@ -352,19 +368,21 @@ def render_pdf(pkg: dict[str, Any], *, page_size: str = "letter") -> tuple[bytes
         artifact_sha256=sha256_hex(data),
         page_size=size_key,
         font_hashes=font_hashes,
+        fonts_embedded=True,
     )
 
 
 def render_docx(pkg: dict[str, Any], *, page_size: str = "letter") -> tuple[bytes, dict[str, Any]]:
     from docx import Document
     from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-    from docx.shared import Inches, Mm
+    from docx.oxml.ns import qn
+    from docx.shared import Inches, Mm, Pt, RGBColor
 
     assert_export_allowed(pkg)
     size_key = page_size.lower().strip()
     if size_key not in {"letter", "a4"}:
         raise ValueError("page_size must be letter or a4")
-    # Fonts are embedded in PDF; for DOCX record the same vendored hashes used by the pilot.
+    # DOCX does not embed OOXML font parts yet — record vendored resource hashes only.
     _, _, font_hashes = resolve_vendored_fonts()
 
     document = Document()
@@ -376,22 +394,62 @@ def render_docx(pkg: dict[str, Any], *, page_size: str = "letter") -> tuple[byte
         section.page_width = Inches(8.5)
         section.page_height = Inches(11)
 
+    def _set_run_font(run, *, family: str, east_asia: str | None = None) -> None:
+        run.font.name = family
+        run.font.size = Pt(11)
+        rpr = run._element.get_or_add_rPr()
+        rfonts = rpr.get_or_add_rFonts()
+        rfonts.set(qn("w:ascii"), family)
+        rfonts.set(qn("w:hAnsi"), family)
+        if east_asia:
+            rfonts.set(qn("w:eastAsia"), east_asia)
+            rfonts.set(qn("w:cs"), east_asia)
+
+    # Prefer Noto family names in styles so Word resolves vendored/system Noto when present.
+    normal = document.styles["Normal"]
+    normal.font.name = "Noto Sans"
+    if normal._element.rPr is not None and normal._element.rPr.rFonts is not None:
+        normal._element.rPr.rFonts.set(qn("w:ascii"), "Noto Sans")
+        normal._element.rPr.rFonts.set(qn("w:hAnsi"), "Noto Sans")
+        normal._element.rPr.rFonts.set(qn("w:eastAsia"), "Noto Sans Devanagari")
+
     record = pkg["record"]
     document.core_properties.title = record["title"]
     document.core_properties.language = "en"
     h = document.add_heading(record["title"], level=1)
     h.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
-    document.add_paragraph(f"Status: {record.get('source_status')}")
+    for run in h.runs:
+        _set_run_font(run, family="Noto Sans")
+    status_p = document.add_paragraph(f"Status: {record.get('source_status')}")
+    for run in status_p.runs:
+        _set_run_font(run, family="Noto Sans")
     if record.get("fixture_label"):
-        document.add_paragraph(record["fixture_label"])
-    document.add_paragraph(f"Page size: {size_key}")
+        label_p = document.add_paragraph(record["fixture_label"])
+        for run in label_p.runs:
+            _set_run_font(run, family="Noto Sans")
+    size_p = document.add_paragraph(f"Page size: {size_key}")
+    for run in size_p.runs:
+        _set_run_font(run, family="Noto Sans")
     for block in sorted(stanza_blocks(pkg["content"]), key=lambda b: int(b.get("ord", 0))):
-        document.add_heading(f"Stanza {block.get('ord')}", level=2)
+        stanza_h = document.add_heading(f"Stanza {block.get('ord')}", level=2)
+        for run in stanza_h.runs:
+            _set_run_font(run, family="Noto Sans")
         p = document.add_paragraph(nfc(block.get("devanagari") or ""))
-        p.style = document.styles["Normal"]
-        document.add_paragraph(nfc(block.get("iast") or ""))
-        document.add_paragraph(nfc(block.get("translation_en") or ""))
-    document.add_paragraph("Export is study-neutral (canonical text only).")
+        for run in p.runs:
+            _set_run_font(run, family="Noto Sans Devanagari", east_asia="Noto Sans Devanagari")
+        iast_p = document.add_paragraph(nfc(block.get("iast") or ""))
+        for run in iast_p.runs:
+            _set_run_font(run, family="Noto Sans")
+        tr_p = document.add_paragraph(nfc(block.get("translation_en") or ""))
+        for run in tr_p.runs:
+            _set_run_font(run, family="Noto Sans")
+    note = document.add_paragraph(
+        "Export is study-neutral (canonical text only). "
+        "DOCX OOXML font embedding is deferred; runs request Noto Sans / Noto Sans Devanagari."
+    )
+    for run in note.runs:
+        _set_run_font(run, family="Noto Sans")
+        run.font.color.rgb = RGBColor(0x33, 0x33, 0x33)
     buf = BytesIO()
     document.save(buf)
     data = buf.getvalue()
@@ -401,4 +459,5 @@ def render_docx(pkg: dict[str, Any], *, page_size: str = "letter") -> tuple[byte
         artifact_sha256=sha256_hex(data),
         page_size=size_key,
         font_hashes=font_hashes,
+        fonts_embedded=False,
     )

@@ -13,7 +13,7 @@ Smallest complete vertical foundation for the Knowledge learning page:
 | Preview | `/studio/knowledge/preview/[slug]` — signed session + loopback Host |
 | Lenses | Little Learner / Explorer / Teen / Study; APG radiogroup; `sessionStorage` after explicit choice |
 | Shell | Stanzas, focus mode, context/practice/source/download, Board B tokens, placeholders |
-| Export | Study-neutral PDF (Nirmala+Noto) and DOCX (`python-docx==1.2.0`) with canonical hash manifests |
+| Export | Study-neutral PDF (vendored Noto embedded) and DOCX (`python-docx`) with canonical hash manifests; DOCX uses `font_resource_hashes` / `fonts_embedded:false` (OOXML embedding deferred) |
 | Footer | `© 2026 Svarna Gauranga Das · Dauji Publication · Bhāva` |
 
 ## Owner decisions applied

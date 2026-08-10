@@ -7,10 +7,6 @@
   "translation_hash": "9a64a4605bd685ef5d9f00644d9e7e1fe7d0e9126b79d16759108368d0c586a3",
   "canonical_content_hash": "3b43cac007fbafb71c9491a69cbf069ed221b29d548eaedb5a729b93b3146e9f",
   "asset_hashes": [],
-  "embedded_font_hashes": {
-    "NotoSans-Regular.ttf": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
-    "NotoSansDevanagari-Regular.ttf": "385e78e6359a9d88a0f243d53b1209d7548361ba2194e2b9ec779bcaa7e8949d"
-  },
   "page_sizes": [
     "a4"
   ],
@@ -18,13 +14,18 @@
     "pdf": "reportlab",
     "docx": "python-docx"
   },
-  "generated_at": "2026-08-07T14:39:00.890933+00:00",
+  "generated_at": "2026-08-10T16:09:37.170337+00:00",
   "validation": {
     "unicode": "pass",
     "study_neutral": true,
     "pdf_ua_claimed": false
   },
-  "artifact_sha256": "bc24636838dd8fb31b2001d199c41e132e6a7d4d714dc718e1ed992c9f48713e",
+  "artifact_sha256": "91ed8c419057a2b9d2d388bac3abb560e78eeaecaab1c4b8fc3e64da9ba742fb",
   "format": "pdf",
-  "fixture": true
+  "fixture": true,
+  "fonts_embedded": true,
+  "embedded_font_hashes": {
+    "NotoSans-Regular.ttf": "b85c38ecea8a7cfb39c24e395a4007474fa5a4fc864f6ee33309eb4948d232d5",
+    "NotoSansDevanagari-Regular.ttf": "385e78e6359a9d88a0f243d53b1209d7548361ba2194e2b9ec779bcaa7e8949d"
+  }
 }

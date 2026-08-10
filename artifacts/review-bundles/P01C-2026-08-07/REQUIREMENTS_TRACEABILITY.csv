@@ -20,9 +20,9 @@ P1-E01,Hash parity lenses/exports,PASS,unit + export tests
 P1-E02,Unicode NFC+fixtures,PASS,vendored Noto + extract tests
 P1-E03,Preserve chars/boundaries,PASS,PDF/DOCX extract tests
 P1-E04,PDF capability not PDF/UA,PASS,pdf_ua_claimed=false in manifests
-P1-E05,DOCX semantic fidelity,PASS,headings/paragraphs/language; opens without repair in tests
-P1-E06,Letter+A4 layout,PASS,pdf+docx letter/a4 tests
-P1-E07,Export manifest hashes,PASS,canonical + embedded_font_hashes
+P1-E05,DOCX semantic fidelity,PARTIAL,"headings/paragraphs/language + Unicode extract PASS; headers/footers, native image-alt, multi-page mantra-unit protection, orphan-heading prevention DEFERRED"
+P1-E06,Letter+A4 layout,PARTIAL,"Letter/A4 page size + Unicode extraction PASS for PDF/DOCX; full stress-layout validation DEFERRED"
+P1-E07,Export manifest hashes,PARTIAL,"canonical hashes PASS; PDF embedded_font_hashes PASS; DOCX uses font_resource_hashes with fonts_embedded=false (OOXML embedding DEFERRED)"
 P1-P01,Loopback-only preview,PASS,Host parsing + signed session + tests
 P1-P02,Footer civil-name removal,PASS,OD-08 implemented; public footer updated
 P1-P03,No paid providers / no arbitrary downloads,PASS,vendored fonts; no paid PDF APIs; no scripture downloads

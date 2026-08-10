@@ -1,33 +1,24 @@
 # P01C Final Handoff
 
-**Date:** 2026-08-07  
+**Date:** 2026-08-10  
 **Repo:** `swap2you/krishna-story-factory`  
 **Branch:** `feature/kf-p01c-learning-page-foundation`  
-**Base:** `develop` @ `27c3f35a72a0ffbea864361bab597cc627eaeb0f` (PR #69 merge present)
+**Base:** current `develop` (includes PR #71 lexicon recovery)
 
 ## Owner authorization honored
 
 - P01B accepted (OD-15); Board B; `python-docx`; engineering foundation authorized
 - Production scripture/artwork remain blocked
-- Feature branch + commits + draft PR to `develop` authorized
-- Merge, staging, production, publication, scheduler changes **not** authorized
+- Feature branch + commits + PR to `develop` authorized for merge after green CI
+- Studio remains private/loopback; no public Studio exposure
+- Local PDF ingestion is a separate local library task (not committed)
 
-## Commits (logical)
+## Evidence package
 
-1. `b7509ac` — validated P01B specification package
-2. `52637c7` — P01C implementation foundation
-3. (this handoff) — remediation, evidence, review bundle
+Local-only zip: `artifacts/review-bundles/P01C-2026-08-07/P01C_REVIEW_BUNDLE.zip` (gitignored)
 
-## What to send ChatGPT
-
-1. Draft PR URL (see GitHub after open)
-2. This zip: `artifacts/review-bundles/P01C-2026-08-07/P01C_REVIEW_BUNDLE.zip`
-3. The complete final Cursor response
-
-## Bundle contents
-
-See folder listing. Includes P01B package copy, implementation summary, traceability, tests, security notes, limitations, PDF recovery manifest, screenshots, synthetic PDF/DOCX samples, checksums.
+Includes P01B package copy, implementation summary, honest PARTIAL/DEFERRED traceability for P1-E05/E06/E07, tests, security notes, limitations, PDF recovery tracking, standalone screenshots (no Next toolbar / no “1 Issue” badge), synthetic PDF/DOCX samples with DOCX `font_resource_hashes` + `fonts_embedded:false`.
 
 ## Hard limits still in force
 
-No merge. No staging/production. No real Nṛsiṁha scripture. No `bhava-library` modifications. No scheduler enablement.
+No real Nṛsiṁha scripture. No public Studio. No committing PDFs/ZIPs/`data/**`. Production promotion remains a separate governed content-release path.

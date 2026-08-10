@@ -16,4 +16,4 @@ Footer/civil-name remediation is **specified only** in P01B — no logo/footer c
 
 ## Export assets
 
-Embedded fonts for PDF/DOCX must be license-cleared (OD-13). Manifest lists every embedded font hash.
+Embedded fonts for PDF must be license-cleared (OD-13). PDF manifests list `embedded_font_hashes`. DOCX manifests list `font_resource_hashes` with `fonts_embedded: false` until OOXML embedding is implemented.

@@ -71,7 +71,13 @@ def test_export_pdf_docx_letter_and_a4(pkg, page_size):
     assert docx_manifest["canonical_content_hash"] == pkg["record"]["canonical_text_hash"]
     assert pdf_manifest["embedded_font_hashes"][VENDORED_LATIN]
     assert pdf_manifest["embedded_font_hashes"][VENDORED_DEVA]
-    assert docx_manifest["embedded_font_hashes"] == pdf_manifest["embedded_font_hashes"]
+    assert pdf_manifest["fonts_embedded"] is True
+    assert docx_manifest["fonts_embedded"] is False
+    assert docx_manifest["fonts_embedding_status"] == "deferred"
+    assert docx_manifest["font_resource_hashes"] == pdf_manifest["embedded_font_hashes"]
+    assert docx_manifest["docx_font_families"]["latin"] == "Noto Sans"
+    assert docx_manifest["docx_font_families"]["devanagari"] == "Noto Sans Devanagari"
+    assert "embedded_font_hashes" not in docx_manifest
     assert pdf_manifest["validation"]["pdf_ua_claimed"] is False
     assert pdf_manifest["validation"]["study_neutral"] is True
 
@@ -95,6 +101,9 @@ def test_export_pdf_docx_letter_and_a4(pkg, page_size):
     assert any("\u0900" <= ch <= "\u097F" for ch in text)
     assert "lens_explanations" not in text
     assert "word_meanings" not in text
+    # Noto family names assigned on runs (embedding still deferred).
+    run_fonts = {run.font.name for p in document.paragraphs for run in p.runs if run.font.name}
+    assert "Noto Sans" in run_fonts or "Noto Sans Devanagari" in run_fonts
     section = document.sections[0]
     if page_size == "a4":
         assert abs(section.page_width.mm - 210) < 1
