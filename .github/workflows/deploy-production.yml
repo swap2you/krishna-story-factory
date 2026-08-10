@@ -9,7 +9,7 @@ on:
       content_release_tag:
         description: Approved public content release
         required: true
-        default: bhava-content-001-022-v1
+        default: bhava-content-001-025-v1
 
 permissions:
   contents: read
@@ -56,7 +56,7 @@ jobs:
           PUBLIC_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${RELEASE_SHA} \
-            --build-arg BHAVA_WEB_VERSION=001-022-v1 \
+            --build-arg BHAVA_WEB_VERSION=001-025-v1 \
             --build-arg BHAVA_CONTENT_RELEASE="${{ inputs.content_release_tag }}" \
             --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${RELEASE_SHA} .
@@ -106,9 +106,9 @@ jobs:
              chmod +x /opt/bhava/config/scripts/*.sh && \
              bash /opt/bhava/config/scripts/update-runtime-env.sh /opt/bhava/config/runtime.env \
                BHAVA_PROD_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
-               BHAVA_PROD_WEB_VERSION=001-022-v1 \
+               BHAVA_PROD_WEB_VERSION=001-025-v1 \
                BHAVA_PROD_CONTENT_RELEASE=${CONTENT_TAG} \
-               BHAVA_WEB_VERSION=001-022-v1 \
+               BHAVA_WEB_VERSION=001-025-v1 \
                BHAVA_CONTENT_RELEASE=${CONTENT_TAG} && \
              BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \

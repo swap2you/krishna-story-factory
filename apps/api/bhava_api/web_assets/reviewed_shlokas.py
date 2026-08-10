@@ -19,6 +19,7 @@ REVIEWED_DATE_008_009 = "2026-07-27"
 REVIEWED_DATE_010_020 = "2026-08-01"
 REVIEWED_DATE_021 = "2026-08-03"
 REVIEWED_DATE_022 = "2026-08-03"
+REVIEWED_DATE_023_025 = "2026-08-10"
 
 _CHAPTER_NOTE = (
     "Reviewed chapter-framed companion reference. Exact verse start/end deferred — "
@@ -401,6 +402,48 @@ REVIEWED_SHLOKAS: dict[str, dict[str, Any]] = {
                     "unlimited loving pastimes."
                 ),
                 reviewed_date=REVIEWED_DATE_022,
+            )
+        ],
+    },
+    "023": {
+        "status": "reviewed",
+        "shlokas": [
+            _chapter_row(
+                reference="SB 10.15 — Dhenukāsura",
+                url="https://vedabase.io/en/library/sb/10/15/",
+                child_explanation=(
+                    "In the Tālavana forest, Balarāma and Kṛṣṇa protect Their friends "
+                    "from the ass-demon Dhenukāsura so the boys can safely enjoy the fruits."
+                ),
+                reviewed_date=REVIEWED_DATE_023_025,
+            )
+        ],
+    },
+    "024": {
+        "status": "reviewed",
+        "shlokas": [
+            _chapter_row(
+                reference="SB 10.16 — Subduing Kāliya",
+                url="https://vedabase.io/en/library/sb/10/16/",
+                child_explanation=(
+                    "Kṛṣṇa dances on the hoods of the serpent Kāliya and drives the poison "
+                    "from the Yamunā so the cowherd boys and cows are safe again."
+                ),
+                reviewed_date=REVIEWED_DATE_023_025,
+            )
+        ],
+    },
+    "025": {
+        "status": "reviewed",
+        "shlokas": [
+            _chapter_row(
+                reference="SB 10.17 — Extinguishing the forest fire",
+                url="https://vedabase.io/en/library/sb/10/17/",
+                child_explanation=(
+                    "When a forest fire surrounds the Vṛndāvana residents, they take shelter "
+                    "of Kṛṣṇa, and He swallows the fire to protect them."
+                ),
+                reviewed_date=REVIEWED_DATE_023_025,
             )
         ],
     },

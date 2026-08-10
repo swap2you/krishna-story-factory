@@ -1,0 +1,71 @@
+schema_version: "1.0.0"
+program: "BHAVA_KNOWLEDGE_PLATFORM"
+package: "BHAVA_KNOWLEDGE_PLATFORM_PHASE0_COMPLETE_V2"
+run_id: "P01B-2026-08-07"
+current_phase:
+  id: "P01B"
+  name: "Requirements, UX, architecture, tests, implementation plan"
+  state: "ACCEPTED"
+  completed_at_utc: "2026-08-07T00:00:00Z"
+  accepted_at_utc: "2026-08-07T13:00:00Z"
+  acceptance: "OD-15"
+prior_phase:
+  id: "P01A"
+  state: "ACCEPTED"
+  evidence_run: "runs/P01A-2026-08-06"
+  merge_pr: 69
+  merge_commit: "27c3f35a72a0ffbea864361bab597cc627eaeb0f"
+  verified_head: "e1a7b1862ddea2796fc48ea17bea02d99a7ea0c6"
+next_authorized:
+  id: "P01C"
+  name: "Engineering foundation implementation"
+  authorized_scope: "FEATURE_BRANCH_DRAFT_PR"
+  blockers_remaining:
+    - "OD-14 authorized golden edition DOSSIER_READY for production scripture"
+    - "merge_to_develop"
+    - "staging"
+    - "production"
+    - "public_content"
+    - "scheduler"
+approvals:
+  phase1_discovery: true
+  phase1_specification: true
+  phase1_build: true
+  phase1_build_scope: "foundation_synthetic_fixtures_only"
+  branch_creation: true
+  push_or_pr: true
+  draft_pr_only: true
+  merge_to_develop: false
+  staging: false
+  production: false
+  public_content: false
+  scheduler: false
+  paid_provider_calls: false
+  dependency_install: true
+  dependency_allowlist: ["python-docx"]
+repository:
+  name: "swap2you/krishna-story-factory"
+  branch: "feature/kf-p01c-learning-page-foundation"
+  base_sha: "27c3f35a72a0ffbea864361bab597cc627eaeb0f"
+  feature_branch_created: true
+  proposed_p01c_branch: "feature/kf-p01c-learning-page-foundation"
+golden_page:
+  status: "SOURCE_BLOCKED"
+  recommended_roadmap_id: "TOP-0147"
+  production_scripture_authorized: false
+  production_artwork_authorized: false
+visual_direction: "B_editorial_gouache"
+default_lens: "explorer"
+export_policy: "study_neutral"
+docx_library: "python-docx"
+owner_decisions_d01_d12: "OWNER_DECISIONS.md"
+open_decisions: "OWNER_OPEN_DECISIONS.md"
+hard_limits_honored:
+  - no_merge_to_develop
+  - no_staging_production_scheduler
+  - no_production_scripture_or_artwork
+  - no_paid_providers
+notes: >
+  P01B accepted (OD-15). P01C engineering foundation authorized on
+  feature/kf-p01c-learning-page-foundation with draft PR only.
+  Golden production scripture remains SOURCE_BLOCKED (OD-14).

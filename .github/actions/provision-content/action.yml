@@ -49,11 +49,17 @@ runs:
         test -d output/020_krishna-protects-everyone-from-the-aghasura-demon
         test -d output/021_the-stealing-of-the-boys-and-calves-by-brahma
         test -d output/022_prayers-offered-by-lord-brahma-to-lord-krishna
-        test ! -d output/023_krishna-protects-everyone-from-dhenukasura
+        test -d output/023_krishna-protects-everyone-from-dhenukasura
+        test -d output/024_subduing-kaliya
+        test -d output/025_extinguishing-the-forest-fire
+        test ! -d output/026_balarama-protects-his-friends-from-pralambasura
         test -d web-assets/001
         test -d web-assets/021
         test -d web-assets/022
-        test ! -d web-assets/023
+        test -d web-assets/023
+        test -d web-assets/024
+        test -d web-assets/025
+        test ! -d web-assets/026
         mkdir -p data
         rm -rf data/web-assets
         mv web-assets data/web-assets
@@ -61,4 +67,7 @@ runs:
         test -f data/web-assets/020/web_manifest.json
         test -f data/web-assets/021/web_manifest.json
         test -f data/web-assets/022/web_manifest.json
-        test ! -f data/web-assets/023/web_manifest.json
+        test -f data/web-assets/023/web_manifest.json
+        test -f data/web-assets/024/web_manifest.json
+        test -f data/web-assets/025/web_manifest.json
+        test ! -f data/web-assets/026/web_manifest.json

@@ -209,17 +209,19 @@ jobs:
           prod_path = Path("deploy/content/RELEASE_CONTENT.json")
           staging = json.loads(staging_path.read_text(encoding="utf-8")) if staging_path.is_file() else {}
           prod = json.loads(prod_path.read_text(encoding="utf-8"))
-          # develop may already pin the upcoming 001-022 production release while
-          # live production remains on 001-020 until the promote deploy.
-          assert int(prod["public_story_max"]) in (20, 22), prod
+          # develop may already pin the upcoming 001-025 production release while
+          # live production remains on an earlier pin until the promote deploy.
+          assert int(prod["public_story_max"]) in (20, 22, 25), prod
           assert str(prod["tag"]).startswith("bhava-content-001-0"), prod
-          if int(prod["public_story_max"]) == 22:
+          if int(prod["public_story_max"]) == 25:
+              assert str(prod["tag"]).startswith("bhava-content-001-025-"), prod
+          elif int(prod["public_story_max"]) == 22:
               assert str(prod["tag"]).startswith("bhava-content-001-022-"), prod
           else:
               assert str(prod["tag"]).startswith("bhava-content-001-020-"), prod
 
-          default_tag = staging.get("tag") or "bhava-content-001-022-staging-v1"
-          default_max = int(staging.get("public_story_max") or 22)
+          default_tag = staging.get("tag") or "bhava-content-001-025-staging-v1"
+          default_max = int(staging.get("public_story_max") or 25)
           event = os.environ["EVENT_NAME"]
           requested = (os.environ.get("REQUESTED") or "").strip()
           content_input = (os.environ.get("CONTENT_TAG_INPUT") or "").strip()
@@ -266,9 +268,11 @@ jobs:
           python3 - <<'PY'
           import json
           pin = json.load(open("deploy/content/RELEASE_CONTENT.json", encoding="utf-8"))
-          assert int(pin["public_story_max"]) in (20, 22), pin
+          assert int(pin["public_story_max"]) in (20, 22, 25), pin
           assert pin["tag"].startswith("bhava-content-001-0"), pin
-          if int(pin["public_story_max"]) == 22:
+          if int(pin["public_story_max"]) == 25:
+              assert pin["tag"].startswith("bhava-content-001-025-"), pin
+          elif int(pin["public_story_max"]) == 22:
               assert pin["tag"].startswith("bhava-content-001-022-"), pin
           else:
               assert pin["tag"].startswith("bhava-content-001-020-"), pin
@@ -285,7 +289,7 @@ jobs:
           PROD_SHA="$(git rev-parse origin/main)"
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${RELEASE_SHA} \
-            --build-arg BHAVA_WEB_VERSION=001-022-staging \
+            --build-arg BHAVA_WEB_VERSION=001-025-staging \
             --build-arg BHAVA_CONTENT_RELEASE=${CONTENT_TAG} \
             --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${RELEASE_SHA} .
@@ -363,7 +367,9 @@ jobs:
           PROD_SHA="$(git rev-parse origin/main)"
           PROD_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
           PROD_TAG="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["tag"])')"
-          if [[ "${PROD_MAX}" == "22" ]]; then
+          if [[ "${PROD_MAX}" == "25" ]]; then
+            PROD_WEB_VERSION=001-025-v1
+          elif [[ "${PROD_MAX}" == "22" ]]; then
             PROD_WEB_VERSION=001-022-v1
           else
             PROD_WEB_VERSION=001-020-v4
@@ -385,7 +391,7 @@ jobs:
                BHAVA_CONTENT_RELEASE=${PROD_TAG} \
                BHAVA_STAGING_CONTENT_RELEASE=${CONTENT_TAG} \
                BHAVA_STAGING_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
-               BHAVA_STAGING_WEB_VERSION=001-022-staging && \
+               BHAVA_STAGING_WEB_VERSION=001-025-staging && \
              cd /opt/bhava/config && \
              docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production && \
              sleep 8 && \

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -55,11 +56,13 @@ _DIACRITIC_TOKEN = re.compile(
 
 
 def extract_diacritic_tokens(text: str) -> list[str]:
-    found = _DIACRITIC_TOKEN.findall(text or "")
+    # NFC so NFD story text yields the same tokens as lexicon keys.
+    found = _DIACRITIC_TOKEN.findall(unicodedata.normalize("NFC", text or ""))
     # Preserve order, unique case-sensitive forms.
     seen: set[str] = set()
     out: list[str] = []
     for token in found:
+        token = unicodedata.normalize("NFC", token)
         if token.lower() in _IGNORE:
             continue
         if token not in seen:
@@ -79,7 +82,8 @@ def evaluate_pronunciation_coverage(
     covered: list[str] = []
     missing: list[str] = []
     for token in tokens:
-        if token in aliases or token.lower() in keys_lower:
+        token_nfc = unicodedata.normalize("NFC", token)
+        if token_nfc in aliases or token_nfc.lower() in keys_lower:
             covered.append(token)
         else:
             missing.append(token)

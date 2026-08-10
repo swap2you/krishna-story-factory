@@ -27,16 +27,16 @@ def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest().upper()
 
 
-def test_production_release_pin_is_022() -> None:
+def test_production_release_pin_is_025() -> None:
     pin = json.loads(RELEASE_PIN.read_text(encoding="utf-8"))
-    assert int(pin["public_story_max"]) == 22
-    assert pin["tag"].startswith("bhava-content-001-022-")
+    assert int(pin["public_story_max"]) == 25
+    assert pin["tag"].startswith("bhava-content-001-025-")
 
 
 def test_private_lock_ledger_schema() -> None:
     data = json.loads(LEDGER.read_text(encoding="utf-8"))
     assert data["schema"] == "bhava-private-story-lock-v1"
-    assert int(data["public_story_max_production"]) == 22
+    assert int(data["public_story_max_production"]) == 25
     for story_no in ("021", "022"):
         row = data["stories"][story_no]
         assert row["human_listening_status"] == "USER_LISTENED_AND_ACCEPTED_ON_2026-08-04"

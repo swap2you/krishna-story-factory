@@ -1,0 +1,82 @@
+{
+  "schema": "bhava-accepted-story-lock-v1",
+  "note": "Governed Stories 023–025 accepted-package lock for R00. Production public_story_max is 25 after bhava-content-001-025-v1. Story 026+ remains private. Controller authorizes objective acceptance of the exact current artifacts without regeneration.",
+  "public_story_max_production": 25,
+  "stories": {
+    "023": {
+      "slug": "krishna-protects-everyone-from-dhenukasura",
+      "human_listening_status": "CONTROLLER_AUTHORIZED_OBJECTIVE_ACCEPTANCE_ON_2026-08-10",
+      "drive_folder_id": "1eKazN4KHBbYtokW0EUanscg9XgWH7Y0r",
+      "audio_sha256": "4B4D69A0DBC11B8F27F751A0E4FCA51C3E30A35E931395EE6681B53D92D2EB21",
+      "audio_duration_seconds": 389.0,
+      "exact_eight": {
+        "story.md": "534C84FDD5AE0BDEC3A9F2C674F9B841F02ACB52AEE2541AE58329E5F900D012",
+        "narration.mp3": "4B4D69A0DBC11B8F27F751A0E4FCA51C3E30A35E931395EE6681B53D92D2EB21",
+        "story_poster.png": "251B29D5BF3AB9957566489BF35EE210268DE580FA85FDB07C02068C11417803",
+        "coloring_page.png": "87595582DF4AB75C8F740FE118E68E2289DE0002E28981388CA40E9B05047E30",
+        "simple_coloring_page.png": "9CF3943CDEC36D95398F16721E35DFA20EA158088B61435B4D7FF2F25B30A40A",
+        "activity_sheet.pdf": "650ED426D1010A7A1B4CE87DACAEE9D0BC1F728F6FD56AF53D27FADB372C7743",
+        "whatsapp_caption.txt": "D67A0320EB4B598501E325174FBB14069B42EF4C6B6F451076E7A38DB9B475FD",
+        "manifest.json": "766C2C41265551EE05CDEBAE4B1B44A4B087A0DA5CD5FB5B6F45641D2D6B96BB"
+      },
+      "immutable_without_approval": [
+        "story.md",
+        "narration.mp3",
+        "story_poster.png",
+        "coloring_page.png",
+        "simple_coloring_page.png",
+        "whatsapp_caption.txt"
+      ]
+    },
+    "024": {
+      "slug": "subduing-kaliya",
+      "human_listening_status": "CONTROLLER_AUTHORIZED_OBJECTIVE_ACCEPTANCE_ON_2026-08-10",
+      "drive_folder_id": "1Y5Fs5G4bgIRb9apETPIWXfv9VMnTUrc3",
+      "audio_sha256": "EE5ED98FA5D48723D7AEDDBB11F67579A7C1C7FAB7AE780EC9863DBE72055FF7",
+      "audio_duration_seconds": 326.1,
+      "exact_eight": {
+        "story.md": "12CB789C38F21DB1A77F9EB350993B5223DB7A92C974E7955701B677E60A2C35",
+        "narration.mp3": "EE5ED98FA5D48723D7AEDDBB11F67579A7C1C7FAB7AE780EC9863DBE72055FF7",
+        "story_poster.png": "48899F27F90769D27B2A39A3BD69AC8EE6EAF21947309429F325E95CB13CFBD3",
+        "coloring_page.png": "105E69CD03F3822CD4D5A8F76AF977B32F170A5CF752E5E6FB3CD7E164B9265C",
+        "simple_coloring_page.png": "B964219F5C3313BB7973432F82BFA87E5EE8C0AA838671A80FEE4A8C0B6DAD91",
+        "activity_sheet.pdf": "329251C138E35F80123B175396154ECCA9B636E764FF8AB08B0EA1D95506A001",
+        "whatsapp_caption.txt": "7AA4416D3F45B1871E9A437751596AB18356E2CD5584F469C54068D8FAC8E3F3",
+        "manifest.json": "F9E058DB40A51B8F3E13B33CCA41605C5B4AFF2C55A56A0229F267217B14DC18"
+      },
+      "immutable_without_approval": [
+        "story.md",
+        "narration.mp3",
+        "story_poster.png",
+        "coloring_page.png",
+        "simple_coloring_page.png",
+        "whatsapp_caption.txt"
+      ]
+    },
+    "025": {
+      "slug": "extinguishing-the-forest-fire",
+      "human_listening_status": "CONTROLLER_AUTHORIZED_OBJECTIVE_ACCEPTANCE_ON_2026-08-10",
+      "drive_folder_id": "1-4XGak0rsUTclBERdJQuzp-A8NQojppl",
+      "audio_sha256": "BE1ED132B63F417E1C6E849E1C856992FF066748099921F7AA1F5D19DB0F95CB",
+      "audio_duration_seconds": 394.7,
+      "exact_eight": {
+        "story.md": "6289C88FB9307C1A06C30961FAF88A2627CDF08133245136C862BB36D6EB71C2",
+        "narration.mp3": "BE1ED132B63F417E1C6E849E1C856992FF066748099921F7AA1F5D19DB0F95CB",
+        "story_poster.png": "58513979D9BF0D2CE65B984077F3DABAA6714560DAF1D9BEB2445A565BE96AC6",
+        "coloring_page.png": "EF50B6E0D07AD16D035C509E46528476D7972C38DE1C3F14A1335A9456FDB9D3",
+        "simple_coloring_page.png": "5EDF08A3E2692C8311F44099BF61B82699EC670C5A72FEC284232230535A4A35",
+        "activity_sheet.pdf": "22AF3715721C571A97616FF6C8D2AB4B14EEB35E69025105B3F5DB11AA8E8954",
+        "whatsapp_caption.txt": "D42C05B8E25B65E149D074079BA4350819A4058EA481905F384943EB67EF244F",
+        "manifest.json": "44251A0B828678DAE0621E77A001D6654E8292C01750559C0338125017DA991C"
+      },
+      "immutable_without_approval": [
+        "story.md",
+        "narration.mp3",
+        "story_poster.png",
+        "coloring_page.png",
+        "simple_coloring_page.png",
+        "whatsapp_caption.txt"
+      ]
+    }
+  }
+}

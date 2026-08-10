@@ -269,11 +269,11 @@ def test_story_021_legacy_independent_audio_fails_exact_gate() -> None:
     assert repaired.status == "PASS", repaired.notes
 
 
-def test_public_story_max_is_022() -> None:
+def test_public_story_max_is_025() -> None:
     import json
 
     pin = json.loads((ROOT / "deploy/content/RELEASE_CONTENT.json").read_text(encoding="utf-8"))
-    assert int(pin["public_story_max"]) == 22
-    assert str(pin["tag"]).startswith("bhava-content-001-022-")
+    assert int(pin["public_story_max"]) == 25
+    assert str(pin["tag"]).startswith("bhava-content-001-025-")
     sitemap = (ROOT / "apps/web/app/sitemap.ts").read_text(encoding="utf-8")
     assert "PUBLIC_STORY_MAX" in sitemap

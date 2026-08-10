@@ -31,7 +31,7 @@ export function SiteFooter() {
             aria-hidden="true"
           />
           <p className="footer-copyright footer-copyright--bar">
-            © 2026 Svarna Gauranga Das (Swapnil Patil) · Dauji Publication · Bhāva
+            © 2026 Svarna Gauranga Das · Dauji Publication · Bhāva
           </p>
         </div>
         <nav className="footer-bar__links" aria-label="Trust and contact">

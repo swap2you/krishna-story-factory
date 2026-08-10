@@ -1,0 +1,24 @@
+schema_version: "1.0.0"
+release_id: "<RELEASE_ID>"
+run_id: "<RUN_ID>"
+state: NOT_STARTED
+start_develop_sha: ""
+start_main_sha: ""
+current_develop_sha: ""
+promotion_pr: null
+merged_main_sha: ""
+staging_deployed_sha: ""
+production_deployed_sha: ""
+content_tag: ""
+code_tag: ""
+rollback_sha: ""
+requirements:
+  pass: 0
+  fail: 0
+  blocked: 0
+  not_applicable: 0
+  owner_deferred: 0
+remediation_cycles: 0
+hard_blocker: null
+updated_at_utc: ""
+

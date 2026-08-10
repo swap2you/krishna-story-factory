@@ -1,0 +1,43 @@
+schema_version: "1.0.0"
+program: BHAVA_CURSOR_RELEASE_FACTORY
+controller_version: V1
+prepared_date: "2026-08-10"
+execution_branch: develop
+promotion_branch: main
+feature_branches_allowed: false
+pr_to_develop_allowed: false
+promotion_pr_required: true
+active_train:
+  - id: R00-STORY-001-025-CLOSURE
+    order: 0
+    state: IMPLEMENTING
+    depends_on: []
+    notes: "Public boundary 22->25; content tags bhava-content-001-025-{staging-,}v1 digest 2dda0485..."
+  - id: R01-KNOWLEDGE-GOLDEN-PAGE
+    order: 1
+    state: NOT_STARTED
+    depends_on: [R00-STORY-001-025-CLOSURE]
+  - id: R02-KNOWLEDGE-FIVE-PAGE-PILOT
+    order: 2
+    state: NOT_STARTED
+    depends_on: [R01-KNOWLEDGE-GOLDEN-PAGE]
+  - id: R03-KNOWLEDGE-25-PAGE-BATCH
+    order: 3
+    state: NOT_STARTED
+    depends_on: [R02-KNOWLEDGE-FIVE-PAGE-PILOT]
+  - id: R04-KNOWLEDGE-50-ITEM-FACTORY
+    order: 4
+    state: NOT_STARTED
+    depends_on: [R03-KNOWLEDGE-25-PAGE-BATCH]
+future_train:
+  - R05-LEARNING-RESOURCES
+  - R06-PUBLICATION-PACKAGES
+  - R07-AUDIO-PODCAST
+  - R08-CONTROLLED-SCHEDULER
+  - R09-3D-MOTION-RESEARCH
+global_limits:
+  max_root_cause_remediation_cycles: 3
+  force_push: false
+  history_rewrite: false
+  private_originals_in_git: false
+  automatic_publication_without_release_gates: false

@@ -1,7 +1,7 @@
 {
-  "tag": "bhava-content-001-022-v1",
-  "bundle": "bhava-content-001-022-v1.tar.gz",
-  "sha256": "399c265073915b766b5a2ad58b1237d51aed7a7b6a5c2b745a8235c6189643a6",
-  "public_story_max": 22,
-  "note": "Immutable public Stories 001-022 content v1: accepted packages for 021-022 promoted without regeneration; Stories 001-020 preserved from prior v4 lineage. Story 023+ remains private. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes."
+  "tag": "bhava-content-001-025-v1",
+  "bundle": "bhava-content-001-025-v1.tar.gz",
+  "sha256": "2dda0485a085f93d222a0ebd1d27b620df408990e7673a11b9603de68ff230a9",
+  "public_story_max": 25,
+  "note": "Immutable public Stories 001-025 content v1: accepted packages for 023-025 promoted without regeneration; Stories 001-022 preserved from prior v1 lineage. Story 026+ remains private. CI verifies a downloaded bundle against this committed digest before any test trusts its bytes."
 }

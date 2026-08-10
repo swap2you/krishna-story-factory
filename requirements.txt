@@ -17,3 +17,4 @@ pypdfium2>=4.30.0
 imageio-ffmpeg>=0.5.1
 PyYAML>=6.0.2
 pypdf>=5.0.0
+python-docx==1.2.0

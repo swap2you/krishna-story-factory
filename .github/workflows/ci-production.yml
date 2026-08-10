@@ -79,7 +79,7 @@ jobs:
           CONTENT_TAG="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["tag"])')"
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${GITHUB_SHA} \
-            --build-arg BHAVA_WEB_VERSION=001-022-v1 \
+            --build-arg BHAVA_WEB_VERSION=001-025-v1 \
             --build-arg BHAVA_CONTENT_RELEASE="${CONTENT_TAG}" \
             --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${GITHUB_SHA} .
