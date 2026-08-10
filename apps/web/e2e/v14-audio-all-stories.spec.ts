@@ -13,12 +13,12 @@ test.describe("published-story audio advancement", () => {
       test.setTimeout(10 * 60_000);
     }
     const stories = await fetchStories(request);
-    expect(stories.length).toBe(20);
+    expect(stories.length).toBe(25);
     const storyNos = stories.map((s) => String(s.story_no).padStart(3, "0"));
-    expect(storyNos).toContain("020");
-    expect(storyNos).not.toContain("021");
+    expect(storyNos).toContain("025");
+    expect(storyNos).not.toContain("026");
     // Full-matrix audio coverage would exceed CI budgets; sample edges + mid-band.
-    const sample = ["001", "005", "010", "015", "020"].filter((n) => storyNos.includes(n));
+    const sample = ["001", "005", "010", "015", "020", "025"].filter((n) => storyNos.includes(n));
 
     for (const storyNo of sample) {
       await page.goto(`/stories/${storyNo}`);

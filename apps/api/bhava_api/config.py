@@ -55,7 +55,7 @@ def get_settings() -> Settings:
         os.getenv("BHAVA_CATALOG_DB", str(root / "data" / "catalog" / "bhava.sqlite"))
     )
     refresh = float(os.getenv("BHAVA_CATALOG_REFRESH_SEC", "20"))
-    story_max = int(os.getenv("BHAVA_PUBLIC_STORY_MAX", "20"))
+    story_max = int(os.getenv("BHAVA_PUBLIC_STORY_MAX", "25"))
     release_sha = os.getenv("BHAVA_RELEASE_SHA", "development").strip() or "development"
     environment = os.getenv("BHAVA_ENVIRONMENT", "development").strip().lower()
     public_site = _as_bool("BHAVA_PUBLIC_SITE", False)

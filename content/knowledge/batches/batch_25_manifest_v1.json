@@ -1,0 +1,245 @@
+{
+  "schema_version": "1.0",
+  "batch_id": "batch_25_v1",
+  "program": "BHAVA_UNIFIED_PLATFORM_BUILD_V2",
+  "milestone": "M2-KNOWLEDGE-SYSTEM-AND-FACTORY",
+  "description": "Private 25-record batch plan. Only already-public Bhāva-original guides/FAQs are marked public. Zero fabricated scripture pages.",
+  "golden_scripture_published": false,
+  "public_allowed_count": 6,
+  "records": [
+    {
+      "batch_ord": 1,
+      "id": "kl-about-bhava",
+      "kind": "article",
+      "title": "What is Bhāva?",
+      "state": "public",
+      "public": true,
+      "slug": "what-is-bhava",
+      "note": "Existing Bhāva-original guide"
+    },
+    {
+      "batch_ord": 2,
+      "id": "kl-source-permissions",
+      "kind": "article",
+      "title": "Sources and permissions",
+      "state": "public",
+      "public": true,
+      "slug": "source-and-permissions",
+      "note": "Existing Bhāva-original guide"
+    },
+    {
+      "batch_ord": 3,
+      "id": "kl-printables",
+      "kind": "article",
+      "title": "Printing and classroom use",
+      "state": "public",
+      "public": true,
+      "slug": "printing-and-classroom-use",
+      "note": "Existing Bhāva-original guide"
+    },
+    {
+      "batch_ord": 4,
+      "id": "kl-q-what-is-bhava",
+      "kind": "question",
+      "title": "What is Bhāva? (FAQ)",
+      "state": "public",
+      "public": true,
+      "slug": "what-is-bhava-faq",
+      "note": "Existing published FAQ"
+    },
+    {
+      "batch_ord": 5,
+      "id": "kl-q-official-bbt",
+      "kind": "question",
+      "title": "Is Bhāva official BBT?",
+      "state": "public",
+      "public": true,
+      "slug": "is-bhava-official-bbt",
+      "note": "Existing published FAQ"
+    },
+    {
+      "batch_ord": 6,
+      "id": "kl-q-child-data",
+      "kind": "question",
+      "title": "Does Bhāva collect child data?",
+      "state": "public",
+      "public": true,
+      "slug": "does-bhava-collect-child-data",
+      "note": "Existing published FAQ"
+    },
+    {
+      "batch_ord": 7,
+      "id": "TOP-0147",
+      "kind": "roadmap",
+      "title": "Sri Nrsimha Pranama and Prayers",
+      "state": "blocked",
+      "public": false,
+      "note": "Golden candidate — SOURCE_BLOCKED; see GOLDEN_PAGE_DECISION.md"
+    },
+    {
+      "batch_ord": 8,
+      "id": "TOP-0148",
+      "kind": "roadmap",
+      "title": "Nrsimha Arati",
+      "state": "blocked",
+      "public": false,
+      "note": "Alternate golden — not dossier-ready"
+    },
+    {
+      "batch_ord": 9,
+      "id": "INTAKE-01",
+      "kind": "intake_pdf",
+      "title": "Letter to Hayagriva TW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/01-letter-to-hayagriva-tw.json"
+    },
+    {
+      "batch_ord": 10,
+      "id": "INTAKE-02",
+      "kind": "intake_pdf",
+      "title": "SB 2-3-22 TW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/02-sb-2-3-22-tw.json"
+    },
+    {
+      "batch_ord": 11,
+      "id": "INTAKE-03",
+      "kind": "intake_pdf",
+      "title": "NoD ch 13 TW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/03-nod-ch-13-tw.json"
+    },
+    {
+      "batch_ord": 12,
+      "id": "INTAKE-04",
+      "kind": "intake_pdf",
+      "title": "Cc Madhya 15.108 TW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/04-cc-madhya-15.108-tw.json"
+    },
+    {
+      "batch_ord": 13,
+      "id": "INTAKE-05",
+      "kind": "intake_pdf",
+      "title": "Letters from Srila PrabhupadaTW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/05-letters-from-srila-prabhupadatw.json"
+    },
+    {
+      "batch_ord": 14,
+      "id": "INTAKE-06",
+      "kind": "intake_pdf",
+      "title": "SB 7.5.23-24TW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/06-sb-7.5.23-24tw.json"
+    },
+    {
+      "batch_ord": 15,
+      "id": "INTAKE-07",
+      "kind": "intake_pdf",
+      "title": "NOD chapter 8TW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/07-nod-chapter-8tw.json"
+    },
+    {
+      "batch_ord": 16,
+      "id": "INTAKE-08",
+      "kind": "intake_pdf",
+      "title": "Offenses in deity worshipTW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/08-offenses-in-deity-worshiptw.json"
+    },
+    {
+      "batch_ord": 17,
+      "id": "INTAKE-09",
+      "kind": "intake_pdf",
+      "title": "NoD ch 9 TW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/09-nod-ch-9-tw.json"
+    },
+    {
+      "batch_ord": 18,
+      "id": "INTAKE-10",
+      "kind": "intake_pdf",
+      "title": "Who are you offending - HG Mahatma Dasa.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/10-who-are-you-offending-hg-mahatma-dasa.json",
+      "note": "OCR_PENDING"
+    },
+    {
+      "batch_ord": 19,
+      "id": "INTAKE-11",
+      "kind": "intake_pdf",
+      "title": "Dangers of Vaisnava Aparadha - HH Radhanath Swami.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/11-dangers-of-vaisnava-aparadha-hh-radhanath-swami.json",
+      "note": "OCR_PENDING"
+    },
+    {
+      "batch_ord": 20,
+      "id": "INTAKE-12",
+      "kind": "intake_pdf",
+      "title": "Cleanliness and PunctualityTW.pdf",
+      "state": "blocked",
+      "public": false,
+      "dossier": "source_intake/dossiers/12-cleanliness-and-punctualitytw.json"
+    },
+    {
+      "batch_ord": 21,
+      "id": "TOP-0141",
+      "kind": "roadmap",
+      "title": "Srila Prabhupada Pranati",
+      "state": "draft",
+      "public": false,
+      "note": "Private draft candidate — no scripture body fabricated"
+    },
+    {
+      "batch_ord": 22,
+      "id": "TOP-0142",
+      "kind": "roadmap",
+      "title": "Guru-pranama",
+      "state": "draft",
+      "public": false,
+      "note": "Private draft candidate — no scripture body fabricated"
+    },
+    {
+      "batch_ord": 23,
+      "id": "TOP-0146",
+      "kind": "roadmap",
+      "title": "Hare Krishna Maha-mantra",
+      "state": "blocked",
+      "public": false,
+      "note": "Source/rights not cleared for public package"
+    },
+    {
+      "batch_ord": 24,
+      "id": "TOP-0001",
+      "kind": "roadmap",
+      "title": "What Sanatana-dharma Means",
+      "state": "review",
+      "public": false,
+      "note": "Editorial concept candidate — private review only"
+    },
+    {
+      "batch_ord": 25,
+      "id": "KF-P01C-FIXTURE-001",
+      "kind": "package_fixture",
+      "title": "P01C Structural Learning-Page Fixture",
+      "state": "review",
+      "public": false,
+      "slug": "p01c-structural-fixture",
+      "note": "Private engineering fixture; SOURCE_BLOCKED; not a golden scripture page"
+    }
+  ]
+}

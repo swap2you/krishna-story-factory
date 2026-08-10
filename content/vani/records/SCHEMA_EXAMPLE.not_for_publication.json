@@ -1,0 +1,27 @@
+{
+  "NOT_FOR_PUBLICATION": true,
+  "fixture_label": "SCHEMA EXAMPLE — NOT_FOR_PUBLICATION",
+  "record_id": "VANI-SCHEMA-EXAMPLE-000",
+  "slug": "schema-example-not-for-publication",
+  "title": "Schema example only — do not publish",
+  "taxonomy_category": "lectures",
+  "visibility": "private",
+  "lifecycle": "blocked",
+  "quote_text": null,
+  "quote_text_note": "Must remain null until a verified source locator and rights clearance exist. Never invent text.",
+  "source_context": {
+    "work_or_genre": null,
+    "date": null,
+    "location_or_occasion": null,
+    "exact_locator": null,
+    "edition": null,
+    "language": null
+  },
+  "topic_tags": [],
+  "audience_depth": null,
+  "related_approved_records": [],
+  "reviewer_state": "blocked",
+  "rights_status": "unknown",
+  "correction_route": "/knowledge/corrections",
+  "ai_generated_attribution_forbidden": true
+}

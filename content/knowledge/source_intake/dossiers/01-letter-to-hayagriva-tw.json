@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "sequence": 1,
+  "slug": "letter-to-hayagriva-tw",
+  "original_filename": "Letter to Hayagriva TW.pdf",
+  "workspace_copy": "01-Letter-to-Hayagriva-TW.pdf",
+  "status": "SOURCE_INCOMPLETE",
+  "missing_fields": [
+    "exact edition/locator",
+    "Devanāgarī",
+    "IAST",
+    "English",
+    "rights clearance"
+  ],
+  "ocr_state": "NONE",
+  "public_allowed": false,
+  "dossier_ready": false,
+  "rights_cleared": false,
+  "notes": "Preserve original; no public binary",
+  "text_extracted": false,
+  "pdf_bytes_in_git": false,
+  "decision": "SOURCE_INCOMPLETE — private stub only; no PDF text copied"
+}

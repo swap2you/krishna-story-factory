@@ -1,0 +1,151 @@
+{
+  "schema_version": "2.0",
+  "program": "BHAVA_UNIFIED_PLATFORM_BUILD_V2",
+  "description": "Private owner-PDF intake ledger (metadata only). Originals stay outside git; no public PDF serving.",
+  "items": [
+    {
+      "sequence": 1,
+      "original_filename": "Letter to Hayagriva TW.pdf",
+      "workspace_copy": "01-Letter-to-Hayagriva-TW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Preserve original; no public binary",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 2,
+      "original_filename": "SB 2-3-22 TW.pdf",
+      "workspace_copy": "02-SB-2-3-22-TW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Preserve original; no public binary",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 3,
+      "original_filename": "NoD ch 13 TW.pdf",
+      "workspace_copy": "03-NoD-ch-13-TW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Preserve original; no public binary",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 4,
+      "original_filename": "Cc Madhya 15.108 TW.pdf",
+      "workspace_copy": "04-Cc-Madhya-15.108-TW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Preserve original; no public binary",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 5,
+      "original_filename": "Letters from Srila PrabhupadaTW.pdf",
+      "workspace_copy": "05-Letters-from-Srila-PrabhupadaTW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Preserve original; no public binary",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 6,
+      "original_filename": "SB 7.5.23-24TW.pdf",
+      "workspace_copy": "06-SB-7.5.23-24TW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Preserve original; no public binary",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 7,
+      "original_filename": "NOD chapter 8TW.pdf",
+      "workspace_copy": "07-NOD-chapter-8TW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Preserve original; no public binary",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 8,
+      "original_filename": "Offenses in deity worshipTW.pdf",
+      "workspace_copy": "08-Offenses-in-deity-worshipTW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Requires conservative operational-review path",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 9,
+      "original_filename": "NoD ch 9 TW.pdf",
+      "workspace_copy": "09-NoD-ch-9-TW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Preserve original; no public binary",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 10,
+      "original_filename": "Who are you offending - HG Mahatma Dasa.pdf",
+      "workspace_copy": "10-Who-are-you-offending-HG-Mahatma-Dasa.pdf",
+      "status": "OCR_PENDING",
+      "notes": "Image-only; preserve original",
+      "dossier_ready": false,
+      "ocr_state": "OCR_PENDING",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 11,
+      "original_filename": "Dangers of Vaisnava Aparadha - HH Radhanath Swami.pdf",
+      "workspace_copy": "11-Dangers-of-Vaisnava-Aparadha-HH-Radhanath-Swami.pdf",
+      "status": "OCR_PENDING",
+      "notes": "Image-only; preserve original",
+      "dossier_ready": false,
+      "ocr_state": "OCR_PENDING",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    },
+    {
+      "sequence": 12,
+      "original_filename": "Cleanliness and PunctualityTW.pdf",
+      "workspace_copy": "12-Cleanliness-and-PunctualityTW.pdf",
+      "status": "STAGED_SOURCE_CANDIDATE",
+      "notes": "Preserve original; no public binary",
+      "dossier_ready": false,
+      "ocr_state": "NONE",
+      "rights_cleared": false,
+      "public_allowed": false,
+      "last_reviewed": null
+    }
+  ]
+}

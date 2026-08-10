@@ -71,6 +71,14 @@ const COLLECTION_ART: Record<string, CollectionArtConfig> = {
     objectPositionDesktop: "center 35%",
     objectPositionMobile: "center 38%",
   },
+  library: {
+    objectPositionDesktop: "center 18%",
+    objectPositionMobile: "center 22%",
+  },
+  learning: {
+    objectPositionDesktop: "center 32%",
+    objectPositionMobile: "center 35%",
+  },
   "prabhupada-vani": {
     objectPositionDesktop: "center 18%",
     objectPositionMobile: "center 20%",

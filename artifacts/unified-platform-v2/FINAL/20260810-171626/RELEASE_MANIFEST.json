@@ -1,0 +1,14 @@
+{
+  "program": "BHAVA_UNIFIED_PLATFORM_BUILD_V2",
+  "state": "CLOSED_WITH_SOURCE_WITHHOLD",
+  "develop_sha": "bf31d44b5f700f12435c1ccb58e78d8f11d8837b",
+  "implement_sha": "6f2194eb8f4a1205a86efb5446fa18c9f69e03f0",
+  "main_pre": "0fb429c6c9cbbd195628857c8f6879f931ed4eba",
+  "promotion_pr": "https://github.com/swap2you/krishna-story-factory/pull/73",
+  "content_tag": "bhava-content-001-025-v1",
+  "content_sha256": "2dda0485a085f93d222a0ebd1d27b620df408990e7673a11b9603de68ff230a9",
+  "public_story_max": 25,
+  "scripture_golden_page": "WITHHELD",
+  "ci": "https://github.com/swap2you/krishna-story-factory/actions/runs/31433681391",
+  "staging": "https://github.com/swap2you/krishna-story-factory/actions/runs/31433680523"
+}

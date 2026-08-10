@@ -1,16 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { KnowledgePackage, LensId } from "@/lib/knowledge/package-types";
-import { DEFAULT_LENS, LENSES, parseLens } from "@/lib/knowledge/package-types";
-
-const LENS_LABELS: Record<LensId, string> = {
-  little_learner: "Little Learner",
-  explorer: "Explorer",
-  teen: "Teen",
-  study: "Study",
-};
+import { DEFAULT_LENS, parseLens } from "@/lib/knowledge/package-types";
+import { FocusModeBar } from "./focus-mode-bar";
+import { LensSelector, LENS_LABELS } from "./lens-selector";
+import { TrustPanel } from "./trust-panel";
 
 const STORAGE_KEY = "bhava.knowledge.lens";
 
@@ -21,6 +16,10 @@ type Props = {
   initialStanza?: string;
 };
 
+/**
+ * Template V1 package record shell (studio private preview).
+ * Lenses, focus mode, canonical stanza sequence, trust panel, study-neutral exports.
+ */
 export function LearningPageShell({ pkg, initialLens, initialFocus, initialStanza }: Props) {
   const [lens, setLens] = useState<LensId>(parseLens(initialLens || pkg.record.audience_default));
   const [focusMode, setFocusMode] = useState(Boolean(initialFocus));
@@ -116,41 +115,7 @@ export function LearningPageShell({ pkg, initialLens, initialFocus, initialStanz
         </div>
       </header>
 
-      <div
-        className="knowledge-lens"
-        role="radiogroup"
-        aria-label="Reading depth lens"
-        onKeyDown={(e) => {
-          const idx = LENSES.indexOf(lens);
-          if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-            e.preventDefault();
-            selectLens(LENSES[(idx + 1) % LENSES.length]);
-          } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-            e.preventDefault();
-            selectLens(LENSES[(idx - 1 + LENSES.length) % LENSES.length]);
-          } else if (e.key === "Home") {
-            e.preventDefault();
-            selectLens(LENSES[0]);
-          } else if (e.key === "End") {
-            e.preventDefault();
-            selectLens(LENSES[LENSES.length - 1]);
-          }
-        }}
-      >
-        {LENSES.map((id) => (
-          <button
-            key={id}
-            type="button"
-            role="radio"
-            aria-checked={lens === id}
-            tabIndex={lens === id ? 0 : -1}
-            className={`bhava-button ${lens === id ? "bhava-button--primary knowledge-lens--selected" : ""}`}
-            onClick={() => selectLens(id, { restoreReadingFocus: true })}
-          >
-            {LENS_LABELS[id]}
-          </button>
-        ))}
-      </div>
+      <LensSelector lens={lens} onSelect={selectLens} />
       <p className="sr-only" aria-live="polite">
         Depth lens {LENS_LABELS[lens]} selected
         {focusMode ? `. Focus mode stanza ${stanzaIndex + 1} of ${stanzas.length}` : ""}
@@ -204,48 +169,28 @@ export function LearningPageShell({ pkg, initialLens, initialFocus, initialStanz
           )}
       </section>
 
-      <div className="knowledge-focus-bar">
-        <button
-          type="button"
-          className="bhava-button"
-          aria-pressed={focusMode}
-          onClick={() => {
-            setFocusMode((v) => {
-              const next = !v;
-              const current = stanzas[stanzaIndex];
-              syncUrl({ focus: next, stanzaId: current?.block_id });
-              if (!next && current) {
-                requestAnimationFrame(() => {
-                  document.getElementById(`${current.block_id}-heading`)?.focus();
-                });
-              }
-              return next;
-            });
-          }}
-        >
-          {focusMode ? "Exit focus mode" : "Focus mode"}
-        </button>
-        {focusMode ? (
-          <>
-            <button
-              type="button"
-              className="bhava-button"
-              disabled={stanzaIndex <= 0}
-              onClick={() => goStanza(stanzaIndex - 1)}
-            >
-              Previous stanza
-            </button>
-            <button
-              type="button"
-              className="bhava-button"
-              disabled={stanzaIndex >= stanzas.length - 1}
-              onClick={() => goStanza(stanzaIndex + 1)}
-            >
-              Next stanza
-            </button>
-          </>
-        ) : null}
-      </div>
+      <FocusModeBar
+        focusMode={focusMode}
+        onToggle={() => {
+          setFocusMode((v) => {
+            const next = !v;
+            const current = stanzas[stanzaIndex];
+            syncUrl({ focus: next, stanzaId: current?.block_id });
+            if (!next && current) {
+              requestAnimationFrame(() => {
+                document.getElementById(`${current.block_id}-heading`)?.focus();
+              });
+            }
+            return next;
+          });
+        }}
+        stanzaNav={{
+          index: stanzaIndex,
+          total: stanzas.length,
+          onPrev: () => goStanza(stanzaIndex - 1),
+          onNext: () => goStanza(stanzaIndex + 1),
+        }}
+      />
 
       {context?.body && lens !== "little_learner" ? (
         <section className="knowledge-context">
@@ -261,42 +206,20 @@ export function LearningPageShell({ pkg, initialLens, initialFocus, initialStanz
         </section>
       ) : null}
 
-      <section className="knowledge-source" aria-label="Source and review">
-        <details
-          className="knowledge-source-details"
-          open={sourceOpen}
-          onToggle={(e) => setSourceOpen((e.target as HTMLDetailsElement).open)}
-        >
-          <summary>Source and review</summary>
-          <dl>
-            <div>
-              <dt>Source status</dt>
-              <dd>{pkg.record.source_status}</dd>
-            </div>
-            <div>
-              <dt>Dossier</dt>
-              <dd>{pkg.source_dossier.decision}</dd>
-            </div>
-            <div>
-              <dt>Version</dt>
-              <dd>{pkg.record.record_version}</dd>
-            </div>
-            <div>
-              <dt>Canonical hash</dt>
-              <dd>
-                <code>{pkg.record.canonical_text_hash}</code>
-              </dd>
-            </div>
-            <div>
-              <dt>Roadmap ref</dt>
-              <dd>{pkg.record.roadmap_ref || "—"}</dd>
-            </div>
-          </dl>
-          <p>
-            <Link href="/knowledge/corrections">Request a correction</Link>
-          </p>
-        </details>
-      </section>
+      <TrustPanel
+        open={sourceOpen}
+        onOpenChange={setSourceOpen}
+        rows={[
+          { label: "Source status", value: pkg.record.source_status },
+          { label: "Dossier", value: pkg.source_dossier.decision },
+          { label: "Version", value: pkg.record.record_version },
+          {
+            label: "Canonical hash",
+            value: <code>{pkg.record.canonical_text_hash}</code>,
+          },
+          { label: "Roadmap ref", value: pkg.record.roadmap_ref || "—" },
+        ]}
+      />
 
       <section className="knowledge-downloads" aria-label="Downloads">
         <h2>Download</h2>

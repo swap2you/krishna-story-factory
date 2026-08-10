@@ -1,0 +1,6 @@
+req_id,status,evidence
+R00-1-verify-023-025,PASS,STORY_023_025_LOCAL_VALIDATION.csv;r00_drive_readback.csv
+R00-2-content-tags,PASS,bhava-content-001-025-v1 digest 2dda0485
+R00-3-boundary-026,PASS,Caddy/smoke/provision; live 025=200 026=404
+R00-4-staging,PASS,run 31420669424
+R00-5-promote-prod,PASS,PR72; run 31422733214

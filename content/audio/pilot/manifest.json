@@ -1,0 +1,10 @@
+{
+  "pilot_id": "BHAVA-AUDIO-PILOT-M4",
+  "pilot_status": "dry_run_scaffold",
+  "voice_clone": false,
+  "auto_publish": false,
+  "host_mode": "educator_host",
+  "ai_educational_disclosure_required": true,
+  "episodes": [],
+  "note": "Empty pilot registry. No episode packs, media files, or publishable transcripts yet."
+}

@@ -20,12 +20,26 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@bhava/ui"],
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: false },
-  webpack: (config) => {
+  webpack: (config, { dev, nextRuntime }) => {
     // pdfjs-dist optional Node canvas binding is unused in the browser viewer.
     config.resolve.alias = {
       ...config.resolve.alias,
       canvas: false,
     };
+    // Edge middleware forbids eval(). Next's EvalSourceMapDevToolPlugin injects
+    // eval() into the middleware bundle in `next dev`, which crashes with
+    // "Code generation from strings disallowed". Strip that plugin for edge
+    // only (Next also reverts custom `devtool` changes in development).
+    if (dev && nextRuntime === "edge") {
+      config.devtool = false;
+      config.plugins = (config.plugins || []).filter((plugin: { constructor?: { name?: string } }) => {
+        const name = plugin?.constructor?.name ?? "";
+        return (
+          name !== "EvalSourceMapDevToolPlugin" &&
+          name !== "EvalDevToolModulePlugin"
+        );
+      });
+    }
     return config;
   },
   async redirects() {

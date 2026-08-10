@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bhava.me/schemas/learning_derivative.json",
+  "title": "BhavaLearningDerivative",
+  "description": "Contract for Bhāva-original learning derivatives (lesson plans, family practice sheets, activities, assessments). A printable is never a source of truth on its own — every derivative must retain canonical lineage.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "slug",
+    "title",
+    "derivative_type",
+    "learning_objective",
+    "audience",
+    "canonical_record_version",
+    "source_lineage",
+    "review_state",
+    "answer_key_relation",
+    "asset_provenance",
+    "export_manifest"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable derivative identifier (e.g. ld-lesson-what-is-bhava)."
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "derivative_type": {
+      "type": "string",
+      "enum": [
+        "lesson_plan",
+        "teacher_guide",
+        "activity",
+        "assessment",
+        "answer_key",
+        "family_practice"
+      ]
+    },
+    "learning_objective": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One clear objective learners should achieve."
+    },
+    "audience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profiles", "age_range"],
+      "properties": {
+        "profiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "children",
+              "youth",
+              "families",
+              "sunday_school",
+              "teachers",
+              "preachers",
+              "gurukula_homeschool",
+              "festival"
+            ]
+          }
+        },
+        "age_range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["label"],
+          "properties": {
+            "min": { "type": ["integer", "null"], "minimum": 0, "maximum": 120 },
+            "max": { "type": ["integer", "null"], "minimum": 0, "maximum": 120 },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Human-readable age band (e.g. Ages 8–12, Adults / facilitators)."
+            }
+          }
+        }
+      }
+    },
+    "canonical_record_version": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_slug", "record_id", "record_version"],
+      "properties": {
+        "record_slug": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Public Knowledge slug this derivative is grounded in."
+        },
+        "record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Version or review stamp of the canonical Knowledge record."
+        },
+        "content_path": {
+          "type": "string",
+          "description": "Repo-relative path to the canonical Knowledge article."
+        }
+      }
+    },
+    "source_lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "notes"],
+      "properties": {
+        "origin": {
+          "type": "string",
+          "enum": ["bhava_original", "adapted_from_bhava_knowledge"],
+          "description": "Derivatives in this contract must be Bhāva-original expression grounded in approved Knowledge — never copied scripture bodies."
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "forbidden_content": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Explicit exclusions (e.g. no invented scripture quotes, no PDF body copies)."
+        }
+      }
+    },
+    "review_state": {
+      "type": "string",
+      "enum": ["draft", "in_review", "approved", "published", "rejected"],
+      "description": "Honest editorial state. Do not mark published without human review gates."
+    },
+    "answer_key_relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["none", "paired", "embedded", "separate_derivative"],
+          "description": "How this derivative relates to an answer key."
+        },
+        "paired_derivative_id": {
+          "type": ["string", "null"],
+          "description": "ID of the related assessment or answer-key derivative when kind is paired or separate_derivative."
+        },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "asset_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rights_status", "steward"],
+      "properties": {
+        "rights_status": {
+          "type": "string",
+          "enum": ["bhava_original", "pending_review", "third_party_blocked"]
+        },
+        "steward": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "path_or_uri", "provenance"],
+            "properties": {
+              "role": { "type": "string" },
+              "path_or_uri": { "type": "string" },
+              "provenance": { "type": "string" }
+            }
+          }
+        },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "export_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["export_version", "formats", "downloadable"],
+      "properties": {
+        "export_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "formats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["markdown", "pdf", "docx", "epub", "print_pdf"]
+          }
+        },
+        "downloadable": {
+          "type": "boolean",
+          "description": "False until validated export artifacts exist. Never advertise fake downloads."
+        },
+        "artifact_paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Repo-relative paths to validated export artifacts only."
+        },
+        "generated_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      }
+    },
+    "body_path": {
+      "type": "string",
+      "description": "Repo-relative path to the markdown body for this derivative."
+    },
+    "visibility": {
+      "type": "string",
+      "enum": ["private", "public", "restricted_review"],
+      "default": "private"
+    }
+  }
+}

@@ -1,0 +1,76 @@
+program: BHAVA_UNIFIED_PLATFORM_BUILD_V2
+prepared: '2026-08-10'
+execution_branch: develop
+promotion_branch: main
+feature_branches_allowed: false
+pr_to_develop_allowed: false
+final_promotion_pr_required: true
+completed_before_program:
+  - id: R00-STORY-001-025-CLOSURE
+    state: CLOSED
+    production_main: 0fb429c6c9cbbd195628857c8f6879f931ed4eba
+    content_tag: bhava-content-001-025-v1
+    content_sha256: 2dda0485a085f93d222a0ebd1d27b620df408990e7673a11b9603de68ff230a9
+  - id: P01C-KNOWLEDGE-ENGINEERING-FOUNDATION
+    state: IMPLEMENTED_PRIVATE_FOUNDATION
+    note: 'No real source-adequate record was published.'
+program_milestones:
+  - id: M1-VISIBLE-SHELL-AND-INTAKE
+    state: COMPLETE
+    started_at: '2026-08-10T20:57:07Z'
+    completed_at: '2026-08-10T21:30:00Z'
+    baseline_develop_sha: d4d68d4f255b8c98e04c35a3d287a20cd6e13442
+    release_family: 'Knowledge platform visibility'
+    note: >-
+      Four-pillar home/nav; Available vs Planned Library/Learning shelves; public_story_max
+      default 25; 12-PDF private intake metadata; next.dev Edge eval guard (strip EvalSourceMap
+      for edge). Supported local UX path remains Production/standalone when Edge eval regresses.
+  - id: M2-KNOWLEDGE-SYSTEM-AND-FACTORY
+    state: COMPLETE
+    started_at: '2026-08-10T21:08:00Z'
+    completed_at: '2026-08-10T21:20:00Z'
+    includes: [R01, R02, R03, R04]
+    note: >-
+      Page Template V1 frozen; 12 private SOURCE_INCOMPLETE dossier stubs; batch_25 manifest
+      with only existing public Bhava-original guides/FAQs marked public; 50-item private draft
+      factory (dry-run, idempotent, zero publication authority). Golden scripture page NOT published:
+      TOP-0147 and all 12 intake PDFs remain source-blocked (missing exact edition/locator,
+      Devanagari, IAST, English, rights clearance). See content/knowledge/source_intake/GOLDEN_PAGE_DECISION.md.
+  - id: M3-LEARNING-AND-PUBLICATION
+    state: COMPLETE
+    started_at: '2026-08-10T21:08:00Z'
+    completed_at: '2026-08-10T21:25:00Z'
+    includes: [R05, R06]
+    note: >-
+      Learning hub with seven honest pathways; derivative schema + two draft Bhava-original
+      samples from public Knowledge guides; six printable templates; private publishing handoff
+      scaffold with Dauji/Bhava identity metadata. No scripture fabrication.
+  - id: M4-VANI-AUDIO-SCHEDULER
+    state: COMPLETE
+    started_at: '2026-08-10T21:08:00Z'
+    completed_at: '2026-08-10T21:25:00Z'
+    includes: [R07, R08]
+    note: >-
+      Vani taxonomy + governance page (no fabricated quotes); audio pilot scaffold dry-run only;
+      private draft scheduler with zero publish/story-generation authority. Story MWF scheduler unchanged.
+  - id: M5-3D-RESEARCH-READINESS
+    state: COMPLETE
+    started_at: '2026-08-10T21:08:00Z'
+    completed_at: '2026-08-10T21:25:00Z'
+    includes: [R09]
+    note: >-
+      Offline 3D/motion-lab contract only; no public nav/runtime 3D; prefers-reduced-motion reinforced.
+global_rules:
+  accepted_story_packages_immutable: true
+  story_026_public: false
+  private_originals_in_git: false
+  automatic_publication: false
+  max_same_root_cause_cycles: 3
+  force_push: false
+  history_rewrite: false
+source_blockers:
+  - id: OD-14-NRSIMHA-AND-INTAKE-DOSSIERS
+    blocks: 'Scripture golden page and any public prayer/shloka package from intake PDFs'
+    missing: 'Exact edition/locator, Devanagari, IAST, English bodies, rights clearance'
+    public_impact: 'No fake scripture pages; Knowledge remains Bhava-original guides only'
+    next_action: 'Owner supplies authorized editions → re-evaluate dossiers → publish golden page'

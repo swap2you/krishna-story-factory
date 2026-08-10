@@ -4,7 +4,9 @@ param(
   [int]$PreferredWebPort = -1,
   [int]$PreferredApiPort = -1,
   [ValidateSet("Development", "Production")]
-  [string]$Mode = "Development",
+  # Production is the supported local UX path (standalone). Development strips
+  # Edge EvalSourceMap for middleware; prefer -Mode Production for browser review.
+  [string]$Mode = "Production",
   [switch]$NoBrowser
 )
 
@@ -60,7 +62,7 @@ $saved = @{
 
 # Local-only: raise the public ceiling to the highest complete package under output/
 # so private next stories (e.g. 021) can be previewed without changing production pins.
-$localStoryMax = 20
+$localStoryMax = 25
 Get-ChildItem -Path (Join-Path $ProjectRoot "output") -Directory -ErrorAction SilentlyContinue | ForEach-Object {
   if ($_.Name -match '^(\d{3})_') {
     $n = [int]$Matches[1]
@@ -75,7 +77,7 @@ Get-ChildItem -Path (Join-Path $ProjectRoot "output") -Directory -ErrorAction Si
 }
 $env:BHAVA_PUBLIC_STORY_MAX = "$localStoryMax"
 $env:NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX = "$localStoryMax"
-Write-Output "Local public_story_max preview ceiling: $localStoryMax (production pin remains 20 unless explicitly released)."
+Write-Output "Local public_story_max preview ceiling: $localStoryMax (production pin defaults to 25)."
 
 $env:BHAVA_API_ORIGIN = $apiUrl
 $env:BHAVA_API_URL = "$apiUrl/api/v1"

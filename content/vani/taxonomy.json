@@ -1,0 +1,90 @@
+{
+  "version": "1",
+  "milestone": "M4-VANI-AUDIO-SCHEDULER",
+  "status": "planned",
+  "note": "Taxonomy only. No published quotations or transcripts.",
+  "public_taxonomy": [
+    {
+      "id": "lectures",
+      "title": "Lectures",
+      "audience": "All ages with parental context",
+      "lifecycle": "planned",
+      "visibility": "public_label_only"
+    },
+    {
+      "id": "morning-walks",
+      "title": "Morning Walks",
+      "audience": "Teenagers and adults",
+      "lifecycle": "planned",
+      "visibility": "public_label_only"
+    },
+    {
+      "id": "conversations",
+      "title": "Conversations",
+      "audience": "Older students and parents",
+      "lifecycle": "planned",
+      "visibility": "public_label_only"
+    },
+    {
+      "id": "letters",
+      "title": "Letters",
+      "audience": "Teachers and parents",
+      "lifecycle": "planned",
+      "visibility": "public_label_only"
+    },
+    {
+      "id": "interviews",
+      "title": "Interviews",
+      "audience": "Teenagers and adults",
+      "lifecycle": "planned",
+      "visibility": "public_label_only"
+    },
+    {
+      "id": "pastimes-remembrances",
+      "title": "Pastimes & Remembrances",
+      "audience": "All ages",
+      "lifecycle": "planned",
+      "visibility": "public_label_only"
+    },
+    {
+      "id": "for-children",
+      "title": "For Children",
+      "audience": "Ages 5–10",
+      "lifecycle": "planned",
+      "visibility": "public_label_only"
+    },
+    {
+      "id": "for-teenagers",
+      "title": "For Teenagers",
+      "audience": "Ages 11–17",
+      "lifecycle": "planned",
+      "visibility": "public_label_only"
+    }
+  ],
+  "private_taxonomy": [
+    {
+      "id": "source_tier",
+      "values": ["A1", "A2", "B", "C", "D"],
+      "note": "Private editorial facet; D discovery-only cannot publish."
+    },
+    {
+      "id": "reviewer_state",
+      "values": [
+        "draft",
+        "source_review",
+        "devotional_review",
+        "rights_review",
+        "approved_private",
+        "blocked"
+      ]
+    },
+    {
+      "id": "audience_depth",
+      "values": ["little_learner", "explorer", "teen", "study"]
+    },
+    {
+      "id": "correction_route",
+      "public_paths": ["/knowledge/corrections", "/knowledge/report-link"]
+    }
+  ]
+}

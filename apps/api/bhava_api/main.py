@@ -206,9 +206,10 @@ def create_app() -> FastAPI:
     app.include_router(knowledge_router)
 
     if not public_mode:
-        from .routes import local_factory
+        from .routes import draft_scheduler, local_factory
 
         app.include_router(local_factory.router)
+        app.include_router(draft_scheduler.router)
 
     @app.get("/healthz", include_in_schema=False)
     def healthz() -> dict[str, str]:
