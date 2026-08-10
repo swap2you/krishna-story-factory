@@ -26,21 +26,19 @@ const nextConfig: NextConfig = {
       ...config.resolve.alias,
       canvas: false,
     };
-    // Edge middleware forbids eval(); Next's default eval-source-map in `next
-    // dev` crashes with "Code generation from strings disallowed".
-    const isEdge =
-      nextRuntime === "edge" ||
-      config.name === "edge-server" ||
-      String(config.name || "").includes("middleware");
-    if (dev && isEdge) {
+    // Edge middleware forbids eval(). Next's EvalSourceMapDevToolPlugin injects
+    // eval() into the middleware bundle in `next dev`, which crashes with
+    // "Code generation from strings disallowed". Strip that plugin for edge
+    // only (Next also reverts custom `devtool` changes in development).
+    if (dev && nextRuntime === "edge") {
       config.devtool = false;
-      // Next may re-assign devtool after this hook; lock it down.
-      const plugin = {
-        apply(compiler: { options: { devtool?: string | false } }) {
-          compiler.options.devtool = false;
-        },
-      };
-      config.plugins = [...(config.plugins || []), plugin];
+      config.plugins = (config.plugins || []).filter((plugin: { constructor?: { name?: string } }) => {
+        const name = plugin?.constructor?.name ?? "";
+        return (
+          name !== "EvalSourceMapDevToolPlugin" &&
+          name !== "EvalDevToolModulePlugin"
+        );
+      });
     }
     return config;
   },

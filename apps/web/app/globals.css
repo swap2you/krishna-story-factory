@@ -201,6 +201,17 @@ main { flex: 1; }
   background-image: linear-gradient(145deg, #0d2748, #1f3f66);
 }
 .collection-card:hover { transform: translateY(-4px); }
+.collection-card--disabled,
+.collection-card[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.9;
+  text-decoration: none;
+  color: inherit;
+}
+.collection-card--disabled:hover,
+.collection-card[aria-disabled="true"]:hover {
+  transform: none;
+}
 .collection-card:focus-visible {
   outline: 3px solid #e7b550;
   outline-offset: 3px;
@@ -523,10 +534,14 @@ main { flex: 1; }
   .brand-sub { display: none; }
   .story-sidebar { grid-template-columns: 110px 1fr; padding: 1rem; }
 }
+/* M5: public motion stays CSS-only; honor OS/browser reduced-motion (no 3D/autoplay mascot). */
 @media (prefers-reduced-motion: reduce) {
   .hero-art img, .story-card, .hero-grid { animation: none !important; }
-  .story-card:hover, .collection-card:hover, .asset-tile:hover, .mode-card.is-active { transform: none; }
-  .story-poster-wash { transition: none; }
+  .story-card:hover, .collection-card:hover, .asset-tile:hover, .mode-card.is-active,
+  .category-card:hover, .canto-list a:hover { transform: none; }
+  .story-poster-wash,
+  .category-card,
+  .canto-list a { transition: none; }
   .mini-player-btn:hover,
   .mini-player-bar { transition: none; }
 }
@@ -1544,6 +1559,13 @@ main { flex: 1; }
   font-size: 0.9rem;
 }
 .knowledge-status--source_blocked { background: #f7efe2; }
+.knowledge-status--guide { background: #eef5ef; border-color: #c5d4c8; }
+.knowledge-article-shell--focus .knowledge-article-body {
+  margin-inline: auto;
+}
+.knowledge-article-shell .knowledge-article-body {
+  margin: 1.25rem 0 1.75rem;
+}
 .knowledge-banner {
   border-left: 4px solid var(--bhava-gold, #d4a84b);
   padding: 0.75rem 1rem;

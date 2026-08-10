@@ -1,10 +1,14 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const destinations = [
+  { label: "Learning Hub", href: /\/learning\/?$/ },
   { label: "Children & Youth", href: /\/learning\/children-youth\/?$/ },
+  { label: "Families", href: /\/learning\/families\/?$/ },
   { label: "Sunday School", href: /\/sunday-school\/?$/ },
   { label: "For Teachers", href: /\/teachers\/?$/ },
   { label: "For Preachers", href: /\/preachers\/?$/ },
+  { label: "Gurukula / Homeschool", href: /\/learning\/gurukula-homeschool\/?$/ },
+  { label: "Festival use", href: /\/learning\/festivals\/?$/ },
   { label: "Printables", href: /\/printables\/?$/ },
 ] as const;
 

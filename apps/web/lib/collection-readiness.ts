@@ -6,7 +6,11 @@
  * Planned = page exists but content is taxonomy-only or coming soon.
  */
 
+import { PUBLIC_STORY_MAX } from "@/lib/public-boundary";
+
 export type CollectionStatus = "active" | "planned";
+
+const STORY_CEILING = String(PUBLIC_STORY_MAX).padStart(3, "0");
 
 export interface CollectionEntry {
   slug: string;
@@ -18,7 +22,9 @@ export interface CollectionEntry {
 
 const READINESS: Record<string, CollectionStatus> = {
   "krishna-book": "active",
+  library: "active",
   knowledge: "active",
+  learning: "active",
   printables: "active",
   "teacher-resources": "planned",
   "srimad-bhagavatam": "planned",
@@ -43,27 +49,36 @@ export function isCollectionActive(slug: string): boolean {
   return getCollectionStatus(slug) === "active";
 }
 
+/** Four public pillars shown on Home — honest status labels. */
 export const ACTIVE_AREAS: CollectionEntry[] = [
   {
-    slug: "krishna-book",
+    slug: "library",
     status: "active",
-    href: "/library/krishna-book",
-    title: "Krishna Book Stories",
-    description: "Published bedtime packages with audio and printables.",
+    href: "/library",
+    title: "Library",
+    description: `Krishna Book Stories 001–${STORY_CEILING} with audio, text, and printables.`,
   },
   {
     slug: "knowledge",
     status: "active",
     href: "/knowledge",
-    title: "Knowledge Library",
-    description: "Governed pathways, questions, and reviewed guides.",
+    title: "Knowledge",
+    description: "Source-led guides, pathways, and reviewed Q&A — not a random blog.",
   },
   {
-    slug: "printables",
+    slug: "learning",
     status: "active",
-    href: "/printables",
-    title: "Printables",
-    description: "Posters, coloring, and activity sheets from real packages.",
+    href: "/learning",
+    title: "Learning",
+    description:
+      "Pathways for children, families, Sunday School, teachers, preachers, Gurukula/homeschool, and festival use.",
+  },
+  {
+    slug: "prabhupada-vani",
+    status: "planned",
+    href: "/prabhupada-vani",
+    title: "Prabhupāda Vāṇī",
+    description: "Governed teaching surface — taxonomy ready; curated records later.",
   },
 ];
 
@@ -87,14 +102,14 @@ export const GROWING_NEXT: CollectionEntry[] = [
     status: "planned",
     href: "/teachers",
     title: "Teacher Resources",
-    description: "Class packs and classroom pathways.",
+    description: "Class packs and classroom pathways still growing.",
   },
   {
-    slug: "prabhupada-vani",
+    slug: "srimad-bhagavatam",
     status: "planned",
-    href: "/prabhupada-vani",
-    title: "Prabhupāda Vāṇī",
-    description: "Source-governed taxonomy for future reviewed records.",
+    href: "/library/srimad-bhagavatam",
+    title: "Śrīmad-Bhāgavatam",
+    description: "Canto shelves prepared; stories not released yet.",
   },
   {
     slug: "devotee-lives",
@@ -126,4 +141,5 @@ export const LIBRARY_MENU_PRACTICE = [
 export const LIBRARY_MENU_EDUCATOR = [
   { slug: "teacher-resources", href: "/teachers", label: "Teacher Resources" },
   { slug: "knowledge", href: "/knowledge", label: "Knowledge Library" },
+  { slug: "learning", href: "/learning", label: "Learning Hub" },
 ] as const;

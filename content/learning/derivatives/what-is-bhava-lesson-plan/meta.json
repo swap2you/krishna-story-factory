@@ -1,0 +1,51 @@
+{
+  "id": "ld-lesson-what-is-bhava",
+  "slug": "what-is-bhava-lesson-plan",
+  "title": "Lesson plan: What is Bhāva?",
+  "derivative_type": "lesson_plan",
+  "learning_objective": "Learners can explain, in their own words, that Bhāva is an independent curated devotional-learning portal that begins with Krishna Book bedtime stories, values source fidelity, and is not an official BBT publication.",
+  "audience": {
+    "profiles": ["teachers", "sunday_school", "gurukula_homeschool"],
+    "age_range": {
+      "min": 10,
+      "max": null,
+      "label": "Ages 10+ with a facilitator (or adult self-study)"
+    }
+  },
+  "canonical_record_version": {
+    "record_slug": "what-is-bhava",
+    "record_id": "kl-about-bhava",
+    "record_version": "published-public-v1",
+    "content_path": "content/knowledge/articles/what-is-bhava/"
+  },
+  "source_lineage": {
+    "origin": "adapted_from_bhava_knowledge",
+    "notes": "Bhāva-original lesson framing derived only from the public Knowledge guide what-is-bhava. No scripture quotations invented or copied.",
+    "forbidden_content": [
+      "invented_scripture_quotes",
+      "pdf_body_copies",
+      "bbt_full_text_republication"
+    ]
+  },
+  "review_state": "draft",
+  "answer_key_relation": {
+    "kind": "none",
+    "paired_derivative_id": null,
+    "notes": "Discussion prompts only; no scored assessment in this sample."
+  },
+  "asset_provenance": {
+    "rights_status": "bhava_original",
+    "steward": "Svarna Gauranga Das",
+    "assets": [],
+    "notes": "Markdown body only in this package; no export PDF/DOCX until validation passes."
+  },
+  "export_manifest": {
+    "export_version": "0.1.0-draft",
+    "formats": ["markdown"],
+    "downloadable": false,
+    "artifact_paths": [],
+    "generated_at": null
+  },
+  "body_path": "content/learning/derivatives/what-is-bhava-lesson-plan/body.md",
+  "visibility": "private"
+}

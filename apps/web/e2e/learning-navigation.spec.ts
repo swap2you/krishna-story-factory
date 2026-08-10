@@ -38,7 +38,17 @@ test.describe("learning navigation", () => {
     await expect(learning).toHaveAttribute("aria-expanded", "true");
     const menu = learningLinks(page, mobile);
     await expect(menu).toBeVisible();
-    for (const label of ["Children & Youth", "Sunday School", "For Teachers", "For Preachers", "Printables"]) {
+    for (const label of [
+      "Learning Hub",
+      "Children & Youth",
+      "Families",
+      "Sunday School",
+      "For Teachers",
+      "For Preachers",
+      "Gurukula / Homeschool",
+      "Festival use",
+      "Printables",
+    ]) {
       await expect(menu.getByRole("link", { name: label })).toBeVisible();
     }
     await page.keyboard.press("Escape");

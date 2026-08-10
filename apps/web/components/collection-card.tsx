@@ -10,14 +10,18 @@ export function CollectionCard({
   title,
   description,
   status,
+  interactive,
 }: {
   href: string;
   slug: string;
   title: string;
   description: string;
   status?: CollectionStatus;
+  /** When false, render a non-link shelf (planned taxonomy without published content). */
+  interactive?: boolean;
 }) {
   const resolvedStatus = status ?? getCollectionStatus(slug);
+  const isInteractive = interactive ?? resolvedStatus === "active";
   const cover = collectionCoverPath(slug) ?? collectionCoverPath("krishna-book");
   const art = getCollectionArt(slug);
   // Focal positions via CSS vars only — avoid inline objectPosition so mobile
@@ -27,13 +31,18 @@ export function CollectionCard({
     ["--collection-focal-mobile" as string]:
       art.objectPositionMobile ?? art.objectPositionDesktop,
   } as CSSProperties;
-  return (
-    <Link
-      href={href}
-      className={`collection-card collection-card--art${cover ? "" : " collection-card--panel"}`}
-      data-contrast-safe="true"
-      data-collection-slug={slug}
-    >
+
+  const className = [
+    "collection-card",
+    "collection-card--art",
+    cover ? "" : "collection-card--panel",
+    isInteractive ? "" : "collection-card--disabled",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const body = (
+    <>
       {cover ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -52,9 +61,33 @@ export function CollectionCard({
         <h3>{title}</h3>
         <p>{description}</p>
         <span className={`editorial-status ${resolvedStatus === "active" ? "active" : "planned"}`}>
-          {resolvedStatus === "active" ? "Active" : "Planned"}
+          {resolvedStatus === "active" ? "Available" : "Planned"}
         </span>
       </div>
+    </>
+  );
+
+  if (!isInteractive) {
+    return (
+      <article
+        className={className}
+        data-contrast-safe="true"
+        data-collection-slug={slug}
+        aria-disabled="true"
+      >
+        {body}
+      </article>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className={className}
+      data-contrast-safe="true"
+      data-collection-slug={slug}
+    >
+      {body}
     </Link>
   );
 }

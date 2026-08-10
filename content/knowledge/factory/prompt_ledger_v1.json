@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "ledger_id": "knowledge_draft_factory_prompt_ledger_v1",
+  "authority": {
+    "approve": false,
+    "merge": false,
+    "deploy": false,
+    "publish": false
+  },
+  "templates": [
+    {
+      "id": "draft_scaffold_v1",
+      "purpose": "Private metadata scaffold for a Knowledge draft (no scripture bodies)",
+      "path": "content/knowledge/factory/templates/draft_scaffold_v1.md",
+      "stages": ["scaffold"]
+    },
+    {
+      "id": "duplicate_check_v1",
+      "purpose": "Detect duplicate roadmap/intake/package ids before scaffolding",
+      "path": "content/knowledge/factory/templates/duplicate_check_v1.md",
+      "stages": ["duplicate_check"]
+    }
+  ],
+  "notes": "Ledger paths are contractual references for the private draft factory. Prompts must never invent Devanāgarī/IAST/English scripture."
+}

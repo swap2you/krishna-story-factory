@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bhava://content/audio/pilot/episode.schema.json",
+  "title": "Bhāva audio pilot episode pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "episode_id",
+    "status",
+    "voice_clone",
+    "auto_publish",
+    "ai_educational_disclosure",
+    "source_notes",
+    "timecodes",
+    "transcript_equivalence_review",
+    "listening_qa"
+  ],
+  "properties": {
+    "episode_id": { "type": "string" },
+    "title": { "type": ["string", "null"] },
+    "status": {
+      "type": "string",
+      "enum": ["dry_run_scaffold", "draft_private", "blocked", "approved_private"]
+    },
+    "host_mode": {
+      "type": "string",
+      "const": "educator_host"
+    },
+    "voice_clone": { "type": "boolean", "const": false },
+    "auto_publish": { "type": "boolean", "const": false },
+    "ai_educational_disclosure": {
+      "type": "object",
+      "required": ["required", "statement"],
+      "properties": {
+        "required": { "type": "boolean", "const": true },
+        "statement": {
+          "type": ["string", "null"],
+          "description": "Public-facing disclosure when any AI assistive audio/script is used."
+        }
+      }
+    },
+    "approved_pack_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Record IDs of approved private/public packs only."
+    },
+    "source_notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pack_ref": { "type": ["string", "null"] },
+          "locator": { "type": ["string", "null"] },
+          "note": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "timecodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "start_sec": { "type": ["number", "null"] },
+          "end_sec": { "type": ["number", "null"] },
+          "label": { "type": ["string", "null"] },
+          "source_ref": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "transcript_equivalence_review": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["not_started", "in_review", "pass", "fail"]
+        },
+        "reviewer": { "type": ["string", "null"] },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "listening_qa": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["not_started", "in_review", "pass", "fail"]
+        },
+        "notes": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

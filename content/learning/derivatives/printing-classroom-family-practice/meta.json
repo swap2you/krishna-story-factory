@@ -1,0 +1,52 @@
+{
+  "id": "ld-family-printing-classroom",
+  "slug": "printing-classroom-family-practice",
+  "title": "Family practice sheet: Printing and classroom use",
+  "derivative_type": "family_practice",
+  "learning_objective": "Families can locate released story printables, choose an age-appropriate activity, and use materials at home without presenting them as official BBT publications.",
+  "audience": {
+    "profiles": ["families", "sunday_school", "teachers"],
+    "age_range": {
+      "min": 5,
+      "max": null,
+      "label": "Ages 5+ with a parent or teacher"
+    }
+  },
+  "canonical_record_version": {
+    "record_slug": "printing-and-classroom-use",
+    "record_id": "kl-printables",
+    "record_version": "published-public-v1",
+    "content_path": "content/knowledge/articles/printing-and-classroom-use/"
+  },
+  "source_lineage": {
+    "origin": "adapted_from_bhava_knowledge",
+    "notes": "Bhāva-original family practice framing derived only from the public Knowledge guide printing-and-classroom-use. No scripture quotations invented or copied.",
+    "forbidden_content": [
+      "invented_scripture_quotes",
+      "pdf_body_copies",
+      "fake_download_links",
+      "bbt_full_text_republication"
+    ]
+  },
+  "review_state": "draft",
+  "answer_key_relation": {
+    "kind": "none",
+    "paired_derivative_id": null,
+    "notes": "Home practice checklist only; no answer key."
+  },
+  "asset_provenance": {
+    "rights_status": "bhava_original",
+    "steward": "Svarna Gauranga Das",
+    "assets": [],
+    "notes": "This sheet points to the live Printables hub for story assets; it does not embed or redistribute package PDFs."
+  },
+  "export_manifest": {
+    "export_version": "0.1.0-draft",
+    "formats": ["markdown"],
+    "downloadable": false,
+    "artifact_paths": [],
+    "generated_at": null
+  },
+  "body_path": "content/learning/derivatives/printing-classroom-family-practice/body.md",
+  "visibility": "private"
+}

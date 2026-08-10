@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageIntro } from "@/components/page-intro";
-import { HelpfulVote } from "@/components/helpful-vote";
+import { ArticleRecordShell } from "@/components/knowledge/article-record-shell";
 import { getBySlug, listArticles } from "@/lib/knowledge/loader";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -24,29 +22,10 @@ export default async function KnowledgeArticlePage({ params }: Props) {
   if (!doc || !doc.body_md) notFound();
 
   return (
-    <>
-      <PageIntro eyebrow="Knowledge article" title={doc.title} body={doc.summary} />
-      <section className="section">
-        <div className="container prose" style={{ maxWidth: 760 }}>
-          <p className="hint">
-            Type: {doc.content_type}
-            {doc.pathway ? ` · Pathway: ${doc.pathway}` : ""}
-            {" · "}
-            Review: {doc.review_state}
-          </p>
-          <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{doc.body_md}</pre>
-          <div style={{ marginTop: "1.5rem" }}>
-            <HelpfulVote resourceId={doc.id || doc.slug} />
-          </div>
-          <p className="hint" style={{ marginTop: "2rem" }}>
-            <Link href="/knowledge">← Knowledge home</Link>
-            {" · "}
-            <Link href="/knowledge/corrections">Suggest a correction</Link>
-            {" · "}
-            <Link href="/knowledge/report-link">Report broken link</Link>
-          </p>
-        </div>
-      </section>
-    </>
+    <section className="section">
+      <div className="container" style={{ maxWidth: 860 }}>
+        <ArticleRecordShell doc={doc} />
+      </div>
+    </section>
   );
 }

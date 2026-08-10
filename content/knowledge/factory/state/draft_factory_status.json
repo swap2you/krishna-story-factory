@@ -1,0 +1,2940 @@
+{
+  "schema_version": "1.0",
+  "factory_version": "1.0.0",
+  "run_id": "kf-m2-dry-2026-08-10T21:12:15Z",
+  "dry_run": true,
+  "prompt_ledger": "content/knowledge/factory/prompt_ledger_v1.json",
+  "stages": [
+    "queue",
+    "scaffold",
+    "duplicate_check",
+    "ledger",
+    "cost_tally"
+  ],
+  "queue_size": 50,
+  "queue": [
+    {
+      "id": "kl-about-bhava",
+      "title": "What is Bhāva?",
+      "kind": "article",
+      "batch_state": "public",
+      "public": true,
+      "source": "batch_25_manifest_v1",
+      "ord": 1,
+      "idempotency_seed": "8f6a65345ea9eb8ec3105aac3e3f7fa7841d1abba87eb4dafe06cc9ecedde295"
+    },
+    {
+      "id": "kl-source-permissions",
+      "title": "Sources and permissions",
+      "kind": "article",
+      "batch_state": "public",
+      "public": true,
+      "source": "batch_25_manifest_v1",
+      "ord": 2,
+      "idempotency_seed": "2f08250599fa5b5f1574ebb126a00f372d231b6ab0ec59671c3924596a8c10e0"
+    },
+    {
+      "id": "kl-printables",
+      "title": "Printing and classroom use",
+      "kind": "article",
+      "batch_state": "public",
+      "public": true,
+      "source": "batch_25_manifest_v1",
+      "ord": 3,
+      "idempotency_seed": "ee627d9ce570a878365631181c2d3b4c35001e74c0d4c4ced953bf8ec67810df"
+    },
+    {
+      "id": "kl-q-what-is-bhava",
+      "title": "What is Bhāva? (FAQ)",
+      "kind": "question",
+      "batch_state": "public",
+      "public": true,
+      "source": "batch_25_manifest_v1",
+      "ord": 4,
+      "idempotency_seed": "09b0d90a675f179678c66df8bf5ee7e600137a5bbe438bfc34a00da1f8c7efce"
+    },
+    {
+      "id": "kl-q-official-bbt",
+      "title": "Is Bhāva official BBT?",
+      "kind": "question",
+      "batch_state": "public",
+      "public": true,
+      "source": "batch_25_manifest_v1",
+      "ord": 5,
+      "idempotency_seed": "f757bd3c4f2fd5da3107306f168f44ae745686ebda4fe3f3339421b7e83d84d6"
+    },
+    {
+      "id": "kl-q-child-data",
+      "title": "Does Bhāva collect child data?",
+      "kind": "question",
+      "batch_state": "public",
+      "public": true,
+      "source": "batch_25_manifest_v1",
+      "ord": 6,
+      "idempotency_seed": "e1bc04afd42a6bf6ffe8d38216d2b3634bbcc3e7e638e3af6c8c7fdb8bead469"
+    },
+    {
+      "id": "TOP-0147",
+      "title": "Sri Nrsimha Pranama and Prayers",
+      "kind": "roadmap",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 7,
+      "idempotency_seed": "c1d46cde2df711c3ed716ab5457e94a7d7a5c00e823014af3173d8717da2b0e0"
+    },
+    {
+      "id": "TOP-0148",
+      "title": "Nrsimha Arati",
+      "kind": "roadmap",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 8,
+      "idempotency_seed": "c29993691a03c5b7939cffec336c354cd8e932cbd6caf3f5c82f70ca89467233"
+    },
+    {
+      "id": "INTAKE-01",
+      "title": "Letter to Hayagriva TW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 9,
+      "idempotency_seed": "f9639aa72b866ba5ec3beb1613a4d78fb8f54048c58b9a6a814efd0875be4688"
+    },
+    {
+      "id": "INTAKE-02",
+      "title": "SB 2-3-22 TW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 10,
+      "idempotency_seed": "27005ea1fede3694468c4d0d79554ca554016f8b9a84cefcd09aba03cb8f0682"
+    },
+    {
+      "id": "INTAKE-03",
+      "title": "NoD ch 13 TW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 11,
+      "idempotency_seed": "bc3aa27f99e7579c184b030b5393be914e10e07b1c018f0631515300b479c8bc"
+    },
+    {
+      "id": "INTAKE-04",
+      "title": "Cc Madhya 15.108 TW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 12,
+      "idempotency_seed": "d38f04132decc4efe1baac32602d209bc026e960fe46eb37697699efa6ab1bd9"
+    },
+    {
+      "id": "INTAKE-05",
+      "title": "Letters from Srila PrabhupadaTW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 13,
+      "idempotency_seed": "a72bb9a1dd1905fbc863034d613b52b584d94b53f454d45a4af7fada29845fc2"
+    },
+    {
+      "id": "INTAKE-06",
+      "title": "SB 7.5.23-24TW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 14,
+      "idempotency_seed": "6465f7899349e22f88e5c43f109c1afc495d1e27655733e6b960577b5f91161b"
+    },
+    {
+      "id": "INTAKE-07",
+      "title": "NOD chapter 8TW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 15,
+      "idempotency_seed": "21c4b479dda58f0e619d42d20a46871657f6d1ae156f4358b94053ef9325c174"
+    },
+    {
+      "id": "INTAKE-08",
+      "title": "Offenses in deity worshipTW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 16,
+      "idempotency_seed": "5e68fcd221af2e39073b87534b450d3bfd9b4f0c146e04cfb3e62685d562e922"
+    },
+    {
+      "id": "INTAKE-09",
+      "title": "NoD ch 9 TW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 17,
+      "idempotency_seed": "eee5e7eef2f998df6a80ffdf4912026e88539d4595e1400fe818221b24510308"
+    },
+    {
+      "id": "INTAKE-10",
+      "title": "Who are you offending - HG Mahatma Dasa.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 18,
+      "idempotency_seed": "49d264a701001d813885220d6e78daccbc81251ac9832a924c1ab6e43375ca56"
+    },
+    {
+      "id": "INTAKE-11",
+      "title": "Dangers of Vaisnava Aparadha - HH Radhanath Swami.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 19,
+      "idempotency_seed": "9e9504b0fc0e8fd9e5c1a6da991cef4b5ca4e9dde6e8cd3475fc252a28ef31cb"
+    },
+    {
+      "id": "INTAKE-12",
+      "title": "Cleanliness and PunctualityTW.pdf",
+      "kind": "intake_pdf",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 20,
+      "idempotency_seed": "70844765f3fccb15d9d1fef551b143aa3eceb4c06bb6bddfd7aed3b8fcf731e3"
+    },
+    {
+      "id": "TOP-0141",
+      "title": "Srila Prabhupada Pranati",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 21,
+      "idempotency_seed": "5fcbe81bc7febd156559efb14d42d388b559bca16f301b5591e642ad0d3438d5"
+    },
+    {
+      "id": "TOP-0142",
+      "title": "Guru-pranama",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 22,
+      "idempotency_seed": "27806b1544cf4b0e92ee1eaa4e23fe4aa48db22a52a3a22a95a785430acb234c"
+    },
+    {
+      "id": "TOP-0146",
+      "title": "Hare Krishna Maha-mantra",
+      "kind": "roadmap",
+      "batch_state": "blocked",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 23,
+      "idempotency_seed": "04738e1520ac9525b6ddea2df66d881be9df351b1d41de4788c781bf15d55241"
+    },
+    {
+      "id": "TOP-0001",
+      "title": "What Sanatana-dharma Means",
+      "kind": "roadmap",
+      "batch_state": "review",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 24,
+      "idempotency_seed": "b6a3b21109ae51095b4fed04b094400041db75d7fa122fb943b1b8eed7f945e5"
+    },
+    {
+      "id": "KF-P01C-FIXTURE-001",
+      "title": "P01C Structural Learning-Page Fixture",
+      "kind": "package_fixture",
+      "batch_state": "review",
+      "public": false,
+      "source": "batch_25_manifest_v1",
+      "ord": 25,
+      "idempotency_seed": "95593c0aa5dd0c667c33ef0998108db152c3257cb726b641b319b0faef9fcc33"
+    },
+    {
+      "id": "TOP-0002",
+      "title": "The Difference Between Dharma and Religion",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 26,
+      "idempotency_seed": "932178a29b4c81038195033f8739a225465683a24d34d1022d923cd16cf1f96d"
+    },
+    {
+      "id": "TOP-0003",
+      "title": "The Self: Atma and the Body",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 27,
+      "idempotency_seed": "f6d13bd4d762afe27e73c8e55573a10302536ee8e5fa3cde6724954164063ae3"
+    },
+    {
+      "id": "TOP-0004",
+      "title": "Karma and Reincarnation",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 28,
+      "idempotency_seed": "8484c644b7b74a2ba1875e3fd5e0bdd2c060e6f664265b36de94c9b519133da1"
+    },
+    {
+      "id": "TOP-0005",
+      "title": "The Three Modes of Material Nature",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 29,
+      "idempotency_seed": "8b2d994b6c21248c83eb680f08fa0090a45b7e8d1f80b55c9b445ce6b4bb1f54"
+    },
+    {
+      "id": "TOP-0006",
+      "title": "Time, Creation, and Dissolution",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 30,
+      "idempotency_seed": "69a4f92a5b953b766d76116a184f04dff03dfc3c568ddc70e8fced6e9171370e"
+    },
+    {
+      "id": "TOP-0007",
+      "title": "The Goal of Human Life",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 31,
+      "idempotency_seed": "c466e04d736adc2b782817457660255f9ac280e98fb61d76964dafa3516214b8"
+    },
+    {
+      "id": "TOP-0008",
+      "title": "God, the Living Being, and Material Nature",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 32,
+      "idempotency_seed": "c343283d2108c9d50cb604420e88c5c2ccb1e54126843d0290f99f6e5d02ba40"
+    },
+    {
+      "id": "TOP-0009",
+      "title": "What Is Bhakti-yoga?",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 33,
+      "idempotency_seed": "17aadd1df2ec28a6894b02de9e9603b14187e561ffb55f6a18e595f0c7e09726"
+    },
+    {
+      "id": "TOP-0010",
+      "title": "The Authority of Guru, Sadhu, and Sastra",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 34,
+      "idempotency_seed": "89523c647ef1a5ad4c9a8a6ccefebe3c043bc48199c9d14e95c7b02675d7734d"
+    },
+    {
+      "id": "TOP-0011",
+      "title": "The Four Purusarthas and the Goal of Prema",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 35,
+      "idempotency_seed": "e7f9c680aef11ee61877123271cb341ba42fe55401fc60887efd138442744341"
+    },
+    {
+      "id": "TOP-0012",
+      "title": "The Four Yugas",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 36,
+      "idempotency_seed": "ff023916f10da8117ebbeb068be74e394af2aa2e802984cbbf874ce44416f2cd"
+    },
+    {
+      "id": "TOP-0013",
+      "title": "The Cosmic Manifestation: A Beginner Overview",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 37,
+      "idempotency_seed": "5a90d235d97810b9c04c24998fa72988feb1428d9c2fa28dfc6b50a7b9b9f560"
+    },
+    {
+      "id": "TOP-0014",
+      "title": "Sacred Sound and Mantra",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 38,
+      "idempotency_seed": "625069fb58ba721c2a8c28b60f78bad5d2b4dc5310eb2d026532634f6a674f30"
+    },
+    {
+      "id": "TOP-0015",
+      "title": "Why Scripture Is Heard in Parampara",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 39,
+      "idempotency_seed": "be35e63a63add454d657d371f844944f5af09613b0791781a3ec7f5a0095524b"
+    },
+    {
+      "id": "TOP-0016",
+      "title": "The Vedas: Scope and Structure",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 40,
+      "idempotency_seed": "25c2bfae8ecb1f93701f8067e62d0347fd05a33e6594c756a65d873c3f17db5a"
+    },
+    {
+      "id": "TOP-0017",
+      "title": "The Upanisads",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 41,
+      "idempotency_seed": "b784785864e126741b832696ed04a7580d09f08ebc441ec5ec1f3edc865fe386"
+    },
+    {
+      "id": "TOP-0018",
+      "title": "Vedanta-sutra",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 42,
+      "idempotency_seed": "a47d842c363310f04a20a1f4f98db50e735aa9a5c314846f139bd48a2642e631"
+    },
+    {
+      "id": "TOP-0019",
+      "title": "The Itihasas: Ramayana and Mahabharata",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 43,
+      "idempotency_seed": "192f1df0d60316935becc41d019cb927cd8eddd5a0536c4c2fcd7da96c1fd1f7"
+    },
+    {
+      "id": "TOP-0020",
+      "title": "The Puranas and Their Purpose",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 44,
+      "idempotency_seed": "d420f08655bef23339305f58e8b1af68ef52fa8b7c45c43e1f2865f80529e4f7"
+    },
+    {
+      "id": "TOP-0021",
+      "title": "Srimad-Bhagavatam: The Ripened Fruit",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 45,
+      "idempotency_seed": "82ede6068ae59bd88d856a0327155651beb945ca88b3251d39e589696faf9cdf"
+    },
+    {
+      "id": "TOP-0022",
+      "title": "Bhagavad-gita: A Guided Map",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 46,
+      "idempotency_seed": "5f85585d61019d360064b56824e5feed61a8c3d53cba809d4b0586f760e424eb"
+    },
+    {
+      "id": "TOP-0023",
+      "title": "Caitanya-caritamrta: A Guided Map",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 47,
+      "idempotency_seed": "63104792f791aac06eeaa32229abd96007df238d6f3137fbf7a7c2bea35b549e"
+    },
+    {
+      "id": "TOP-0024",
+      "title": "The Six Gosvamis and Their Principal Works",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 48,
+      "idempotency_seed": "18f016624658baaf8c9a6b63213cc95efe3654a6904c25475b52ae246721a2a2"
+    },
+    {
+      "id": "TOP-0025",
+      "title": "Bhakti-rasamrta-sindhu and Nectar of Devotion",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 49,
+      "idempotency_seed": "d882c301cf0c17580fa3e170ad7616a888e3f91576818f9b62547b778098a73b"
+    },
+    {
+      "id": "TOP-0026",
+      "title": "Hari-bhakti-vilasa: Scope and Use",
+      "kind": "roadmap",
+      "batch_state": "draft",
+      "public": false,
+      "source": "roadmap_fill",
+      "ord": 50,
+      "idempotency_seed": "1a84da2f66a71284bc1d6f0a4003a63aa8a05c644a98388c8adf9f8b9dde1454"
+    }
+  ],
+  "completed_keys": [
+    "00cdf20e7603f2f22944fb64d04f05b23b8b195fb10e0fbee307aae9c88ef064",
+    "013095f95fbbad28aee556690481b36d47cef772a80e60eee5e7425f3b82a74d",
+    "01b433de5e8992f7a7d31086d7f0653b178d7698e377c2c47dde61b695aa9212",
+    "0296e9c3805293954b0208efa50edb43e33b3afd4a924bceff1ec38fd80aea0a",
+    "035cafe12ddc61aa156b8addce984df01e8d40a2194eeb0f161a46b22329f011",
+    "04738e1520ac9525b6ddea2df66d881be9df351b1d41de4788c781bf15d55241",
+    "0740afd247f2fde3c27e557a399c183bd2669703f59e57c1c3e9392341f23da9",
+    "07edbb283def20cd2fe31f128cd868700ce5ab416f1e536fb6e7d286f4d409a8",
+    "0813625c6c27ee70e56188b4596e8634b48253773e4f5539898791a06b78310c",
+    "09b0d90a675f179678c66df8bf5ee7e600137a5bbe438bfc34a00da1f8c7efce",
+    "0a7de7876193afce725d2ffbd454c81bc4be4f9dd32d59d318cf146d114e4091",
+    "0a8fad72b2f4a44f7cc224919ca60e49b56eaa412509ea12886efa5d6506e9cc",
+    "0b7744b0d4759ab2b89cc965321f356a17846b58817269ef1cb5212703a40dac",
+    "1197689d551539ec0f293b69eb4042db2cb8f182100a92d581c021835e7f5473",
+    "1289a9feec84359e50092ce230918b88c00a194055f3afa82c5a637d83775950",
+    "13762a4140ba0836d854c1a8f43e3fb48b85f086225e862d89a8205da0dc4b50",
+    "1566633d2a5b623d96e4ebe1a9dfd7a450bf9107603843e0209b8fc7f1aba93e",
+    "158ca955baeb7ebce6efdeea01db3fed83e13d1057fa26924be5d8a74e6b00e0",
+    "165a334f241ce35b0fba0fe6fbbf07abe8572b37eac54b753e2bbedcedcefe66",
+    "17aadd1df2ec28a6894b02de9e9603b14187e561ffb55f6a18e595f0c7e09726",
+    "18f016624658baaf8c9a6b63213cc95efe3654a6904c25475b52ae246721a2a2",
+    "192f1df0d60316935becc41d019cb927cd8eddd5a0536c4c2fcd7da96c1fd1f7",
+    "196e1d0f136ac6d81f09a9ee111bfe36e8b81373d34400639782b3f54addd96c",
+    "1a84da2f66a71284bc1d6f0a4003a63aa8a05c644a98388c8adf9f8b9dde1454",
+    "1bd6874166bc9c20efa81cc9a9f07e4ee8d3d2a990fa0ce07ed68025bff93004",
+    "1c7525b80d23719563b54c7509a316e72996835e5b5bd10a70b344b1647b02c6",
+    "1ce8039bbb7c60ba7569f41ffb05d91be561c0d156b6be9337aeca4cc6124cd5",
+    "1e8eb5feb2be01a132065fa4c7bcb5960fe3e4589057f6ea1b95f99d87e4e407",
+    "21c4b479dda58f0e619d42d20a46871657f6d1ae156f4358b94053ef9325c174",
+    "224a10a26e3bec7113547efa8280843851257bf6020f018292ba1d4694a19ddb",
+    "230d6bbd3b491da7b3dc628ffe18b4f5f63d9cd4baae35347e4ec638e06eb09a",
+    "2356ad7e2a776a6b2cc7349bdb70ab925ba8df00af9121bc180372a4032d84b5",
+    "242d6702cf2e05c991338443438cda0ce574515c6468fd7f8fe587601717378c",
+    "24ff35a3ce14eaffcff92ee16bce33b8efd305ea146d2354df1e1168dcb0be98",
+    "2596813bbf820f0168a29447dbbcaf6567a2e9ab1a979a7ae498f12c7147ff22",
+    "25c2bfae8ecb1f93701f8067e62d0347fd05a33e6594c756a65d873c3f17db5a",
+    "263236d5ecab37aade196f656c4b1337712dd3c5fcc36f24f72b548128f9b0a9",
+    "26ac6641a709a600ef035afa52fc04b1681ecb094c6f8bddb1e1a26cc2961f3b",
+    "27005ea1fede3694468c4d0d79554ca554016f8b9a84cefcd09aba03cb8f0682",
+    "27806b1544cf4b0e92ee1eaa4e23fe4aa48db22a52a3a22a95a785430acb234c",
+    "27d6e1ab4d155bea3d446474df225020ab98961d68444134995f05060d386528",
+    "287626ac5341bddf14dc2f7557e81cf011da39cc0d2a52eed6eff2d7a8935e6f",
+    "2881310ee4586cce8425fcae8e8351aab8bc5fafa37844df85dbfa1f13d9aee7",
+    "2a0052603b5eb3ae99ed0076d0b01935674b62a168e7f35e099f495520257297",
+    "2a0666fce800bc22f38e01a1a9cc24aaeade87f3b91c414fd2a74267b2f23910",
+    "2a40653f4f05573e3769c1ea575889d1c2f7c504eb378876b4054241ad94d3fe",
+    "2d4fd557bc1d9df9a79122af3c1634a5e2b065b5c66e285e657eec25d52ebbc9",
+    "2ea58a632cdcf8cb4e30907bb278ac838a01975b6c3df211a348f79234ee8a60",
+    "2eaf86d44a59624770a8d2475b4ce4b60f49f08a4e7cf5969e4958fbe9bd018b",
+    "2f08250599fa5b5f1574ebb126a00f372d231b6ab0ec59671c3924596a8c10e0",
+    "314890d83e58dd46a837e30b752ec00c478d32f823fa958aba81e94f7a78ea12",
+    "31537e56c4273c114109446d1f036b721b45a817dd38e6ae21f7936ae9b10298",
+    "324199e99fa074b001d81057b1ed71219cc5b50fe1d808288a6f7daeb914b25e",
+    "34d617ebde0770f84875450c79c7f33db5437e68ffcc1a3aaf30dd882c73c13a",
+    "34e2caaa87f86b37de3c4f5919bd66da45e4b77cbacde84d9e078cfdc9e6a774",
+    "368b22d92be134b128eeec06eb357d841fcc4ca171af857b26af472f85be905c",
+    "3763f835abab4591e0a84f7dc14a210ce996b99e69178a24d3db63b2e1ec89bb",
+    "3b3f37e6bdad5adc88c64178964ed89ea88e86446840791e1e1a027299e336f4",
+    "3c3530a423d532eb5a885286894089b44aeb2a45e4d36db9f86de7592b041fe6",
+    "3e46985e89d6e4fb6bc8a105956e0ef87c8e9b35577ab408620c86496ed3ab55",
+    "3f40f8bb104548a7d0d2f2db6a65e57f2efd0ec5c4683238f8661ced41f37d50",
+    "3fb680c8e5b27436c5f72a6999009707443d0719aaefe4450c0900148928b54a",
+    "3ff4bf8f050c51814822f6237fc8a361ae43ccbc8b5067d9e08891cea53afe79",
+    "403523ae044691a44810e2233fd2282f6a25e9148a3eb4dc5eebaad464190f08",
+    "42acc827872c4f77aa4ad8a0e0e7d378531a549c194523c1087ceee144499568",
+    "42d4496cda9d22ece0c244e2ba17c3b7707ce2a5f77eb20c73f4c17f5441e631",
+    "43a5f91ce403e2395f89c534f9df38d970c31335c49f16485ae987fda9bfc854",
+    "44160dad77d7f6a4fe6575966e8736ae5433a6b01dc20119b6bc47a21e1d7e06",
+    "44bd9644493e3ba624d505d8481fa8dce0207a7434e500a5de5c43036cc96ca1",
+    "455dddd1d4746fee4eccc64490805ba6e805bfd56b1613102c60d818929a41cc",
+    "49d264a701001d813885220d6e78daccbc81251ac9832a924c1ab6e43375ca56",
+    "4b57c1b19b09f2f7013e26bd3a83ecfc8f36f594b075b5079db973c91687a0e2",
+    "4b7e443138837f3e38eebf595ff67b2a827102d3b5c17ac4f9333d8db1ac0210",
+    "4b8a8711edffefccf92cb0e887f2e27b570fbea3bfbfb90dbb3ea4c413f1b847",
+    "4db65fc3f84cfdd0eded47650175016f932c60bbe58b1d3e8db3fb299ab38de5",
+    "4dcaed85a912b13f5a238ddebd08a61af79c0df4b37fd718a7bd2c3867cc07f1",
+    "4e4d370f7b7b3bdc4875c677a636cc69fa5c8eab9dfdb4c42799faa3069ada96",
+    "4f90deacbf263222dafdc2633e5da035eeb306c097015e3c9b3bee24d9b22da3",
+    "502ff78b0c585e904b4f6803abc2d85f5be3f761ae9faaeb81f5df0e263b3334",
+    "531c08165bb8ad4903c225a7a162ab5afca246e8dbc3bc2053eefa1c34e3327f",
+    "5554fb402f39c6860f17ea5b562e0246f861a09d0845be62b29522a566b3c110",
+    "5582f9ae1462c472582429c35e836e071e649ee5d72ab02dc531adf0ce4d0e8c",
+    "569689cee39e6f6a3e9cbd7b6fa152826111c25e0130217d65ec7ab0ef326888",
+    "58b79b95d77a3d51cc8b0310a30826a3c1f8baaa8065f75de29ffaf9f74a949a",
+    "5967e01bde76cd6c0318bf7d3c58f68a007773b215a3433b9f6ed3ba024c4057",
+    "59f1b85d90aa53a53cbb62357a27e8271eee444fcd8b8fcc51ab9214b341f435",
+    "5a90d235d97810b9c04c24998fa72988feb1428d9c2fa28dfc6b50a7b9b9f560",
+    "5b526735d5d3c509872d195401cf8f56ecdef640804ef8ca90e871eb8ca574d7",
+    "5e682e0abf641eaa0fa2157ca8d48c55d06aff79a7baae4cbfb194aa9ec502c0",
+    "5e68fcd221af2e39073b87534b450d3bfd9b4f0c146e04cfb3e62685d562e922",
+    "5e7151743e55fe77c5c3c46e0dcaac1b5b231bc3cfd8e55f562bd94cc3493674",
+    "5edbf38f09612b4405199c8026be81451efda75151df91877a2bc34ab6693c07",
+    "5f85585d61019d360064b56824e5feed61a8c3d53cba809d4b0586f760e424eb",
+    "5fcbe81bc7febd156559efb14d42d388b559bca16f301b5591e642ad0d3438d5",
+    "625069fb58ba721c2a8c28b60f78bad5d2b4dc5310eb2d026532634f6a674f30",
+    "62a36141609c74088b14a0429a6a937efc19b9afee603bf0b5cb1276afe39473",
+    "63104792f791aac06eeaa32229abd96007df238d6f3137fbf7a7c2bea35b549e",
+    "6465f7899349e22f88e5c43f109c1afc495d1e27655733e6b960577b5f91161b",
+    "686287c1f9d00cd65ab64c4dc85442c523faa4c45f8d885b81b127a0cb1de0cd",
+    "68fad0850959ab5df63ccfb5b3f35c0fbae475a2822ffedd7c397b5466c02896",
+    "69a4f92a5b953b766d76116a184f04dff03dfc3c568ddc70e8fced6e9171370e",
+    "69c0d20a3d1595c502523e820d67135acc5d77362c9c7567bb63aa746c577367",
+    "69c2f118017e578641b86a17410c9888a9952d8bf8468bd3b9a7d8d15cffe354",
+    "6b5a63ad35ce1079b646c783217b62afbcb996573cc976b18d664d6f1728f9d8",
+    "6bec818a09d5aa6bf5efa0c2bc2d5ff26b685ab687332a71e9b0292cc5b28f9f",
+    "6c4c6b28355b6b1080cc4bf7c6efa61220aa7eb88ae17f5bcc079e274a11db2b",
+    "70844765f3fccb15d9d1fef551b143aa3eceb4c06bb6bddfd7aed3b8fcf731e3",
+    "7188f5aa2a656cf8589ce19bcc709ab86a83317a2be117caab89cceb539c7a55",
+    "71f213fc2ad4ba29a78efbe53148d613c530e456d6a535f8f38a0940b6fe983d",
+    "77356aa9912157578c06ef02ebc8cd78596d6dc9f3376d2ce1d9f9a56590fb1b",
+    "7753d0cc1ec52eb6a6ee5512a33536da889643a2a75bfd23489c294763af0396",
+    "784f64de6e01fe6b87647285ffac7366e89134318d280e76cdc7110729a204e0",
+    "79f065eaaebe655481fa2e098714c267cef40c161ac82ead2de5652b0565daf8",
+    "7d835809fb413adc54a1f16571ce009fd9eeede1927a90d21cb9eae1c3e22997",
+    "7f20fefce9441bc2fc6fbef7bd0865f91905203df29d82f243ce8def18b65f7c",
+    "7fe81303452db2cae1aefb2826a0cedfed8feae5bac525300e2ff88374d9da92",
+    "7ffae9c8db8dcf7114f8d680ca4eb7a7ebbb03201ab64ae30b6a4e1830233d79",
+    "82bac178116e912354c71b0b81bf6b1e7ca1443162f53838efac0f74f2ce820a",
+    "82ede6068ae59bd88d856a0327155651beb945ca88b3251d39e589696faf9cdf",
+    "8342210b1f6b36a901babb52f15261532f038addc0637e23de01ee97c8909714",
+    "83efc95f41b5c0124f050a412123bd6e8c9a804c0e52a8a381f86436184d5940",
+    "8484c644b7b74a2ba1875e3fd5e0bdd2c060e6f664265b36de94c9b519133da1",
+    "854e5a2f3f2545a50a2b073cbb51689ea059530dc78b6be6804e2fffd8439e8f",
+    "8655d9796a27864743b01d0f1628dec700fec0bb9b569f81a7ec24b1673a28b9",
+    "882a5705731ed7af9dbbcaf05ba62d42d07acc96bd8bd940ae6e85551176baed",
+    "88ce2de7779e3ab3f9624e18e279647ce111c0e46dab43d63fec2015d9a63909",
+    "89523c647ef1a5ad4c9a8a6ccefebe3c043bc48199c9d14e95c7b02675d7734d",
+    "8a48f1cd6f5d6d5145a28039214e5a6e266b8e48bcdd340357a3d23fbd97df34",
+    "8b2d994b6c21248c83eb680f08fa0090a45b7e8d1f80b55c9b445ce6b4bb1f54",
+    "8bf8f2ccbeeecaf4378d91d1f39116ef80142d54636902e2cbac1bcde6c0d9dd",
+    "8c06478de8737c1b5e49103a7bd3398ae1fc67907d2a4403eeb4c733dabc977c",
+    "8d95fd0c680a4b1b9b3fdde329de2b3255b4e0d84c301c96a3bfc6702aa62531",
+    "8e93e1d25f3eeda6a66bbb98ebcefbdd63178efc53d92537d95467f844b6a759",
+    "8f6a65345ea9eb8ec3105aac3e3f7fa7841d1abba87eb4dafe06cc9ecedde295",
+    "9119af9ae83b1df455c6967ddd4fdd3f4d54474d414d0b278a17e103e1b604c2",
+    "92d49dd18614af377bf07c7205e0001ab9dc0645fa290864d585c91575846f97",
+    "931675492d4e64bc9937ad9eb7fae716d4015e459a91d931a4c230ff6d5cdb94",
+    "932178a29b4c81038195033f8739a225465683a24d34d1022d923cd16cf1f96d",
+    "95593c0aa5dd0c667c33ef0998108db152c3257cb726b641b319b0faef9fcc33",
+    "95bb89511a463c9cbe9af3a3005c3d3260297990b2678d439ca5be407330470f",
+    "98bbf4d962347ee6cc37c79ac7ddcf9b2b678575f3e6c4d9840b818ad26580f6",
+    "999f80af9710161f29fa4a4273b96c56beee8455fa364a40d3e647d577e7b859",
+    "9b96a4d0c427e4973f8fa8702c00ebed7dead16184ebf507b46d8e7ebc1a6ecc",
+    "9c03931ddb8daa6eba6ef4394d8135c50a0446fb619243adcbed08b81874a9e3",
+    "9e9504b0fc0e8fd9e5c1a6da991cef4b5ca4e9dde6e8cd3475fc252a28ef31cb",
+    "9ee17661c8d6aabd8ca39f56c7b64486f98d74a6d9300a8dfa7607842f7b06ab",
+    "9fd37e71b142b6f245af81b91723ac78fe2bedd3a97d46972d8186afbdc764dc",
+    "a1894ebc77057f93efc57986d5cfad4fcbf8fbbebc02adfaaa89d65c4e6e2e1c",
+    "a1e4c47a0d479a2b048ba751444454e272d12dc4c7194b3bc0ac4823e2d78880",
+    "a47d842c363310f04a20a1f4f98db50e735aa9a5c314846f139bd48a2642e631",
+    "a56d117cea1758e5b402af6ab01dedf4fbb340120394bac62dcd75c335a78495",
+    "a592e5b0259c0ddcff404c2618cd80b7c0f3a76fd1bb9a0de582bea52978f990",
+    "a72bb9a1dd1905fbc863034d613b52b584d94b53f454d45a4af7fada29845fc2",
+    "a897a9d0527dae676b455a4261750e952087369b5e069e18c2487721b4738a0a",
+    "a94933679e64944c7dc4def9df23e3adcae3de3289cf20a7f996302a581208c5",
+    "a952e47aebea568568ee9705f35cba8ba8693177c4a25832fb32133fcd20892c",
+    "ab5f782490bd8eb24f61ec9dca6b6979df90ebd34dbcaff56a94a7affce3b9bd",
+    "aeeffe80ea85bfc4bde63d6edfea88907ff2ef53ddf8ea0f15c450f3ed87bf97",
+    "af2a942863bcf0a54fd8de7b7f11210dc1c7722ed96b82cc18e75851c7b8175f",
+    "b09b604567e355309463dca55744c95c817d9fea089991f63fac3718951a1fde",
+    "b15e1e51e101738183c265f2cbecd7c60b1def85ad89cdae4e421969012cdd22",
+    "b1de3118ac98ff8d83387528432eee986ea338d7aa1e068fe40aa869cf58e444",
+    "b25c6e5dedc973bae7206af3d0ede91ab87ed7bad76c1420b0a63198408ae220",
+    "b3be5d4e3b029b94ec3064491c80c71aa5927380ee4380cc0666521804daf7e2",
+    "b4489eeae18b465ce8b26fea6a93f453fad23cd9e81d38a687193095ad6c7e77",
+    "b5ac6c7ddc6009a4a14a3eb8a8aa5b5a71366ce6e03733474b56760aa85e03b6",
+    "b5c166df46b43daa7c4e020eb5169f2da90204c38af2f1a5086017dce890ff25",
+    "b6a3b21109ae51095b4fed04b094400041db75d7fa122fb943b1b8eed7f945e5",
+    "b7073ca1cbf86d5911bc066051f830c4047713b0bc143a13f8255fbc7a36c955",
+    "b784785864e126741b832696ed04a7580d09f08ebc441ec5ec1f3edc865fe386",
+    "b8516f8cffad9ecebc8f7b3b3f99ae0cca81190bab4897283077b115e40e13bb",
+    "bc20732857f490953210ef30efee3032198c6b55e5f5ca16231bf6e69f7586b7",
+    "bc3aa27f99e7579c184b030b5393be914e10e07b1c018f0631515300b479c8bc",
+    "be35e63a63add454d657d371f844944f5af09613b0791781a3ec7f5a0095524b",
+    "be7fe498fec43251fe32eedbca7aa4bab7653ed19f114fa3828841e8d643adc5",
+    "bf129614b678da0ebbd578aa4ee3d26679e7ece5f0a327d9f5ec95f6cf9ae0b9",
+    "bf17948c737040593552bd5906fcad8133ab373fe755300d3102be15e8223290",
+    "bfb7a696953c716fdb18b86440386570cf25389f920bcc4b075f29e78bef9f96",
+    "c1115f1098e32344c5fdafad777a923d271b9fc5b316ad83a65dfaff8db9769c",
+    "c114c241b39fb75c24c026780fc3f6c7a567917c4f0b7c8e55a02ca8ca1e2754",
+    "c1d46cde2df711c3ed716ab5457e94a7d7a5c00e823014af3173d8717da2b0e0",
+    "c211ad5efeb4f610dac71b4efe4bfd9318d271c2b81443ecec323450491471c1",
+    "c29993691a03c5b7939cffec336c354cd8e932cbd6caf3f5c82f70ca89467233",
+    "c310c4bb838daaae72569a44b221769aa3c8dbf3a08314c8dc37f19d771947ee",
+    "c343283d2108c9d50cb604420e88c5c2ccb1e54126843d0290f99f6e5d02ba40",
+    "c350e380dc3ffa69f321a706f4a2e75f0d89329b647c838cc7ed50fe171b1876",
+    "c42ca3e21404422471dce24b5fcf72a81399788ba77df6e95f8ae1a47b441811",
+    "c466e04d736adc2b782817457660255f9ac280e98fb61d76964dafa3516214b8",
+    "c50354416e0a1e0d4d2272abbda960466fee8870175b0b5d7eba9fd3b471d503",
+    "c557da6a45fb83ac26a8629c24a4b0eed7ec81bcd83c14de20ae78a23030cd4a",
+    "c86784f4d4ef0fbd41d8e3b78a8368a81ab7cd8432975a19d9abc4c8f3f9a873",
+    "c915686f81e646401d314336fe64ae1696a2d5423e91a3eb9ff9625103d5982e",
+    "c9288d6226264417b72fc262738cf369cee8b33885d6e6cddbe6eafbb006505d",
+    "cb225c6d3d594d6f1f4c97f1bf75adf7da5d508fc8c677b018081ecfd28c4a1b",
+    "cb2c0db55db1a162c12c7bc40a4f87ac0b91d3631badebb61245afc8d5f2ad15",
+    "cc4de73de1741a7e833c71e19b49e1d5bf60511810ca3d72b551d32b403efaeb",
+    "ce5468decbf4be944a09e576b5b6b8f2c2aab29a35ecd3c748892c70d99f95e7",
+    "ce7ea95c5a405a9bc2d2117e32914efa3f452ab7c726a2b36a1a8cbb26791bce",
+    "cef46b562c978cbd27dc67fd43481028f586bf7acd22141d87ceae96f3c7925a",
+    "cf8736b76298ca6db01926ab530002322c8cff1e2724c63cb919b3f18c99fc8c",
+    "d0e21b727a24622da7fdb8dd8f9f494da04022043436196ec0e1d372723a3c8f",
+    "d1bf086671d0a02080ca80324a8096c7a305a4e90c2d7e4937a9eb1f0e898106",
+    "d3368945a38aec13b8953247793fd8a318c0d6f28eaff0c33e79fb22a9f0ca32",
+    "d38f04132decc4efe1baac32602d209bc026e960fe46eb37697699efa6ab1bd9",
+    "d420f08655bef23339305f58e8b1af68ef52fa8b7c45c43e1f2865f80529e4f7",
+    "d6109380a2130726a3b4e386ab42785f8b6187ca228c52744340b3a66b7fee0f",
+    "d6d6fcfc09d229bf1883695cc3c22b0a6fe61839746be14e0aa0fbbbeff61936",
+    "d78a8a2fc943e2fcf2c913128d8a60e2e2254ebc1e3c135ff3720d5141cad5e7",
+    "d88249d4d13f92cf543f463ebc64718124579c51a09ba09d046af67f4b8f5a6a",
+    "d882c301cf0c17580fa3e170ad7616a888e3f91576818f9b62547b778098a73b",
+    "d94245a6c11124726adf495423d483d119052accf6805d1bdd1c426b9ec0b6c9",
+    "da7bb37c8ea473a03a4337e95e8f928585186c14beaf2badc77279ce31619d20",
+    "dcee555f9793b101b10edeb1cab54f28bc6510a5800ac153168f79d620090f10",
+    "df16b3902cc7035dba532d42bd42ed32d522bf148f552248bedfad174efb806f",
+    "df5ee60faab0e6f6d71b9518b759ad41f286e1c7ac6c10aea7222a45afdd399c",
+    "e05300c1baca360e9fce3b681d72ae9e7c41475f0b3c86d53c38adaf091cbb5e",
+    "e1bc04afd42a6bf6ffe8d38216d2b3634bbcc3e7e638e3af6c8c7fdb8bead469",
+    "e1e4612c877f382b57346a3e663838209a52cf53836be117751b0663732787c5",
+    "e2323acc1a230264abf48976143770755f8700851c27ad483d007f397ae3c403",
+    "e2be75db66ca4f79e7c4c6ab03df0de87f1ddf1b7973ed22216f103e400deb1d",
+    "e2d84d4fb8b634afb72c2bfeab6933bb816b70a9438d6f232697955a0ab480b7",
+    "e3cf17d3b47d3745bc1d4aae4af9c7000a1f10d8996de30b7cb83461e96e75f2",
+    "e40f10f65a8ffebc62ad93916f91acdc6276acf59fc740bff56e9905f0b90724",
+    "e63ba68145e3d82c865d864fba36034dd3f45284e8395a955a46ffc769c45892",
+    "e64fd6c61a66e06413100e09d5f5caccd56a7763b68dcef2203758c26f21fc67",
+    "e6d58a69e75b735cfc41a8d59b2ceabfc88fe73dcc210087ee7d7a6f106c82db",
+    "e6e077889434b7011ad6191da1435537695fc74c16cc84d53443617c667a63a3",
+    "e7f9c680aef11ee61877123271cb341ba42fe55401fc60887efd138442744341",
+    "e8c3ac1773a9d8cd616f1fe5b5657aa107a971b40bb4c1cb46c1921cefd120a7",
+    "e921b940897265464e61d516efa07927c73f349dcdb8bec9130d3e8e4c01754e",
+    "e9a1dbd0fddf13dc76a7ba9aa0828beefa2e80f0fd2ba8230ade1e595fab58eb",
+    "eb6eeb0f8c66c739914b2d627389022eba1364ecd40460530fcab54e35868ef2",
+    "ec08d24a9551da2ab1c67fb6dd618ef367931a2f28c84ad9242a74292adf228c",
+    "ee627d9ce570a878365631181c2d3b4c35001e74c0d4c4ced953bf8ec67810df",
+    "eee5e7eef2f998df6a80ffdf4912026e88539d4595e1400fe818221b24510308",
+    "f0b6bb2ac5eb5a8030d09af817dd5b6e21a16f749dbc666fa5c7026b72dd4541",
+    "f16a83627bb65218474c3301a59e9e77348a4908101c2efa8db90229ad6286be",
+    "f19c78eb4e8f1d6902c569d26c8cbc7a362a6c11c15ed42a46de487b3d42bca5",
+    "f3ef6e2f01b0a9c63b9adb52706469cbdb6b8bfd1bfe40312680628bf36c94ea",
+    "f6418661a03f6eada66e9cb4550ed98dd0e0e8abf23c57f52b83b83dcab631bf",
+    "f6d13bd4d762afe27e73c8e55573a10302536ee8e5fa3cde6724954164063ae3",
+    "f74b62bf900552c5d0e19a21794b6b4d1319bc4ded3b9dff79f9898e9e7eef9d",
+    "f757bd3c4f2fd5da3107306f168f44ae745686ebda4fe3f3339421b7e83d84d6",
+    "f77b180de3075cdf023bc4a9236143247ae71cf0acb840ccd8dbaec891487993",
+    "f9639aa72b866ba5ec3beb1613a4d78fb8f54048c58b9a6a814efd0875be4688",
+    "f9d8579c39e0bc539c957e03ecc07191b45495e6d6eacfe8333d36b3a78365e9",
+    "fa3f5e33f12f29f73dc0b9090d67753e13b29d0783decfabcad444b10bb87213",
+    "fcedc7d1ad02ca410952fa899a4383727a1d0ec9bd7b44d6d996f9dfd76af9c5",
+    "fe40599754215f964427ecc40b4bc89bffb32a21bf84b7f3394ea0593d884ece",
+    "ff023916f10da8117ebbeb068be74e394af2aa2e802984cbbf874ce44416f2cd"
+  ],
+  "item_states": {
+    "kl-about-bhava": {
+      "id": "kl-about-bhava",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "8f6a65345ea9eb8ec3105aac3e3f7fa7841d1abba87eb4dafe06cc9ecedde295",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "existing_public_guide_noted",
+          "idempotency_key": "1197689d551539ec0f293b69eb4042db2cb8f182100a92d581c021835e7f5473",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "58b79b95d77a3d51cc8b0310a30826a3c1f8baaa8065f75de29ffaf9f74a949a",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "44bd9644493e3ba624d505d8481fa8dce0207a7434e500a5de5c43036cc96ca1",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "8655d9796a27864743b01d0f1628dec700fec0bb9b569f81a7ec24b1673a28b9",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "kl-source-permissions": {
+      "id": "kl-source-permissions",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "2f08250599fa5b5f1574ebb126a00f372d231b6ab0ec59671c3924596a8c10e0",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "existing_public_guide_noted",
+          "idempotency_key": "c557da6a45fb83ac26a8629c24a4b0eed7ec81bcd83c14de20ae78a23030cd4a",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "00cdf20e7603f2f22944fb64d04f05b23b8b195fb10e0fbee307aae9c88ef064",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "3e46985e89d6e4fb6bc8a105956e0ef87c8e9b35577ab408620c86496ed3ab55",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "c310c4bb838daaae72569a44b221769aa3c8dbf3a08314c8dc37f19d771947ee",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "kl-printables": {
+      "id": "kl-printables",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "ee627d9ce570a878365631181c2d3b4c35001e74c0d4c4ced953bf8ec67810df",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "existing_public_guide_noted",
+          "idempotency_key": "c211ad5efeb4f610dac71b4efe4bfd9318d271c2b81443ecec323450491471c1",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "7ffae9c8db8dcf7114f8d680ca4eb7a7ebbb03201ab64ae30b6a4e1830233d79",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "1ce8039bbb7c60ba7569f41ffb05d91be561c0d156b6be9337aeca4cc6124cd5",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "502ff78b0c585e904b4f6803abc2d85f5be3f761ae9faaeb81f5df0e263b3334",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "kl-q-what-is-bhava": {
+      "id": "kl-q-what-is-bhava",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "09b0d90a675f179678c66df8bf5ee7e600137a5bbe438bfc34a00da1f8c7efce",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "existing_public_guide_noted",
+          "idempotency_key": "9119af9ae83b1df455c6967ddd4fdd3f4d54474d414d0b278a17e103e1b604c2",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "92d49dd18614af377bf07c7205e0001ab9dc0645fa290864d585c91575846f97",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "fcedc7d1ad02ca410952fa899a4383727a1d0ec9bd7b44d6d996f9dfd76af9c5",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "cc4de73de1741a7e833c71e19b49e1d5bf60511810ca3d72b551d32b403efaeb",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "kl-q-official-bbt": {
+      "id": "kl-q-official-bbt",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "f757bd3c4f2fd5da3107306f168f44ae745686ebda4fe3f3339421b7e83d84d6",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "existing_public_guide_noted",
+          "idempotency_key": "d3368945a38aec13b8953247793fd8a318c0d6f28eaff0c33e79fb22a9f0ca32",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "7fe81303452db2cae1aefb2826a0cedfed8feae5bac525300e2ff88374d9da92",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "82bac178116e912354c71b0b81bf6b1e7ca1443162f53838efac0f74f2ce820a",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "0a7de7876193afce725d2ffbd454c81bc4be4f9dd32d59d318cf146d114e4091",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "kl-q-child-data": {
+      "id": "kl-q-child-data",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "e1bc04afd42a6bf6ffe8d38216d2b3634bbcc3e7e638e3af6c8c7fdb8bead469",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "existing_public_guide_noted",
+          "idempotency_key": "5b526735d5d3c509872d195401cf8f56ecdef640804ef8ca90e871eb8ca574d7",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "b4489eeae18b465ce8b26fea6a93f453fad23cd9e81d38a687193095ad6c7e77",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "f77b180de3075cdf023bc4a9236143247ae71cf0acb840ccd8dbaec891487993",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "5e682e0abf641eaa0fa2157ca8d48c55d06aff79a7baae4cbfb194aa9ec502c0",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0147": {
+      "id": "TOP-0147",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "c1d46cde2df711c3ed716ab5457e94a7d7a5c00e823014af3173d8717da2b0e0",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "4e4d370f7b7b3bdc4875c677a636cc69fa5c8eab9dfdb4c42799faa3069ada96",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "e1e4612c877f382b57346a3e663838209a52cf53836be117751b0663732787c5",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "3f40f8bb104548a7d0d2f2db6a65e57f2efd0ec5c4683238f8661ced41f37d50",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "e9a1dbd0fddf13dc76a7ba9aa0828beefa2e80f0fd2ba8230ade1e595fab58eb",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0148": {
+      "id": "TOP-0148",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "c29993691a03c5b7939cffec336c354cd8e932cbd6caf3f5c82f70ca89467233",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "79f065eaaebe655481fa2e098714c267cef40c161ac82ead2de5652b0565daf8",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "eb6eeb0f8c66c739914b2d627389022eba1364ecd40460530fcab54e35868ef2",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "d88249d4d13f92cf543f463ebc64718124579c51a09ba09d046af67f4b8f5a6a",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "34d617ebde0770f84875450c79c7f33db5437e68ffcc1a3aaf30dd882c73c13a",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-01": {
+      "id": "INTAKE-01",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "f9639aa72b866ba5ec3beb1613a4d78fb8f54048c58b9a6a814efd0875be4688",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "a1894ebc77057f93efc57986d5cfad4fcbf8fbbebc02adfaaa89d65c4e6e2e1c",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "e40f10f65a8ffebc62ad93916f91acdc6276acf59fc740bff56e9905f0b90724",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "44160dad77d7f6a4fe6575966e8736ae5433a6b01dc20119b6bc47a21e1d7e06",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "c350e380dc3ffa69f321a706f4a2e75f0d89329b647c838cc7ed50fe171b1876",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-02": {
+      "id": "INTAKE-02",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "27005ea1fede3694468c4d0d79554ca554016f8b9a84cefcd09aba03cb8f0682",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "3fb680c8e5b27436c5f72a6999009707443d0719aaefe4450c0900148928b54a",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "b09b604567e355309463dca55744c95c817d9fea089991f63fac3718951a1fde",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "0296e9c3805293954b0208efa50edb43e33b3afd4a924bceff1ec38fd80aea0a",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "7188f5aa2a656cf8589ce19bcc709ab86a83317a2be117caab89cceb539c7a55",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-03": {
+      "id": "INTAKE-03",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "bc3aa27f99e7579c184b030b5393be914e10e07b1c018f0631515300b479c8bc",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "e05300c1baca360e9fce3b681d72ae9e7c41475f0b3c86d53c38adaf091cbb5e",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "95bb89511a463c9cbe9af3a3005c3d3260297990b2678d439ca5be407330470f",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "8a48f1cd6f5d6d5145a28039214e5a6e266b8e48bcdd340357a3d23fbd97df34",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "b1de3118ac98ff8d83387528432eee986ea338d7aa1e068fe40aa869cf58e444",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-04": {
+      "id": "INTAKE-04",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "d38f04132decc4efe1baac32602d209bc026e960fe46eb37697699efa6ab1bd9",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "ce7ea95c5a405a9bc2d2117e32914efa3f452ab7c726a2b36a1a8cbb26791bce",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "8e93e1d25f3eeda6a66bbb98ebcefbdd63178efc53d92537d95467f844b6a759",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "3c3530a423d532eb5a885286894089b44aeb2a45e4d36db9f86de7592b041fe6",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "a1e4c47a0d479a2b048ba751444454e272d12dc4c7194b3bc0ac4823e2d78880",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-05": {
+      "id": "INTAKE-05",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "a72bb9a1dd1905fbc863034d613b52b584d94b53f454d45a4af7fada29845fc2",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "314890d83e58dd46a837e30b752ec00c478d32f823fa958aba81e94f7a78ea12",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "324199e99fa074b001d81057b1ed71219cc5b50fe1d808288a6f7daeb914b25e",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "07edbb283def20cd2fe31f128cd868700ce5ab416f1e536fb6e7d286f4d409a8",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "c915686f81e646401d314336fe64ae1696a2d5423e91a3eb9ff9625103d5982e",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-06": {
+      "id": "INTAKE-06",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "6465f7899349e22f88e5c43f109c1afc495d1e27655733e6b960577b5f91161b",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "42d4496cda9d22ece0c244e2ba17c3b7707ce2a5f77eb20c73f4c17f5441e631",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "569689cee39e6f6a3e9cbd7b6fa152826111c25e0130217d65ec7ab0ef326888",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "34e2caaa87f86b37de3c4f5919bd66da45e4b77cbacde84d9e078cfdc9e6a774",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "cb2c0db55db1a162c12c7bc40a4f87ac0b91d3631badebb61245afc8d5f2ad15",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-07": {
+      "id": "INTAKE-07",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "21c4b479dda58f0e619d42d20a46871657f6d1ae156f4358b94053ef9325c174",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "013095f95fbbad28aee556690481b36d47cef772a80e60eee5e7425f3b82a74d",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "1289a9feec84359e50092ce230918b88c00a194055f3afa82c5a637d83775950",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "5edbf38f09612b4405199c8026be81451efda75151df91877a2bc34ab6693c07",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "2356ad7e2a776a6b2cc7349bdb70ab925ba8df00af9121bc180372a4032d84b5",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-08": {
+      "id": "INTAKE-08",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "5e68fcd221af2e39073b87534b450d3bfd9b4f0c146e04cfb3e62685d562e922",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "d78a8a2fc943e2fcf2c913128d8a60e2e2254ebc1e3c135ff3720d5141cad5e7",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "531c08165bb8ad4903c225a7a162ab5afca246e8dbc3bc2053eefa1c34e3327f",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "999f80af9710161f29fa4a4273b96c56beee8455fa364a40d3e647d577e7b859",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "9fd37e71b142b6f245af81b91723ac78fe2bedd3a97d46972d8186afbdc764dc",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-09": {
+      "id": "INTAKE-09",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "eee5e7eef2f998df6a80ffdf4912026e88539d4595e1400fe818221b24510308",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "2eaf86d44a59624770a8d2475b4ce4b60f49f08a4e7cf5969e4958fbe9bd018b",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "196e1d0f136ac6d81f09a9ee111bfe36e8b81373d34400639782b3f54addd96c",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "5967e01bde76cd6c0318bf7d3c58f68a007773b215a3433b9f6ed3ba024c4057",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "e6d58a69e75b735cfc41a8d59b2ceabfc88fe73dcc210087ee7d7a6f106c82db",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-10": {
+      "id": "INTAKE-10",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "49d264a701001d813885220d6e78daccbc81251ac9832a924c1ab6e43375ca56",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "ce5468decbf4be944a09e576b5b6b8f2c2aab29a35ecd3c748892c70d99f95e7",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "69c0d20a3d1595c502523e820d67135acc5d77362c9c7567bb63aa746c577367",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "88ce2de7779e3ab3f9624e18e279647ce111c0e46dab43d63fec2015d9a63909",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "287626ac5341bddf14dc2f7557e81cf011da39cc0d2a52eed6eff2d7a8935e6f",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-11": {
+      "id": "INTAKE-11",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "9e9504b0fc0e8fd9e5c1a6da991cef4b5ca4e9dde6e8cd3475fc252a28ef31cb",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "01b433de5e8992f7a7d31086d7f0653b178d7698e377c2c47dde61b695aa9212",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "d94245a6c11124726adf495423d483d119052accf6805d1bdd1c426b9ec0b6c9",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "263236d5ecab37aade196f656c4b1337712dd3c5fcc36f24f72b548128f9b0a9",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "a94933679e64944c7dc4def9df23e3adcae3de3289cf20a7f996302a581208c5",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "INTAKE-12": {
+      "id": "INTAKE-12",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "70844765f3fccb15d9d1fef551b143aa3eceb4c06bb6bddfd7aed3b8fcf731e3",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "5554fb402f39c6860f17ea5b562e0246f861a09d0845be62b29522a566b3c110",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "9b96a4d0c427e4973f8fa8702c00ebed7dead16184ebf507b46d8e7ebc1a6ecc",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "230d6bbd3b491da7b3dc628ffe18b4f5f63d9cd4baae35347e4ec638e06eb09a",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "2a40653f4f05573e3769c1ea575889d1c2f7c504eb378876b4054241ad94d3fe",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0141": {
+      "id": "TOP-0141",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "5fcbe81bc7febd156559efb14d42d388b559bca16f301b5591e642ad0d3438d5",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "1c7525b80d23719563b54c7509a316e72996835e5b5bd10a70b344b1647b02c6",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "a952e47aebea568568ee9705f35cba8ba8693177c4a25832fb32133fcd20892c",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "69c2f118017e578641b86a17410c9888a9952d8bf8468bd3b9a7d8d15cffe354",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "224a10a26e3bec7113547efa8280843851257bf6020f018292ba1d4694a19ddb",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0142": {
+      "id": "TOP-0142",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "27806b1544cf4b0e92ee1eaa4e23fe4aa48db22a52a3a22a95a785430acb234c",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "e2be75db66ca4f79e7c4c6ab03df0de87f1ddf1b7973ed22216f103e400deb1d",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "c114c241b39fb75c24c026780fc3f6c7a567917c4f0b7c8e55a02ca8ca1e2754",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "e2323acc1a230264abf48976143770755f8700851c27ad483d007f397ae3c403",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "8342210b1f6b36a901babb52f15261532f038addc0637e23de01ee97c8909714",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0146": {
+      "id": "TOP-0146",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "04738e1520ac9525b6ddea2df66d881be9df351b1d41de4788c781bf15d55241",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "0b7744b0d4759ab2b89cc965321f356a17846b58817269ef1cb5212703a40dac",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "6c4c6b28355b6b1080cc4bf7c6efa61220aa7eb88ae17f5bcc079e274a11db2b",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "b3be5d4e3b029b94ec3064491c80c71aa5927380ee4380cc0666521804daf7e2",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "71f213fc2ad4ba29a78efbe53148d613c530e456d6a535f8f38a0940b6fe983d",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0001": {
+      "id": "TOP-0001",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "b6a3b21109ae51095b4fed04b094400041db75d7fa122fb943b1b8eed7f945e5",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "ec08d24a9551da2ab1c67fb6dd618ef367931a2f28c84ad9242a74292adf228c",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "68fad0850959ab5df63ccfb5b3f35c0fbae475a2822ffedd7c397b5466c02896",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "be7fe498fec43251fe32eedbca7aa4bab7653ed19f114fa3828841e8d643adc5",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "d0e21b727a24622da7fdb8dd8f9f494da04022043436196ec0e1d372723a3c8f",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "KF-P01C-FIXTURE-001": {
+      "id": "KF-P01C-FIXTURE-001",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "95593c0aa5dd0c667c33ef0998108db152c3257cb726b641b319b0faef9fcc33",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "2a0052603b5eb3ae99ed0076d0b01935674b62a168e7f35e099f495520257297",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "455dddd1d4746fee4eccc64490805ba6e805bfd56b1613102c60d818929a41cc",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "d6d6fcfc09d229bf1883695cc3c22b0a6fe61839746be14e0aa0fbbbeff61936",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "df16b3902cc7035dba532d42bd42ed32d522bf148f552248bedfad174efb806f",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0002": {
+      "id": "TOP-0002",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "932178a29b4c81038195033f8739a225465683a24d34d1022d923cd16cf1f96d",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "2881310ee4586cce8425fcae8e8351aab8bc5fafa37844df85dbfa1f13d9aee7",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "bc20732857f490953210ef30efee3032198c6b55e5f5ca16231bf6e69f7586b7",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "d6109380a2130726a3b4e386ab42785f8b6187ca228c52744340b3a66b7fee0f",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "bfb7a696953c716fdb18b86440386570cf25389f920bcc4b075f29e78bef9f96",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0003": {
+      "id": "TOP-0003",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "f6d13bd4d762afe27e73c8e55573a10302536ee8e5fa3cde6724954164063ae3",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "9c03931ddb8daa6eba6ef4394d8135c50a0446fb619243adcbed08b81874a9e3",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "c9288d6226264417b72fc262738cf369cee8b33885d6e6cddbe6eafbb006505d",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "83efc95f41b5c0124f050a412123bd6e8c9a804c0e52a8a381f86436184d5940",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "4dcaed85a912b13f5a238ddebd08a61af79c0df4b37fd718a7bd2c3867cc07f1",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0004": {
+      "id": "TOP-0004",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "8484c644b7b74a2ba1875e3fd5e0bdd2c060e6f664265b36de94c9b519133da1",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "e8c3ac1773a9d8cd616f1fe5b5657aa107a971b40bb4c1cb46c1921cefd120a7",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "cef46b562c978cbd27dc67fd43481028f586bf7acd22141d87ceae96f3c7925a",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "0a8fad72b2f4a44f7cc224919ca60e49b56eaa412509ea12886efa5d6506e9cc",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "784f64de6e01fe6b87647285ffac7366e89134318d280e76cdc7110729a204e0",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0005": {
+      "id": "TOP-0005",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "8b2d994b6c21248c83eb680f08fa0090a45b7e8d1f80b55c9b445ce6b4bb1f54",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "0740afd247f2fde3c27e557a399c183bd2669703f59e57c1c3e9392341f23da9",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "7f20fefce9441bc2fc6fbef7bd0865f91905203df29d82f243ce8def18b65f7c",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "a592e5b0259c0ddcff404c2618cd80b7c0f3a76fd1bb9a0de582bea52978f990",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "882a5705731ed7af9dbbcaf05ba62d42d07acc96bd8bd940ae6e85551176baed",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0006": {
+      "id": "TOP-0006",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "69a4f92a5b953b766d76116a184f04dff03dfc3c568ddc70e8fced6e9171370e",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "e921b940897265464e61d516efa07927c73f349dcdb8bec9130d3e8e4c01754e",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "bf17948c737040593552bd5906fcad8133ab373fe755300d3102be15e8223290",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "b8516f8cffad9ecebc8f7b3b3f99ae0cca81190bab4897283077b115e40e13bb",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "f16a83627bb65218474c3301a59e9e77348a4908101c2efa8db90229ad6286be",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0007": {
+      "id": "TOP-0007",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "c466e04d736adc2b782817457660255f9ac280e98fb61d76964dafa3516214b8",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "158ca955baeb7ebce6efdeea01db3fed83e13d1057fa26924be5d8a74e6b00e0",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "b15e1e51e101738183c265f2cbecd7c60b1def85ad89cdae4e421969012cdd22",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "26ac6641a709a600ef035afa52fc04b1681ecb094c6f8bddb1e1a26cc2961f3b",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "b5c166df46b43daa7c4e020eb5169f2da90204c38af2f1a5086017dce890ff25",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0008": {
+      "id": "TOP-0008",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "c343283d2108c9d50cb604420e88c5c2ccb1e54126843d0290f99f6e5d02ba40",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "b7073ca1cbf86d5911bc066051f830c4047713b0bc143a13f8255fbc7a36c955",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "7753d0cc1ec52eb6a6ee5512a33536da889643a2a75bfd23489c294763af0396",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "4db65fc3f84cfdd0eded47650175016f932c60bbe58b1d3e8db3fb299ab38de5",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "403523ae044691a44810e2233fd2282f6a25e9148a3eb4dc5eebaad464190f08",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0009": {
+      "id": "TOP-0009",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "17aadd1df2ec28a6894b02de9e9603b14187e561ffb55f6a18e595f0c7e09726",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "ab5f782490bd8eb24f61ec9dca6b6979df90ebd34dbcaff56a94a7affce3b9bd",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "f0b6bb2ac5eb5a8030d09af817dd5b6e21a16f749dbc666fa5c7026b72dd4541",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "c50354416e0a1e0d4d2272abbda960466fee8870175b0b5d7eba9fd3b471d503",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "42acc827872c4f77aa4ad8a0e0e7d378531a549c194523c1087ceee144499568",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0010": {
+      "id": "TOP-0010",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "89523c647ef1a5ad4c9a8a6ccefebe3c043bc48199c9d14e95c7b02675d7734d",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "0813625c6c27ee70e56188b4596e8634b48253773e4f5539898791a06b78310c",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "4b7e443138837f3e38eebf595ff67b2a827102d3b5c17ac4f9333d8db1ac0210",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "e64fd6c61a66e06413100e09d5f5caccd56a7763b68dcef2203758c26f21fc67",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "31537e56c4273c114109446d1f036b721b45a817dd38e6ae21f7936ae9b10298",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0011": {
+      "id": "TOP-0011",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "e7f9c680aef11ee61877123271cb341ba42fe55401fc60887efd138442744341",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "e2d84d4fb8b634afb72c2bfeab6933bb816b70a9438d6f232697955a0ab480b7",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "fa3f5e33f12f29f73dc0b9090d67753e13b29d0783decfabcad444b10bb87213",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "bf129614b678da0ebbd578aa4ee3d26679e7ece5f0a327d9f5ec95f6cf9ae0b9",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "e63ba68145e3d82c865d864fba36034dd3f45284e8395a955a46ffc769c45892",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0012": {
+      "id": "TOP-0012",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "ff023916f10da8117ebbeb068be74e394af2aa2e802984cbbf874ce44416f2cd",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "cb225c6d3d594d6f1f4c97f1bf75adf7da5d508fc8c677b018081ecfd28c4a1b",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "2d4fd557bc1d9df9a79122af3c1634a5e2b065b5c66e285e657eec25d52ebbc9",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "8c06478de8737c1b5e49103a7bd3398ae1fc67907d2a4403eeb4c733dabc977c",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "242d6702cf2e05c991338443438cda0ce574515c6468fd7f8fe587601717378c",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0013": {
+      "id": "TOP-0013",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "5a90d235d97810b9c04c24998fa72988feb1428d9c2fa28dfc6b50a7b9b9f560",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "24ff35a3ce14eaffcff92ee16bce33b8efd305ea146d2354df1e1168dcb0be98",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "af2a942863bcf0a54fd8de7b7f11210dc1c7722ed96b82cc18e75851c7b8175f",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "e3cf17d3b47d3745bc1d4aae4af9c7000a1f10d8996de30b7cb83461e96e75f2",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "035cafe12ddc61aa156b8addce984df01e8d40a2194eeb0f161a46b22329f011",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0014": {
+      "id": "TOP-0014",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "625069fb58ba721c2a8c28b60f78bad5d2b4dc5310eb2d026532634f6a674f30",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "c1115f1098e32344c5fdafad777a923d271b9fc5b316ad83a65dfaff8db9769c",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "4b57c1b19b09f2f7013e26bd3a83ecfc8f36f594b075b5079db973c91687a0e2",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "b5ac6c7ddc6009a4a14a3eb8a8aa5b5a71366ce6e03733474b56760aa85e03b6",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "9ee17661c8d6aabd8ca39f56c7b64486f98d74a6d9300a8dfa7607842f7b06ab",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0015": {
+      "id": "TOP-0015",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "be35e63a63add454d657d371f844944f5af09613b0791781a3ec7f5a0095524b",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "59f1b85d90aa53a53cbb62357a27e8271eee444fcd8b8fcc51ab9214b341f435",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "d1bf086671d0a02080ca80324a8096c7a305a4e90c2d7e4937a9eb1f0e898106",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "1bd6874166bc9c20efa81cc9a9f07e4ee8d3d2a990fa0ce07ed68025bff93004",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "686287c1f9d00cd65ab64c4dc85442c523faa4c45f8d885b81b127a0cb1de0cd",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0016": {
+      "id": "TOP-0016",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "25c2bfae8ecb1f93701f8067e62d0347fd05a33e6594c756a65d873c3f17db5a",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "77356aa9912157578c06ef02ebc8cd78596d6dc9f3376d2ce1d9f9a56590fb1b",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "da7bb37c8ea473a03a4337e95e8f928585186c14beaf2badc77279ce31619d20",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "98bbf4d962347ee6cc37c79ac7ddcf9b2b678575f3e6c4d9840b818ad26580f6",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "2a0666fce800bc22f38e01a1a9cc24aaeade87f3b91c414fd2a74267b2f23910",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0017": {
+      "id": "TOP-0017",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "b784785864e126741b832696ed04a7580d09f08ebc441ec5ec1f3edc865fe386",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "5582f9ae1462c472582429c35e836e071e649ee5d72ab02dc531adf0ce4d0e8c",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "2ea58a632cdcf8cb4e30907bb278ac838a01975b6c3df211a348f79234ee8a60",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "6bec818a09d5aa6bf5efa0c2bc2d5ff26b685ab687332a71e9b0292cc5b28f9f",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "f9d8579c39e0bc539c957e03ecc07191b45495e6d6eacfe8333d36b3a78365e9",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0018": {
+      "id": "TOP-0018",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "a47d842c363310f04a20a1f4f98db50e735aa9a5c314846f139bd48a2642e631",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "854e5a2f3f2545a50a2b073cbb51689ea059530dc78b6be6804e2fffd8439e8f",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "f3ef6e2f01b0a9c63b9adb52706469cbdb6b8bfd1bfe40312680628bf36c94ea",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "7d835809fb413adc54a1f16571ce009fd9eeede1927a90d21cb9eae1c3e22997",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "aeeffe80ea85bfc4bde63d6edfea88907ff2ef53ddf8ea0f15c450f3ed87bf97",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0019": {
+      "id": "TOP-0019",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "192f1df0d60316935becc41d019cb927cd8eddd5a0536c4c2fcd7da96c1fd1f7",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "62a36141609c74088b14a0429a6a937efc19b9afee603bf0b5cb1276afe39473",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "1e8eb5feb2be01a132065fa4c7bcb5960fe3e4589057f6ea1b95f99d87e4e407",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "cf8736b76298ca6db01926ab530002322c8cff1e2724c63cb919b3f18c99fc8c",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "2596813bbf820f0168a29447dbbcaf6567a2e9ab1a979a7ae498f12c7147ff22",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0020": {
+      "id": "TOP-0020",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "d420f08655bef23339305f58e8b1af68ef52fa8b7c45c43e1f2865f80529e4f7",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "fe40599754215f964427ecc40b4bc89bffb32a21bf84b7f3394ea0593d884ece",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "a56d117cea1758e5b402af6ab01dedf4fbb340120394bac62dcd75c335a78495",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "a897a9d0527dae676b455a4261750e952087369b5e069e18c2487721b4738a0a",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "3ff4bf8f050c51814822f6237fc8a361ae43ccbc8b5067d9e08891cea53afe79",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0021": {
+      "id": "TOP-0021",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "82ede6068ae59bd88d856a0327155651beb945ca88b3251d39e589696faf9cdf",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "c86784f4d4ef0fbd41d8e3b78a8368a81ab7cd8432975a19d9abc4c8f3f9a873",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "3763f835abab4591e0a84f7dc14a210ce996b99e69178a24d3db63b2e1ec89bb",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "8d95fd0c680a4b1b9b3fdde329de2b3255b4e0d84c301c96a3bfc6702aa62531",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "13762a4140ba0836d854c1a8f43e3fb48b85f086225e862d89a8205da0dc4b50",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0022": {
+      "id": "TOP-0022",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "5f85585d61019d360064b56824e5feed61a8c3d53cba809d4b0586f760e424eb",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "1566633d2a5b623d96e4ebe1a9dfd7a450bf9107603843e0209b8fc7f1aba93e",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "931675492d4e64bc9937ad9eb7fae716d4015e459a91d931a4c230ff6d5cdb94",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "27d6e1ab4d155bea3d446474df225020ab98961d68444134995f05060d386528",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "4f90deacbf263222dafdc2633e5da035eeb306c097015e3c9b3bee24d9b22da3",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0023": {
+      "id": "TOP-0023",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "63104792f791aac06eeaa32229abd96007df238d6f3137fbf7a7c2bea35b549e",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "f19c78eb4e8f1d6902c569d26c8cbc7a362a6c11c15ed42a46de487b3d42bca5",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "4b8a8711edffefccf92cb0e887f2e27b570fbea3bfbfb90dbb3ea4c413f1b847",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "5e7151743e55fe77c5c3c46e0dcaac1b5b231bc3cfd8e55f562bd94cc3493674",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "165a334f241ce35b0fba0fe6fbbf07abe8572b37eac54b753e2bbedcedcefe66",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0024": {
+      "id": "TOP-0024",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "18f016624658baaf8c9a6b63213cc95efe3654a6904c25475b52ae246721a2a2",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "6b5a63ad35ce1079b646c783217b62afbcb996573cc976b18d664d6f1728f9d8",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "c42ca3e21404422471dce24b5fcf72a81399788ba77df6e95f8ae1a47b441811",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "f74b62bf900552c5d0e19a21794b6b4d1319bc4ded3b9dff79f9898e9e7eef9d",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "43a5f91ce403e2395f89c534f9df38d970c31335c49f16485ae987fda9bfc854",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0025": {
+      "id": "TOP-0025",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "d882c301cf0c17580fa3e170ad7616a888e3f91576818f9b62547b778098a73b",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "8bf8f2ccbeeecaf4378d91d1f39116ef80142d54636902e2cbac1bcde6c0d9dd",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "368b22d92be134b128eeec06eb357d841fcc4ca171af857b26af472f85be905c",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "b25c6e5dedc973bae7206af3d0ede91ab87ed7bad76c1420b0a63198408ae220",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "3b3f37e6bdad5adc88c64178964ed89ea88e86446840791e1e1a027299e336f4",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    },
+    "TOP-0026": {
+      "id": "TOP-0026",
+      "stages": {
+        "queue": {
+          "ok": true,
+          "detail": "queued",
+          "idempotency_key": "1a84da2f66a71284bc1d6f0a4003a63aa8a05c644a98388c8adf9f8b9dde1454",
+          "attempts": 1
+        },
+        "scaffold": {
+          "ok": true,
+          "detail": "private_scaffold_ok",
+          "idempotency_key": "df5ee60faab0e6f6d71b9518b759ad41f286e1c7ac6c10aea7222a45afdd399c",
+          "attempts": 1
+        },
+        "duplicate_check": {
+          "ok": true,
+          "detail": "unique",
+          "idempotency_key": "f6418661a03f6eada66e9cb4550ed98dd0e0e8abf23c57f52b83b83dcab631bf",
+          "attempts": 1
+        },
+        "ledger": {
+          "ok": true,
+          "detail": "prompt_ledger",
+          "idempotency_key": "dcee555f9793b101b10edeb1cab54f28bc6510a5800ac153168f79d620090f10",
+          "attempts": 1
+        },
+        "cost_tally": {
+          "ok": true,
+          "detail": "cost_tallied",
+          "idempotency_key": "e6e077889434b7011ad6191da1435537695fc74c16cc84d53443617c667a63a3",
+          "attempts": 1
+        }
+      },
+      "status": "done",
+      "attempts": {
+        "queue": 1,
+        "scaffold": 1,
+        "duplicate_check": 1,
+        "ledger": 1,
+        "cost_tally": 1
+      }
+    }
+  },
+  "costs": {
+    "items_queued": 50,
+    "items_processed": 50,
+    "stages_executed": 250,
+    "retries": 0,
+    "duplicates_skipped": 0,
+    "estimated_tokens": 0,
+    "estimated_usd": 0.0
+  },
+  "started_at": "2026-08-10T21:12:15Z",
+  "updated_at": "2026-08-10T21:12:15Z",
+  "finished_at": "2026-08-10T21:12:15Z",
+  "authority": {
+    "approve": false,
+    "merge": false,
+    "deploy": false,
+    "publish": false
+  },
+  "publication_authority": false
+}

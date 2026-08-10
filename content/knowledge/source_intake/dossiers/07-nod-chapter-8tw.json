@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "sequence": 7,
+  "slug": "nod-chapter-8tw",
+  "original_filename": "NOD chapter 8TW.pdf",
+  "workspace_copy": "07-NOD-chapter-8TW.pdf",
+  "status": "SOURCE_INCOMPLETE",
+  "missing_fields": [
+    "exact edition/locator",
+    "Devanāgarī",
+    "IAST",
+    "English",
+    "rights clearance"
+  ],
+  "ocr_state": "NONE",
+  "public_allowed": false,
+  "dossier_ready": false,
+  "rights_cleared": false,
+  "notes": "Preserve original; no public binary",
+  "text_extracted": false,
+  "pdf_bytes_in_git": false,
+  "decision": "SOURCE_INCOMPLETE — private stub only; no PDF text copied"
+}

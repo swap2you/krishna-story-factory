@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "sequence": 2,
+  "slug": "sb-2-3-22-tw",
+  "original_filename": "SB 2-3-22 TW.pdf",
+  "workspace_copy": "02-SB-2-3-22-TW.pdf",
+  "status": "SOURCE_INCOMPLETE",
+  "missing_fields": [
+    "exact edition/locator",
+    "Devanāgarī",
+    "IAST",
+    "English",
+    "rights clearance"
+  ],
+  "ocr_state": "NONE",
+  "public_allowed": false,
+  "dossier_ready": false,
+  "rights_cleared": false,
+  "notes": "Preserve original; no public binary",
+  "text_extracted": false,
+  "pdf_bytes_in_git": false,
+  "decision": "SOURCE_INCOMPLETE — private stub only; no PDF text copied"
+}

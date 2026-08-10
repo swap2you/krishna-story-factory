@@ -56,6 +56,9 @@ portal-bootstrap/
 
 # Private source books and derived web assets (never commit)
 /KrishnaBook.pdf
+/content/knowledge/source_intake/**/*.pdf
+/content/knowledge/factory/drafts/*.json
+
 /bhava_v1_1_consolidated_release_prompts.zip
 /bhava_v1_1_consolidated_release_prompts/
 /data/web-assets/**

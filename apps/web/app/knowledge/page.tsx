@@ -58,17 +58,38 @@ export default function KnowledgeHomePage() {
   const pathways = listPathways();
   const articles = listArticles();
   const questions = listQuestions();
+  const publishedPathways = pathways.filter((p) => p.status === "published");
+  const shellPathways = pathways.filter((p) => p.status !== "published");
 
   return (
     <>
       <PageIntro
         eyebrow="Knowledge"
         title="Bhāva Knowledge Library"
-        body="A curated documentation library for Krishna Book learning, practice pathways, and carefully reviewed Q&A. Public pages show approved resources only; the editorial roadmap stays private until reviewed."
+        body="Source-led study for Krishna Book learning, practice pathways, and carefully reviewed Q&A — not a random blog or open forum. Only approved resources appear publicly."
         heroSrc={brandSrc("collection-bhakti-blog")}
       />
       <section className="section">
         <div className="container knowledge-home">
+          <div className="scope-grid" style={{ marginBottom: "2rem" }}>
+            <article className="scope-card">
+              <h3>Available now</h3>
+              <p>
+                {articles.length} published guide{articles.length === 1 ? "" : "s"},{" "}
+                {questions.length} canonical question{questions.length === 1 ? "" : "s"}, and{" "}
+                {publishedPathways.length} published pathway
+                {publishedPathways.length === 1 ? "" : "s"} listed below. Search covers approved public pages only.
+              </p>
+            </article>
+            <article className="scope-card">
+              <h3>Prepared later</h3>
+              <p>
+                Roadmap topics, draft dossiers, and unreviewed records stay private in Studio.
+                Pathway shells ({shellPathways.length}) may appear with an honest status badge — never as invented scripture.
+              </p>
+            </article>
+          </div>
+
           <form className="search-bar" action="/knowledge/search" method="get">
             <label className="sr-only" htmlFor="knowledge-search">Search Knowledge</label>
             <input id="knowledge-search" name="q" placeholder="Search articles, questions, and published guides" />
@@ -89,25 +110,36 @@ export default function KnowledgeHomePage() {
           </div>
 
           <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>Published guides</h2>
-          <ul className="plain-list">
-            {articles.map((a) => (
-              <li key={a.slug}>
-                <Link href={`/knowledge/${a.slug}`}>{a.title}</Link>
-                <span className="hint"> — {a.summary}</span>
-              </li>
-            ))}
-          </ul>
+          {articles.length ? (
+            <ul className="plain-list">
+              {articles.map((a) => (
+                <li key={a.slug}>
+                  <Link href={`/knowledge/${a.slug}`}>{a.title}</Link>
+                  <span className="hint"> — {a.summary}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="hint">No published guides are available yet. Nothing invented is shown here.</p>
+          )}
 
           <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>Canonical questions</h2>
-          <ul className="plain-list">
-            {questions.map((q) => (
-              <li key={q.slug}>
-                <Link href={`/knowledge/questions/${q.slug}`}>{q.title}</Link>
-              </li>
-            ))}
-          </ul>
+          {questions.length ? (
+            <ul className="plain-list">
+              {questions.map((q) => (
+                <li key={q.slug}>
+                  <Link href={`/knowledge/questions/${q.slug}`}>{q.title}</Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="hint">No canonical questions are published yet.</p>
+          )}
 
           <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>Pathway shells</h2>
+          <p className="hint" style={{ marginBottom: "1rem" }}>
+            Shells help orientation. Published means reviewed content is ready; other statuses remain Planned.
+          </p>
           <div className="scope-grid">
             {pathways.map((p) => (
               <article key={p.slug} className="scope-card">
@@ -116,7 +148,7 @@ export default function KnowledgeHomePage() {
                 </h3>
                 <p className="hint" style={{ marginBottom: 0 }}>
                   <span className={`editorial-status ${p.status === "published" ? "active" : "planned"}`}>
-                    {p.status}
+                    {p.status === "published" ? "Available" : "Planned"}
                   </span>
                 </p>
               </article>

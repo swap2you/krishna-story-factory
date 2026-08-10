@@ -4,8 +4,11 @@ import { StoryGrid } from "@/components/story-grid";
 import { ContinueJourney } from "@/components/continue-journey";
 import { AudiencePathwayGrid } from "@/components/audience-pathway-grid";
 import { ACTIVE_AREAS, GROWING_NEXT } from "@/lib/collection-readiness";
+import { PUBLIC_STORY_MAX } from "@/lib/public-boundary";
 
 export const dynamic = "force-dynamic";
+
+const storyCeiling = String(PUBLIC_STORY_MAX).padStart(3, "0");
 
 const journeySteps = [
   { title: "Listen", body: "Bedtime narration with a calm pace." },
@@ -39,9 +42,31 @@ export default async function Home() {
           <p className="brand-kicker brand-display">Bhāva</p>
           <h1>Timeless devotion for growing hearts and minds.</h1>
           <p className="hero-copy-text">
-            One calm weekly journey: listen tonight, read and create tomorrow, then return to the reviewed source.
+            Library, Knowledge, Learning, and Prabhupāda Vāṇī — one calm platform for families.
           </p>
           <ContinueJourney />
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="pillars-heading">
+        <div className="container">
+          <p className="eyebrow">Four pillars</p>
+          <h2 id="pillars-heading" className="section-heading">
+            What Bhāva offers today
+          </h2>
+          <p className="section-lead">
+            Stories {`001–${storyCeiling}`} are available in the Library. Knowledge is source-led.
+            Learning serves children, families, and teachers. Prabhupāda Vāṇī is prepared with honest Planned status until curated records open.
+          </p>
+          <div className="collection-grid" data-testid="home-core-areas">
+            {ACTIVE_AREAS.map((card) => (
+              <CollectionCard
+                key={card.href + card.title}
+                {...card}
+                interactive
+              />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -68,28 +93,17 @@ export default async function Home() {
 
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
-          <p className="eyebrow">Latest releases</p>
+          <p className="eyebrow">Krishna Book Library</p>
           <h2 className="section-heading">Continue the Krishna Book journey</h2>
           <p className="section-lead">
-            Newly released stories for listening, reading, coloring, and family learning.
+            Stories {`001–${storyCeiling}`} are publicly available for listening, reading, coloring, and family learning.
+            Story {String(PUBLIC_STORY_MAX + 1).padStart(3, "0")} and beyond remain private until released.
           </p>
           <StoryGrid
             stories={latest.length ? latest : stories}
             unavailable={catalogUnavailable}
             empty="Stories will appear here as they are released for families."
           />
-        </div>
-      </section>
-
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="container">
-          <p className="eyebrow">Explore Bhāva</p>
-          <h2 className="section-heading">Start with what is ready today</h2>
-          <div className="collection-grid" data-testid="home-core-areas">
-            {ACTIVE_AREAS.map((card) => (
-              <CollectionCard key={card.href + card.title} {...card} />
-            ))}
-          </div>
         </div>
       </section>
 
@@ -111,7 +125,7 @@ export default async function Home() {
             <p className="hint">Honest planned destinations — not yet equally ready for every family.</p>
             <div className="collection-grid collection-grid--quiet">
               {GROWING_NEXT.map((card) => (
-                <CollectionCard key={card.href + card.title} {...card} />
+                <CollectionCard key={card.href + card.title} {...card} interactive />
               ))}
             </div>
           </details>

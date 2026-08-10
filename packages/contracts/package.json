@@ -11,6 +11,7 @@
     "./schemas/shloka.schema.json": "./schemas/shloka.schema.json",
     "./schemas/source_reference.schema.json": "./schemas/source_reference.schema.json",
     "./schemas/vani_item.schema.json": "./schemas/vani_item.schema.json",
-    "./schemas/blog_article.schema.json": "./schemas/blog_article.schema.json"
+    "./schemas/blog_article.schema.json": "./schemas/blog_article.schema.json",
+    "./schemas/learning_derivative.schema.json": "./schemas/learning_derivative.schema.json"
   }
 }

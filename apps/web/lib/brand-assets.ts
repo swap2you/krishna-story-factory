@@ -46,6 +46,8 @@ export function collectionCoverPath(slug: string): string | undefined {
     printables: "collection-printables",
     knowledge: "collection-bhakti-blog",
     "bhakti-blog": "collection-bhakti-blog",
+    library: "collection-krishna-book",
+    learning: "collection-sunday-school",
     vani: "collection-prabhupada-vani",
     "prabhupada-vani": "collection-prabhupada-vani",
     "devotee-lives": "collection-bhakti-blog",

@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/page-intro";
 import { getRoadmapCounts, listRoadmap, listRoadmapPillars } from "@/lib/knowledge/loader";
 import { listKnowledgePackages } from "@/lib/knowledge/packages";
+import { getDraftFactoryStatus } from "@/lib/knowledge/draft-factory";
+import { getSourceIntakeSummary, listSourceIntakeItems } from "@/lib/knowledge/source-intake";
 import { isLoopbackRequest, isStudioAuthed } from "@/lib/knowledge/studio-guard";
 import { StudioClient } from "./studio-client";
 
@@ -70,6 +72,9 @@ export default async function KnowledgeStudioPage({
   const start = (safePage - 1) * pageSize;
   const pageRows = rows.slice(start, start + pageSize);
   const packages = listKnowledgePackages();
+  const intakeSummary = getSourceIntakeSummary();
+  const intakeItems = listSourceIntakeItems();
+  const factoryStatus = getDraftFactoryStatus();
 
   return (
     <>
@@ -164,6 +169,75 @@ export default async function KnowledgeStudioPage({
                   </Link>
                 ) : null}
               </nav>
+
+              <h2 style={{ marginTop: "2rem" }}>Draft factory (read-only)</h2>
+              <p className="hint">
+                Private 50-item draft factory progress. Zero approve/merge/deploy/publication authority.
+              </p>
+              {factoryStatus.available ? (
+                <div className="scope-grid" style={{ marginTop: "0.75rem" }}>
+                  <article className="scope-card">
+                    <h3 style={{ marginTop: 0 }}>Run</h3>
+                    <p style={{ margin: 0 }}><code>{factoryStatus.run_id}</code></p>
+                    <p className="hint">{factoryStatus.dry_run ? "dry-run" : "live-scaffold"} · v{factoryStatus.factory_version}</p>
+                  </article>
+                  <article className="scope-card">
+                    <h3 style={{ marginTop: 0 }}>Queue</h3>
+                    <p style={{ fontSize: "1.6rem", margin: 0 }}>{factoryStatus.queue_size ?? 0}</p>
+                    <p className="hint">{factoryStatus.items_done ?? 0} done · {factoryStatus.items_blocked_or_duplicate ?? 0} blocked/dup</p>
+                  </article>
+                  <article className="scope-card">
+                    <h3 style={{ marginTop: 0 }}>Idempotency keys</h3>
+                    <p style={{ fontSize: "1.6rem", margin: 0 }}>{factoryStatus.completed_keys ?? 0}</p>
+                    <p className="hint">Stages completed (resumable)</p>
+                  </article>
+                  <article className="scope-card">
+                    <h3 style={{ marginTop: 0 }}>Authority</h3>
+                    <p style={{ margin: 0 }}>approve/merge/deploy/publish = false</p>
+                    <p className="hint">{factoryStatus.message}</p>
+                  </article>
+                </div>
+              ) : (
+                <p className="hint" style={{ marginTop: "0.75rem" }}>{factoryStatus.message}</p>
+              )}
+
+              <h2 style={{ marginTop: "2rem" }}>Source intake (private metadata)</h2>
+              <p className="hint">
+                Owner-PDF inventory only — no PDF bytes, no public serving.
+                {" "}{intakeSummary.total} staged
+                {" · "}{intakeSummary.by_status.STAGED_SOURCE_CANDIDATE || 0} STAGED_SOURCE_CANDIDATE
+                {" · "}{intakeSummary.ocr_pending} OCR_PENDING
+                {" · "}dossier_ready {intakeSummary.dossier_ready}
+                {" · "}public_allowed {intakeSummary.public_allowed}.
+              </p>
+              {intakeItems.length ? (
+                <div style={{ overflowX: "auto", marginTop: "0.75rem" }}>
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Original</th>
+                        <th>Status</th>
+                        <th>OCR</th>
+                        <th>Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {intakeItems.map((item) => (
+                        <tr key={item.sequence}>
+                          <td>{item.sequence}</td>
+                          <td><code>{item.original_filename}</code></td>
+                          <td>{item.status}</td>
+                          <td>{item.ocr_state}</td>
+                          <td>{item.notes}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="hint">Intake ledger not found.</p>
+              )}
 
               <h2 style={{ marginTop: "2rem" }}>Knowledge packages (private)</h2>
               <p className="hint">

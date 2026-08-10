@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "sequence": 11,
+  "slug": "dangers-of-vaisnava-aparadha-hh-radhanath-swami",
+  "original_filename": "Dangers of Vaisnava Aparadha - HH Radhanath Swami.pdf",
+  "workspace_copy": "11-Dangers-of-Vaisnava-Aparadha-HH-Radhanath-Swami.pdf",
+  "status": "SOURCE_INCOMPLETE",
+  "missing_fields": [
+    "exact edition/locator",
+    "Devanāgarī",
+    "IAST",
+    "English",
+    "rights clearance"
+  ],
+  "ocr_state": "OCR_PENDING",
+  "public_allowed": false,
+  "dossier_ready": false,
+  "rights_cleared": false,
+  "notes": "Image-only; preserve original",
+  "text_extracted": false,
+  "pdf_bytes_in_git": false,
+  "decision": "SOURCE_INCOMPLETE — private stub only; no PDF text copied"
+}

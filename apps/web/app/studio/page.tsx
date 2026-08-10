@@ -31,9 +31,26 @@ type EnrichmentRow = {
   error?: string;
 };
 
+type DraftSchedulerState = {
+  controls?: {
+    enabled?: boolean;
+    dry_run?: boolean;
+    queue?: string;
+    status?: string;
+    last_log?: string | null;
+  };
+  capabilities?: {
+    can_publish?: boolean;
+    can_trigger_story_generation?: boolean;
+  };
+  story_scheduler_unchanged?: boolean;
+  note?: string;
+};
+
 export default function StudioPage() {
   const [status, setStatus] = useState<Status | null>(null);
   const [queue, setQueue] = useState<unknown>(null);
+  const [draftScheduler, setDraftScheduler] = useState<DraftSchedulerState | null>(null);
   const [enrichment, setEnrichment] = useState<EnrichmentRow[]>([]);
   const [message, setMessage] = useState("Studio loads only against 127.0.0.1.");
 
@@ -81,12 +98,14 @@ export default function StudioPage() {
 
   async function refresh() {
     try {
-      const [statusRes, queueRes] = await Promise.all([
+      const [statusRes, queueRes, draftRes] = await Promise.all([
         fetch("/api/v1/local/status"),
         fetch("/api/v1/local/queue"),
+        fetch("/api/v1/local/draft-scheduler"),
       ]);
       setStatus(statusRes.ok ? await statusRes.json() : null);
       setQueue(queueRes.ok ? await queueRes.json() : null);
+      setDraftScheduler(draftRes.ok ? await draftRes.json() : null);
       setMessage(statusRes.ok ? "Connected to local factory gateway." : "API not reachable on loopback.");
       await loadEnrichment();
     } catch {
@@ -228,6 +247,38 @@ export default function StudioPage() {
             <p className="hint" style={{ marginTop: "1rem" }}>
               Disabled controls are intentional. Tests and default local runs never call paid providers.
             </p>
+          </section>
+          <section className="studio-panel">
+            <h2>Private draft scheduler (Knowledge / Vāṇī)</h2>
+            <p className="hint">
+              Unified Platform M4 controls for private-draft dry-runs only. Cannot approve, merge, deploy,
+              publish, or trigger Story generation. Story MWF scheduler is unchanged. See{" "}
+              <code>docs/ops/DRAFT_SCHEDULER_OPERATORS.md</code>.
+            </p>
+            {draftScheduler ? (
+              <>
+                <p>
+                  <strong>Enabled:</strong> {String(draftScheduler.controls?.enabled ?? false)}
+                  {" · "}
+                  <strong>Dry-run:</strong> {String(draftScheduler.controls?.dry_run ?? true)}
+                  {" · "}
+                  <strong>Queue:</strong> {draftScheduler.controls?.queue ?? "—"}
+                  {" · "}
+                  <strong>Status:</strong> {draftScheduler.controls?.status ?? "—"}
+                </p>
+                <p className="hint" style={{ margin: 0 }}>
+                  can_publish={String(draftScheduler.capabilities?.can_publish ?? false)} ·
+                  can_trigger_story_generation=
+                  {String(draftScheduler.capabilities?.can_trigger_story_generation ?? false)} ·
+                  story_scheduler_unchanged={String(draftScheduler.story_scheduler_unchanged ?? true)}
+                </p>
+                {draftScheduler.controls?.last_log ? (
+                  <p className="hint">Last log: {draftScheduler.controls.last_log}</p>
+                ) : null}
+              </>
+            ) : (
+              <p className="hint">Draft scheduler endpoint not reachable (loopback API required).</p>
+            )}
           </section>
         </div>
       </section>

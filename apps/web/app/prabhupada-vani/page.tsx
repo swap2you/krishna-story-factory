@@ -1,58 +1,52 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 
 export const metadata: Metadata = {
   title: "Prabhupāda Vāṇī",
-  description: "Curated categories of Śrīla Prabhupāda's instructions — lectures, walks, conversations, letters, and more — arriving with proper source attribution.",
+  description:
+    "Governed study shelf for Śrīla Prabhupāda's instructions — Planned taxonomy only until source-verified records clear rights and review.",
 };
 
 const CATEGORIES = [
   {
-    icon: "🎙",
     title: "Lectures",
-    desc: "Recorded class lectures on Bhagavad-gītā, Śrīmad-Bhāgavatam, and Caitanya-caritāmṛta — curated excerpts with date, location, and verse reference.",
+    desc: "Class lectures on Bhagavad-gītā, Śrīmad-Bhāgavatam, and Caitanya-caritāmṛta — future curated excerpts will require date, location, and verse locator.",
     audience: "All ages with parental context",
   },
   {
-    icon: "🌅",
     title: "Morning Walks",
-    desc: "Transcribed conversations from Śrīla Prabhupāda's morning walks — selected passages with historical context and participant notes.",
+    desc: "Morning-walk conversations — future selections will include historical context and participant notes from verified transcripts.",
     audience: "Teenagers and adults",
   },
   {
-    icon: "💬",
     title: "Conversations",
-    desc: "Room conversations with guests, disciples, and scholars — selected for accessibility and relevance to family devotional life.",
+    desc: "Room conversations with guests, disciples, and scholars — selected only when rights and source context are confirmed.",
     audience: "Older students and parents",
   },
   {
-    icon: "✉️",
     title: "Letters",
-    desc: "Personal letters of instruction and encouragement — selected with appropriate permissions and context for the reader.",
+    desc: "Letters of instruction and encouragement — published only with appropriate permissions and full letter context.",
     audience: "Teachers and parents",
   },
   {
-    icon: "🎤",
     title: "Interviews",
-    desc: "Media interviews and public engagements — selected clips and transcripts showing Śrīla Prabhupāda's interactions with the wider world.",
+    desc: "Media interviews and public engagements — Planned shelf only until verified clips and transcripts clear review.",
     audience: "Teenagers and adults",
   },
   {
-    icon: "🙏",
     title: "Pastimes & Remembrances",
-    desc: "Stories and memories shared by disciples — curated respectfully with attribution to the narrator and occasion.",
+    desc: "Disciple remembrances — curated with attribution to the narrator and occasion; never presented as Prabhupāda's own wording unless sourced.",
     audience: "All ages",
   },
   {
-    icon: "🧒",
     title: "For Children",
-    desc: "Short, age-appropriate selections introducing children to Śrīla Prabhupāda's words — simple language, warm context, and parental guidance notes.",
+    desc: "Age-appropriate introductions — Planned; no invented quotations for children.",
     audience: "Ages 5–10",
   },
   {
-    icon: "📖",
     title: "For Teenagers",
-    desc: "Selections addressing identity, purpose, and spiritual practice — themes relevant to adolescent life, presented with discussion prompts.",
+    desc: "Themes for adolescent life — Planned discussion prompts only after source-verified selections exist.",
     audience: "Ages 11–17",
   },
 ];
@@ -62,28 +56,68 @@ export default function PrabhupadaVaniPage() {
     <>
       <PageIntro
         eyebrow="Prabhupāda Vāṇī"
-        title="A space for timeless instruction."
-        body="Prepared with care, context, and appropriate source attribution — never as a placeholder dump."
+        title="A trustworthy study surface — not a quote mill."
+        body="This pillar is open as a governed entry. Categories below are Planned taxonomy only. There are no fabricated quotes, AI impersonation, or transcript packs published here."
       />
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="scope-grid" style={{ marginBottom: "2.5rem" }}>
             <article className="scope-card">
+              <h3>What you can trust today</h3>
+              <p>
+                This honest entry page, source-governance commitments, and a Planned category map.
+                No lecture transcripts, quote cards, or downloadable quotation packs are published here.
+              </p>
+            </article>
+            <article className="scope-card">
+              <h3>Planned — said honestly</h3>
+              <p>
+                Every category badge below means <strong>Planned</strong>, not available.
+                Curated records open only after exact source attribution, rights clearance, and review.
+              </p>
+            </article>
+            <article className="scope-card">
               <h3>Source governance</h3>
-              <p>Every item will cite its original source — lecture date and location, letter recipient and date, walk participants and city. No content is scraped, paraphrased, or fabricated.</p>
+              <p>
+                Future items must cite original context — lecture date and location, letter recipient and date,
+                walk participants and city. No scraped, paraphrased-as-quote, or fabricated wording.
+              </p>
             </article>
             <article className="scope-card">
               <h3>Permissions</h3>
-              <p>Content will be published only with appropriate permissions from the Bhaktivedanta Book Trust and other rights holders. Until permissions are confirmed, categories remain planned.</p>
+              <p>
+                Content publishes only with appropriate permissions from the Bhaktivedanta Book Trust and other
+                rights holders. Until then, categories remain Planned.
+              </p>
+            </article>
+          </div>
+
+          <div className="scope-grid" style={{ marginBottom: "2.5rem" }}>
+            <article className="scope-card">
+              <h3>What we will never do here</h3>
+              <p>
+                Fabricate quotations; present AI-generated first-person Prabhupāda dialogue; clone a voice;
+                or strip teachings into decontextualized quote cards without source framing.
+              </p>
+            </article>
+            <article className="scope-card">
+              <h3>Suggest a correction</h3>
+              <p>
+                If you see an attribution error anywhere on Bhāva, use the private Knowledge routes:{" "}
+                <Link href="/knowledge/corrections">Suggest a correction</Link>
+                {" · "}
+                <Link href="/knowledge/report-link">Report a broken link</Link>.
+              </p>
             </article>
           </div>
 
           <h2 className="section-heading">Categories</h2>
-          <p className="section-lead">Each category will open when curated selections and source permissions are ready.</p>
+          <p className="section-lead">
+            Planned structure for future curated selections. None of these are clickable published records today.
+          </p>
           <div className="category-grid">
             {CATEGORIES.map((cat) => (
-              <article key={cat.title} className="category-card">
-                <span style={{ fontSize: "1.6rem", display: "block", marginBottom: ".5rem" }} aria-hidden="true">{cat.icon}</span>
+              <article key={cat.title} className="category-card" aria-disabled="true">
                 <h3>{cat.title}</h3>
                 <p>{cat.desc}</p>
                 <div style={{ marginTop: ".75rem", display: "flex", flexWrap: "wrap", gap: ".5rem", alignItems: "center" }}>
@@ -96,11 +130,13 @@ export default function PrabhupadaVaniPage() {
 
           <div className="coming" style={{ marginTop: "2.5rem" }}>
             <div>
-              <p className="eyebrow">Coming soon</p>
-              <h2>Instruction with reverence</h2>
+              <p className="eyebrow">Meanwhile</p>
+              <h2>Study what is already reviewed</h2>
               <p>
-                Prabhupāda Vāṇī will open when curated selections and permissions are ready.
-                Until then, enjoy Krishna Book stories in the library.
+                Until Prabhupāda Vāṇī records open, continue with Krishna Book stories in the{" "}
+                <Link href="/library/krishna-book">Library</Link> and source-led pages in{" "}
+                <Link href="/knowledge">Knowledge</Link>. Collection model notes live privately under{" "}
+                <code>content/vani/</code> for operators — not as public transcripts.
               </p>
             </div>
           </div>

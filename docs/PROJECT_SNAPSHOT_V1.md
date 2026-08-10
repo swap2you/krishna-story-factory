@@ -149,12 +149,11 @@ Installer defaults to **Disabled** unless `-Enable`. Current ops state: **Disabl
 | Item | State |
 | --- | --- |
 | Stories 001–006 | Locked (Story Format V2); do not modify without approval |
-| Stories 001–020 | **complete / public** (exact-eight packages) |
-| Next pending | **021** (private; not generated) |
-| PublicStoryMax | **20** |
-| Content tag (exists) | `bhava-content-001-020-v2` |
-| Staging candidate | quality-completion **v3** content (`bhava-content-001-020-v3` being prepared) |
-| Production | Older web/content until later approval — do not promote v3 without explicit approval |
+| Stories 001–025 | **complete / public** (exact-eight packages) |
+| Next pending | **026** (private) |
+| PublicStoryMax | **25** |
+| Content tag | `bhava-content-001-025-v1` |
+| Production | Public Krishna Story Library through Story 025; Unified Platform Build V2 continues Knowledge / Learning / Vāṇī |
 | Scheduler | **`Krishna Story Factory MWF` Disabled** (install defaults Disabled) |
 | Stack | Node **24**, Python **3.14** |
 | Senior devotee review (001–006 pilot) | **Pending** |

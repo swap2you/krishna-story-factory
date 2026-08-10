@@ -1,0 +1,27 @@
+{
+  "$comment": "Fill a copy per Bhāva-original publication package only. Do not use for third-party or BBT-copyrighted bodies. No phone number.",
+  "author_name": "Svarna Gauranga Das",
+  "publisher_name": "Dauji Publication",
+  "imprint_line": "A Bhāva Project publication",
+  "location": {
+    "city": "Harrisburg",
+    "region": "Pennsylvania",
+    "country": "USA"
+  },
+  "contact": {
+    "email": "svarnagaurangdas@gmail.com",
+    "phone": null
+  },
+  "rights": {
+    "scope": "bhava_original_works_only",
+    "notes": "Apply this identity metadata only when a Bhāva-original work truly needs publication metadata. Never attach these marks to private owner PDFs or third-party source scans."
+  },
+  "package_fields_to_set": {
+    "work_title": "",
+    "package_id": "",
+    "canonical_record_refs": [],
+    "review_state": "draft",
+    "export_version": "",
+    "formats": []
+  }
+}
