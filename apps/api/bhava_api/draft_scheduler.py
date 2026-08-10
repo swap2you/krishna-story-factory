@@ -110,6 +110,13 @@ def get_state() -> DraftSchedulerState:
     return DraftSchedulerState(controls=_STATE)
 
 
+def reset_state_for_tests() -> DraftSchedulerState:
+    """Test helper: restore default disabled dry-run controls."""
+    global _STATE
+    _STATE = DraftSchedulerControls(enabled=False, dry_run=True, status=DraftScheduleStatus.DISABLED)
+    return get_state()
+
+
 def set_enabled(enabled: bool) -> DraftSchedulerState:
     global _STATE
     if not enabled:

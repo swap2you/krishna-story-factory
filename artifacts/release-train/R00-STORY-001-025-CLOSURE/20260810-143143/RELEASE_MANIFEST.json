@@ -4,6 +4,8 @@
   "content_tag": "bhava-content-001-025-v1",
   "sha256": "2dda0485a085f93d222a0ebd1d27b620df408990e7673a11b9603de68ff230a9",
   "public_story_max": 25,
-  "main_sha": "0fb429c6c9cbbd195628857c8f6879f931ed4eba",
-  "develop_sha": "228f915"
+  "implementation_sha": "05936ff246532f4402f59c5a625b201aa4a8a39a",
+  "ledger_close_sha": "05936ff246532f4402f59c5a625b201aa4a8a39a",
+  "branch_tip_sha": "228f915",
+  "main_merge_sha": "0fb429c6c9cbbd195628857c8f6879f931ed4eba"
 }

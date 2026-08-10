@@ -98,6 +98,43 @@ def test_draft_scheduler_dry_run_refuses_story_and_publish(fixture_client: TestC
         assert body["can_trigger_story_generation"] is False
 
 
+def test_draft_scheduler_configure_omitted_fields_do_not_reset_state(fixture_client: TestClient) -> None:
+    """Partial /configure must not apply falsey defaults for omitted optionals."""
+    from bhava_api import draft_scheduler
+
+    draft_scheduler.reset_state_for_tests()
+    client = fixture_client
+    csrf = client.get("/api/v1/local/status").json()["csrf_token"]
+    headers = {"X-Bhava-CSRF-Token": csrf}
+
+    seeded = client.post(
+        "/api/v1/local/draft-scheduler/configure",
+        headers=headers,
+        json={
+            "queue": "knowledge",
+            "dry_run": True,
+            "paid_providers_allowed": True,
+            "max_usd_per_run": 1.5,
+        },
+    )
+    assert seeded.status_code == 200
+    assert seeded.json()["controls"]["cost_limits"]["paid_providers_allowed"] is True
+    assert seeded.json()["controls"]["cost_limits"]["max_usd_per_run"] == 1.5
+
+    # Only change queue — paid_providers_allowed and dry_run must remain.
+    partial = client.post(
+        "/api/v1/local/draft-scheduler/configure",
+        headers=headers,
+        json={"queue": "vani"},
+    )
+    assert partial.status_code == 200
+    body = partial.json()["controls"]
+    assert body["queue"] == "vani"
+    assert body["dry_run"] is True
+    assert body["cost_limits"]["paid_providers_allowed"] is True
+    assert body["cost_limits"]["max_usd_per_run"] == 1.5
+
+
 def test_story_scheduler_scripts_untouched_by_draft_module() -> None:
     """Regression: MWF story scheduler entrypoints still exist and are separate."""
     scheduled = ROOT / "scripts" / "run_daily_story_scheduled.ps1"

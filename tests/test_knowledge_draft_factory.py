@@ -70,3 +70,30 @@ def test_forbidden_actions_raise():
     for action in ("approve", "merge", "deploy", "publish", "publication"):
         with pytest.raises(FactoryAuthorityError):
             assert_no_publication_authority(action)
+
+
+def test_cli_dry_run_and_live_scaffold_are_mutually_exclusive():
+    """--dry-run and --live-scaffold must not both be accepted."""
+    import subprocess
+
+    script = ROOT / "scripts" / "knowledge_draft_factory.py"
+    both = subprocess.run(
+        [sys.executable, str(script), "--dry-run", "--live-scaffold"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert both.returncode != 0
+    combined = (both.stderr + both.stdout).lower()
+    assert "not allowed with argument" in combined or both.returncode == 2
+
+    dry = subprocess.run(
+        [sys.executable, str(script), "--dry-run", "--no-resume", "--queue-size", "2"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert dry.returncode == 0
+    assert '"dry_run": true' in dry.stdout

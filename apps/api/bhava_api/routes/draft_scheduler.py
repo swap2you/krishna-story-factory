@@ -23,13 +23,15 @@ router = APIRouter(prefix="/api/v1/local/draft-scheduler", tags=["draft-schedule
 
 
 class ConfigureBody(BaseModel):
+    """Partial configure: omitted fields stay None and must not reset current state."""
+
     queue: DraftQueueChoice | None = None
-    dry_run: bool | None = True
+    dry_run: bool | None = None
     idempotency_key: str | None = None
     max_retries: int | None = Field(default=None, ge=0, le=5)
     max_usd_per_run: float | None = Field(default=None, ge=0.0)
     max_usd_per_day: float | None = Field(default=None, ge=0.0)
-    paid_providers_allowed: bool | None = False
+    paid_providers_allowed: bool | None = None
 
 
 class EnqueueBody(BaseModel):

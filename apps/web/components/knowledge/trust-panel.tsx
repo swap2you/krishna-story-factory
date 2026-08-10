@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode, SyntheticEvent } from "react";
+import { useState, type ReactNode, type SyntheticEvent } from "react";
 
 export type TrustPanelRow = {
   label: string;
@@ -24,18 +24,22 @@ type Props = {
  */
 export function TrustPanel({ rows, open, onOpenChange, defaultOpen = false, className }: Props) {
   const controlled = open !== undefined;
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
+  const isOpen = controlled ? Boolean(open) : uncontrolledOpen;
+
   return (
     <section className={`knowledge-source ${className || ""}`.trim()} aria-label="Source and review">
       <details
         className="knowledge-source-details"
-        {...(controlled
-          ? {
-              open,
-              onToggle: (e: SyntheticEvent<HTMLDetailsElement>) => {
-                onOpenChange?.((e.target as HTMLDetailsElement).open);
-              },
-            }
-          : { open: defaultOpen || undefined })}
+        open={isOpen}
+        onToggle={(e: SyntheticEvent<HTMLDetailsElement>) => {
+          const next = (e.target as HTMLDetailsElement).open;
+          if (controlled) {
+            onOpenChange?.(next);
+          } else {
+            setUncontrolledOpen(next);
+          }
+        }}
       >
         <summary>Source and review</summary>
         <dl>

@@ -25,8 +25,17 @@ from bhava_api.knowledge.draft_factory import (  # noqa: E402
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Bhāva Knowledge private draft factory")
-    parser.add_argument("--dry-run", action="store_true", default=True, help="Dry-run (default)")
-    parser.add_argument("--live-scaffold", action="store_true", help="Write private scaffolds (still no publish)")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Dry-run only (default when --live-scaffold is omitted)",
+    )
+    mode.add_argument(
+        "--live-scaffold",
+        action="store_true",
+        help="Write private scaffolds (still no publish)",
+    )
     parser.add_argument("--no-resume", action="store_true", help="Ignore prior status and start a new run")
     parser.add_argument("--queue-size", type=int, default=50)
     parser.add_argument("--status", action="store_true", help="Print read-only status JSON and exit")
@@ -44,6 +53,7 @@ def main() -> int:
         print(json.dumps(get_factory_status(), indent=2, ensure_ascii=False))
         return 0
 
+    # Default to dry-run; --live-scaffold opts into private scaffold writes.
     dry_run = not args.live_scaffold
     state = run_factory(
         dry_run=dry_run,

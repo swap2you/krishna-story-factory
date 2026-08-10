@@ -63,7 +63,7 @@ export function ArticleRecordShell({ doc }: Props) {
         <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit", margin: 0 }}>{doc.body_md}</pre>
       </section>
 
-      <TrustPanel rows={trustRows} open />
+      <TrustPanel rows={trustRows} defaultOpen />
 
       <div style={{ marginTop: "1.5rem" }}>
         <HelpfulVote resourceId={doc.id || doc.slug} />
