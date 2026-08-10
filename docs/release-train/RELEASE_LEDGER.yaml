@@ -19,8 +19,11 @@ active_train:
     evidence_zip: MyPilotDropbox/BHAVA/release-handoffs/R00-STORY-001-025-CLOSURE-20260810-143143.zip
   - id: R01-KNOWLEDGE-GOLDEN-PAGE
     order: 1
-    state: NOT_STARTED
+    state: BLOCKED
     depends_on: [R00-STORY-001-025-CLOSURE]
+    blocked_at: "2026-08-10T19:31:00Z"
+    blocker: "OD-14 authorized Nrsimha edition missing; TOP-0147 DOSSIER_READY=false"
+    evidence_zip: MyPilotDropbox/BHAVA/release-handoffs/R01-KNOWLEDGE-GOLDEN-PAGE-20260810-153100.zip
   - id: R02-KNOWLEDGE-FIVE-PAGE-PILOT
     order: 2
     state: NOT_STARTED
