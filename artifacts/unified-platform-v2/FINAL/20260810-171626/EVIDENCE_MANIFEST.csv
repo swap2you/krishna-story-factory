@@ -1,0 +1,4 @@
+path,role,sha256
+FINAL_HANDOFF.md,handoff,
+PROGRAM_STATE.yaml,ledger,
+RELEASE_MANIFEST.json,manifest,
