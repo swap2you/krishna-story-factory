@@ -1,0 +1,19 @@
+{
+  "slug": "printing-and-classroom-use",
+  "record_id": "kl-printables",
+  "label": "Bhāva-original",
+  "source_dossier_summary": "Substantive editorial guide for families and teachers on printing posters, coloring pages, and activity sheets from released Krishna Book packages (Stories 001–025).",
+  "claim_map_note": "Claims describe released package asset types, the live Printables hub, Planned labeling for unfinished puzzle types, and the boundary that materials are not official BBT publications. No scripture verse bodies.",
+  "rights_use": {
+    "status": "bhava_original",
+    "scripture_body": "none",
+    "notes": "Bhāva-original classroom guidance. Points to released story printables; does not embed or redistribute private intake PDFs."
+  },
+  "review_ledger": {
+    "review_state": "published",
+    "visibility": "public",
+    "last_human_review": "public-pilot-v1",
+    "notes": "Accepted into the public Knowledge pilot as the substantive classroom/printing guide."
+  },
+  "correction_path": "/knowledge/corrections"
+}

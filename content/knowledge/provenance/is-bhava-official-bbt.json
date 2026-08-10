@@ -1,0 +1,19 @@
+{
+  "slug": "is-bhava-official-bbt",
+  "record_id": "kl-q-official-bbt",
+  "label": "Bhāva-original",
+  "source_dossier_summary": "Canonical FAQ clarifying independence from official BBT publication status. Editorial trust boundary only.",
+  "claim_map_note": "Single clear claim: Bhāva is independent, cites sources carefully, and does not claim to be an official BBT publication.",
+  "rights_use": {
+    "status": "bhava_original",
+    "scripture_body": "none",
+    "notes": "Bhāva-original FAQ. No scripture body and no BBT text republication."
+  },
+  "review_ledger": {
+    "review_state": "published",
+    "visibility": "public",
+    "last_human_review": "public-pilot-v1",
+    "notes": "Accepted into the public Knowledge pilot as a trust FAQ."
+  },
+  "correction_path": "/knowledge/corrections"
+}

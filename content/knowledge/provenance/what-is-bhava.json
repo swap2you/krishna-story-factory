@@ -1,0 +1,19 @@
+{
+  "slug": "what-is-bhava",
+  "record_id": "kl-about-bhava",
+  "label": "Bhāva-original",
+  "source_dossier_summary": "Editorial guide authored for Bhāva. No scripture edition, Devanāgarī, IAST, or verse body is claimed or attached.",
+  "claim_map_note": "Claims are limited to what Bhāva is (independent curated portal), how Krishna Book bedtime stories are presented, and that Bhāva is not an official BBT publication. No śloka or Purāṇic verse claims.",
+  "rights_use": {
+    "status": "bhava_original",
+    "scripture_body": "none",
+    "notes": "Bhāva-original editorial expression. Not a scripture package and not a PDF body copy from intake dossiers."
+  },
+  "review_ledger": {
+    "review_state": "published",
+    "visibility": "public",
+    "last_human_review": "public-pilot-v1",
+    "notes": "Accepted into the public Knowledge pilot as a Bhāva-original guide."
+  },
+  "correction_path": "/knowledge/corrections"
+}

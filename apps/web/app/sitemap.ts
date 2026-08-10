@@ -1,6 +1,10 @@
 import type { MetadataRoute } from "next";
 import { PUBLIC_STORY_MAX } from "@/lib/public-boundary";
 import { CANONICAL_ORIGIN } from "@/lib/seo";
+import { listPublicPilotCatalog } from "@/lib/knowledge/loader";
+import { listPublicDerivativeMetas } from "@/lib/learning/derivatives";
+
+export const runtime = "nodejs";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
@@ -51,11 +55,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     (_, index) => `/stories/${String(index + 1).padStart(3, "0")}`,
   );
 
+  const { guides, questions } = listPublicPilotCatalog();
+  const knowledgeRoutes = [
+    ...guides.map((g) => `/knowledge/${g.slug}`),
+    ...questions.map((q) => `/knowledge/questions/${q.slug}`),
+  ];
+  const learningRoutes = listPublicDerivativeMetas().map(
+    (d) => `/learning/derivatives/${d.slug}`,
+  );
+
   const now = new Date();
-  return [...staticRoutes, ...cantos, ...stories].map((path) => ({
-    url: `${CANONICAL_ORIGIN}${path}`,
-    lastModified: now,
-    changeFrequency: path.startsWith("/stories/") ? "monthly" : "weekly",
-    priority: path === "" ? 1 : path.startsWith("/stories/") ? 0.8 : 0.6,
-  }));
+  return [...staticRoutes, ...cantos, ...stories, ...knowledgeRoutes, ...learningRoutes].map(
+    (path) => ({
+      url: `${CANONICAL_ORIGIN}${path}`,
+      lastModified: now,
+      changeFrequency: path.startsWith("/stories/") ? "monthly" : "weekly",
+      priority: path === "" ? 1 : path.startsWith("/stories/") ? 0.8 : 0.6,
+    }),
+  );
 }

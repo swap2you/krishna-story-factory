@@ -1,0 +1,52 @@
+{
+  "id": "ld-activity-family-trust-qa",
+  "slug": "family-trust-qa-activity",
+  "title": "Family discussion: Trust, BBT boundary, and child data",
+  "derivative_type": "activity",
+  "learning_objective": "Families can answer, in their own words, whether Bhāva is an official BBT publication and whether the site collects child account data — using only the published FAQs.",
+  "audience": {
+    "profiles": ["families", "sunday_school", "children", "youth"],
+    "age_range": {
+      "min": 8,
+      "max": null,
+      "label": "Ages 8+ with a parent or facilitator"
+    }
+  },
+  "canonical_record_version": {
+    "record_slug": "is-bhava-official-bbt",
+    "record_id": "kl-q-official-bbt",
+    "record_version": "published-public-v1",
+    "content_path": "content/knowledge/questions/is-bhava-official-bbt/"
+  },
+  "source_lineage": {
+    "origin": "adapted_from_bhava_knowledge",
+    "notes": "Primary lineage: is-bhava-official-bbt. Secondary lineage: does-bhava-collect-child-data (kl-q-child-data). Discussion prompts only — Bhāva-original; no scripture bodies.",
+    "forbidden_content": [
+      "invented_scripture_quotes",
+      "pdf_body_copies",
+      "fake_download_links",
+      "child_account_collection"
+    ]
+  },
+  "review_state": "published",
+  "answer_key_relation": {
+    "kind": "embedded",
+    "paired_derivative_id": null,
+    "notes": "Short facilitator answer cues embedded below; not a scored test."
+  },
+  "asset_provenance": {
+    "rights_status": "bhava_original",
+    "steward": "Svarna Gauranga Das",
+    "assets": [],
+    "notes": "In-page markdown activity. No downloadable worksheet file until a validated export exists."
+  },
+  "export_manifest": {
+    "export_version": "1.0.0",
+    "formats": ["markdown"],
+    "downloadable": false,
+    "artifact_paths": [],
+    "generated_at": null
+  },
+  "body_path": "content/learning/derivatives/family-trust-qa-activity/body.md",
+  "visibility": "public"
+}

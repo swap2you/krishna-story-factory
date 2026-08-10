@@ -1,8 +1,8 @@
 # Lesson plan: What is Bhāva?
 
-> **Template status:** Bhāva-original sample derivative (draft).  
-> **Canonical source:** Knowledge guide `what-is-bhava` (`kl-about-bhava`).  
-> **Downloads:** none yet — do not treat this markdown as a published printable pack.
+> **Status:** Published · Bhāva-original Learning derivative  
+> **Canonical source:** Knowledge guide `what-is-bhava` (`kl-about-bhava`)  
+> **Downloads:** none — read this page in Learning; do not treat markdown as a printable pack PDF
 
 ## Learning objective
 
@@ -15,8 +15,8 @@ By the end of this short session, learners can explain that Bhāva is an indepen
 
 ## Materials (available now)
 
-- Public Knowledge page: `/knowledge/what-is-bhava` (or the article under Knowledge)
-- Optional: Krishna Book story library for a follow-on listen — `/library/krishna-book`
+- Public Knowledge page: `/knowledge/what-is-bhava`
+- Optional: Krishna Book story library — `/library/krishna-book`
 - Optional: Printables hub for released story assets — `/printables`
 
 ## Session outline (20–30 minutes)
@@ -33,7 +33,6 @@ By the end of this short session, learners can explain that Bhāva is an indepen
 ## Facilitator notes
 
 - Stay with the Knowledge guide. Do **not** invent scripture quotes or attribute teachings to sources that are not on the page.
-- AI may assist production elsewhere in Bhāva; this lesson still requires human review before any public “approved” claim.
 - If learners ask for downloads: point to real Printables for released stories; this lesson plan itself has `downloadable: false`.
 
 ## Source lineage
@@ -43,4 +42,5 @@ By the end of this short session, learners can explain that Bhāva is an indepen
 | Canonical record | `what-is-bhava` / `kl-about-bhava` |
 | Record version | `published-public-v1` |
 | Origin | Bhāva-original expression adapted from approved Knowledge |
-| Review state | `draft` |
+| Review state | `published` |
+| Visibility | `public` |

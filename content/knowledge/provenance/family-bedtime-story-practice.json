@@ -1,0 +1,19 @@
+{
+  "slug": "family-bedtime-story-practice",
+  "record_id": "kl-family-bedtime",
+  "label": "Bhāva-original",
+  "source_dossier_summary": "Substantive Bhāva-original family practice guide for using public Krishna Book bedtime stories 001–025. No scripture verse bodies; no intake PDF content.",
+  "claim_map_note": "Claims describe a calm bedtime rhythm, optional Printables use, sequence awareness for the public Library, and honest privacy/non-BBT boundaries. Does not invent ślokas or purport text.",
+  "rights_use": {
+    "status": "bhava_original",
+    "scripture_body": "none",
+    "notes": "Bhāva-original family guidance pointing at the public Library. Not an official BBT publication; does not republish copyrighted book text."
+  },
+  "review_ledger": {
+    "review_state": "published",
+    "visibility": "public",
+    "last_human_review": "public-pilot-v1",
+    "notes": "Accepted as the second substantive public Knowledge pilot guide (alongside printing-and-classroom-use)."
+  },
+  "correction_path": "/knowledge/corrections"
+}

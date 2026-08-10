@@ -1,0 +1,19 @@
+{
+  "slug": "source-and-permissions",
+  "record_id": "kl-source-permissions",
+  "label": "Bhāva-original",
+  "source_dossier_summary": "Editorial policy guide on how Bhāva cites Krishna Book boundaries and related references without claiming blanket BBT ownership or wholesale republication rights.",
+  "claim_map_note": "Claims cover citation practice, non-republication of full copyrighted books, and that quotations/ślokas stay unpublished until reviewed. Does not assert rights clearance for intake PDFs or TOP-0147.",
+  "rights_use": {
+    "status": "bhava_original",
+    "scripture_body": "none",
+    "notes": "Bhāva-original policy text. No scripture body; no owner-PDF republication."
+  },
+  "review_ledger": {
+    "review_state": "published",
+    "visibility": "public",
+    "last_human_review": "public-pilot-v1",
+    "notes": "Accepted into the public Knowledge pilot as a Bhāva-original policy guide."
+  },
+  "correction_path": "/knowledge/corrections"
+}

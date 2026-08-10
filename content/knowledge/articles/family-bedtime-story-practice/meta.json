@@ -1,0 +1,21 @@
+{
+  "id": "kl-family-bedtime",
+  "slug": "family-bedtime-story-practice",
+  "title": "Family bedtime story practice",
+  "summary": "A calm, repeatable bedtime rhythm using Bhāva’s public Krishna Book stories—without inventing scripture or treating Bhāva as official BBT.",
+  "content_type": "guide",
+  "pathway": "families",
+  "visibility": "public",
+  "review_state": "published",
+  "audience": [
+    "parents",
+    "families",
+    "caregivers"
+  ],
+  "sources": [
+    {
+      "label": "Bhāva Library — public Krishna Book stories 001–025",
+      "tier": "editorial"
+    }
+  ]
+}

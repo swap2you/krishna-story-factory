@@ -1,0 +1,53 @@
+{
+  "id": "ld-teacher-sunday-school-printing",
+  "slug": "sunday-school-printing-teacher-guide",
+  "title": "Sunday School teacher guide: Printing and permissions",
+  "derivative_type": "teacher_guide",
+  "learning_objective": "Teachers can prepare a calm Sunday School session using released Printables, explain Bhāva source boundaries from Sources and permissions, and avoid presenting materials as official BBT publications.",
+  "audience": {
+    "profiles": ["sunday_school", "teachers", "gurukula_homeschool"],
+    "age_range": {
+      "min": null,
+      "max": null,
+      "label": "Facilitators leading ages 5–13 (adapt depth)"
+    }
+  },
+  "canonical_record_version": {
+    "record_slug": "printing-and-classroom-use",
+    "record_id": "kl-printables",
+    "record_version": "published-public-v1",
+    "content_path": "content/knowledge/articles/printing-and-classroom-use/"
+  },
+  "source_lineage": {
+    "origin": "adapted_from_bhava_knowledge",
+    "notes": "Primary lineage: printing-and-classroom-use. Secondary lineage: source-and-permissions (kl-source-permissions) for citation and non-republication boundaries. Bhāva-original teacher framing only — no scripture bodies, no intake PDF copies.",
+    "forbidden_content": [
+      "invented_scripture_quotes",
+      "pdf_body_copies",
+      "fake_download_links",
+      "bbt_full_text_republication",
+      "TOP-0147_publication"
+    ]
+  },
+  "review_state": "published",
+  "answer_key_relation": {
+    "kind": "none",
+    "paired_derivative_id": null,
+    "notes": "Facilitator guide; no scored assessment."
+  },
+  "asset_provenance": {
+    "rights_status": "bhava_original",
+    "steward": "Svarna Gauranga Das",
+    "assets": [],
+    "notes": "In-page markdown only. Points to /printables and public Knowledge guides; downloadable remains false."
+  },
+  "export_manifest": {
+    "export_version": "1.0.0",
+    "formats": ["markdown"],
+    "downloadable": false,
+    "artifact_paths": [],
+    "generated_at": null
+  },
+  "body_path": "content/learning/derivatives/sunday-school-printing-teacher-guide/body.md",
+  "visibility": "public"
+}

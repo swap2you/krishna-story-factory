@@ -4,6 +4,7 @@
  * Anatomy: docs/unified-platform-v2/specs/01_VISIBLE_PRODUCT_SPEC.md
  */
 export { ArticleRecordShell } from "./article-record-shell";
+export { QuestionRecordShell } from "./question-record-shell";
 export { FocusModeBar } from "./focus-mode-bar";
 export { LearningPageShell } from "./learning-page-shell";
 export { LensSelector, LENS_LABELS } from "./lens-selector";

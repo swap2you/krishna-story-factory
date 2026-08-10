@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 
 type AgeGroup = "bal-gopal" | "damodara" | "mixed";
@@ -124,6 +125,22 @@ export default function SundaySchoolPage() {
             <pre style={{ whiteSpace: "pre-wrap", padding: "1rem", borderRadius: ".9rem", background: "rgba(255,250,242,.8)", border: "1px solid var(--bhava-border)", fontFamily: "var(--font-body), sans-serif", fontSize: ".92rem", lineHeight: 1.65, color: "var(--bhava-ink)" }}>
               {PARENT_MESSAGE}
             </pre>
+          </section>
+
+          <section className="teacher-panel" style={{ marginTop: "1.25rem" }}>
+            <h2>Published Learning derivative</h2>
+            <p className="hint">
+              Bhāva-original teacher guide grounded in Printing and classroom use plus Sources and
+              permissions. Read in-page — no fake pack PDF.
+            </p>
+            <p>
+              <Link href="/learning/derivatives/sunday-school-printing-teacher-guide">
+                Sunday School teacher guide: Printing and permissions
+              </Link>
+              <span className="editorial-status active" style={{ marginLeft: ".65rem" }}>
+                Available
+              </span>
+            </p>
           </section>
 
           <section className="teacher-panel" style={{ marginTop: "1.25rem" }}>
