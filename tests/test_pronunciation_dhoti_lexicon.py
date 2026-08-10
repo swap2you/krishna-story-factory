@@ -68,11 +68,24 @@ def test_story_024_and_025_plan_rows_exist_for_preflight() -> None:
     assert plan_025 is not None and plan_025.slug == "extinguishing-the-forest-fire"
 
 
+def _contains_dhoti_term(text: str) -> bool:
+    """True if text has dhoti/dhotī in any case; .lower() alone is not enough for DHOTĪ."""
+    folded = text.casefold()
+    return "dhotī" in folded or "dhoti" in folded
+
+
 def test_story_024_synthetic_excerpt_passes_pronunciation_preflight() -> None:
-    assert "dhotī" in STORY_024_SYNTHETIC
+    # Hermetic: never read work/** or gitignored output/** for this preflight.
+    assert _contains_dhoti_term(STORY_024_SYNTHETIC)
+    assert _contains_dhoti_term("His yellow DHOTĪ shining")
     report = evaluate_pronunciation_coverage(STORY_024_SYNTHETIC, project_root=ROOT)
     assert report.status == "PASS", report.notes
     assert not report.missing
+    upper = evaluate_pronunciation_coverage(
+        "Kṛṣṇa stood up, His yellow DHOTĪ shining by the Yamunā.",
+        project_root=ROOT,
+    )
+    assert upper.status == "PASS", upper.notes
 
 
 def test_story_025_synthetic_excerpt_passes_pronunciation_preflight() -> None:

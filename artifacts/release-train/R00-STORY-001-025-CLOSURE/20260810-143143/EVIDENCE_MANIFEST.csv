@@ -1,0 +1,5 @@
+path,role,sha256
+RELEASE_STATE.yaml,state,
+FINAL_HANDOFF.md,handoff,
+r00_drive_readback.csv,drive,
+STORY_023_025_LOCAL_VALIDATION.csv,local,

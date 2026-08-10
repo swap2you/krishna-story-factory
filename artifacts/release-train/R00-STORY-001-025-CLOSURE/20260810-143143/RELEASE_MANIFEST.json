@@ -1,0 +1,9 @@
+{
+  "release_id": "R00-STORY-001-025-CLOSURE",
+  "state": "CLOSED",
+  "content_tag": "bhava-content-001-025-v1",
+  "sha256": "2dda0485a085f93d222a0ebd1d27b620df408990e7673a11b9603de68ff230a9",
+  "public_story_max": 25,
+  "main_sha": "0fb429c6c9cbbd195628857c8f6879f931ed4eba",
+  "develop_sha": "228f915"
+}

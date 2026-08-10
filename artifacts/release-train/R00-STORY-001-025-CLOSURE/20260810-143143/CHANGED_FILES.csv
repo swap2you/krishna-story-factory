@@ -1,0 +1,4 @@
+path,change
+deploy/content/RELEASE_CONTENT.json,pin 001-025-v1
+deploy/ionos/Caddyfile,private floor 026+
+.github/actions/provision-content/action.yml,assert 025 present / 026 absent

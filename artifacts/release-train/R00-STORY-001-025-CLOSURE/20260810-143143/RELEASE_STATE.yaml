@@ -1,0 +1,16 @@
+release_id: R00-STORY-001-025-CLOSURE
+state: CLOSED
+develop_sha: 05936ff246532f4402f59c5a625b201aa4a8a39a
+main_merge_sha: 0fb429c6c9cbbd195628857c8f6879f931ed4eba
+promotion_pr: https://github.com/swap2you/krishna-story-factory/pull/72
+content_tag_prod: bhava-content-001-025-v1
+content_tag_staging: bhava-content-001-025-staging-v1
+content_sha256: 2dda0485a085f93d222a0ebd1d27b620df408990e7673a11b9603de68ff230a9
+public_story_max: 25
+private_floor: 026
+ci: https://github.com/swap2you/krishna-story-factory/actions/runs/31420669386
+ci_production: https://github.com/swap2you/krishna-story-factory/actions/runs/31420669277
+staging_deploy: https://github.com/swap2you/krishna-story-factory/actions/runs/31420669424
+production_deploy: https://github.com/swap2you/krishna-story-factory/actions/runs/31422733214
+live_version: web_version=001-025-v1 public_story_max=25 indexed=25
+live_boundary: stories/025=200 stories/026=404 reader/025=200 reader/026=404
