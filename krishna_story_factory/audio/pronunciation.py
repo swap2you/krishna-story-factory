@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 import re
+import unicodedata
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -38,7 +39,12 @@ def load_pronunciation_aliases(project_root: Path | None = None) -> dict[str, st
         return _parse_simple_yaml_aliases(path.read_text(encoding="utf-8"))
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     aliases = data.get("aliases") or {}
-    return {str(k): str(v) for k, v in aliases.items() if str(k).strip() and str(v).strip()}
+    # NFC-normalize keys so NFD story text still resolves against lexicon entries.
+    return {
+        unicodedata.normalize("NFC", str(k)): str(v)
+        for k, v in aliases.items()
+        if str(k).strip() and str(v).strip()
+    }
 
 
 def _parse_simple_yaml_aliases(text: str) -> dict[str, str]:
@@ -56,7 +62,8 @@ def _parse_simple_yaml_aliases(text: str) -> dict[str, str]:
             break
         match = re.match(r'^"?([^"]+)"?\s*:\s*"?([^"]+)"?\s*$', stripped)
         if match:
-            aliases[match.group(1).strip()] = match.group(2).strip()
+            key = unicodedata.normalize("NFC", match.group(1).strip())
+            aliases[key] = match.group(2).strip()
     return aliases
 
 
@@ -71,7 +78,8 @@ def _cached_aliases(project_root: str) -> tuple[tuple[str, str], ...]:
 def normalize_for_tts(text: str, *, project_root: Path | None = None) -> PronunciationResult:
     """Convert display Unicode names to TTS-friendly aliases without touching story.md."""
     root = str((project_root or Path.cwd()).resolve())
-    audio = text or ""
+    # NFC first so NFD inputs match precomposed lexicon keys and fold maps.
+    audio = unicodedata.normalize("NFC", text or "")
     applied: list[str] = []
     for source, target in _cached_aliases(root):
         # Word/token boundaries so "Rama" does not rewrite "drama".
@@ -89,6 +97,7 @@ def normalize_for_tts(text: str, *, project_root: Path | None = None) -> Pronunc
 
 
 def _fold_remaining_diacritics(text: str) -> str:
+    text = unicodedata.normalize("NFC", text or "")
     mapping = str.maketrans(
         {
             "ā": "a",
@@ -113,7 +122,11 @@ def _fold_remaining_diacritics(text: str) -> str:
             "Ṣ": "Sh",
         }
     )
-    return text.translate(mapping)
+    folded = text.translate(mapping)
+    # Drop leftover combining marks (true NFD leftovers or unmapped marks).
+    return "".join(
+        ch for ch in unicodedata.normalize("NFD", folded) if unicodedata.category(ch) != "Mn"
+    )
 
 
 def validate_locked_voice(*, voice_id: str, voice_name: str = "", model_id: str = "") -> list[str]:
