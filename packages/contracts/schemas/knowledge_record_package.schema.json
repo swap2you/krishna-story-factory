@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bhava.me/schemas/knowledge_record_package.json",
+  "title": "BhavaKnowledgeRecordPackage",
+  "type": "object",
+  "required": ["record", "content", "source_dossier", "rights", "assets", "reviews", "manifest"],
+  "properties": {
+    "record": {
+      "type": "object",
+      "required": [
+        "record_id", "slug", "title", "content_type", "lifecycle", "package_status",
+        "visibility", "record_version", "canonical_text_hash", "unicode_normalization",
+        "source_status"
+      ],
+      "properties": {
+        "record_id": { "type": "string", "minLength": 1 },
+        "slug": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "title_iast": { "type": "string" },
+        "content_type": { "type": "string", "enum": ["prayer", "arati", "mantra_collection", "sloka"] },
+        "pillar": { "type": "string" },
+        "cluster": { "type": "string" },
+        "pathway": { "type": "string" },
+        "source_tier_required": { "type": "string" },
+        "lifecycle": { "type": "string" },
+        "package_status": { "type": "string" },
+        "visibility": { "type": "string", "enum": ["private", "public", "restricted_review"] },
+        "source_status": {
+          "type": "string",
+          "enum": ["SOURCE_BLOCKED", "RIGHTS_BLOCKED", "DOSSIER_READY", "CONFLICT_REVIEW_REQUIRED"]
+        },
+        "audience_default": { "type": "string" },
+        "min_age": { "type": "integer" },
+        "max_age": { "type": "integer" },
+        "purpose_sentence": { "type": "string" },
+        "record_version": { "type": "string" },
+        "canonical_text_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "unicode_normalization": { "type": "string", "const": "NFC" },
+        "relationships": { "type": "array", "items": { "type": "string" } },
+        "roadmap_ref": { "type": "string" },
+        "fixture": { "type": "boolean" },
+        "fixture_label": { "type": "string" }
+      }
+    },
+    "content": {
+      "type": "object",
+      "required": ["blocks"],
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["block_id", "block_type", "ord"],
+            "properties": {
+              "block_id": { "type": "string" },
+              "block_type": { "type": "string" },
+              "ord": { "type": "integer" },
+              "devanagari": { "type": "string" },
+              "devanagari_nfc": { "type": "string" },
+              "iast": { "type": "string" },
+              "translation_en": { "type": "string" },
+              "translator": { "type": "string" },
+              "edition": { "type": "string" },
+              "exact_locator": { "type": "string" },
+              "word_meanings": { "type": "array" },
+              "lens_explanations": { "type": "object" },
+              "asset_refs": { "type": "array" },
+              "body": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "source_dossier": { "type": "object" },
+    "rights": { "type": "object" },
+    "assets": { "type": "object" },
+    "reviews": { "type": "object" },
+    "manifest": { "type": "object" }
+  }
+}

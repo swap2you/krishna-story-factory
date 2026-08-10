@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Source_Sans_3, Tillana } from "next/font/google";
+import { Fraunces, Noto_Serif_Devanagari, Source_Sans_3, Tillana } from "next/font/google";
 import "@bhava/ui/styles.css";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
@@ -21,6 +21,11 @@ const brandDisplay = Tillana({
 });
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display" });
 const body = Source_Sans_3({ subsets: ["latin"], variable: "--font-body" });
+const devanagari = Noto_Serif_Devanagari({
+  subsets: ["devanagari"],
+  weight: ["400", "600", "700"],
+  variable: "--font-devanagari",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(CANONICAL_ORIGIN),
@@ -113,7 +118,7 @@ const websiteJsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${brandDisplay.variable} ${display.variable} ${body.variable}`}>
+    <html lang="en" className={`${brandDisplay.variable} ${display.variable} ${body.variable} ${devanagari.variable}`}>
       <body>
         <script
           type="application/ld+json"

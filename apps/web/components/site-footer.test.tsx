@@ -24,14 +24,10 @@ describe("SiteFooter version Env", () => {
     expect(screen.getByText("staging")).toBeInTheDocument();
   });
 
-  it("renders compact trust links without Explore/Learning groups", async () => {
+  it("renders approved Bhāva/Dauji footer without civil name", async () => {
     const { SiteFooter } = await import("./site-footer");
     const { container } = render(<SiteFooter />);
-    const footer = container.querySelector("footer");
-    expect(footer).toBeTruthy();
-    expect(footer!.textContent).toContain("About");
-    expect(footer!.textContent).toContain("Contact");
-    expect(footer!.textContent).toContain("Copyright");
-    expect(footer!.querySelectorAll("h2")).toHaveLength(0);
+    expect(container.textContent).toMatch(/Svarna Gauranga Das · Dauji Publication · Bhāva/);
+    expect(container.textContent).not.toMatch(/Swapnil Patil/);
   });
 });

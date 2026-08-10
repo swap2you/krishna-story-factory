@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/page-intro";
 import { getRoadmapCounts, listRoadmap, listRoadmapPillars } from "@/lib/knowledge/loader";
+import { listKnowledgePackages } from "@/lib/knowledge/packages";
+import { isLoopbackRequest, isStudioAuthed } from "@/lib/knowledge/studio-guard";
 import { StudioClient } from "./studio-client";
 
 export const metadata: Metadata = {
@@ -37,12 +40,16 @@ const WORKFLOW = [
 export default async function KnowledgeStudioPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; lifecycle?: string; pillar?: string }>;
+  searchParams: Promise<{ q?: string; lifecycle?: string; pillar?: string; page?: string }>;
 }) {
   const params = await searchParams;
   const jar = await cookies();
+  const hdrs = await headers();
+  if (!isLoopbackRequest(hdrs)) {
+    notFound();
+  }
   const role = jar.get("bhava_studio_role")?.value || "";
-  const authed = Boolean(jar.get("bhava_studio_session")?.value) && ROLES.includes(role as (typeof ROLES)[number]);
+  const authed = isStudioAuthed(jar);
 
   const counts = getRoadmapCounts(true);
   const pillars = listRoadmapPillars(true);
@@ -55,6 +62,14 @@ export default async function KnowledgeStudioPage({
       [r.id, r.title, r.cluster, r.content_type].join(" ").toLowerCase().includes(q),
     );
   }
+
+  const pageSize = 50;
+  const page = Math.max(1, Number.parseInt(params.page || "1", 10) || 1);
+  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const start = (safePage - 1) * pageSize;
+  const pageRows = rows.slice(start, start + pageSize);
+  const packages = listKnowledgePackages();
 
   return (
     <>
@@ -103,7 +118,9 @@ export default async function KnowledgeStudioPage({
               </form>
 
               <p className="hint" style={{ marginTop: "1rem" }}>
-                Showing {rows.length} of {counts.total}. Workflow: {WORKFLOW.join(" → ")}.
+                Showing {start + 1}–{Math.min(start + pageSize, rows.length)} of {rows.length} filtered
+                (roadmap total {counts.total}). Research/backlog rows are not public until approved.
+                Workflow: {WORKFLOW.join(" → ")}.
               </p>
 
               <div style={{ overflowX: "auto", marginTop: "1rem" }}>
@@ -120,7 +137,7 @@ export default async function KnowledgeStudioPage({
                     </tr>
                   </thead>
                   <tbody>
-                    {rows.slice(0, 200).map((row) => (
+                    {pageRows.map((row) => (
                       <tr key={row.id}>
                         <td><code>{row.id}</code></td>
                         <td>{row.title}</td>
@@ -134,13 +151,41 @@ export default async function KnowledgeStudioPage({
                   </tbody>
                 </table>
               </div>
-              {rows.length > 200 ? (
-                <p className="hint">First 200 rows shown — refine filters to narrow.</p>
-              ) : null}
+              <nav className="knowledge-pager" aria-label="Roadmap pages" style={{ marginTop: "1rem", display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+                {safePage > 1 ? (
+                  <Link className="bhava-button" href={`?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.lifecycle ? { lifecycle: params.lifecycle } : {}), ...(params.pillar ? { pillar: params.pillar } : {}), page: String(safePage - 1) }).toString()}`}>
+                    Previous
+                  </Link>
+                ) : null}
+                <span className="hint">Page {safePage} of {totalPages}</span>
+                {safePage < totalPages ? (
+                  <Link className="bhava-button" href={`?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.lifecycle ? { lifecycle: params.lifecycle } : {}), ...(params.pillar ? { pillar: params.pillar } : {}), page: String(safePage + 1) }).toString()}`}>
+                    Next
+                  </Link>
+                ) : null}
+              </nav>
+
+              <h2 style={{ marginTop: "2rem" }}>Knowledge packages (private)</h2>
+              <p className="hint">
+                Pilot packages for loopback preview. Production scripture stays blocked until dossier approval.
+              </p>
+              <ul>
+                {packages.map((pkg) => (
+                  <li key={pkg.record.record_id}>
+                    <Link href={`/studio/knowledge/preview/${pkg.record.slug}`}>
+                      {pkg.record.title}
+                    </Link>
+                    {" · "}
+                    <strong>{pkg.record.source_status}</strong>
+                    {pkg.record.fixture ? ` · ${pkg.record.fixture_label}` : null}
+                  </li>
+                ))}
+              </ul>
               <p className="hint" style={{ marginTop: "1.5rem" }}>
-                Capabilities: create/edit metadata, Markdown preview, citation/source panel, rights/confidentiality,
-                reviewer assignment, comments, revisions, approval/rejection, scheduling, rollback/archive,
-                taxonomy, duplicate detection, broken-link review, audit history. Production mutations stay disabled unless factory actions are explicitly enabled.
+                This foundation provides a read-only roadmap/package queue, authenticated
+                loopback private preview, and synthetic study-neutral PDF/DOCX exports.
+                Create/edit mutations, reviewer workflows, scheduling, and publication actions
+                are not implemented in P01C.
               </p>
               <p><Link href="/knowledge">Public Knowledge home</Link></p>
             </>
