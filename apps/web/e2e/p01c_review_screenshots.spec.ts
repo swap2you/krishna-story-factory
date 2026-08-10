@@ -33,6 +33,10 @@ async function studioSignIn(page: import("@playwright/test").Page) {
 
 test.describe("P01C review screenshots (standalone)", () => {
   test("capture six review screenshots without Next toolbar", async ({ page }) => {
+    test.skip(
+      process.env.BHAVA_E2E_MODE === "public",
+      "review screenshots require private studio on standalone/local builds",
+    );
     test.setTimeout(180_000);
     await studioSignIn(page);
     await assertNoDevChrome(page);

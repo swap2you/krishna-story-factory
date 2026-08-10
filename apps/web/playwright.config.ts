@@ -17,7 +17,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   projects: [
-    { name: "chromium-desktop", use: { ...devices["Desktop Chrome"] }, testIgnore: /launch-screenshots\.spec\.ts/ },
+    { name: "chromium-desktop", use: { ...devices["Desktop Chrome"] }, testIgnore: /launch-screenshots\.spec\.ts|p01c_review_screenshots\.spec\.ts/ },
     {
       name: "firefox-desktop",
       use: {
@@ -30,14 +30,14 @@ export default defineConfig({
           },
         },
       },
-      testIgnore: /launch-screenshots\.spec\.ts/,
+      testIgnore: /launch-screenshots\.spec\.ts|p01c_review_screenshots\.spec\.ts/,
     },
-    { name: "webkit-desktop", use: { ...devices["Desktop Safari"] }, testIgnore: /launch-screenshots\.spec\.ts/ },
-    { name: "chromium-mobile", use: { ...devices["Pixel 5"] }, testIgnore: /launch-screenshots\.spec\.ts/ },
-    { name: "webkit-mobile", use: { ...devices["iPhone 13"] }, testIgnore: /launch-screenshots\.spec\.ts/ },
+    { name: "webkit-desktop", use: { ...devices["Desktop Safari"] }, testIgnore: /launch-screenshots\.spec\.ts|p01c_review_screenshots\.spec\.ts/ },
+    { name: "chromium-mobile", use: { ...devices["Pixel 5"] }, testIgnore: /launch-screenshots\.spec\.ts|p01c_review_screenshots\.spec\.ts/ },
+    { name: "webkit-mobile", use: { ...devices["iPhone 13"] }, testIgnore: /launch-screenshots\.spec\.ts|p01c_review_screenshots\.spec\.ts/ },
     {
       name: "screenshots",
-      testMatch: /launch-screenshots\.spec\.ts/,
+      testMatch: /launch-screenshots\.spec\.ts|p01c_review_screenshots\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
   ],
