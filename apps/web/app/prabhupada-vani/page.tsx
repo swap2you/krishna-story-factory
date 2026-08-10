@@ -117,7 +117,7 @@ export default function PrabhupadaVaniPage() {
           </p>
           <div className="category-grid">
             {CATEGORIES.map((cat) => (
-              <article key={cat.title} className="category-card" aria-disabled="true">
+              <article key={cat.title} className="category-card" data-planned="true">
                 <h3>{cat.title}</h3>
                 <p>{cat.desc}</p>
                 <div style={{ marginTop: ".75rem", display: "flex", flexWrap: "wrap", gap: ".5rem", alignItems: "center" }}>

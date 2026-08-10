@@ -73,7 +73,7 @@ export function CollectionCard({
         className={className}
         data-contrast-safe="true"
         data-collection-slug={slug}
-        aria-disabled="true"
+        data-planned="true"
       >
         {body}
       </article>
