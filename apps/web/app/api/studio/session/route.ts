@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { randomUUID } from "node:crypto";
 import { isLoopbackRequest, signStudioSession, studioToken } from "@/lib/knowledge/studio-guard";
 
 export const runtime = "nodejs";
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (token !== studioToken()) {
     return NextResponse.json({ detail: "Invalid bootstrap token" }, { status: 403 });
   }
-  const nonce = crypto.randomUUID();
+  const nonce = randomUUID();
   const session = signStudioSession(role, nonce);
   const secure = process.env.NODE_ENV === "production";
   const res = NextResponse.json({ ok: true, role });
