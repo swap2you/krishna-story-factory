@@ -1,8 +1,8 @@
 # Family practice sheet: Printing and classroom use
 
-> **Template status:** Bhāva-original sample derivative (draft).  
-> **Canonical source:** Knowledge guide `printing-and-classroom-use` (`kl-printables`).  
-> **Downloads:** this sheet itself is not a download pack. Use the live Printables hub for released story assets only.
+> **Status:** Published · Bhāva-original Learning derivative  
+> **Canonical source:** Knowledge guide `printing-and-classroom-use` (`kl-printables`)  
+> **Downloads:** this sheet is not a download pack. Use the live Printables hub for released story assets only.
 
 ## Learning objective
 
@@ -16,8 +16,8 @@ Families can find released posters, coloring pages, and activity sheets, pick on
 
 ## Before you start
 
-1. Open the Knowledge guide: **Printing and classroom use**.
-2. Open the live hub: [`/printables`](/printables).
+1. Open the Knowledge guide: **Printing and classroom use** (`/knowledge/printing-and-classroom-use`).
+2. Open the live hub: `/printables`.
 3. Choose a **released** Krishna Book story package (Stories 001–025). Do not invent missing puzzle types or claim Planned items are ready.
 
 ## Home practice (15–25 minutes)
@@ -42,5 +42,6 @@ Released packages may include posters, simple and detailed coloring pages, and a
 | Canonical record | `printing-and-classroom-use` / `kl-printables` |
 | Record version | `published-public-v1` |
 | Origin | Bhāva-original expression adapted from approved Knowledge |
-| Review state | `draft` |
-| Export | `downloadable: false` for this sheet until a validated export exists |
+| Review state | `published` |
+| Visibility | `public` |
+| Export | `downloadable: false` until a validated export exists |

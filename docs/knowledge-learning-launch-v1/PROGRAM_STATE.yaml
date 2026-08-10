@@ -1,0 +1,41 @@
+program: KNOWLEDGE_LEARNING_LAUNCH_V1
+parent_program: BHAVA_UNIFIED_PLATFORM_BUILD_V2
+execution_branch: develop
+prepared: '2026-08-10'
+state: COMPLETE
+started_at: '2026-08-10T22:20:00Z'
+completed_at: '2026-08-10T22:45:00Z'
+scope: implementable_public_pilot
+product_goal: >-
+  Visible, useful public Knowledge pilot and Learning derivatives from accepted
+  Bhāva-original records only. No scripture fabrication.
+public_knowledge_pilot:
+  guides:
+    - family-bedtime-story-practice
+    - printing-and-classroom-use
+    - what-is-bhava
+    - source-and-permissions
+  substantive_guides:
+    - family-bedtime-story-practice
+    - printing-and-classroom-use
+  questions:
+    - is-bhava-official-bbt
+    - does-bhava-collect-child-data
+    - what-is-bhava-faq
+  provenance_dir: content/knowledge/provenance/
+  template: ArticleRecordShell / QuestionRecordShell with TrustPanel defaultOpen
+public_learning_derivatives:
+  - what-is-bhava-lesson-plan
+  - printing-classroom-family-practice
+  - sunday-school-printing-teacher-guide
+  - family-trust-qa-activity
+blocked_scripture_items:
+  - id: TOP-0147
+    reason: SOURCE_BLOCKED — missing exact edition/locator, Devanagari, IAST, English, rights clearance
+  - id: INTAKE_PDFS_01_THROUGH_12
+    reason: Private intake dossiers remain SOURCE_INCOMPLETE / blocked; no public PDF body copies
+honest_boundaries:
+  - No empty Available cards for Planned shelves
+  - No fake download links (export_manifest.downloadable stays false without validated artifacts)
+  - Studio remains private / loopback-guarded
+  - In-page markdown preferred over inventing PDFs

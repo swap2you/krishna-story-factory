@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "program": "KNOWLEDGE_LEARNING_LAUNCH_V1",
+  "public_derivative_slugs": [
+    "what-is-bhava-lesson-plan",
+    "printing-classroom-family-practice",
+    "sunday-school-printing-teacher-guide",
+    "family-trust-qa-activity"
+  ],
+  "notes": "Public Learning derivatives are Bhāva-original adaptations of accepted Knowledge pilot records. export_manifest.downloadable remains false without validated artifacts. TOP-0147 and intake PDFs are out of scope."
+}

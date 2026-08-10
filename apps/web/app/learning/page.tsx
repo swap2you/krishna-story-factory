@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { brandSrc } from "@/lib/brand-assets";
+import {
+  audienceLabel,
+  listPublicDerivatives,
+} from "@/lib/learning/derivatives";
 
 export const metadata: Metadata = {
   title: "Learning",
   description:
-    "Honest learning pathways for children, families, Sunday School, teachers, preachers, Gurukula/homeschool, and festival use — linking only to real Bhāva pages.",
+    "Honest learning pathways and Bhāva-original derivatives for children, families, Sunday School, teachers, and communities — linking only to real pages.",
 };
 
 type Pathway = {
@@ -30,14 +34,14 @@ const PATHWAYS: Pathway[] = [
     href: "/learning/families",
     status: "available",
     audience: "Homes and caregivers",
-    body: "Calm home practice routes into Printables and public Knowledge guides. No fake take-home downloads.",
+    body: "Calm home practice routes into Printables, public Knowledge guides, and published family derivatives.",
   },
   {
     title: "Sunday School",
     href: "/sunday-school",
     status: "available",
     audience: "Weekly classes",
-    body: "Usable weekly planner, homework checklist, and parent message template. Festival unit packs remain Planned on that page.",
+    body: "Usable weekly planner plus a published teacher guide grounded in printing and permissions Knowledge.",
   },
   {
     title: "Teachers",
@@ -70,6 +74,8 @@ const PATHWAYS: Pathway[] = [
 ];
 
 export default function LearningHubPage() {
+  const derivatives = listPublicDerivatives();
+
   return (
     <>
       <PageIntro
@@ -84,22 +90,59 @@ export default function LearningHubPage() {
             <article className="scope-card">
               <h3>Available now</h3>
               <p>
-                Children &amp; Youth, Families, Sunday School planner, Teachers classroom helper, and Preachers
-                workspace — grounded in released Krishna Book stories and public Knowledge pages.
+                Audience pathways below, plus {derivatives.length} published
+                Bhāva-original derivative{derivatives.length === 1 ? "" : "s"}{" "}
+                grounded in the public Knowledge pilot. In-page markdown only —
+                no fake PDF downloads.
               </p>
             </article>
             <article className="scope-card">
               <h3>Still planned</h3>
               <p>
-                Dedicated Gurukula/homeschool curriculum packs and festival unit packs remain Planned. They are
-                labeled clearly so nothing looks published before it is ready — and never as fake downloads.
+                Dedicated Gurukula/homeschool curriculum packs and festival unit
+                packs remain Planned. They are labeled clearly so nothing looks
+                published before it is ready.
               </p>
             </article>
           </div>
 
+          <h2 className="section-heading">Published learning derivatives</h2>
+          <p className="section-lead">
+            Each item shows lineage, audience, objective, and review state.
+            Downloads stay off until a validated export exists.
+          </p>
+          {derivatives.length ? (
+            <div className="scope-grid" style={{ marginBottom: "2.5rem" }}>
+              {derivatives.map((d) => (
+                <article key={d.slug} className="scope-card">
+                  <h3 style={{ marginTop: 0 }}>
+                    <Link href={`/learning/derivatives/${d.slug}`}>{d.title}</Link>
+                  </h3>
+                  <p className="hint" style={{ marginBottom: ".5rem" }}>
+                    {audienceLabel(d)}
+                  </p>
+                  <p style={{ marginBottom: ".65rem" }}>{d.learning_objective}</p>
+                  <p className="hint" style={{ marginBottom: ".65rem" }}>
+                    Lineage: {d.canonical_record_version.record_slug} · Review:{" "}
+                    {d.review_state} ·{" "}
+                    {d.export_manifest.downloadable
+                      ? "Export validated"
+                      : "In-page only (no download)"}
+                  </p>
+                  <span className="editorial-status active">Available</span>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="hint" style={{ marginBottom: "2.5rem" }}>
+              No public derivatives are published yet.
+            </p>
+          )}
+
           <h2 className="section-heading">Learning pathways</h2>
           <p className="section-lead">
-            Choose a pathway. Planned destinations stay open as honest shells — never as fake downloads.
+            Choose a pathway. Planned destinations stay open as honest shells —
+            never as fake downloads.
           </p>
           <div className="scope-grid">
             {PATHWAYS.map((pathway) => (
@@ -122,8 +165,8 @@ export default function LearningHubPage() {
 
           <p className="hint" style={{ marginTop: "2rem" }}>
             Looking for story printables? Visit the{" "}
-            <Link href="/printables">Printables hub</Link>. For source-led study, start in{" "}
-            <Link href="/knowledge">Knowledge</Link>.
+            <Link href="/printables">Printables hub</Link>. For source-led study,
+            start in <Link href="/knowledge">Knowledge</Link>.
           </p>
         </div>
       </section>

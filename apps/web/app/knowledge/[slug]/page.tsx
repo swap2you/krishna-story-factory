@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleRecordShell } from "@/components/knowledge/article-record-shell";
-import { getBySlug, listArticles } from "@/lib/knowledge/loader";
+import { getBySlug, getProvenance, listArticles } from "@/lib/knowledge/loader";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -20,11 +20,12 @@ export default async function KnowledgeArticlePage({ params }: Props) {
   const { slug } = await params;
   const doc = getBySlug(slug);
   if (!doc || !doc.body_md) notFound();
+  const provenance = getProvenance(slug);
 
   return (
     <section className="section">
       <div className="container" style={{ maxWidth: 860 }}>
-        <ArticleRecordShell doc={doc} />
+        <ArticleRecordShell doc={doc} provenance={provenance} />
       </div>
     </section>
   );

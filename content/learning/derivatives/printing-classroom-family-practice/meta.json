@@ -28,7 +28,7 @@
       "bbt_full_text_republication"
     ]
   },
-  "review_state": "draft",
+  "review_state": "published",
   "answer_key_relation": {
     "kind": "none",
     "paired_derivative_id": null,
@@ -41,12 +41,12 @@
     "notes": "This sheet points to the live Printables hub for story assets; it does not embed or redistribute package PDFs."
   },
   "export_manifest": {
-    "export_version": "0.1.0-draft",
+    "export_version": "1.0.0",
     "formats": ["markdown"],
     "downloadable": false,
     "artifact_paths": [],
     "generated_at": null
   },
   "body_path": "content/learning/derivatives/printing-classroom-family-practice/body.md",
-  "visibility": "private"
+  "visibility": "public"
 }

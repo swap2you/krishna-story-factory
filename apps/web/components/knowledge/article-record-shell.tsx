@@ -3,35 +3,68 @@
 import Link from "next/link";
 import { useState } from "react";
 import { HelpfulVote } from "@/components/helpful-vote";
-import type { KnowledgeDoc } from "@/lib/knowledge/loader";
+import type { KnowledgeDoc, KnowledgeProvenance } from "@/lib/knowledge/loader";
 import { FocusModeBar } from "./focus-mode-bar";
 import { TrustPanel } from "./trust-panel";
 
 type Props = {
   doc: KnowledgeDoc;
+  provenance?: KnowledgeProvenance | null;
 };
 
 /**
  * Template V1 adapted shell for public Bhāva-original Knowledge guides.
  * Hero + reading focus + body + trust panel. No Devanāgarī/IAST scripture sequence.
  */
-export function ArticleRecordShell({ doc }: Props) {
+export function ArticleRecordShell({ doc, provenance }: Props) {
   const [focusMode, setFocusMode] = useState(false);
 
   const trustRows = [
+    {
+      label: "Provenance label",
+      value: provenance?.label ?? "Bhāva-original",
+    },
     { label: "Content type", value: doc.content_type },
-    { label: "Review state", value: doc.review_state },
-    { label: "Visibility", value: doc.visibility },
+    { label: "Review state", value: provenance?.review_ledger.review_state ?? doc.review_state },
+    { label: "Visibility", value: provenance?.review_ledger.visibility ?? doc.visibility },
     ...(doc.pathway ? [{ label: "Pathway", value: doc.pathway }] : []),
     {
-      label: "Sources",
-      value: doc.sources?.length
-        ? doc.sources.map((s) => `${s.label}${s.tier ? ` (${s.tier})` : ""}`).join("; ")
-        : "Bhāva editorial guide (not a scripture package)",
+      label: "Source dossier",
+      value:
+        provenance?.source_dossier_summary ??
+        "Bhāva editorial guide — not a scripture package.",
+    },
+    {
+      label: "Claim map",
+      value:
+        provenance?.claim_map_note ??
+        "Claims are limited to Bhāva-original editorial guidance; no verse bodies.",
+    },
+    {
+      label: "Rights / use",
+      value: provenance
+        ? `${provenance.rights_use.status} · scripture body: ${provenance.rights_use.scripture_body}. ${provenance.rights_use.notes}`
+        : "Bhāva original / no scripture body",
+    },
+    {
+      label: "Review ledger",
+      value: provenance?.review_ledger.notes
+        ? `${provenance.review_ledger.last_human_review ?? "reviewed"} — ${provenance.review_ledger.notes}`
+        : doc.sources?.length
+          ? doc.sources.map((s) => `${s.label}${s.tier ? ` (${s.tier})` : ""}`).join("; ")
+          : "Published Bhāva-original pilot record",
     },
     {
       label: "Scripture bodies",
       value: "Not applicable — this is a Bhāva-original guide, not a verified verse package.",
+    },
+    {
+      label: "Correction path",
+      value: (
+        <Link href={provenance?.correction_path ?? "/knowledge/corrections"}>
+          Suggest a correction
+        </Link>
+      ),
     },
   ];
 

@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import {
+  audienceLabel,
+  listPublicDerivatives,
+} from "@/lib/learning/derivatives";
 
 export const metadata: Metadata = {
   title: "Families — Learning",
   description:
-    "Home practice routes for families into real Bhāva Printables and Knowledge guides — no fake downloads.",
+    "Home practice routes for families into real Bhāva Printables, Knowledge guides, and published Learning derivatives — no fake downloads.",
 };
 
 const LINKS = [
@@ -33,40 +37,57 @@ const LINKS = [
     body: "Bedtime and family listening from the active story library.",
     status: "available" as const,
   },
-  {
-    title: "Family practice packs",
-    href: "/learning",
-    body: "Structured take-home derivative packs are still in draft under content/learning — not advertised as public downloads yet.",
-    status: "planned" as const,
-  },
 ];
 
 export default function FamiliesLearningPage() {
+  const familyDerivatives = listPublicDerivatives().filter((d) =>
+    d.audience.profiles.includes("families"),
+  );
+
   return (
     <>
       <PageIntro
         eyebrow="Learning · Families"
         title="Calm practice at home."
-        body="This pathway points only to real pages and released assets. Planned family packs stay labeled Planned — never as fake downloads."
+        body="This pathway points only to real pages, released assets, and published Bhāva-original derivatives. Nothing is advertised as a download unless a validated export exists."
       />
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
+          <h2 className="section-heading">Published family derivatives</h2>
+          {familyDerivatives.length ? (
+            <div className="scope-grid" style={{ marginBottom: "2rem" }}>
+              {familyDerivatives.map((d) => (
+                <article key={d.slug} className="scope-card">
+                  <h3 style={{ marginTop: 0 }}>
+                    <Link href={`/learning/derivatives/${d.slug}`}>{d.title}</Link>
+                  </h3>
+                  <p className="hint" style={{ marginBottom: ".5rem" }}>
+                    {audienceLabel(d)}
+                  </p>
+                  <p style={{ marginBottom: ".65rem" }}>{d.learning_objective}</p>
+                  <p className="hint" style={{ marginBottom: ".65rem" }}>
+                    Lineage: {d.canonical_record_version.record_slug} ·{" "}
+                    {d.review_state} · in-page only
+                  </p>
+                  <span className="editorial-status active">Available</span>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="hint" style={{ marginBottom: "2rem" }}>
+              Family derivatives will appear here when published.
+            </p>
+          )}
+
+          <h2 className="section-heading">Related pages</h2>
           <div className="scope-grid">
             {LINKS.map((item) => (
               <article key={item.title} className="scope-card">
                 <h3 style={{ marginTop: 0 }}>
-                  {item.status === "available" ? (
-                    <Link href={item.href}>{item.title}</Link>
-                  ) : (
-                    item.title
-                  )}
+                  <Link href={item.href}>{item.title}</Link>
                 </h3>
                 <p style={{ marginBottom: ".85rem" }}>{item.body}</p>
-                <span
-                  className={`editorial-status ${item.status === "available" ? "active" : "planned"}`}
-                >
-                  {item.status === "available" ? "Available" : "Planned"}
-                </span>
+                <span className="editorial-status active">Available</span>
               </article>
             ))}
           </div>

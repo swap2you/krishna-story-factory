@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "program": "KNOWLEDGE_LEARNING_LAUNCH_V1",
+  "description": "Provenance sidecars for the public Knowledge pilot. All records are labeled Bhāva-original; none carry scripture bodies from TOP-0147 or the 12 intake PDFs.",
+  "public_pilot_slugs": [
+    "family-bedtime-story-practice",
+    "printing-and-classroom-use",
+    "what-is-bhava",
+    "source-and-permissions",
+    "is-bhava-official-bbt",
+    "does-bhava-collect-child-data",
+    "what-is-bhava-faq"
+  ],
+  "blocked_from_publication": [
+    "TOP-0147",
+    "INTAKE-01",
+    "INTAKE-02",
+    "INTAKE-03",
+    "INTAKE-04",
+    "INTAKE-05",
+    "INTAKE-06",
+    "INTAKE-07",
+    "INTAKE-08",
+    "INTAKE-09",
+    "INTAKE-10",
+    "INTAKE-11",
+    "INTAKE-12"
+  ]
+}

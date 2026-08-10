@@ -60,6 +60,17 @@ program_milestones:
     includes: [R09]
     note: >-
       Offline 3D/motion-lab contract only; no public nav/runtime 3D; prefers-reduced-motion reinforced.
+  - id: M6-KNOWLEDGE-LEARNING-LAUNCH-V1
+    state: COMPLETE
+    started_at: '2026-08-10T22:20:00Z'
+    completed_at: '2026-08-10T22:45:00Z'
+    release_family: 'Knowledge & Learning Launch V1'
+    detail_ledger: docs/knowledge-learning-launch-v1/PROGRAM_STATE.yaml
+    note: >-
+      Public Knowledge pilot (4 guides + 3 FAQs) with two substantive guides
+      (family bedtime practice, printing/classroom); provenance sidecars; TrustPanel
+      defaultOpen on Template V1 shells; four public Learning derivatives rendered
+      in-page with lineage. TOP-0147 and 12 intake PDFs remain blocked. Studio private.
 global_rules:
   accepted_story_packages_immutable: true
   story_026_public: false

@@ -27,7 +27,7 @@
       "bbt_full_text_republication"
     ]
   },
-  "review_state": "draft",
+  "review_state": "published",
   "answer_key_relation": {
     "kind": "none",
     "paired_derivative_id": null,
@@ -37,15 +37,15 @@
     "rights_status": "bhava_original",
     "steward": "Svarna Gauranga Das",
     "assets": [],
-    "notes": "Markdown body only in this package; no export PDF/DOCX until validation passes."
+    "notes": "Markdown body rendered in-page; no export PDF/DOCX until validation passes."
   },
   "export_manifest": {
-    "export_version": "0.1.0-draft",
+    "export_version": "1.0.0",
     "formats": ["markdown"],
     "downloadable": false,
     "artifact_paths": [],
     "generated_at": null
   },
   "body_path": "content/learning/derivatives/what-is-bhava-lesson-plan/body.md",
-  "visibility": "private"
+  "visibility": "public"
 }

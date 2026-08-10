@@ -2,164 +2,254 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import {
-  listArticles,
+  listPublicPilotCatalog,
   listPathways,
-  listQuestions,
 } from "@/lib/knowledge/loader";
 import { brandSrc } from "@/lib/brand-assets";
 
 export const metadata: Metadata = {
   title: "Bhāva Knowledge Library",
-  description: "Curated devotional documentation for families, teachers, and preachers — not an open forum.",
+  description:
+    "Public Knowledge pilot — Bhāva-original guides and FAQs for families and teachers. No fabricated scripture pages.",
 };
 
-const GROUPS: { title: string; links: { href: string; label: string }[] }[] = [
+type Props = {
+  searchParams: Promise<{ kind?: string }>;
+};
+
+const REAL_TOOLS: { href: string; label: string; body: string }[] = [
   {
-    title: "Learn the foundations",
-    links: [
-      { href: "/knowledge/pathways/new-to-bhakti", label: "New to Bhakti" },
-      { href: "/knowledge/topics", label: "Topics & pathways" },
-      { href: "/knowledge/scriptures", label: "Scriptures" },
-      { href: "/knowledge/learning-paths", label: "Learning paths" },
-    ],
+    href: "/knowledge/search",
+    label: "Search",
+    body: "Search approved public guides and FAQs only.",
   },
   {
-    title: "Practice & worship",
-    links: [
-      { href: "/knowledge/pathways/daily-practice", label: "Daily Practice" },
-      { href: "/knowledge/prayers", label: "Prayers & Āratis" },
-      { href: "/knowledge/slokas", label: "Ślokas & Stutis" },
-      { href: "/knowledge/pathways/deity-worship", label: "Deity Worship" },
-    ],
+    href: "/knowledge/ask",
+    label: "Ask privately",
+    body: "Private intake — not an open forum.",
   },
   {
-    title: "Community & service",
-    links: [
-      { href: "/knowledge/pathways/families-children", label: "Families & Children" },
-      { href: "/teachers", label: "Teachers" },
-      { href: "/preachers", label: "Preachers" },
-      { href: "/sunday-school", label: "Sunday School" },
-    ],
+    href: "/knowledge/corrections",
+    label: "Suggest a correction",
+    body: "Request a fix on a published record.",
   },
   {
-    title: "Ask & standards",
-    links: [
-      { href: "/knowledge/questions", label: "Q&A" },
-      { href: "/knowledge/ask", label: "Ask privately" },
-      { href: "/knowledge/corrections", label: "Suggest a correction" },
-      { href: "/knowledge/standards", label: "Editorial standards" },
-      { href: "/knowledge/index", label: "Alphabetical index" },
-      { href: "/knowledge/recent", label: "Recently updated" },
-    ],
+    href: "/knowledge/standards",
+    label: "Editorial standards",
+    body: "How Bhāva reviews and publishes Knowledge.",
   },
 ];
 
-export default function KnowledgeHomePage() {
+export default async function KnowledgeHomePage({ searchParams }: Props) {
+  const { kind: kindRaw } = await searchParams;
+  const kind =
+    kindRaw === "guides" || kindRaw === "questions" ? kindRaw : "all";
+  const { guides, questions, total } = listPublicPilotCatalog();
   const pathways = listPathways();
-  const articles = listArticles();
-  const questions = listQuestions();
   const publishedPathways = pathways.filter((p) => p.status === "published");
-  const shellPathways = pathways.filter((p) => p.status !== "published");
+  const plannedPathways = pathways.filter((p) => p.status !== "published");
+
+  const showGuides = kind === "all" || kind === "guides";
+  const showQuestions = kind === "all" || kind === "questions";
 
   return (
     <>
       <PageIntro
         eyebrow="Knowledge"
         title="Bhāva Knowledge Library"
-        body="Source-led study for Krishna Book learning, practice pathways, and carefully reviewed Q&A — not a random blog or open forum. Only approved resources appear publicly."
+        body="A public pilot of Bhāva-original guides and FAQs — source-honest study for families and teachers, not a random blog or open forum. Scripture packages stay blocked until editions and rights clear."
         heroSrc={brandSrc("collection-bhakti-blog")}
       />
       <section className="section">
         <div className="container knowledge-home">
           <div className="scope-grid" style={{ marginBottom: "2rem" }}>
             <article className="scope-card">
-              <h3>Available now</h3>
+              <h3>Public pilot · Available</h3>
               <p>
-                {articles.length} published guide{articles.length === 1 ? "" : "s"},{" "}
-                {questions.length} canonical question{questions.length === 1 ? "" : "s"}, and{" "}
-                {publishedPathways.length} published pathway
-                {publishedPathways.length === 1 ? "" : "s"} listed below. Search covers approved public pages only.
+                {total} published record{total === 1 ? "" : "s"}: {guides.length}{" "}
+                guide{guides.length === 1 ? "" : "s"} and {questions.length}{" "}
+                canonical question{questions.length === 1 ? "" : "s"}. All are
+                labeled Bhāva-original — no scripture bodies from TOP-0147 or
+                intake PDFs.
               </p>
             </article>
             <article className="scope-card">
-              <h3>Prepared later</h3>
+              <h3>Still planned / blocked</h3>
               <p>
-                Roadmap topics, draft dossiers, and unreviewed records stay private in Studio.
-                Pathway shells ({shellPathways.length}) may appear with an honest status badge — never as invented scripture.
+                Pathway shells ({plannedPathways.length} planned) and private
+                dossiers stay out of this catalog as clickable shelves. Golden
+                scripture work remains blocked until source adequacy clears.
+                Editorial queues live in Studio — not here.
               </p>
             </article>
           </div>
 
           <form className="search-bar" action="/knowledge/search" method="get">
-            <label className="sr-only" htmlFor="knowledge-search">Search Knowledge</label>
-            <input id="knowledge-search" name="q" placeholder="Search articles, questions, and published guides" />
-            <button className="bhava-button bhava-button--primary" type="submit">Search</button>
+            <label className="sr-only" htmlFor="knowledge-search">
+              Search Knowledge
+            </label>
+            <input
+              id="knowledge-search"
+              name="q"
+              placeholder="Search approved public guides and FAQs"
+            />
+            <button className="bhava-button bhava-button--primary" type="submit">
+              Search
+            </button>
           </form>
 
-          <div className="knowledge-mega" aria-label="Knowledge pathways">
-            {GROUPS.map((group) => (
-              <div key={group.title} className="knowledge-mega-col">
-                <h2>{group.title}</h2>
-                <ul className="plain-list">
-                  {group.links.map((link) => (
-                    <li key={link.href}><Link href={link.href}>{link.label}</Link></li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>Published guides</h2>
-          {articles.length ? (
-            <ul className="plain-list">
-              {articles.map((a) => (
-                <li key={a.slug}>
-                  <Link href={`/knowledge/${a.slug}`}>{a.title}</Link>
-                  <span className="hint"> — {a.summary}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="hint">No published guides are available yet. Nothing invented is shown here.</p>
-          )}
-
-          <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>Canonical questions</h2>
-          {questions.length ? (
-            <ul className="plain-list">
-              {questions.map((q) => (
-                <li key={q.slug}>
-                  <Link href={`/knowledge/questions/${q.slug}`}>{q.title}</Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="hint">No canonical questions are published yet.</p>
-          )}
-
-          <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>Pathway shells</h2>
-          <p className="hint" style={{ marginBottom: "1rem" }}>
-            Shells help orientation. Published means reviewed content is ready; other statuses remain Planned.
+          <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>
+            Public pilot collection
+          </h2>
+          <p className="section-lead">
+            Filters cover only content that exists today. Empty shelves are not
+            shown as Available.
           </p>
-          <div className="scope-grid">
-            {pathways.map((p) => (
-              <article key={p.slug} className="scope-card">
-                <h3 style={{ marginTop: 0 }}>
-                  <Link href={`/knowledge/pathways/${p.slug}`}>{p.title}</Link>
-                </h3>
-                <p className="hint" style={{ marginBottom: 0 }}>
-                  <span className={`editorial-status ${p.status === "published" ? "active" : "planned"}`}>
-                    {p.status === "published" ? "Available" : "Planned"}
-                  </span>
-                </p>
-              </article>
+
+          <nav className="knowledge-pilot-filters" aria-label="Pilot filters">
+            <Link href="/knowledge" aria-current={kind === "all" ? "page" : undefined}>
+              All ({total})
+            </Link>
+            <Link
+              href="/knowledge?kind=guides"
+              aria-current={kind === "guides" ? "page" : undefined}
+            >
+              Guides ({guides.length})
+            </Link>
+            <Link
+              href="/knowledge?kind=questions"
+              aria-current={kind === "questions" ? "page" : undefined}
+            >
+              Q&amp;A ({questions.length})
+            </Link>
+          </nav>
+
+          {showGuides ? (
+            <>
+              <h3 className="section-heading" style={{ marginTop: "1.75rem", fontSize: "1.15rem" }}>
+                Guides
+              </h3>
+              {guides.length ? (
+                <div className="scope-grid">
+                  {guides.map((a) => (
+                    <article key={a.slug} className="scope-card">
+                      <h3 style={{ marginTop: 0 }}>
+                        <Link href={`/knowledge/${a.slug}`}>{a.title}</Link>
+                      </h3>
+                      <p style={{ marginBottom: ".65rem" }}>{a.summary}</p>
+                      <p className="hint" style={{ marginBottom: ".65rem" }}>
+                        Bhāva-original · {a.review_state}
+                      </p>
+                      <span className="editorial-status active">Available</span>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="hint">No guides match this filter.</p>
+              )}
+            </>
+          ) : null}
+
+          {showQuestions ? (
+            <>
+              <h3 className="section-heading" style={{ marginTop: "1.75rem", fontSize: "1.15rem" }}>
+                Canonical questions
+              </h3>
+              {questions.length ? (
+                <div className="scope-grid">
+                  {questions.map((q) => (
+                    <article key={q.slug} className="scope-card">
+                      <h3 style={{ marginTop: 0 }}>
+                        <Link href={`/knowledge/questions/${q.slug}`}>{q.title}</Link>
+                      </h3>
+                      <p style={{ marginBottom: ".65rem" }}>{q.summary}</p>
+                      <p className="hint" style={{ marginBottom: ".65rem" }}>
+                        Bhāva-original · {q.review_state}
+                      </p>
+                      <span className="editorial-status active">Available</span>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <p className="hint">No questions match this filter.</p>
+              )}
+            </>
+          ) : null}
+
+          <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>
+            Tools that exist
+          </h2>
+          <ul className="plain-list">
+            {REAL_TOOLS.map((tool) => (
+              <li key={tool.href}>
+                <Link href={tool.href}>{tool.label}</Link>
+                <span className="hint"> — {tool.body}</span>
+              </li>
             ))}
-          </div>
+            <li>
+              <Link href="/teachers">Teachers</Link>
+              <span className="hint"> — classroom playlist helper</span>
+            </li>
+            <li>
+              <Link href="/sunday-school">Sunday School</Link>
+              <span className="hint"> — weekly planner</span>
+            </li>
+            <li>
+              <Link href="/learning">Learning hub</Link>
+              <span className="hint"> — pathways and public derivatives</span>
+            </li>
+          </ul>
+
+          {publishedPathways.length ? (
+            <>
+              <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>
+                Published pathway labels
+              </h2>
+              <p className="hint" style={{ marginBottom: "1rem" }}>
+                These labels already have related public pilot records. They are
+                orientation links, not empty shelves.
+              </p>
+              <ul className="plain-list">
+                {publishedPathways.map((p) => (
+                  <li key={p.slug}>
+                    <Link href={`/knowledge/pathways/${p.slug}`}>{p.title}</Link>
+                    <span className="editorial-status active" style={{ marginLeft: ".5rem" }}>
+                      Available
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+
+          {plannedPathways.length ? (
+            <>
+              <h2 className="section-heading" style={{ marginTop: "2.5rem" }}>
+                Planned pathway shells
+              </h2>
+              <p className="hint" style={{ marginBottom: "1rem" }}>
+                Named honestly and not offered as finished reading shelves.
+              </p>
+              <ul className="plain-list">
+                {plannedPathways.map((p) => (
+                  <li key={p.slug}>
+                    <span>{p.title}</span>
+                    <span className="editorial-status planned" style={{ marginLeft: ".5rem" }}>
+                      Planned
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
 
           <aside className="knowledge-roadmap-note" style={{ marginTop: "2.5rem" }}>
             <h2 className="section-heading">How publishing works</h2>
             <p className="hint">
-              The researched topic roadmap is governed privately. Only approved and published resources appear on public Knowledge pages.
-              Private editorial counts and filters live in the local studio — not as a public “finished content” claim.
+              Only approved and published Bhāva-original resources appear here.
+              TOP-0147 and the twelve intake PDFs remain source-blocked. Private
+              editorial counts live in the local studio — never as a public
+              “finished content” claim.
             </p>
           </aside>
         </div>

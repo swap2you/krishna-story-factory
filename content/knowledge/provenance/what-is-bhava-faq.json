@@ -1,0 +1,19 @@
+{
+  "slug": "what-is-bhava-faq",
+  "record_id": "kl-q-what-is-bhava",
+  "label": "Bhāva-original",
+  "source_dossier_summary": "Canonical FAQ answer aligned with the What is Bhāva? guide. Editorial only; no scripture package attached.",
+  "claim_map_note": "Short identity claim: independent curated portal for Krishna Book learning with listening, reading, coloring, and teaching tools.",
+  "rights_use": {
+    "status": "bhava_original",
+    "scripture_body": "none",
+    "notes": "Bhāva-original FAQ. No scripture body."
+  },
+  "review_ledger": {
+    "review_state": "published",
+    "visibility": "public",
+    "last_human_review": "public-pilot-v1",
+    "notes": "Optional FAQ retained in the public Knowledge pilot catalog."
+  },
+  "correction_path": "/knowledge/corrections"
+}

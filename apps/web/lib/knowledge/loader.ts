@@ -20,6 +20,38 @@ export type KnowledgeDoc = KnowledgeMeta & {
   body_md?: string;
 };
 
+/** Honest provenance sidecar for public Bhāva-original pilot records. */
+export type KnowledgeProvenance = {
+  slug: string;
+  record_id: string;
+  label: string;
+  source_dossier_summary: string;
+  claim_map_note: string;
+  rights_use: {
+    status: string;
+    scripture_body: string;
+    notes: string;
+  };
+  review_ledger: {
+    review_state: string;
+    visibility: string;
+    last_human_review?: string;
+    notes?: string;
+  };
+  correction_path: string;
+};
+
+/** Fixed public Knowledge pilot catalog (Bhāva-original only). */
+export const PUBLIC_KNOWLEDGE_PILOT_SLUGS = [
+  "family-bedtime-story-practice",
+  "printing-and-classroom-use",
+  "what-is-bhava",
+  "source-and-permissions",
+  "is-bhava-official-bbt",
+  "does-bhava-collect-child-data",
+  "what-is-bhava-faq",
+] as const;
+
 export type RoadmapRecord = {
   id: string;
   pillar: string;
@@ -124,6 +156,23 @@ export function listQuestions(): KnowledgeDoc[] {
     out.push(meta);
   }
   return out.sort((a, b) => a.title.localeCompare(b.title));
+}
+
+export function getProvenance(slug: string): KnowledgeProvenance | null {
+  const file = path.join(knowledgeRoot(), "provenance", `${slug}.json`);
+  return readJson<KnowledgeProvenance>(file);
+}
+
+/** Public catalog for the Knowledge pilot — guides + FAQs that are public and listed. */
+export function listPublicPilotCatalog(): {
+  guides: KnowledgeDoc[];
+  questions: KnowledgeDoc[];
+  total: number;
+} {
+  const pilot = new Set<string>(PUBLIC_KNOWLEDGE_PILOT_SLUGS);
+  const guides = listArticles().filter((a) => pilot.has(a.slug));
+  const questions = listQuestions().filter((q) => pilot.has(q.slug));
+  return { guides, questions, total: guides.length + questions.length };
 }
 
 export function listByType(contentType: string): KnowledgeDoc[] {

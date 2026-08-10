@@ -1,0 +1,19 @@
+{
+  "slug": "does-bhava-collect-child-data",
+  "record_id": "kl-q-child-data",
+  "label": "Bhāva-original",
+  "source_dossier_summary": "Canonical privacy FAQ for families. Describes local browser notes and mailto contact — not a child-account product.",
+  "claim_map_note": "Claims: no child accounts; story notes stay in local browser storage; contact uses mailto and does not store submissions on Bhāva servers.",
+  "rights_use": {
+    "status": "bhava_original",
+    "scripture_body": "none",
+    "notes": "Bhāva-original privacy FAQ. No scripture body."
+  },
+  "review_ledger": {
+    "review_state": "published",
+    "visibility": "public",
+    "last_human_review": "public-pilot-v1",
+    "notes": "Accepted into the public Knowledge pilot as a family privacy FAQ."
+  },
+  "correction_path": "/knowledge/corrections"
+}
