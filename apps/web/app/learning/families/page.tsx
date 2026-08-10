@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import {
   audienceLabel,
-  listPublicDerivatives,
+  listPublicDerivativeMetas,
 } from "@/lib/learning/derivatives";
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ const LINKS = [
 ];
 
 export default function FamiliesLearningPage() {
-  const familyDerivatives = listPublicDerivatives().filter((d) =>
+  const familyDerivatives = listPublicDerivativeMetas().filter((d) =>
     d.audience.profiles.includes("families"),
   );
 

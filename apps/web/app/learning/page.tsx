@@ -4,7 +4,7 @@ import { PageIntro } from "@/components/page-intro";
 import { brandSrc } from "@/lib/brand-assets";
 import {
   audienceLabel,
-  listPublicDerivatives,
+  listPublicDerivativeMetas,
 } from "@/lib/learning/derivatives";
 
 export const metadata: Metadata = {
@@ -74,7 +74,7 @@ const PATHWAYS: Pathway[] = [
 ];
 
 export default function LearningHubPage() {
-  const derivatives = listPublicDerivatives();
+  const derivatives = listPublicDerivativeMetas();
 
   return (
     <>

@@ -4,13 +4,13 @@ import { notFound } from "next/navigation";
 import {
   audienceLabel,
   getDerivativeBySlug,
-  listPublicDerivatives,
+  listPublicDerivativeMetas,
 } from "@/lib/learning/derivatives";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return listPublicDerivatives().map((d) => ({ slug: d.slug }));
+  return listPublicDerivativeMetas().map((d) => ({ slug: d.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

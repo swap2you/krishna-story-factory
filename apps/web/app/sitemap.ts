@@ -2,7 +2,9 @@ import type { MetadataRoute } from "next";
 import { PUBLIC_STORY_MAX } from "@/lib/public-boundary";
 import { CANONICAL_ORIGIN } from "@/lib/seo";
 import { listPublicPilotCatalog } from "@/lib/knowledge/loader";
-import { listPublicDerivatives } from "@/lib/learning/derivatives";
+import { listPublicDerivativeMetas } from "@/lib/learning/derivatives";
+
+export const runtime = "nodejs";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
@@ -58,7 +60,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...guides.map((g) => `/knowledge/${g.slug}`),
     ...questions.map((q) => `/knowledge/questions/${q.slug}`),
   ];
-  const learningRoutes = listPublicDerivatives().map(
+  const learningRoutes = listPublicDerivativeMetas().map(
     (d) => `/learning/derivatives/${d.slug}`,
   );
 

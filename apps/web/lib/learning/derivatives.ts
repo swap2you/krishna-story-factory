@@ -53,6 +53,9 @@ export type LearningDerivative = LearningDerivativeMeta & {
   body_md: string;
 };
 
+/** Safe content slugs only: lowercase letters, digits, hyphens. */
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
 const ROOT = path.join(process.cwd(), "..", "..", "content", "learning", "derivatives");
 const ROOT_ALT = path.join(process.cwd(), "content", "learning", "derivatives");
 
@@ -75,20 +78,43 @@ function isPublicDerivative(meta: LearningDerivativeMeta): boolean {
   return meta.review_state === "approved" || meta.review_state === "published";
 }
 
-export function listDerivatives(includePrivate = false): LearningDerivative[] {
+export function isSafeDerivativeSlug(slug: string): boolean {
+  return SLUG_RE.test(slug);
+}
+
+function resolveDerivativeDir(slug: string): string | null {
+  if (!isSafeDerivativeSlug(slug)) return null;
+  const root = path.resolve(derivativesRoot());
+  const dir = path.resolve(root, slug);
+  if (!dir.startsWith(root + path.sep) && dir !== root) return null;
+  return dir;
+}
+
+export function listDerivativeMetas(includePrivate = false): LearningDerivativeMeta[] {
   const dir = derivativesRoot();
   if (!fs.existsSync(dir)) return [];
-  const out: LearningDerivative[] = [];
-  for (const slug of fs.readdirSync(dir)) {
-    const metaPath = path.join(dir, slug, "meta.json");
-    const bodyPath = path.join(dir, slug, "body.md");
-    const meta = readJson<LearningDerivativeMeta>(metaPath);
+  const out: LearningDerivativeMeta[] = [];
+  for (const entry of fs.readdirSync(dir)) {
+    if (!isSafeDerivativeSlug(entry)) continue;
+    const meta = readJson<LearningDerivativeMeta>(path.join(dir, entry, "meta.json"));
     if (!meta) continue;
     if (!includePrivate && !isPublicDerivative(meta)) continue;
-    const body_md = fs.existsSync(bodyPath) ? fs.readFileSync(bodyPath, "utf8") : "";
-    out.push({ ...meta, body_md });
+    out.push(meta);
   }
   return out.sort((a, b) => a.title.localeCompare(b.title));
+}
+
+export function listPublicDerivativeMetas(): LearningDerivativeMeta[] {
+  return listDerivativeMetas(false);
+}
+
+export function listDerivatives(includePrivate = false): LearningDerivative[] {
+  return listDerivativeMetas(includePrivate).map((meta) => {
+    const dir = resolveDerivativeDir(meta.slug);
+    const bodyPath = dir ? path.join(dir, "body.md") : "";
+    const body_md = bodyPath && fs.existsSync(bodyPath) ? fs.readFileSync(bodyPath, "utf8") : "";
+    return { ...meta, body_md };
+  });
 }
 
 export function listPublicDerivatives(): LearningDerivative[] {
@@ -99,11 +125,12 @@ export function getDerivativeBySlug(
   slug: string,
   opts?: { includePrivate?: boolean },
 ): LearningDerivative | null {
-  const metaPath = path.join(derivativesRoot(), slug, "meta.json");
-  const bodyPath = path.join(derivativesRoot(), slug, "body.md");
-  const meta = readJson<LearningDerivativeMeta>(metaPath);
+  const dir = resolveDerivativeDir(slug);
+  if (!dir) return null;
+  const meta = readJson<LearningDerivativeMeta>(path.join(dir, "meta.json"));
   if (!meta) return null;
   if (!opts?.includePrivate && !isPublicDerivative(meta)) return null;
+  const bodyPath = path.join(dir, "body.md");
   const body_md = fs.existsSync(bodyPath) ? fs.readFileSync(bodyPath, "utf8") : "";
   return { ...meta, body_md };
 }
