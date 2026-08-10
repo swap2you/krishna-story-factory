@@ -32,7 +32,7 @@ EXPECTED_CONTENT_RELEASE = {
     "tests/portal/test_public_rights_contract.py::test_public_reader_rights_section_contract",
     "tests/portal/test_public_rights_contract.py::test_public_web_manifest_rights_contract",
     "tests/portal/test_v11_safety_baseline.py::test_stories_001_007_file_hashes_match_baseline",
-    "tests/test_launch_story_hash_guard.py::test_story_023_absent_from_output",
+    "tests/test_launch_story_hash_guard.py::test_story_026_absent_from_output",
     "tests/test_poster_text_glyphs.py::test_already_credited_poster_is_not_accepted_as_a_master",
     "tests/test_poster_text_glyphs.py::test_band_and_corrected_chapters_are_discovered",
     "tests/test_poster_text_glyphs.py::test_story_007_poster_caption_keeps_its_diacritics",
@@ -41,7 +41,7 @@ EXPECTED_CONTENT_RELEASE = {
     "tests/test_publication_copyright.py::test_retrofitted_packages_have_rights_and_exact_eight",
     "tests/test_unicode_printable_copyright.py::test_public_packages_version_and_exact_eight",
     "tests/test_unicode_printable_copyright.py::test_public_pdf_has_footer_on_all_activity_pages",
-    "tests/test_unicode_printable_copyright.py::test_story_023_absent_from_public_content",
+    "tests/test_unicode_printable_copyright.py::test_story_026_absent_from_public_content",
 } | {
     f"tests/test_launch_story_hash_guard.py::test_launch_story_hashes_unchanged[{n:03d}]"
     for n in range(1, 10)
@@ -109,6 +109,7 @@ EXPECTED_LOCAL_RUNTIME = {
     "tests/portal/test_v11_safety_baseline.py::test_queue_021_pending_after_020_release",
     "tests/test_coverage_non_skipping.py::test_live_queue_next_pending_is_brahma_stealing",
     "tests/test_private_story_lock_021_022.py::test_private_lock_ledger_matches_local_packages_when_present",
+    "tests/test_accepted_story_lock_023_025.py::test_accepted_lock_ledger_matches_local_packages_when_present",
     "tests/test_unicode_printable_copyright.py::test_queue_pending_holds_at_story_021",
 }
 

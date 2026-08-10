@@ -43,12 +43,12 @@ def _write_pkg(root: Path, chapter: str, *, publishable: bool, quality: str = "P
     return Package(path=pkg, manifest=manifest, files=files)
 
 
-def test_local_preview_ceiling_22_includes_021_and_022(monkeypatch, tmp_path: Path) -> None:
-    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "22")
+def test_local_preview_ceiling_25_includes_023_to_025(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", "25")
     monkeypatch.setenv("BHAVA_PUBLIC_SITE", "0")
     settings = get_settings()
-    assert settings.public_story_max == 22
-    for n in ("021", "022"):
+    assert settings.public_story_max == 25
+    for n in ("023", "024", "025"):
         assert _within_ceiling(n, settings)
         pkg = _write_pkg(tmp_path, n, publishable=True)
         assert is_publicly_publishable(pkg)
@@ -103,11 +103,12 @@ def test_production_defaults_follow_release_pin(monkeypatch) -> None:
             encoding="utf-8"
         )
     )
-    assert int(pin["public_story_max"]) == 22
+    assert int(pin["public_story_max"]) == 25
     # Production deploy injects BHAVA_PUBLIC_STORY_MAX from the release pin.
     monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", str(pin["public_story_max"]))
     settings = get_settings()
-    assert settings.public_story_max == 22
-    assert _within_ceiling("021", settings)
-    assert _within_ceiling("022", settings)
-    assert not _within_ceiling("023", settings)
+    assert settings.public_story_max == 25
+    assert _within_ceiling("023", settings)
+    assert _within_ceiling("024", settings)
+    assert _within_ceiling("025", settings)
+    assert not _within_ceiling("026", settings)

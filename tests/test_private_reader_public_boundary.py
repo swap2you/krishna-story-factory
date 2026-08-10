@@ -2,7 +2,7 @@
 
 Reproduces shared-mount architecture:
 - public_site=true
-- public_story_max=20 (production) or 22 (staging)
+- public_story_max=20 (legacy) or 25 (current production/staging)
 - indexed catalog capped at max
 - filesystem/web-assets may still contain packages above max
 """
@@ -101,7 +101,7 @@ def test_reader_handlers_require_story_record_before_filesystem() -> None:
 
 
 def test_production_reader_boundary_shared_mount(monkeypatch, tmp_path):
-    """Production max=20 with 001-022 on disk: private readers must 404."""
+    """Legacy production max=20 with 001-022 on disk: private readers must 404."""
     app = _shared_mount_app(
         monkeypatch, tmp_path, story_max=20, indexed_count=20, disk_count=22
     )
@@ -117,21 +117,20 @@ def test_production_reader_boundary_shared_mount(monkeypatch, tmp_path):
         assert version["discovered_package_count"] >= 22
 
 
-def test_staging_reader_boundary_shared_mount(monkeypatch, tmp_path):
-    """Staging max=22: 021/022 readers visible; 023 still 404 even with disk assets."""
+def test_current_public_reader_boundary_shared_mount(monkeypatch, tmp_path):
+    """Current max=25: 023-025 readers visible; 026 still 404 even with disk assets."""
     app = _shared_mount_app(
-        monkeypatch, tmp_path, story_max=22, indexed_count=22, disk_count=23
+        monkeypatch, tmp_path, story_max=25, indexed_count=25, disk_count=26
     )
     with TestClient(app) as client:
-        assert client.get("/api/v1/stories/021/reader").status_code == 200
-        assert client.get("/api/v1/stories/021/reader.txt").status_code == 200
-        assert client.get("/api/v1/stories/022/reader").status_code == 200
-        assert client.get("/api/v1/stories/022/reader.txt").status_code == 200
-        assert client.get("/api/v1/stories/023/reader").status_code == 404
-        assert client.get("/api/v1/stories/023/reader.txt").status_code == 404
+        for story in ("023", "024", "025"):
+            assert client.get(f"/api/v1/stories/{story}/reader").status_code == 200, story
+            assert client.get(f"/api/v1/stories/{story}/reader.txt").status_code == 200, story
+        assert client.get("/api/v1/stories/026/reader").status_code == 404
+        assert client.get("/api/v1/stories/026/reader.txt").status_code == 404
         version = client.get("/api/v1/version").json()
-        assert version["public_story_max"] == 22
-        assert version["indexed_story_count"] == 22
+        assert version["public_story_max"] == 25
+        assert version["indexed_story_count"] == 25
 
 
 @pytest.mark.parametrize("suffix", PROJECTION_SUFFIXES)
@@ -157,3 +156,4 @@ def test_caddyfile_production_only_private_reader_deny() -> None:
     assert "private_reader_api" not in staging
     assert "@private_reader_api" in prod
     assert "handle @private_reader_api" in prod
+    assert "2[6-9]" in prod

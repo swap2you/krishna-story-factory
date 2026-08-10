@@ -1,4 +1,4 @@
-"""Governed private-story lock for Stories 021–022 (does not alter 001–020 release lock)."""
+"""Governed accepted-story lock for Stories 023–025 (R00 public closure)."""
 from __future__ import annotations
 
 import hashlib
@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-LEDGER = ROOT / "deploy" / "content" / "PRIVATE_STORY_LOCK_021_022.json"
+LEDGER = ROOT / "deploy" / "content" / "ACCEPTED_STORY_LOCK_023_025.json"
 RELEASE_PIN = ROOT / "deploy" / "content" / "RELEASE_CONTENT.json"
 
 EXACT_EIGHT = {
@@ -33,23 +33,26 @@ def test_production_release_pin_is_025() -> None:
     assert pin["tag"].startswith("bhava-content-001-025-")
 
 
-def test_private_lock_ledger_schema() -> None:
+def test_accepted_lock_ledger_schema() -> None:
     data = json.loads(LEDGER.read_text(encoding="utf-8"))
-    assert data["schema"] == "bhava-private-story-lock-v1"
+    assert data["schema"] == "bhava-accepted-story-lock-v1"
     assert int(data["public_story_max_production"]) == 25
-    for story_no in ("021", "022"):
+    for story_no in ("023", "024", "025"):
         row = data["stories"][story_no]
-        assert row["human_listening_status"] == "USER_LISTENED_AND_ACCEPTED_ON_2026-08-04"
+        assert row["human_listening_status"] == (
+            "CONTROLLER_AUTHORIZED_OBJECTIVE_ACCEPTANCE_ON_2026-08-10"
+        )
         assert len(row["audio_sha256"]) == 64
         assert set(row["exact_eight"]) == EXACT_EIGHT
         assert row["audio_sha256"] == row["exact_eight"]["narration.mp3"]
+        assert row.get("drive_folder_id")
         for name in row["immutable_without_approval"]:
             assert name in row["exact_eight"]
             assert len(row["exact_eight"][name]) == 64
 
 
 @pytest.mark.local_runtime
-def test_private_lock_ledger_matches_local_packages_when_present() -> None:
+def test_accepted_lock_ledger_matches_local_packages_when_present() -> None:
     """Fail on unauthorized drift when local packages exist (operator workstation)."""
     data = json.loads(LEDGER.read_text(encoding="utf-8"))
     checked = 0
@@ -66,5 +69,5 @@ def test_private_lock_ledger_matches_local_packages_when_present() -> None:
             if actual != expected.upper():
                 drifts.append(f"{story_no}/{name}: expected {expected} got {actual}")
     if checked == 0:
-        pytest.skip("Stories 021/022 packages not present in this checkout")
-    assert not drifts, "Unauthorized private-story lock drift:\n" + "\n".join(drifts)
+        pytest.skip("Stories 023-025 packages not present in this checkout")
+    assert not drifts, "Unauthorized accepted-story lock drift:\n" + "\n".join(drifts)

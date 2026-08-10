@@ -60,11 +60,12 @@ def test_prior_2_1_0_archive_preserved(chapter: str) -> None:
 
 
 @pytest.mark.content_release
-def test_story_023_absent_from_output() -> None:
+def test_story_026_absent_from_output() -> None:
     import os
 
-    assert list((ROOT / "output").glob("021_*")), "Story 021 must be present in public content 001-022"
-    assert list((ROOT / "output").glob("022_*")), "Story 022 must be present in public content 001-022"
-    # CI provisions only the immutable public pin; operator workstations may keep private 023+.
+    assert list((ROOT / "output").glob("023_*")), "Story 023 must be present in public content 001-025"
+    assert list((ROOT / "output").glob("024_*")), "Story 024 must be present in public content 001-025"
+    assert list((ROOT / "output").glob("025_*")), "Story 025 must be present in public content 001-025"
+    # CI provisions only the immutable public pin; operator workstations may keep private 026+.
     if os.getenv("GITHUB_ACTIONS"):
-        assert not list((ROOT / "output").glob("023_*")), "Story 023 must remain excluded from public content"
+        assert not list((ROOT / "output").glob("026_*")), "Story 026 must remain excluded from public content"

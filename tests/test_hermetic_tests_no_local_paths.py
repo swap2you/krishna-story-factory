@@ -36,6 +36,7 @@ _ALLOWLIST_FILES = {
     "test_v11_safety_baseline.py",
     # Private 021/022 lock drift probe (local_runtime) against operator packages.
     "test_private_story_lock_021_022.py",
+    "test_accepted_story_lock_023_025.py",
 }
 
 _LOCAL_NAME_FRAGMENTS = {

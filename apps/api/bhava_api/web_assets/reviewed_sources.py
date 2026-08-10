@@ -14,6 +14,7 @@ REVIEWED_DATE = "2026-07-23"
 REVIEWED_DATE_010_020 = "2026-08-01"
 REVIEWED_DATE_021 = "2026-08-03"
 REVIEWED_DATE_022 = "2026-08-03"
+REVIEWED_DATE_023_025 = "2026-08-10"
 
 # Vedabase URLs — same host/path pattern as Stories 001–009.
 KB_1 = "https://vedabase.io/en/library/kb/1/"
@@ -30,6 +31,9 @@ KB_11 = "https://vedabase.io/en/library/kb/11/"
 KB_12 = "https://vedabase.io/en/library/kb/12/"
 KB_13 = "https://vedabase.io/en/library/kb/13/"
 KB_14 = "https://vedabase.io/en/library/kb/14/"
+KB_15 = "https://vedabase.io/en/library/kb/15/"
+KB_16 = "https://vedabase.io/en/library/kb/16/"
+KB_17 = "https://vedabase.io/en/library/kb/17/"
 SB_10_1 = "https://vedabase.io/en/library/sb/10/1/"
 SB_10_2 = "https://vedabase.io/en/library/sb/10/2/"
 SB_10_3 = "https://vedabase.io/en/library/sb/10/3/"
@@ -44,6 +48,9 @@ SB_10_11 = "https://vedabase.io/en/library/sb/10/11/"
 SB_10_12 = "https://vedabase.io/en/library/sb/10/12/"
 SB_10_13 = "https://vedabase.io/en/library/sb/10/13/"
 SB_10_14 = "https://vedabase.io/en/library/sb/10/14/"
+SB_10_15 = "https://vedabase.io/en/library/sb/10/15/"
+SB_10_16 = "https://vedabase.io/en/library/sb/10/16/"
+SB_10_17 = "https://vedabase.io/en/library/sb/10/17/"
 
 _WORK_KB = "Kṛṣṇa, the Supreme Personality of Godhead (Krishna Book)"
 _AUTHOR = "His Divine Grace A.C. Bhaktivedanta Swami Prabhupāda"
@@ -552,6 +559,69 @@ REVIEWED_SOURCES: dict[str, dict[str, Any]] = {
         "review_status": "reviewed",
         "reviewer": REVIEWER,
         "reviewed_date": REVIEWED_DATE_022,
+        "permissions_note": _PERMS_NOTE_CHAPTER_DEFERRED,
+    },
+    "023": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 15,
+        "chapter_title": "The Killing of Dhenukāsura",
+        "passage_start": "Opening of Krishna Book Chapter 15",
+        "passage_end": "Conclusion of Krishna Book Chapter 15",
+        "vedabase_url": KB_15,
+        "scripture_secondary": _sb_companion(
+            chapter=15,
+            vedabase_url=SB_10_15,
+            central_event="Dhenukāsura",
+        ),
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_023_025,
+        "permissions_note": _PERMS_NOTE_CHAPTER_DEFERRED,
+    },
+    "024": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 16,
+        "chapter_title": "Subduing Kāliya",
+        "passage_start": "Opening of Krishna Book Chapter 16",
+        "passage_end": "Conclusion of Krishna Book Chapter 16",
+        "vedabase_url": KB_16,
+        "scripture_secondary": _sb_companion(
+            chapter=16,
+            vedabase_url=SB_10_16,
+            central_event="Kāliya",
+        ),
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_023_025,
+        "permissions_note": _PERMS_NOTE_CHAPTER_DEFERRED,
+    },
+    "025": {
+        "work": _WORK_KB,
+        "author": _AUTHOR,
+        "chapter_number": 17,
+        "chapter_title": "Extinguishing the Forest Fire",
+        "passage_start": "Opening of Krishna Book Chapter 17",
+        "passage_end": "Conclusion of Krishna Book Chapter 17",
+        "vedabase_url": KB_17,
+        "scripture_secondary": _sb_companion(
+            chapter=17,
+            vedabase_url=SB_10_17,
+            central_event="Forest fire",
+        ),
+        "permissions_status": "excerpt-needs-review",
+        "provenance": "bbt-source-derived",
+        "content_type": "bedtime adaptation boundary",
+        "review_status": "reviewed",
+        "reviewer": REVIEWER,
+        "reviewed_date": REVIEWED_DATE_023_025,
         "permissions_note": _PERMS_NOTE_CHAPTER_DEFERRED,
     },
 }

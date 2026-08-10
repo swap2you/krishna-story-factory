@@ -174,16 +174,16 @@ for n in 001 002 003 004 005 006 007 008 009; do
   curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${n}" >/dev/null
 done
 
-# Production confidentiality gate: Stories 021/022 public; 023+ private.
+# Production confidentiality gate: Stories 001-025 public; 026+ private.
 # discovered_package_count may exceed public_story_max on shared mounts; that is OK.
 if [[ "${ENVIRONMENT}" == "production" ]]; then
-  if [[ "${PUBLIC_MAX}" != "22" ]]; then
-    echo "Production public_story_max must be 22, got ${PUBLIC_MAX}." >&2
+  if [[ "${PUBLIC_MAX}" != "25" ]]; then
+    echo "Production public_story_max must be 25, got ${PUBLIC_MAX}." >&2
     exit 1
   fi
   indexed="$(printf '%s' "${version}" | python -c 'import json,sys; print(int(json.load(sys.stdin)["indexed_story_count"]))')"
-  if [[ "${indexed}" != "22" ]]; then
-    echo "Production indexed_story_count must be 22, got ${indexed}." >&2
+  if [[ "${indexed}" != "25" ]]; then
+    echo "Production indexed_story_count must be 25, got ${indexed}." >&2
     exit 1
   fi
   for path in \
@@ -197,7 +197,19 @@ if [[ "${ENVIRONMENT}" == "production" ]]; then
     /stories/022 \
     /api/v1/stories/022 \
     /api/v1/stories/022/reader \
-    /api/v1/stories/022/reader.txt
+    /api/v1/stories/022/reader.txt \
+    /stories/023 \
+    /api/v1/stories/023 \
+    /api/v1/stories/023/reader \
+    /api/v1/stories/023/reader.txt \
+    /stories/024 \
+    /api/v1/stories/024 \
+    /api/v1/stories/024/reader \
+    /api/v1/stories/024/reader.txt \
+    /stories/025 \
+    /api/v1/stories/025 \
+    /api/v1/stories/025/reader \
+    /api/v1/stories/025/reader.txt
   do
     code="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}${path}")"
     if [[ "${code}" != "200" ]]; then
@@ -206,13 +218,13 @@ if [[ "${ENVIRONMENT}" == "production" ]]; then
     fi
   done
   for path in \
-    /stories/023 \
-    /api/v1/stories/023 \
-    /api/v1/stories/023/reader \
-    /api/v1/stories/023/reader.txt \
-    /stories/024 \
-    /api/v1/stories/024/reader \
-    /api/v1/stories/024/reader.txt
+    /stories/026 \
+    /api/v1/stories/026 \
+    /api/v1/stories/026/reader \
+    /api/v1/stories/026/reader.txt \
+    /stories/027 \
+    /api/v1/stories/027/reader \
+    /api/v1/stories/027/reader.txt
   do
     code="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}${path}")"
     if [[ "${code}" != "404" ]]; then
@@ -221,16 +233,16 @@ if [[ "${ENVIRONMENT}" == "production" ]]; then
     fi
   done
   sitemap="$(curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml")"
-  if printf '%s' "${sitemap}" | grep -E '/stories/023|/stories/024' >/dev/null; then
-    echo "Production sitemap includes private Stories 023+." >&2
+  if printf '%s' "${sitemap}" | grep -E '/stories/026|/stories/027' >/dev/null; then
+    echo "Production sitemap includes private Stories 026+." >&2
     exit 1
   fi
-  if ! printf '%s' "${sitemap}" | grep -E '/stories/021' >/dev/null; then
-    echo "Production sitemap missing public Story 021." >&2
+  if ! printf '%s' "${sitemap}" | grep -E '/stories/025' >/dev/null; then
+    echo "Production sitemap missing public Story 025." >&2
     exit 1
   fi
-  if ! printf '%s' "${sitemap}" | grep -E '/stories/022' >/dev/null; then
-    echo "Production sitemap missing public Story 022." >&2
+  if ! printf '%s' "${sitemap}" | grep -E '/stories/023' >/dev/null; then
+    echo "Production sitemap missing public Story 023." >&2
     exit 1
   fi
 fi
