@@ -10,9 +10,13 @@ promotion_pr_required: true
 active_train:
   - id: R00-STORY-001-025-CLOSURE
     order: 0
-    state: IMPLEMENTING
+    state: CLOSED
     depends_on: []
-    notes: "Public boundary 22->25; content tags bhava-content-001-025-{staging-,}v1 digest 2dda0485..."
+    closed_at: "2026-08-10T19:29:46Z"
+    develop_sha: 05936ff246532f4402f59c5a625b201aa4a8a39a
+    main_sha: 0fb429c6c9cbbd195628857c8f6879f931ed4eba
+    content_tag: bhava-content-001-025-v1
+    evidence_zip: MyPilotDropbox/BHAVA/release-handoffs/R00-STORY-001-025-CLOSURE-20260810-143143.zip
   - id: R01-KNOWLEDGE-GOLDEN-PAGE
     order: 1
     state: NOT_STARTED
