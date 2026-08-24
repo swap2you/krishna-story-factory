@@ -35,7 +35,7 @@ def test_no_year_without_reviewed_first_publication() -> None:
     text = compact_footer(year=None)
     assert "© 20" not in text
     assert "Svarna Gauranga Das" in text
-    assert "Swapnil Patil" in text
+    assert "Swapnil Patil" not in text
     assert "Dauji Publication" in text
     assert "Bhāva" in text
     assert "A Bhāva Project publication" not in text

@@ -60,7 +60,9 @@ def load_identity(root: Path | None = None) -> PublicationIdentity:
     publisher = str(data["publisher"]).strip()
     if publisher != "Dauji Publication":
         raise ValueError(f"Unexpected publisher: {publisher!r}")
-    display = str(data.get("public_display_credit") or f"{owner} (Swapnil Patil)").strip()
+    display = str(data.get("public_display_credit") or owner).strip()
+    if "Swapnil Patil" in display:
+        raise ValueError("public_display_credit must not include civil/professional identity.")
     return PublicationIdentity(
         copyright_owner=owner,
         public_author_name=str(data.get("public_author_name") or owner).strip(),

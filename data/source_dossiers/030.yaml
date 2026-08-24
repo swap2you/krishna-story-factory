@@ -1,0 +1,55 @@
+story_no: "030"
+kb_chapter: 22
+title: "Stealing the Garments of the Unmarried Gopi Girls"
+source_url: "https://vedabase.io/en/library/kb/22/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  senior_review required — senior devotional review is mandatory and cannot be
+  self-approved. Strict child-safe, respectful, non-sensational telling of Krishna
+  Book Ch.22: month-long Katyayani vow; early Yamuna worship; desire for Krishna as
+  husband; Krishna understanding their hearts; taking the garments; the girls'
+  appeal; respectful return of the garments; Krishna's promise concerning the next
+  autumn; later praise of the charitable trees and their service to others (unless
+  the title/source line clearly says adapted selection rather than complete chapter).
+  Do not place editorial notes, moderation instructions, or visual-production
+  directions in spoken narration. Do not use words like "naked" or "nude" in
+  narration. Do not falsify the event by claiming the source says the gopis were
+  already draped; use tasteful indirect wording and composition only.
+required_events:
+  - "katyayani|katyayani vow|goddess katyayani"
+  - "month|one month|month-long|month long"
+  - "yamuna"
+  - "garment|garments|cloth|clothes"
+  - "appeal|asked|pray|prayed|please"
+  - "return|returned|gave back|delivered"
+  - "autumn|next autumn|next autumn season"
+  - "tree|trees|charitable|shelter"
+required_phrases:
+  - "krishna"
+  - "katyayani"
+forbidden_phrases:
+  - "naked"
+  - "nude"
+  - "undressed"
+  - "sexy"
+  - "editorial note"
+  - "connective narration"
+  - "sequence note"
+  - "for reviewers"
+  - "moderation note"
+  - "visual direction"
+prohibited_contradictions:
+  - '\bnaked\b|\bnude\b|without clothes|completely naked'
+  - '\[(editorial|connective|sequence|moderation|visual).{0,40}(note|narration|direction)'
+  - "already draped|already covered.{0,20}source"
+visual_restrictions:
+  - "NO exposed bodies: waterline, foreground lotuses/reeds, back/shoulder framing, distance, modest composition"
+  - "gopīs modestly composed behind foliage/water; Krishna holding garments respectfully"
+  - "senior visual review required before release"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Yamunā: Yamuna
+  Kātyāyanī: Katyayani
+  gopī: gopi
+  Vṛndāvana: Vrindavana
+  Varuṇa: Varuna

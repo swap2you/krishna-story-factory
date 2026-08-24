@@ -263,7 +263,7 @@ def test_generate_mp3_allows_with_valid_pass_fixture(
     out = tmp_path / "narration.mp3"
     calls = {"el": 0}
 
-    def fake_el(self, text, output_path):
+    def fake_el(self, text, output_path, *, work_dir=None):
         calls["el"] += 1
         Path(output_path).write_bytes(b"1234567890" * 20)
         self.last_provider = "elevenlabs"
@@ -361,7 +361,13 @@ def test_fallback_requires_openai_sample_pass(
     from krishna_story_factory.audio.pronunciation import normalize_for_tts
     from krishna_story_factory.audio.sanitize import sanitize_audio_script
 
-    settings = load_settings(Path(__file__).resolve().parents[1])
+    from dataclasses import replace
+
+    settings = replace(
+        load_settings(Path(__file__).resolve().parents[1]),
+        audio_provider_mode="auto",
+        audio_provider_fallback="openai",
+    )
     gen = AudioGenerator(settings, mode="prod")
     model_id = settings.elevenlabs_model_id or "eleven_v3"
     voice = settings.elevenlabs_voice_id or "Itr6exdQTrvjpW1lNztS"

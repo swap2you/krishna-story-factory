@@ -1,0 +1,43 @@
+story_no: "031"
+kb_chapter: 23
+title: "Delivering the Wives of the Brahmanas Who Performed Sacrifices"
+source_url: "https://vedabase.io/en/library/kb/23/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  Age-adapted retelling of Krishna Book Ch.23. Include: hungry cowherd boys;
+  Krishna's first instruction to approach the brahmanas; their refusal; the second
+  request to the wives; the wives carrying food despite relatives' resistance;
+  their meeting with Krishna; Krishna directing them to return home; their return
+  and acceptance; the boys eating the food; the brahmanas' later repentance.
+  Treat the brahmanas respectfully. The contrast is ritual knowledge without
+  recognition versus sincere devotion — not ridicule or caricature.
+required_events:
+  - "hungry|hunger"
+  - "brahmana|brahmanas"
+  - "refuse|refused|would not|did not give|no reply|silent"
+  - "wife|wives"
+  - "food|feast|offerings|grains"
+  - "resist|resistance|relative|relatives|husband|fathers|asked them not"
+  - "return home|returned home|go home|sent them home"
+  - "eat|ate|enjoyed the food|boys ate"
+  - "repent|repented|regret|regretted"
+required_phrases:
+  - "krishna"
+  - "brahmanas"
+forbidden_phrases:
+  - "stupid brahmanas"
+  - "evil priests"
+  - "foolish priests"
+  - "dumb brahmanas"
+prohibited_contradictions:
+  - "stupid.{0,20}brahmana|evil.{0,20}(priest|brahmana)|mock(ed|ing)?.{0,20}brahmana|caricature"
+visual_restrictions:
+  - "respectful depiction of brahmanas and wives; focus on devotion not ridicule"
+  - "wives bringing food; boys receiving prasadam; no mocking of ritual priests"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Balarāma: Balarama
+  brāhmaṇa: brahmana
+  Āṅgirasa: Angirasa
+  Vṛndāvana: Vrindavana
+  Yamunā: Yamuna

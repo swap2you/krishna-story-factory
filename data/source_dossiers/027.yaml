@@ -1,0 +1,51 @@
+story_no: "027"
+kb_chapter: 19
+title: "Devouring the Forest Fire"
+source_url: "https://vedabase.io/en/library/kb/19/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  Age-adapted retelling of Krishna Book Ch.19 only. Goats, cows, and buffalo
+  wander into Ishikatavi for fresh grass; boys follow footprints and eaten grass;
+  boys become tired and thirsty; they hear the cows; Krishna calls the cows by
+  name and the herd replies; friends appeal to Krishna and Balarama; Krishna
+  swallows the fire; upon awakening they are in Bhandira forest; evening return
+  to Vrindavana playing flutes. Fire motion in every visual must be unmistakably
+  inward toward Krishna—never blown or exhaled outward.
+required_events:
+  - "goat|goats"
+  - "cow|cows"
+  - "buffalo|buffaloes"
+  - "isikatavi|ishikatavi"
+  - "fresh grass|green grass|new grass|eaten grass"
+  - "footprint|footprints|hoofprint|hoofprints|hoof print"
+  - "tired|thirsty|thirst"
+  - "called the cows|calling the cows|called each cow|call each cow|by their names|by name"
+  - "swallow|swallowed|devour|devouring"
+  - "bhandira|bhandiravana"
+  - "evening|returned|flute|flutes"
+required_phrases:
+  - "forest fire"
+  - "krishna"
+forbidden_phrases:
+  - "hide and seek"
+  - "hide-and-seek"
+  - "not a leaf was burned"
+  - "i promise, i will protect you"
+  - "because you are my dear friends, you will always be protected"
+  - "blew the fire"
+  - "blew outward"
+  - "exhaled the fire"
+prohibited_contradictions:
+  - "hide.{0,20}seek"
+  - "blew.{0,30}fire|exhale.{0,30}fire|breath(ed|ing)?.{0,20}outward|fire.{0,20}outward"
+  - "leaf.{0,20}(not|never).{0,20}burn"
+visual_restrictions:
+  - "fire must be drawn/swallowed inward toward Krishna's mouth, never blown outward"
+  - "child-safe; no horror flames on faces"
+  - "herd includes goats, cows, and buffalo context where shown"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Balarāma: Balarama
+  Vṛndāvana: Vrindavana
+  Īṣīkāṭavī: Ishikatavi
+  Bhāṇḍīra: Bhandira

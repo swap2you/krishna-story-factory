@@ -105,12 +105,12 @@ EXPECTED_LOCAL_ARCHIVE = {
 # test_coverage_non_skipping.py::test_next_pending_is_cart_breaking.
 # Also includes private 021/022 package lock drift checks against local output/.
 EXPECTED_LOCAL_RUNTIME = {
-    "tests/portal/test_queue_guard.py::test_queue_001_020_done_and_021_pending",
-    "tests/portal/test_v11_safety_baseline.py::test_queue_021_pending_after_020_release",
-    "tests/test_coverage_non_skipping.py::test_live_queue_next_pending_is_brahma_stealing",
+    "tests/portal/test_queue_guard.py::test_queue_001_025_done_public_baseline_and_private_boundary",
+    "tests/portal/test_v11_safety_baseline.py::test_queue_public_baseline_complete_next_pending_after_025",
+    "tests/test_coverage_non_skipping.py::test_live_queue_next_pending_after_public_ceiling",
     "tests/test_private_story_lock_021_022.py::test_private_lock_ledger_matches_local_packages_when_present",
     "tests/test_accepted_story_lock_023_025.py::test_accepted_lock_ledger_matches_local_packages_when_present",
-    "tests/test_unicode_printable_copyright.py::test_queue_pending_holds_at_story_021",
+    "tests/test_unicode_printable_copyright.py::test_queue_public_ceiling_and_private_batch_boundary",
 }
 
 EXPECTED = {

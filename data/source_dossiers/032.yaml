@@ -1,0 +1,48 @@
+story_no: "032"
+kb_chapter: 24
+title: "Worshiping Govardhana Hill"
+source_url: "https://vedabase.io/en/library/kb/24/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  Govardhana sequence part 1 — Krishna Book Ch.24 only. Include Nanda's planned
+  Indra sacrifice and Krishna's inquiry/dialogue; cow protection and Vraja's
+  prescribed work; Annakuta foods; honoring brahmanas, cows, animals, and people
+  with prasadam; decorated cows and circumambulation; Krishna assuming the great
+  Govardhana form and accepting the offerings; villagers' joyful completion.
+  Present Krishna's argument in a child-appropriate way without flattening it into
+  a modern environmental message. Do NOT include the storm, hill lifting, or
+  seven-day shelter (those are Ch.25).
+required_events:
+  - "nanda"
+  - "indra"
+  - "sacrifice|yajna|worship|indra-yajna"
+  - "govardhana|govardhan"
+  - "cow|cows"
+  - "annakuta|annakut|food|foods|prasadam|offerings"
+  - "decorate|decorated|circumambulat|walked around|circled"
+  - "form|assumed|accepted the offering|accepted the offerings|huge form|great form"
+required_phrases:
+  - "krishna"
+  - "govardhana"
+forbidden_phrases:
+  - "lifted govardhana"
+  - "held the hill"
+  - "seven days of rain"
+  - "seven days under"
+  - "samvartaka"
+  - "seven days under the hill"
+prohibited_contradictions:
+  - "lift(ed|ing)?.{0,30}(hill|govardhana)|held.{0,20}(hill|govardhana).{0,20}(up|aloft|umbrella)"
+  - "seven days.{0,40}(rain|shelter|under)"
+  - "samvartaka|hailstorm|torrents of rain began"
+visual_restrictions:
+  - "festive Govardhana worship and Annakuta; Krishna as child-leader; great form accepting offerings"
+  - "decorated cows and circumambulation; no rainstorm or hill-lifting climax"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Govardhana: Govardhana
+  Indra: Indra
+  Nanda: Nanda
+  Annakūṭa: Annakuta
+  brāhmaṇa: brahmana
+  Vṛndāvana: Vrindavana

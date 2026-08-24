@@ -6,8 +6,8 @@ schema_version: "1.0"
 
 copyright_owner: "Svarna Gauranga Das"
 public_author_name: "Svarna Gauranga Das"
-# Concise public credit line for printables and website footer.
-public_display_credit: "Svarna Gauranga Das (Swapnil Patil)"
+# Concise public credit line for printables and website footer (devotional name only).
+public_display_credit: "Svarna Gauranga Das"
 publisher: "Dauji Publication"
 publisher_role: "publishing imprint"
 project: "Bhāva"

@@ -33,6 +33,7 @@ _TEST_MP3_PLACEHOLDER = base64.b64decode(
 
 _PLACEHOLDER_MAX_BYTES = 512
 _QUOTA_MARKERS = ("quota", "credit", "insufficient", "payment_required", "402")
+_ELEVENLABS_MAX_INPUT_CHARS = 4800
 
 
 class AudioGenerator:
@@ -165,8 +166,15 @@ class AudioGenerator:
             )
         if provider == "elevenlabs":
             try:
-                return self._synthesize_elevenlabs(narration_text, output_path)
+                return self._synthesize_elevenlabs(narration_text, output_path, work_dir=work_dir)
             except AudioGenerationError as exc:
+                fallback = (getattr(self.settings, "audio_provider_fallback", "") or "").strip().lower()
+                if not fallback:
+                    mode = (getattr(self.settings, "audio_provider_mode", "") or "").strip().lower()
+                    if mode != "elevenlabs":
+                        fallback = "openai"
+                if not fallback:
+                    raise
                 if not self._is_eligible_elevenlabs_runtime_fallback(str(exc)):
                     raise
                 from .provider import invalidate_elevenlabs_cache, preflight_openai
@@ -266,7 +274,7 @@ class AudioGenerator:
         self.low_credit_mode = False
         return "openai"
 
-    def _synthesize_elevenlabs(self, narration_text: str, output_path) -> str:
+    def _synthesize_elevenlabs(self, narration_text: str, output_path, *, work_dir: Path | None = None) -> str:
         if not self.settings.elevenlabs_enabled:
             raise AudioGenerationError("ElevenLabs provider selected but ELEVENLABS_ENABLED=false.")
         if not self.settings.elevenlabs_api_key:
@@ -288,12 +296,83 @@ class AudioGenerator:
             raise AudioGenerationError(str(exc)) from exc
 
         # No concise/compressed narration path — quota must be gated by preflight.
-        self._synthesize(narration_text, output_path)
+        self._synthesize(narration_text, output_path, work_dir=work_dir)
         self.low_credit_mode = False
         self.last_provider = "elevenlabs"
         return "elevenlabs"
 
-    def _synthesize(self, narration_text: str, output_path) -> None:
+    def _synthesize(self, narration_text: str, output_path, *, work_dir: Path | None = None) -> None:
+        if len(narration_text) > _ELEVENLABS_MAX_INPUT_CHARS:
+            self._synthesize_chunked(narration_text, output_path, work_dir=work_dir)
+            return
+        audio_bytes, meta = self._request_elevenlabs_audio(narration_text)
+        self._apply_elevenlabs_response_meta(meta)
+        if "<break" in narration_text.lower() or "[pause]" in narration_text.lower():
+            raise AudioGenerationError("Narration text still contains forbidden SSML/pause markup.")
+        Path(output_path).write_bytes(audio_bytes)
+
+    def _synthesize_chunked(self, narration_text: str, output_path, *, work_dir: Path | None = None) -> None:
+        from .assemble import assemble_mp3_chunks
+        from .chunking import chunk_narration
+
+        plan = chunk_narration(narration_text, max_input_chars=_ELEVENLABS_MAX_INPUT_CHARS)
+        chunk_root = Path(work_dir or Path(output_path).parent) / "elevenlabs_chunks"
+        chunk_root.mkdir(parents=True, exist_ok=True)
+        chunk_paths: list[Path] = []
+        chunk_metadata: list[dict] = []
+        total_cost = 0
+        for chunk in plan.chunks:
+            chunk_path = chunk_root / f"chunk_{chunk.sequence:03d}.mp3"
+            audio_bytes, meta = self._request_elevenlabs_audio(chunk.text)
+            chunk_path.write_bytes(audio_bytes)
+            chunk_paths.append(chunk_path)
+            total_cost += int(meta.get("character_cost") or 0)
+            chunk_metadata.append(
+                {
+                    "sequence": chunk.sequence,
+                    "char_count": chunk.char_count,
+                    "text_sha256": chunk.text_sha256,
+                    "boundary": chunk.boundary,
+                    "character_cost": meta.get("character_cost"),
+                    "request_id": meta.get("request_id"),
+                }
+            )
+        assemble_mp3_chunks(chunk_paths, Path(output_path))
+        if chunk_metadata:
+            self._apply_elevenlabs_response_meta(chunk_metadata[-1])
+        self.last_character_cost = total_cost
+        self.last_chunk_metadata = chunk_metadata
+        self.last_request_metadata = {
+            **(self.last_request_metadata or {}),
+            "chunk_count": len(chunk_metadata),
+            "chunks": chunk_metadata,
+            "character_cost": total_cost,
+            "reconstruction_equal": plan.reconstruction_equal,
+            "original_text_sha256": plan.original_sha256,
+            "reconstructed_text_sha256": plan.reconstructed_sha256,
+        }
+
+    def _apply_elevenlabs_response_meta(self, meta: dict) -> None:
+        self.last_voice_id = meta.get("voice_id") or self.last_voice_id
+        self.last_model_id = meta.get("model_id") or self.last_model_id
+        self.last_output_format = meta.get("output_format") or self.last_output_format
+        self.last_request_id = meta.get("request_id") or self.last_request_id
+        self.last_trace_id = meta.get("trace_id") or self.last_trace_id
+        if meta.get("character_cost") is not None:
+            self.last_character_cost = int(meta.get("character_cost") or 0)
+        self.last_request_metadata = {
+            "provider": "elevenlabs",
+            "voice_id": self.last_voice_id,
+            "voice_name": self.last_voice_name or LOCKED_VOICE_NAME,
+            "model_id": self.last_model_id,
+            "output_format": self.last_output_format,
+            "pronunciation_dictionary_attached": self.last_dictionary_attached,
+            "request_id": self.last_request_id,
+            "trace_id": self.last_trace_id,
+            "character_cost": self.last_character_cost,
+        }
+
+    def _request_elevenlabs_audio(self, narration_text: str) -> tuple[bytes, dict]:
         voice_id = self.settings.elevenlabs_voice_id or LOCKED_VOICE_ID
         model_id = self.settings.elevenlabs_model_id or LOCKED_MODEL_ID
         output_format = getattr(self.settings, "elevenlabs_output_format", "") or LOCKED_OUTPUT_FORMAT
@@ -320,7 +399,8 @@ class AudioGenerator:
             ]
 
         try:
-            response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
+            request_timeout = int(getattr(self.settings, "elevenlabs_request_timeout_seconds", 600) or 600)
+            response = requests.post(url, params=params, headers=headers, json=payload, timeout=request_timeout)
             self.last_dictionary_attached = bool(dictionary_id)
             if response.status_code >= 400 and "pronunciation_dictionary" in response.text.lower():
                 logger.warning("ElevenLabs pronunciation dictionary not supported; retrying with normalized audio text only.")
@@ -336,14 +416,14 @@ class AudioGenerator:
                         dictionary_attached=False,
                         dictionary_fallback_reason="API rejected pronunciation_dictionary_locators",
                     )
-                response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
+                response = requests.post(url, params=params, headers=headers, json=payload, timeout=request_timeout)
             if response.status_code >= 400 and self._has_optional_voice_fields(payload):
                 logger.warning("ElevenLabs rejected optional voice settings; retrying with core settings only.")
                 payload["voice_settings"] = {
                     "stability": payload["voice_settings"].get("stability", 0.42),
                     "similarity_boost": payload["voice_settings"].get("similarity_boost", 0.78),
                 }
-                response = requests.post(url, params=params, headers=headers, json=payload, timeout=120)
+                response = requests.post(url, params=params, headers=headers, json=payload, timeout=request_timeout)
         except (requests.Timeout, requests.ConnectionError, requests.RequestException) as exc:
             from .redact import sanitize_error_text
 
@@ -356,30 +436,20 @@ class AudioGenerator:
             raise AudioGenerationError(
                 f"ElevenLabs TTS failed: {response.status_code} {sanitize_error_text(response.text[:500])}"
             )
-        self.last_voice_id = voice_id
-        self.last_model_id = model_id
-        self.last_output_format = output_format
-        self.last_request_id = response.headers.get("request-id") or response.headers.get("x-request-id") or ""
-        self.last_trace_id = response.headers.get("x-trace-id") or response.headers.get("trace-id") or ""
         cost_raw = response.headers.get("character-cost") or response.headers.get("x-character-count") or "0"
         try:
-            self.last_character_cost = int(float(cost_raw))
+            character_cost = int(float(cost_raw))
         except ValueError:
-            self.last_character_cost = 0
-        self.last_request_metadata = {
-            "provider": "elevenlabs",
+            character_cost = 0
+        meta = {
             "voice_id": voice_id,
-            "voice_name": self.last_voice_name or LOCKED_VOICE_NAME,
             "model_id": model_id,
             "output_format": output_format,
-            "pronunciation_dictionary_attached": self.last_dictionary_attached,
-            "request_id": self.last_request_id,
-            "trace_id": self.last_trace_id,
-            "character_cost": self.last_character_cost,
+            "request_id": response.headers.get("request-id") or response.headers.get("x-request-id") or "",
+            "trace_id": response.headers.get("x-trace-id") or response.headers.get("trace-id") or "",
+            "character_cost": character_cost,
         }
-        if "<break" in narration_text.lower() or "[pause]" in narration_text.lower():
-            raise AudioGenerationError("Narration text still contains forbidden SSML/pause markup.")
-        output_path.write_bytes(response.content)
+        return response.content, meta
 
     def _voice_settings(self, model_id: str) -> dict:
         s = self.settings

@@ -140,11 +140,14 @@ def test_story_026_absent_from_public_content() -> None:
 
 
 @pytest.mark.local_runtime
-def test_queue_pending_holds_at_story_021() -> None:
+def test_queue_public_ceiling_and_private_batch_boundary() -> None:
     queue = ROOT / "tracking" / "queue_state.csv"
     rows = {str(r["chapter_no"]).zfill(3): r["status"] for r in csv.DictReader(queue.open(encoding="utf-8"))}
-    assert rows.get("020") == "done"
-    assert rows.get("021") == "pending"
+    assert rows.get("025") == "done"
+    for n in range(1, 26):
+        assert rows.get(f"{n:03d}") == "done"
+    pending = sorted(ch for ch, status in rows.items() if status == "pending" and int(ch) > 25)
+    assert pending and int(pending[0]) >= 26
 
 
 @pytest.mark.content_release

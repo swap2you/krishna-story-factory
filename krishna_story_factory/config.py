@@ -142,6 +142,18 @@ def _optional_path(project_root: Path, env_name: str) -> Path | None:
     return value
 
 
+def _resolve_audio_provider_fallback() -> str:
+    """Empty fallback disables OpenAI only when mode is locked to elevenlabs."""
+    raw = os.getenv("AUDIO_PROVIDER_FALLBACK")
+    if raw is None:
+        return "openai"
+    fallback = raw.strip().lower()
+    if fallback:
+        return fallback
+    mode = (os.getenv("AUDIO_PROVIDER_MODE", "auto") or "auto").strip().lower()
+    return "" if mode == "elevenlabs" else "openai"
+
+
 def _resolve_path(project_root: Path, env_name: str, default: str) -> Path:
     value = Path(os.getenv(env_name, default))
     if not value.is_absolute():
@@ -222,7 +234,7 @@ def load_settings(project_root: Path) -> Settings:
         ).strip(),
         audio_provider_mode=os.getenv("AUDIO_PROVIDER_MODE", "auto").strip().lower() or "auto",
         audio_provider_primary=os.getenv("AUDIO_PROVIDER_PRIMARY", "elevenlabs").strip().lower() or "elevenlabs",
-        audio_provider_fallback=os.getenv("AUDIO_PROVIDER_FALLBACK", "openai").strip().lower() or "openai",
+        audio_provider_fallback=_resolve_audio_provider_fallback(),
         audio_required=str_to_bool(os.getenv("AUDIO_REQUIRED"), True),
         openai_tts_enabled=str_to_bool(os.getenv("OPENAI_TTS_ENABLED"), False),
         openai_tts_model=os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts").strip() or "gpt-4o-mini-tts",

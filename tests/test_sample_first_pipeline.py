@@ -63,13 +63,13 @@ def test_run_sample_first_writes_pass_before_full_tts(
     decision = MagicMock(status="READY", provider="elevenlabs", model_id=model_id, reason="")
     order: list[str] = []
 
-    def fake_sample(self, text, output_path):
+    def fake_sample(self, text, output_path, **_kwargs):
         order.append("sample")
         Path(output_path).write_bytes(b"ID3" + b"\x00" * 2000)
         self.last_provider = "elevenlabs"
         return "elevenlabs"
 
-    def fake_full(self, text, output_path):
+    def fake_full(self, text, output_path, **_kwargs):
         order.append("full")
         Path(output_path).write_bytes(b"ID3" + b"\x00" * 4000)
         self.last_provider = "elevenlabs"
