@@ -425,3 +425,34 @@ jobs:
         run: |
           SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh \
             https://staging.bhava.me "${RELEASE_SHA}" staging
+
+      - name: Stage 1 private stories 026-035 route matrix
+        if: ${{ needs.resolve.outputs.public_max >= 35 }}
+        env:
+          STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
+          STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+        run: |
+          set -euo pipefail
+          AUTH=(-u "${STAGING_BASIC_AUTH_USER}:${STAGING_BASIC_AUTH_PASSWORD}")
+          BASE=https://staging.bhava.me
+          ver="$(curl -fsS "${AUTH[@]}" "${BASE}/api/v1/version")"
+          echo "$ver"
+          echo "$ver" | grep -F "${RELEASE_SHA}" >/dev/null
+          code_catalog="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories")"
+          [[ "$code_catalog" == "200" ]]
+          for n in $(seq 26 35); do
+            sn="$(printf '%03d' "$n")"
+            page="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories/${sn}")"
+            api="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories/${sn}")"
+            audio="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories/${sn}/assets/narration.mp3")"
+            echo "${sn} page=${page} api=${api} audio=${audio}"
+            [[ "$page" == "200" && "$api" == "200" && "$audio" == "200" ]]
+          done
+          p036="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories/036")"
+          a036="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories/036")"
+          echo "036 page=${p036} api=${a036}"
+          [[ "$p036" == "404" && "$a036" == "404" ]]
+          hdrs="$(curl -sSI "${AUTH[@]}" "${BASE}/stories/026")"
+          echo "$hdrs" | grep -Eiq '^x-robots-tag:[[:space:]]*noindex'
+          echo "STAGE1_ROUTE_MATRIX_PASS"
