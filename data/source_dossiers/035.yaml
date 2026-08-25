@@ -1,0 +1,54 @@
+story_no: "035"
+kb_chapter: 27
+title: "Prayers by Indra, the King of Heaven"
+source_url: "https://vedabase.io/en/library/kb/27/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  Govardhana sequence part 4 — Krishna Book Ch.27 only. Begin AFTER the rescue.
+  Indra approaches Krishna privately/secluded, bows, admits pride and offense, and
+  recognizes Krishna's supremacy. Include Krishna's instruction: delegated opulence
+  comes from Him; removing false prestige can be mercy; Indra should return to his
+  duty without pride. Include Surabhi's prayer, the milk abhisheka, Indra's celestial
+  Ganges water through Airavata, Krishna honored as Govinda, flower showers, restored
+  abundance, and Indra's return with permission. Do NOT open with "Indra stopped the
+  rain" as a Chapter 27 action — the clouds were already withdrawn at the end of Ch.25.
+required_events:
+  - "indra"
+  - "private|secluded|stealthily|quietly|alone"
+  - "pride|proud|offense|false prestige|puffed"
+  - "pray|prayer|prayers|bow|bowed"
+  - "opulenc|prestige|mercy|subordinate|master"
+  - "surabhi"
+  - "milk|abhisheka|bathed"
+  - "ganges|ganga|airavata|elephant"
+  - "govinda"
+  - "flower|flowers|shower"
+  - "abundance|milk|overflow|permission|returned|return"
+required_phrases:
+  - "krishna"
+  - "indra"
+  - "govinda"
+forbidden_phrases:
+  - "indra stopped the rain"
+  - "indra stopped the clouds"
+  - "seven days of rain began"
+  - "first worship of govardhana"
+  - "lifted the hill for the first time"
+prohibited_contradictions:
+  - "indra (then )?stopped (the )?(rain|clouds)"
+  - "stopped the rain"
+  - "rainstorm began|sent devastating rain|samvartaka.{0,20}ordered"
+  - "first worship of govardhana|lifted.{0,20}hill.{0,20}first"
+visual_restrictions:
+  - "Indra respectful and humbled in a secluded approach; Surabhi present"
+  - "milk and Ganges abhisheka; Airavata; Govinda honor; flower showers"
+  - "no storm action opening; clouds already cleared from Ch.25"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Indra: Indra
+  Surabhi: Surabhi
+  Govinda: Govinda
+  Airāvata: Airavata
+  Gaṅgā: Ganges
+  Vṛndāvana: Vrindavana
+  Govardhana: Govardhana

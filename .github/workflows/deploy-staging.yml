@@ -211,9 +211,11 @@ jobs:
           prod = json.loads(prod_path.read_text(encoding="utf-8"))
           # develop may already pin the upcoming 001-025 production release while
           # live production remains on an earlier pin until the promote deploy.
-          assert int(prod["public_story_max"]) in (20, 22, 25), prod
+          assert int(prod["public_story_max"]) in (20, 22, 25, 35), prod
           assert str(prod["tag"]).startswith("bhava-content-001-0"), prod
-          if int(prod["public_story_max"]) == 25:
+          if int(prod["public_story_max"]) == 35:
+              assert str(prod["tag"]).startswith("bhava-content-001-035-"), prod
+          elif int(prod["public_story_max"]) == 25:
               assert str(prod["tag"]).startswith("bhava-content-001-025-"), prod
           elif int(prod["public_story_max"]) == 22:
               assert str(prod["tag"]).startswith("bhava-content-001-022-"), prod
@@ -268,9 +270,11 @@ jobs:
           python3 - <<'PY'
           import json
           pin = json.load(open("deploy/content/RELEASE_CONTENT.json", encoding="utf-8"))
-          assert int(pin["public_story_max"]) in (20, 22, 25), pin
+          assert int(pin["public_story_max"]) in (20, 22, 25, 35), pin
           assert pin["tag"].startswith("bhava-content-001-0"), pin
-          if int(pin["public_story_max"]) == 25:
+          if int(pin["public_story_max"]) == 35:
+              assert pin["tag"].startswith("bhava-content-001-035-"), pin
+          elif int(pin["public_story_max"]) == 25:
               assert pin["tag"].startswith("bhava-content-001-025-"), pin
           elif int(pin["public_story_max"]) == 22:
               assert pin["tag"].startswith("bhava-content-001-022-"), pin
@@ -287,9 +291,18 @@ jobs:
         run: |
           git fetch origin main
           PROD_SHA="$(git rev-parse origin/main)"
+          if [[ "${PUBLIC_MAX}" == "35" ]]; then
+            STAGING_WEB_VERSION=001-035-staging
+          elif [[ "${PUBLIC_MAX}" == "25" ]]; then
+            STAGING_WEB_VERSION=001-025-staging
+          elif [[ "${PUBLIC_MAX}" == "22" ]]; then
+            STAGING_WEB_VERSION=001-022-staging
+          else
+            STAGING_WEB_VERSION=001-025-staging
+          fi
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${RELEASE_SHA} \
-            --build-arg BHAVA_WEB_VERSION=001-025-staging \
+            --build-arg BHAVA_WEB_VERSION=${STAGING_WEB_VERSION} \
             --build-arg BHAVA_CONTENT_RELEASE=${CONTENT_TAG} \
             --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${RELEASE_SHA} .
@@ -367,7 +380,9 @@ jobs:
           PROD_SHA="$(git rev-parse origin/main)"
           PROD_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
           PROD_TAG="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["tag"])')"
-          if [[ "${PROD_MAX}" == "25" ]]; then
+          if [[ "${PROD_MAX}" == "35" ]]; then
+            PROD_WEB_VERSION=001-035-v1
+          elif [[ "${PROD_MAX}" == "25" ]]; then
             PROD_WEB_VERSION=001-025-v1
           elif [[ "${PROD_MAX}" == "22" ]]; then
             PROD_WEB_VERSION=001-022-v1
@@ -391,7 +406,7 @@ jobs:
                BHAVA_CONTENT_RELEASE=${PROD_TAG} \
                BHAVA_STAGING_CONTENT_RELEASE=${CONTENT_TAG} \
                BHAVA_STAGING_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
-               BHAVA_STAGING_WEB_VERSION=001-025-staging && \
+               BHAVA_STAGING_WEB_VERSION=$(if [[ "${PUBLIC_MAX}" == "35" ]]; then echo 001-035-staging; elif [[ "${PUBLIC_MAX}" == "22" ]]; then echo 001-022-staging; else echo 001-025-staging; fi) && \
              cd /opt/bhava/config && \
              docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production && \
              sleep 8 && \
@@ -416,3 +431,40 @@ jobs:
         run: |
           SKIP_TLS_READINESS=1 bash deploy/ionos/scripts/smoke-test.sh \
             https://staging.bhava.me "${RELEASE_SHA}" staging
+
+      - name: Stage 1 private stories 026-035 route matrix
+        if: ${{ needs.resolve.outputs.public_max >= 35 }}
+        env:
+          STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
+          STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+          RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+        run: |
+          set -euo pipefail
+          AUTH=(-u "${STAGING_BASIC_AUTH_USER}:${STAGING_BASIC_AUTH_PASSWORD}")
+          BASE=https://staging.bhava.me
+          ver="$(curl -fsS "${AUTH[@]}" "${BASE}/api/v1/version")"
+          echo "$ver"
+          echo "$ver" | grep -F "${RELEASE_SHA}" >/dev/null
+          # Catalog surface is /library/krishna-book + /api/v1/stories (no /stories index page).
+          code_library="$(curl -sS -L "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/library/krishna-book")"
+          code_api_list="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories")"
+          echo "catalog_library=${code_library} catalog_api=${code_api_list}"
+          [[ "$code_library" == "200" && "$code_api_list" == "200" ]]
+          for n in $(seq 26 35); do
+            sn="$(printf '%03d' "$n")"
+            page="$(curl -sS -L "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories/${sn}")"
+            api="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories/${sn}")"
+            audio="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories/${sn}/assets/narration.mp3")"
+            echo "${sn} page=${page} api=${api} audio=${audio}"
+            if [[ "$page" != "200" || "$api" != "200" || "$audio" != "200" ]]; then
+              echo "ROUTE_FAIL ${sn}" >&2
+              exit 1
+            fi
+          done
+          p036="$(curl -sS -L "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories/036")"
+          a036="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories/036")"
+          echo "036 page=${p036} api=${a036}"
+          [[ "$p036" == "404" && "$a036" == "404" ]]
+          hdrs="$(curl -sSI "${AUTH[@]}" "${BASE}/stories/026")"
+          echo "$hdrs" | grep -Eiq '^x-robots-tag:[[:space:]]*noindex'
+          echo "STAGE1_ROUTE_MATRIX_PASS"

@@ -37,8 +37,10 @@ def compact_footer(
 ) -> str:
     ident = identity or get_identity()
     y = _year_prefix(year)
+    # Printables use devotional copyright owner only — never civil/professional identity.
+    credit = ident.copyright_owner or ident.public_display_credit
     return (
-        f"© {y}{ident.public_display_credit} · {ident.publisher} · {ident.project}"
+        f"© {y}{credit} · {ident.publisher} · {ident.project}"
     ).replace("©  ", "© ").strip()
 
 

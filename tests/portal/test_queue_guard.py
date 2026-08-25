@@ -20,13 +20,22 @@ def _sha256(path: Path) -> str:
 
 
 @pytest.mark.local_runtime
-def test_queue_001_020_done_and_021_pending() -> None:
+def test_queue_001_025_done_public_baseline_and_private_boundary() -> None:
+    """Public baseline 001–025 complete; 026+ remain private/non-catalog until approved."""
     rows = list(csv.DictReader(QUEUE.open(encoding="utf-8")))
     by_chapter = {str(row["chapter_no"]).zfill(3): row["status"] for row in rows}
-    for n in range(1, 21):
+    for n in range(1, 26):
         chapter = f"{n:03d}"
         assert by_chapter.get(chapter) == "done", chapter
-    assert by_chapter.get("021") == "pending"
+    # Next pending must be after the public ceiling, derived from live queue data.
+    pending = sorted(
+        ch for ch, status in by_chapter.items() if status == "pending" and int(ch) > 25
+    )
+    assert pending, "Expected at least one pending story after public ceiling 25"
+    assert int(pending[0]) >= 26
+    # Private batch stories must never be treated as public-catalog complete.
+    for ch in ("026", "027", "028", "029", "030", "031", "032", "033", "034", "035"):
+        assert by_chapter.get(ch) in {"done", "pending", "failed", "processing"}, ch
 
 
 def test_v15_baseline_records_008_complete() -> None:

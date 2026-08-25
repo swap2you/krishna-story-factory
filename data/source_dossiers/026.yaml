@@ -1,0 +1,62 @@
+story_no: "026"
+kb_chapter: 18
+title: "Balarama Protects His Friends from Pralambasura"
+source_url: "https://vedabase.io/en/library/kb/18/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  Age-adapted retelling of Krishna Book Ch.18 only (summer Vrindavana play,
+  then Pralambasura). Preserve: Balarama's party won; Krishna carried Sridama;
+  Bhadrasena carried Vrishabha; Pralambasura carried Balarama far away; demon
+  assumed his real form; Balarama struck his head with His fist; boys rushed to
+  the spot, praised and embraced Balarama; demigods showered flowers. Do not
+  invent "early one morning" as a required setup. Do not invent the boys searching
+  and calling until they found Him—after the fall they rush to the spot. Never say
+  Krishna's team won or that Balarama deliberately grew heavier.
+required_events:
+  - "summer|vrindavana|vrndavana|forest"
+  - "balarama's party|balarama party|party of balarama|came out victorious|had won"
+  - "sridama|shridama"
+  - "vrishabha|vrsabha"
+  - "krishna carried|carried sridama|carried shridama"
+  - "bhadrasena"
+  - "carried balarama|carrying balarama|balarama away|balarama far"
+  - "real form|demon form|terrible form|true form"
+  - "fist|struck his head|struck the head|strong fist"
+  - "rushed|rushed to the spot|boys rushed"
+  - "praise|praised|well done|embraced"
+  - "flower|flowers|showered flowers|demigod"
+required_phrases:
+  - "balarama"
+  - "pralambasura"
+forbidden_phrases:
+  - "krishna's team cleverly worked together and won"
+  - "krishna's team won"
+  - "krishna's party won"
+  - "deliberately grew heavier"
+  - "grew heavier and heavier"
+  - "grew heavier"
+  - "mountain sitting on pralambasura"
+  - "early one morning"
+  - "searched and called until"
+  - "calling until they found"
+  - "searched calling until"
+prohibited_contradictions:
+  - "krishna's (team|party).{0,30}won"
+  - "krishna.{0,20}team.{0,20}won"
+  - "losing team.{0,40}balarama"
+  - "grew.{0,20}heavier"
+  - "early (one )?morning"
+  - "search(ed|ing)?.{0,40}call(ed|ing)?.{0,40}(until|found)"
+visual_restrictions:
+  - "child-safe; no gore; demon defeat symbolic not graphic"
+  - "poster must show Balarama protection and victory, not Krishna team victory"
+  - "boys rushing to the spot after the fall; demigods/flowers optional and modest"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Balarāma: Balarama
+  Pralambāsura: Pralambasura
+  Śrīdāmā: Sridama
+  Vṛṣabha: Vrishabha
+  Bhadrasena: Bhadrasena
+  Bhāṇḍīravana: Bhandiravana
+  Vṛndāvana: Vrindavana

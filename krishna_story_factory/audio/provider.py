@@ -218,7 +218,7 @@ def select_audio_provider(
 
     mode = (getattr(settings, "audio_provider_mode", "auto") or "auto").strip().lower()
     primary = (getattr(settings, "audio_provider_primary", "elevenlabs") or "elevenlabs").strip().lower()
-    fallback = (getattr(settings, "audio_provider_fallback", "openai") or "openai").strip().lower()
+    fallback = (getattr(settings, "audio_provider_fallback", "openai") or "").strip().lower()
     audio_required = bool(getattr(settings, "audio_required", True))
 
     eleven_detail = preflight_elevenlabs(
@@ -272,7 +272,7 @@ def select_audio_provider(
     elif mode == "openai":
         decision = prefer("openai")
     else:
-        decision = prefer(primary) or prefer(fallback)
+        decision = prefer(primary) or (prefer(fallback) if fallback else None)
 
     if decision:
         _CACHE.decision = decision

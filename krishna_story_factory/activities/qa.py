@@ -25,6 +25,37 @@ GENERIC_PLACEHOLDERS = frozenset(
     }
 )
 
+GENERIC_TEMPLATE_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"lead from .+", re.I),
+    re.compile(r"companion from .+", re.I),
+    re.compile(r"first scene of .+", re.I),
+    re.compile(r"listener from .+", re.I),
+    re.compile(r"i remember my part", re.I),
+    re.compile(r"^prop:\s*simple cloth\s*$", re.I),
+)
+
+
+def generic_template_errors(pack: ActivityPack) -> list[str]:
+    """Reject template-like role cards and generic mission lines."""
+    errors: list[str] = []
+    for page in pack.pages:
+        for component in page.components:
+            label = component_label(component).strip()
+            lower = label.lower()
+            for pattern in GENERIC_TEMPLATE_PATTERNS:
+                if pattern.search(lower):
+                    errors.append(f"Generic template activity label rejected: {label!r}")
+            if lower.startswith("prop:") and "simple cloth" in lower and len(lower) < 24:
+                errors.append(f"Generic prop card rejected: {label!r}")
+    mission = (pack.story_connection or "") + " " + " ".join(
+        p.page_title for p in pack.pages
+    )
+    if "family kindness mission" in mission.lower() and pack.activity_type == "FAMILY_MISSION":
+        if not any(n in mission.lower() for n in ("pralamb", "bhandira", "ishikatavi", "govardhana", "gopi", "indra")):
+            errors.append("FAMILY_MISSION lacks material story-specific nouns/events.")
+    return errors
+
+
 _METADATA_EVENT_RE = re.compile(
     r"(?is)^(?:---|\s*(?:title|source_reference|scripture_reference|age_range|story_number|format|greeting)\s*:|"
     r"hare\s+k[rṛ][sṣ][nṇ]a,?\s+dear)",
@@ -184,6 +215,8 @@ def semantic_activity_errors(pack: ActivityPack) -> list[str]:
     printed_labels = list(pack.printable_components)
     if pack.answer_key and printed_labels and pack.answer_key == printed_labels:
         errors.append("answer_key must not equal the printed component order labels.")
+
+    errors.extend(generic_template_errors(pack))
 
     return errors
 

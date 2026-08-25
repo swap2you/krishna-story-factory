@@ -1,0 +1,52 @@
+story_no: "033"
+kb_chapter: 25
+title: "Devastating Rainfall in Vrindavana"
+source_url: "https://vedabase.io/en/library/kb/25/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  Govardhana sequence part 2 — Krishna Book Ch.25 only. Include Indra's pride and
+  Samvartaka clouds; thunder/hail/cold; cows shielding calves; residents' prayer;
+  Krishna lifting Govardhana on the little finger of His left hand; everyone with
+  property and animals sheltering safely for seven days; Indra ordering the clouds
+  to stop; Krishna replacing the hill; residents' affectionate embraces and
+  blessings. Do NOT include Indra's later prayers or Surabhi's abhisheka (Ch.27).
+required_events:
+  - "indra"
+  - "pride|proud|angry|anger|puffed"
+  - "samvartaka|samvartaka clouds|devastating cloud|dangerous clouds"
+  - "rain|rainfall|storm|hail|cold|thunder"
+  - "calf|calves|shield|underneath|cows bowed"
+  - "pray|prayed|prayer|protect us"
+  - "govardhana|govardhan"
+  - "lift|lifted|lifting|picked up"
+  - "little finger|left hand|left little finger"
+  - "seven days|one week|seven-day"
+  - "stop|desist|cleared|clouds to stop|ordered the clouds"
+  - "replace|replaced|put back|same position"
+  - "embrace|embraced|blessing|blessings"
+required_phrases:
+  - "krishna"
+  - "govardhana"
+forbidden_phrases:
+  - "surabhi"
+  - "abhisheka"
+  - "bathing with milk"
+  - "indra prayed"
+  - "indra offered prayers"
+  - "worshiping govardhana hill for the first time"
+prohibited_contradictions:
+  - "surabhi|abhisheka|milk bath|ganges water through"
+  - "indra.{0,40}(prayed|prayer|prostrat|fell at)"
+  - "first time.{0,30}worship.{0,30}govardhana"
+visual_restrictions:
+  - "child-safe rainstorm; cows shielding calves; Krishna as protector under lifted Govardhana"
+  - "little finger of left hand holding the hill; families and cows sheltered"
+  - "no Surabhi abhisheka or Indra prayer scene"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Indra: Indra
+  Govardhana: Govardhana
+  Sāṁvartaka: Samvartaka
+  Vṛndāvana: Vrindavana
+  Nanda: Nanda
+  Yaśodā: Yashoda

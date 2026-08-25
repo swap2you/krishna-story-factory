@@ -120,6 +120,7 @@ def test_insufficient_elevenlabs_selects_openai(monkeypatch) -> None:
         openai_tts_enabled=True,
         openai_api_key="y",
         audio_provider_mode="auto",
+        audio_provider_fallback="openai",
         audio_required=True,
     )
 

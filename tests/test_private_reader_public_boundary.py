@@ -117,6 +117,22 @@ def test_production_reader_boundary_shared_mount(monkeypatch, tmp_path):
         assert version["discovered_package_count"] >= 22
 
 
+def test_production_035_reader_boundary_shared_mount(monkeypatch, tmp_path):
+    """Production max=35: 026-035 readers visible; 036 still 404 even with disk assets."""
+    app = _shared_mount_app(
+        monkeypatch, tmp_path, story_max=35, indexed_count=35, disk_count=36
+    )
+    with TestClient(app) as client:
+        for story in ("026", "030", "035"):
+            assert client.get(f"/api/v1/stories/{story}/reader").status_code == 200, story
+            assert client.get(f"/api/v1/stories/{story}/reader.txt").status_code == 200, story
+        assert client.get("/api/v1/stories/036/reader").status_code == 404
+        assert client.get("/api/v1/stories/036/reader.txt").status_code == 404
+        version = client.get("/api/v1/version").json()
+        assert version["public_story_max"] == 35
+        assert version["indexed_story_count"] == 35
+
+
 def test_current_public_reader_boundary_shared_mount(monkeypatch, tmp_path):
     """Current max=25: 023-025 readers visible; 026 still 404 even with disk assets."""
     app = _shared_mount_app(
@@ -156,4 +172,4 @@ def test_caddyfile_production_only_private_reader_deny() -> None:
     assert "private_reader_api" not in staging
     assert "@private_reader_api" in prod
     assert "handle @private_reader_api" in prod
-    assert "2[6-9]" in prod
+    assert "3[6-9]" in prod

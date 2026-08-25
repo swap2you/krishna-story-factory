@@ -4,9 +4,10 @@
 tiers below are probed by this module:
 
 ``content_release``
-    Public Stories 001-020 (exact-eight files each), provisioned in CI by
-    downloading and verifying the approved ``bhava-content-001-020-v1`` GitHub
-    Release, and present naturally on an operator workstation.
+    Public Stories through the committed production pin in
+    ``deploy/content/RELEASE_CONTENT.json`` (exact-eight files each),
+    provisioned in CI by downloading and verifying the approved GitHub Release,
+    and present naturally on an operator workstation.
 
 ``local_archive``
     Pre-copyright drafts under ``output/_archive/``. These are superseded
@@ -34,7 +35,11 @@ OUTPUT = ROOT / "output"
 ARCHIVE = OUTPUT / "_archive" / "pre-copyright"
 QUEUE = ROOT / "tracking" / "queue_state.csv"
 
-PUBLIC_STORIES = tuple(f"{n:03d}" for n in range(1, 21))
+from tests.support.content_pin import production_public_story_max
+
+
+def public_stories() -> tuple[str, ...]:
+    return tuple(f"{n:03d}" for n in range(1, production_public_story_max() + 1))
 # Pre-copyright archives exist only for the original launch band.
 ARCHIVE_STORIES = tuple(f"{n:03d}" for n in range(1, 10))
 EXACT_EIGHT = frozenset(
@@ -66,7 +71,7 @@ def missing_public_content() -> list[str]:
     if not OUTPUT.is_dir():
         return [f"{OUTPUT} does not exist"]
     problems: list[str] = []
-    for story_no in PUBLIC_STORIES:
+    for story_no in public_stories():
         folder = public_package(story_no)
         if folder is None:
             problems.append(f"Story {story_no}: package directory missing or ambiguous")
@@ -97,7 +102,7 @@ TIERS = {
     "content_release": (
         missing_public_content,
         "BHAVA_REQUIRE_CONTENT",
-        "Public Stories 001-020 release content",
+        "Public Stories release content (committed production pin)",
     ),
     "local_archive": (
         missing_local_archives,

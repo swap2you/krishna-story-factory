@@ -1,0 +1,44 @@
+story_no: "028"
+kb_chapter: 20
+title: "Description of Autumn"
+source_url: "https://vedabase.io/en/library/kb/20/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  Krishna Book Ch.20 covers the rainy season and its transition into autumn, with
+  many devotional comparisons, Krishna and Balarama's forest life near Govardhana
+  and the Yamuna, clear autumn water and sky, lotuses, harvest/offerings where
+  source-supported, and movement toward the gopis' feeling of separation. Retell a
+  representative, coherent progression through both seasons. Do not invent farmer
+  dialogue, fruit-picking excursions, or specific events absent from the chapter.
+  If the adaptation is intentionally selective, label it "adapted from Chapter 20"
+  — never claim "Complete Chapter 20" for a selective retelling.
+required_events:
+  - "rainy season|monsoon|rains|rainy"
+  - "autumn|autumnal"
+  - "lotus|lotuses"
+  - "clear water|clear sky|pure water|clean water|crystal"
+  - "govardhana|govardhan|yamuna"
+  - "forest|vrindavana|vrndavana"
+  - "gopi|gopis|separation|separated"
+required_phrases:
+  - "krishna"
+  - "autumn"
+forbidden_phrases:
+  - "farmers, joyfully singing, worked together"
+  - "picked and sharing their treasures"
+  - "guavas, pomegranates"
+  - "fruit-picking"
+  - "fruit picking excursion"
+prohibited_contradictions:
+  - "invented (direct )?quotation|farmers.{0,30}(sang|singing|dialogue)"
+  - "complete (krishna book )?chapter 20.{0,80}(only autumn|autumn only|selective)"
+visual_restrictions:
+  - "gentle seasonal progression rainy-to-autumn; no invented action sequences"
+  - "Govardhana/Yamuna forest setting; lotuses and clear water when shown"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Balarāma: Balarama
+  Vṛndāvana: Vrindavana
+  Govardhana: Govardhana
+  Yamunā: Yamuna
+  gopī: gopi

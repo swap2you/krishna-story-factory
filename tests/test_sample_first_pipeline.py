@@ -63,13 +63,13 @@ def test_run_sample_first_writes_pass_before_full_tts(
     decision = MagicMock(status="READY", provider="elevenlabs", model_id=model_id, reason="")
     order: list[str] = []
 
-    def fake_sample(self, text, output_path):
+    def fake_sample(self, text, output_path, **_kwargs):
         order.append("sample")
         Path(output_path).write_bytes(b"ID3" + b"\x00" * 2000)
         self.last_provider = "elevenlabs"
         return "elevenlabs"
 
-    def fake_full(self, text, output_path):
+    def fake_full(self, text, output_path, **_kwargs):
         order.append("full")
         Path(output_path).write_bytes(b"ID3" + b"\x00" * 4000)
         self.last_provider = "elevenlabs"
@@ -269,11 +269,11 @@ def test_story_021_legacy_independent_audio_fails_exact_gate() -> None:
     assert repaired.status == "PASS", repaired.notes
 
 
-def test_public_story_max_is_025() -> None:
+def test_public_story_max_is_035() -> None:
     import json
 
     pin = json.loads((ROOT / "deploy/content/RELEASE_CONTENT.json").read_text(encoding="utf-8"))
-    assert int(pin["public_story_max"]) == 25
-    assert str(pin["tag"]).startswith("bhava-content-001-025-")
+    assert int(pin["public_story_max"]) == 35
+    assert str(pin["tag"]).startswith("bhava-content-001-035-")
     sitemap = (ROOT / "apps/web/app/sitemap.ts").read_text(encoding="utf-8")
     assert "PUBLIC_STORY_MAX" in sitemap

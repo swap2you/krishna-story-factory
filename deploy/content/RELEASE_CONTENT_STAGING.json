@@ -1,8 +1,8 @@
 {
-  "tag": "bhava-content-001-025-staging-v1",
-  "bundle": "bhava-content-001-025-staging-v1.tar.gz",
-  "sha256": "2dda0485a085f93d222a0ebd1d27b620df408990e7673a11b9603de68ff230a9",
-  "public_story_max": 25,
-  "note": "Staging Stories 001-025 content. Production RELEASE_CONTENT.json pins bhava-content-001-025-v1 / public_story_max=25; Story 026+ remains private.",
-  "base_content": "bhava-content-001-022-v1"
+  "tag": "bhava-content-001-035-staging-v1",
+  "bundle": "bhava-content-001-035-staging-v1.tar.gz",
+  "sha256": "e073df81d85ba9e873c7debb9ebbad449858ed6db65482905faf3bb9f7781e8e",
+  "public_story_max": 35,
+  "note": "Stage 1 private staging content Stories 001-035. Production RELEASE_CONTENT.json remains bhava-content-001-025-v1 / public_story_max=25. Stories 026-035 are private_staging_eligible only (publishable=false).",
+  "base_content": "bhava-content-001-025-staging-v1"
 }

@@ -1,0 +1,76 @@
+story_no: "034"
+kb_chapter: 26
+title: "Wonderful Krishna"
+source_url: "https://vedabase.io/en/library/kb/26/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  COMPLETE REWRITE from Krishna Book Ch.26 only — not from prior drafts.
+  Canonical setup occurs AFTER the Govardhana rescue. The cowherd men discuss
+  Krishna's extraordinary activities (Putana, the cart, Trinavarta, the twin trees,
+  Bakasura, Vatsasura, Dhenukasura, Pralambasura, the forest fire, Kaliya, and
+  Govardhana). They ask Nanda Maharaja how such a seven-year-old boy can perform
+  these wonders and why everyone is so naturally attracted to Him. Nanda recounts
+  Garga Muni's statements about Krishna's colors, names, prior identity as Vasudeva,
+  auspicious protection, and qualities like Vishnu/Narayana. Close with the cowherd
+  community satisfied and praying to remain under wonderful Krishna's protection.
+  STRICTLY PROHIBITED: presenting this chapter as life continuing under the lifted
+  hill; chanting or sharing food under the hill; re-narrating the storm as the main
+  plot (those belong to Ch.25 action, not Ch.26's retrospective discussion).
+required_events:
+  - "wonderful|astonishing|marvelous|wonders"
+  - "cowherd|vraja|vrindavana|friends of nanda"
+  - "seven|seven-year|seven years|seven year"
+  - "putana"
+  - "cart|hand-driven cart|kicked"
+  - "trinavarta|whirlwind"
+  - "yamala|arjuna|twin trees|two trees|mortar"
+  - "bakasura|baka"
+  - "vatsasura|vatsa"
+  - "dhenukasura|dhenuka"
+  - "pralambasura|pralamba"
+  - "forest fire"
+  - "kaliya"
+  - "govardhana|govardhan"
+  - "nanda"
+  - "garga|garga muni|gargacarya|gargacharya"
+  - "blackish|different colors|different colours|white color|red color|yellow color|vasudeva"
+  - "vishnu|visnu|narayana"
+  - "protect|protection|pray|prayed|satisfied|jubilant"
+required_phrases:
+  - "krishna"
+  - "nanda"
+  - "garga"
+forbidden_phrases:
+  - "life under the hill"
+  - "under the lifted hill"
+  - "chanting under the hill"
+  - "sharing food under the hill"
+  - "still holding the hill"
+  - "indra prayed"
+  - "indra fell at his feet"
+  - "surabhi bathed"
+prohibited_contradictions:
+  - "(life|living|stayed|remain(ed)?|chant(ing)?|shar(ed|ing) food|ate).{0,40}under.{0,20}(the )?(hill|govardhana)"
+  - "storm.{0,40}(main|began again)|samvartaka.{0,30}(returned|again)"
+  - "indra.{0,40}(prayer|prayed|prostrat|fell at)|surabhi.{0,30}abhisheka"
+visual_restrictions:
+  - "cowherd men gathered in discussion with Nanda after the rescue — not storm action"
+  - "retrospective wonder montage may recall pastimes without replaying Ch.25 storm as main scene"
+  - "no continuous life-under-the-hill tableau; no Surabhi abhisheka"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Nanda: Nanda
+  Garga Muni: Garga Muni
+  Gargācārya: Gargacharya
+  Pūtanā: Putana
+  Tṛṇāvarta: Trinavarta
+  Bakāsura: Bakasura
+  Vatsāsura: Vatsasura
+  Dhenukāsura: Dhenukasura
+  Pralambāsura: Pralambasura
+  Kāliya: Kaliya
+  Govardhana: Govardhana
+  Vāsudeva: Vasudeva
+  Viṣṇu: Vishnu
+  Nārāyaṇa: Narayana
+  Vṛndāvana: Vrindavana

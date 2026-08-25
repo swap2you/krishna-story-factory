@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session, selectinload
 from ..config import get_settings
 from ..models import Asset, Collection, Story
 from .filesystem import asset_media_type, discover_packages
-from .publish_gates import is_publicly_publishable
+from .publish_gates import is_catalog_indexable
 from .readiness import CatalogReadinessError, assert_public_scan_complete
 
 logger = logging.getLogger(__name__)
@@ -70,30 +70,36 @@ def index_packages(session: Session) -> IndexResult:
     packages = discover_packages(settings.output_root)
     # Public sites may share a content mount with private packages above max.
     # Index only stories within public_story_max so readiness stays hermetic.
-    publishable_packages = [
+    # Production indexes publishable only; staging/local may also index
+    # private_staging_eligible packages (production publishable remains false).
+    indexable_packages = [
         package
         for package in packages
-        if is_publicly_publishable(package)
+        if is_catalog_indexable(
+            package,
+            environment=settings.environment,
+            public_site=settings.public_site,
+        )
         and (
             not settings.public_site
             or _package_story_number(package) <= settings.public_story_max
         )
     ]
     try:
-        assert_public_scan_complete(len(publishable_packages), settings)
+        assert_public_scan_complete(len(indexable_packages), settings)
     except CatalogReadinessError:
         # Preserve last-known-good SQLite rows; never commit a destructive empty refresh.
         session.rollback()
         logger.error(
-            "catalog_incomplete_scan preserved_existing_catalog publishable=%s expected=%s",
-            len(publishable_packages),
+            "catalog_incomplete_scan preserved_existing_catalog indexable=%s expected=%s",
+            len(indexable_packages),
             settings.public_story_max,
         )
         raise
 
     seen: set[str] = set()
     result = IndexResult()
-    for package in publishable_packages:
+    for package in indexable_packages:
         manifest = package.manifest
         story_no = _normalize_story_no(manifest.get("chapter_no"))
         if not story_no or not manifest.get("slug") or not manifest.get("title"):

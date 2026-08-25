@@ -77,9 +77,16 @@ jobs:
         run: |
           PUBLIC_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
           CONTENT_TAG="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["tag"])')"
+          if [[ "${PUBLIC_MAX}" == "35" ]]; then
+            WEB_VERSION=001-035-v1
+          elif [[ "${PUBLIC_MAX}" == "25" ]]; then
+            WEB_VERSION=001-025-v1
+          else
+            WEB_VERSION=001-025-v1
+          fi
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${GITHUB_SHA} \
-            --build-arg BHAVA_WEB_VERSION=001-025-v1 \
+            --build-arg BHAVA_WEB_VERSION=${WEB_VERSION} \
             --build-arg BHAVA_CONTENT_RELEASE="${CONTENT_TAG}" \
             --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${GITHUB_SHA} .

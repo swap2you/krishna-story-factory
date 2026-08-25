@@ -1,0 +1,69 @@
+story_no: "029"
+kb_chapter: 21
+title: "The Gopis Attracted by the Flute"
+source_url: "https://vedabase.io/en/library/kb/21/"
+reviewer_state: pending_owner_content_review
+adaptation_notes: >
+  COMPLETE REWRITE from Krishna Book Ch.21 only — not from prior drafts.
+  Canonical setup: in beautiful autumn, Krishna and Balarama enter the forest with
+  cows and cowherd boys; Krishna plays His flute; the gopis remain in Vraja and
+  speak among themselves while remembering Him and describing the flute's effects.
+  Include a child-appropriate selection of effects on peacocks, deer, cows/calves,
+  birds, Yamuna, clouds, Govardhana, and moving/nonmoving beings. Preserve the
+  conclusion that remaining absorbed in thoughts of Krishna is the example of
+  Krishna consciousness. STRICTLY PROHIBITED (later rasa-lila chapters, not Ch.21):
+  night/moonlit rendezvous as the main setup; gopis leaving homes or duties; gopis
+  entering the forest to meet Krishna; Krishna meeting them there; Krishna teaching
+  them there. Keep attraction transcendental and child-safe — not ordinary romance.
+required_events:
+  - "autumn|autumnal"
+  - "forest|vrindavana|vrndavana"
+  - "cow|cows|cowherd"
+  - "balarama|balaram"
+  - "flute|fluting"
+  - "gopi|gopis"
+  - "vraja|in vraja|in the village"
+  - "among themselves|talking among|discuss|discussed|describing|remembered|remembering"
+  - "peacock|peacocks"
+  - "deer"
+  - "calf|calves"
+  - "bird|birds"
+  - "yamuna"
+  - "cloud|clouds"
+  - "govardhana|govardhan"
+  - "thought|thoughts|absorbed|krishna consciousness|remembering"
+required_phrases:
+  - "krishna"
+  - "flute"
+  - "gopis"
+forbidden_phrases:
+  - "boyfriend"
+  - "girlfriend"
+  - "dating"
+  - "left their homes"
+  - "left their duties"
+  - "went into the forest to meet"
+  - "met krishna in the forest at night"
+  - "moonlit rendezvous"
+  - "rasa dance"
+  - "rasa-lila"
+prohibited_contradictions:
+  - "night.{0,40}(rendezvous|meet|meeting|left home|left their)"
+  - "moonlit.{0,40}(rendezvous|meet|meeting|forest)"
+  - "gopi[s]?.{0,60}(left|leave|leaving).{0,40}(home|homes|duty|duties|house)"
+  - "gopi[s]?.{0,60}(enter|entered|went).{0,40}(forest|woods).{0,40}(meet|meeting|find)"
+  - "krishna.{0,40}(met|meets|taught|teaches|teaching).{0,40}gopi"
+  - "ordinary romance|romantic date|boyfriend|girlfriend"
+visual_restrictions:
+  - "daytime autumn forest: Krishna/Balarama with cows and boys playing flute"
+  - "gopis remain in Vraja discussing; do not show night forest rendezvous or gopis arriving to meet Krishna"
+  - "devotional mood; modest dress; not sensual"
+  - "may include peacocks, deer, cows/calves, birds, Yamuna, clouds, Govardhana reacting to flute"
+pronunciation_aliases:
+  Kṛṣṇa: Krishna
+  Balarāma: Balarama
+  gopī: gopi
+  Vṛndāvana: Vrindavana
+  Govardhana: Govardhana
+  Yamunā: Yamuna
+  Vraja: Vraja

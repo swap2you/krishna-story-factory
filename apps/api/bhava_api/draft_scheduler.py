@@ -216,13 +216,32 @@ def refuse_forbidden(action: str) -> dict[str, Any]:
 
 
 def asserts_no_story_generation_imports() -> None:
-    """Static safety: this module must not pull Story Factory pipeline symbols."""
-    import sys
+    """Static safety: this module must not import Story Factory pipeline symbols.
 
-    banned_prefixes = (
-        "krishna_story_factory.pipeline",
-        "krishna_story_factory.scheduler_simulate",
-    )
-    leaked = [name for name in sys.modules if name.startswith(banned_prefixes)]
+    Inspect this file's AST only. Do not scan global ``sys.modules`` — other tests
+    may legitimately load pipeline modules without this scheduler importing them.
+    """
+    import ast
+    from pathlib import Path
+
+    path = Path(__file__).resolve()
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    banned_roots = {
+        "krishna_story_factory",
+        "run_daily_story",
+        "factory_adapter",
+        "scheduler_simulate",
+    }
+    leaked: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                root = alias.name.split(".")[0]
+                if root in banned_roots or "pipeline" in alias.name:
+                    leaked.append(alias.name)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            root = node.module.split(".")[0]
+            if root in banned_roots or "pipeline" in node.module:
+                leaked.append(node.module)
     if leaked:
-        raise RuntimeError(f"draft_scheduler must not load story modules: {leaked}")
+        raise RuntimeError(f"draft_scheduler must not import story modules: {sorted(set(leaked))}")

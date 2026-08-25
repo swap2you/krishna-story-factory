@@ -196,6 +196,27 @@ def write_manifest(
         audio_source=str(manifest.get("audio_source") or ""),
         package_dir=paths.root,
     )
+    chapter_int = int(str(plan.chapter_no).lstrip("0") or "0")
+    public_max = int(getattr(settings, "public_story_max", 25) or 25)
+    is_private_story = chapter_int > public_max
+    package_technically_valid = bool(manifest["publishable"])
+    audio_stale_flag = bool(isinstance(audio_block, dict) and audio_block.get("audio_stale"))
+    manifest["package_technically_valid"] = package_technically_valid
+    manifest["public_release_eligible"] = package_technically_valid and not is_private_story
+    manifest["review"] = {
+        "content_status": "pending_owner_content_review",
+        "audio_status": "stale_revision_required" if audio_stale_flag else "pending_owner_audio_review",
+        "human_approval_complete": False,
+        "owner_content_approved": False,
+        "owner_audio_approved": False,
+    }
+    manifest["publication"] = {
+        "status": "privately_shared" if is_private_story else "review",
+        "catalog_exposure": "private" if is_private_story else "public",
+        "drive_review_only": is_private_story,
+    }
+    if is_private_story:
+        manifest["publishable"] = False
     # Never claim an exact seven-file Drive package.
     detail = str(manifest["package"].get("drive_detail") or "")
     if "seven file" in detail.lower() or "seven-file" in detail.lower():

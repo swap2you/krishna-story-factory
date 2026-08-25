@@ -446,7 +446,7 @@ def _footer(c: Canvas, plan: PlanRow, page: int) -> None:
     c.setFont(FONT_REGULAR, 8.5)
     _wrapped(c, plan.title, MARGIN, 0.55 * inch, 4.6 * inch, 8.5, 10)
     c.drawRightString(PAGE_W - MARGIN, 0.48 * inch, f"Page {page}")
-    year = first_publication_year({})
+    year = first_publication_year({}) or 2026
     c.setFont(FONT_REGULAR, 7.5)
     footer = compact_footer(year=year)
     c.drawCentredString(PAGE_W / 2, 0.28 * inch, footer)
@@ -799,33 +799,52 @@ def _render_emotion_map(c: Canvas, plan: PlanRow, activity: ActivityPack, page: 
 
 
 def _render_sequence_page(c: Canvas, plan: PlanRow, activity: ActivityPack, page: ActivityPage, y: float) -> None:
-    labels = [component_label(item) for item in page.components] or ["Event 1", "Event 2", "Event 3", "Event 4", "Event 5", "Event 6"]
+    labels = [component_label(item) for item in page.components] or [
+        "Event 1",
+        "Event 2",
+        "Event 3",
+        "Event 4",
+        "Event 5",
+        "Event 6",
+    ]
     for step in page.instructions[:2]:
         y = _wrapped(c, f"• {step}", MARGIN, y, PAGE_W - 2 * MARGIN)
         y -= 0.04 * inch
+    # Up to 8 cards (4 rows × 2 cols). Shrink card height when more than 6.
+    count = min(8, len(labels))
+    if count <= 6:
+        card_h = 1.7 * inch
+        row_pitch = 1.95 * inch
+        top = 6.15 * inch
+        font_size, leading, max_lines = 8.5, 10, 10
+    else:
+        card_h = 1.22 * inch
+        row_pitch = 1.38 * inch
+        top = 6.05 * inch
+        font_size, leading, max_lines = 7.5, 9, 8
     c.setDash(4, 3)
-    card_h = 1.7 * inch
-    for i, label in enumerate(labels[:6]):
+    for i, label in enumerate(labels[:count]):
         row, col = divmod(i, 2)
         x = MARGIN + col * 3.65 * inch
-        yy = 6.15 * inch - row * 1.95 * inch
+        yy = top - row * row_pitch
         c.roundRect(x, yy, 3.25 * inch, card_h, 8, stroke=1, fill=0)
         c.setDash()
-        c.rect(x + 0.12 * inch, yy + card_h - 0.48 * inch, 0.32 * inch, 0.32 * inch, stroke=1, fill=0)
+        box = 0.28 * inch if count > 6 else 0.32 * inch
+        c.rect(x + 0.12 * inch, yy + card_h - box - 0.12 * inch, box, box, stroke=1, fill=0)
         # Draw the complete event sentence (no 3-line clip).
         _wrapped_font(
             c,
             label,
             x + 0.52 * inch,
-            yy + card_h - 0.28 * inch,
+            yy + card_h - 0.22 * inch,
             2.6 * inch,
             font=FONT_BOLD,
-            size=8.5,
-            leading=10,
-            max_lines=10,
+            size=font_size,
+            leading=leading,
+            max_lines=max_lines,
         )
-        c.setFont(FONT_REGULAR, 8.5)
-        c.drawString(x + 0.52 * inch, yy + 0.16 * inch, "Number + draw one detail")
+        c.setFont(FONT_REGULAR, 8.0 if count > 6 else 8.5)
+        c.drawString(x + 0.52 * inch, yy + 0.12 * inch, "Number + draw one detail")
         c.setDash(4, 3)
     c.setDash()
 

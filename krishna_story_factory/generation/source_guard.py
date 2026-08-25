@@ -86,14 +86,46 @@ def source_fact_brief(plan: PlanRow) -> str:
             "already defeated before this story; Chapter 7 or 8 material as main content; "
             "claiming the Pūtanā episode alone made Śukadeva a devotee."
         )
+    if plan.chapter_no == "026":
+        brief += (
+            "\nSTORY 026 HARD BOUNDARY (Krishna Book Ch. 18 — Pralambāsura): "
+            "Balarāma's party (with Śrīdāmā and Vṛṣabha) WON the game; Krishna's party lost and "
+            "carried the winners. Krishna carried Śrīdāmā; Bhadrasena carried Vṛṣabha. "
+            "Pralambāsura carried Balarāma away, revealed his demon form, and was killed by "
+            "Balarāma's fist. FORBIDDEN: Krishna's team winning; Balarāma deliberately becoming "
+            "heavier; invented direct quotations."
+        )
+    if plan.chapter_no == "027":
+        brief += (
+            "\nSTORY 027 HARD BOUNDARY (Krishna Book Ch. 19 — Forest Fire): "
+            "Unattended goats/cows/buffalo wandered into Īṣīkāṭavī for fresh grass; they cried "
+            "when they saw the forest fire. Boys noticed animals missing, followed hoofprints and "
+            "eaten grass. Krishna called cows by name; cows answered. Fire surrounded animals and "
+            "boys; they appealed to Krishna and Balarāma; Krishna SWALLOWED the flames. When boys "
+            "opened eyes, they were again in Bhāṇḍīra forest; returned to Vṛndāvana in evening. "
+            "FORBIDDEN: hide-and-seek as cause; 'not a leaf was burned'; Krishna blowing fire outward."
+        )
+    if plan.chapter_no == "028":
+        brief += (
+            "\nSTORY 028 HARD BOUNDARY (Krishna Book Ch. 20 — Autumn): "
+            "Rainy season transitions to autumn with source comparisons (lakes, lotuses, minds, etc.). "
+            "Distinguish source observations from connective narration. "
+            "FORBIDDEN: invented farmer interactions, excursions, foods, or dialogue as canonical fact."
+        )
     return brief
 
 
 def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
     errors: list[str] = []
     # Boundary checks apply to the episode narrative, not next-preview / parent notes.
-    story = f"{content.recap}\n{content.main_story}\n{content.devotional_meaning}".lower()
-    narration = content.audio_script.lower()
+    import unicodedata
+
+    def _fold(s: str) -> str:
+        s = unicodedata.normalize("NFKD", s or "")
+        return "".join(c for c in s if not unicodedata.combining(c))
+
+    story = _fold(f"{content.recap}\n{content.main_story}\n{content.devotional_meaning}").lower()
+    narration = _fold(content.audio_script).lower()
     if content.next_story_preview:
         narration = narration.replace(content.next_story_preview.lower(), " ")
     combined = f"{story}\n{narration}"
@@ -102,6 +134,9 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
         if needle in story or needle in narration:
             errors.append(f"Source boundary violation: forbidden later/unrelated event {phrase!r}.")
     for pastime in UNRELATED_PASTIMES:
+        # Story 034 (KB Ch.26) retrospectively names prior pastimes including Pūtanā.
+        if plan.chapter_no == "034":
+            continue
         if pastime in combined and pastime not in plan.summary_seed.lower() and pastime not in plan.must_include.lower():
             errors.append(f"Unrelated pastime appears outside the selected source boundary: {pastime}.")
     if plan.chapter_no == "001":
@@ -371,6 +406,52 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
                     errors.append(msg)
             elif needle not in main_only and needle != "gigantic":
                 errors.append(msg)
+    if plan.chapter_no in {f"{n:03d}" for n in range(26, 36)}:
+        from pathlib import Path as _Path
+
+        from ..content.source_dossiers import load_dossier, validate_dossier_text
+
+        root = _Path(__file__).resolve().parents[2]
+        dossier = load_dossier(root, plan.chapter_no)
+        if dossier is not None:
+            errors.extend(validate_dossier_text(dossier, combined))
+    if plan.chapter_no == "026":
+        if re.search(r"krishna.{0,30}team.{0,30}won", combined, re.I):
+            errors.append("Story 026: Krishna's team must not win; Balarāma's party won (Ch.18).")
+        if "deliberately grew heavier" in combined or "grew heavier and heavier" in combined:
+            errors.append("Story 026: unsupported claim that Balarāma deliberately became heavier.")
+        _require(combined, ("balarama", "balarama"), "Story 026 must name Balarāma.", errors)
+        _require(combined, ("pralamb",), "Story 026 must name Pralambāsura.", errors)
+        _require(combined, ("sridama", "śrīdāmā"), "Story 026 must include Śrīdāmā.", errors)
+        _require(combined, ("vrishabha", "vṛṣabha", "vrsabha"), "Story 026 must include Vṛṣabha.", errors)
+        _require(combined, ("bhadrasena",), "Story 026 must include Bhadrasena carrying Vṛṣabha.", errors)
+        _require(combined, ("fist", "blow", "struck"), "Story 026 must describe Balarāma's fist killing Pralambāsura.", errors)
+    if plan.chapter_no == "027":
+        if "hide and seek" in combined or "hide-and-seek" in combined:
+            errors.append("Story 027: hide-and-seek is not the canonical setup (Ch.19).")
+        if "not a leaf was burned" in combined:
+            errors.append("Story 027: unsupported claim 'not a leaf was burned'.")
+        _require(combined, ("isikatavi", "īṣīkāṭavī", "ishikatavi"), "Story 027 must mention Īṣīkāṭavī.", errors)
+        _require(combined, ("hoofprint", "hoof print", "hoofprints"), "Story 027 must mention following hoofprints.", errors)
+        _require(combined, ("swallow", "devour", "devouring"), "Story 027 must say Krishna swallowed/devoured the fire.", errors)
+        _require(combined, ("bhandira", "bhāṇḍīra"), "Story 027 must return to Bhāṇḍīra forest.", errors)
+    if plan.chapter_no == "028":
+        if "farmers, joyfully singing" in combined:
+            errors.append("Story 028: invented farmer interaction presented as canonical fact.")
+    if plan.chapter_no == "029":
+        if re.search(r"gopi[s]?.{0,60}(left|leave|leaving).{0,40}(home|homes|duty|duties)", combined, re.I):
+            errors.append("Story 029: gopīs must remain in Vraja; they do not leave home in Ch.21.")
+        if re.search(r"night.{0,40}(rendezvous|meet|meeting)", combined, re.I):
+            errors.append("Story 029: night rendezvous/meeting is not Chapter 21.")
+        _require(combined, ("flute",), "Story 029 must include Krishna's flute.", errors)
+        _require(combined, ("gopi", "gopī"), "Story 029 must include the gopīs.", errors)
+        _require(combined, ("discuss", "talk", "describ", "remember"), "Story 029 must show gopīs discussing/remembering.", errors)
+    if plan.chapter_no == "034":
+        if re.search(r"(life|living|chanting|sharing food).{0,40}under.{0,20}(the )?(hill|govardhana)", combined, re.I):
+            errors.append("Story 034: must not present life under the hill as the main plot.")
+        _require(combined, ("nanda",), "Story 034 must include Nanda.", errors)
+        _require(combined, ("garga",), "Story 034 must include Garga Muni.", errors)
+        _require(combined, ("putana", "pūtanā"), "Story 034 must recall Pūtanā among the wonders.", errors)
     return errors
 
 

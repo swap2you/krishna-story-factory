@@ -74,16 +74,20 @@ def test_stories_001_007_file_hashes_match_baseline(baseline: dict) -> None:
 
 
 @pytest.mark.local_runtime
-def test_queue_021_pending_after_020_release(baseline: dict) -> None:
-    """Stories 001–020 released — assert 021 is next pending and 020 is done."""
+def test_queue_public_baseline_complete_next_pending_after_025(baseline: dict) -> None:
+    """Stories 001–025 public baseline done; next pending is derived from live queue."""
     rows = list(csv.DictReader(QUEUE.open(encoding="utf-8")))
     by_chapter = {str(row["chapter_no"]).zfill(3): row["status"] for row in rows}
-    assert by_chapter.get("020") == "done", (
-        f"Story 020 must be done; found status={by_chapter.get('020')!r}"
+    assert by_chapter.get("025") == "done", (
+        f"Story 025 must be done; found status={by_chapter.get('025')!r}"
     )
-    assert by_chapter.get("021") == "pending", (
-        f"Story 021 must remain pending; found status={by_chapter.get('021')!r}"
-    )
+    for n in range(1, 26):
+        assert by_chapter.get(f"{n:03d}") == "done", f"{n:03d}"
+    pending = [
+        ch for ch, status in sorted(by_chapter.items()) if status == "pending" and int(ch) > 25
+    ]
+    assert pending, "Expected pending private story after public ceiling 25"
+    assert int(pending[0]) >= 26
 
 
 def test_factory_actions_not_forced_true_in_env_example() -> None:
