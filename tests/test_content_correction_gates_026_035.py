@@ -130,7 +130,15 @@ def test_030_narration_has_no_editorial_markers() -> None:
     assert data["review"]["senior_devotional_review_complete"] is False
 
 
-def test_027_visual_brief_requires_inward_fire() -> None:
+def test_033_has_no_unsupported_night_sleep_scene() -> None:
+    narr = _narration("033")
+    story = _draft_text("033")
+    banned = "The cowherd community slept that night under a clear sky"
+    assert banned not in narr
+    assert banned not in story
+    assert "returned home" in narr.lower() or "returned home" in story.lower()
+    assert "chanted" in narr.lower() or "gopīs chanted" in story.lower() or "gopis chanted" in story.lower()
+
     path = DRAFTS / "027" / "visual_briefs.md"
     if not path.is_file():
         pytest.skip("Visual briefs not built")
@@ -139,10 +147,10 @@ def test_027_visual_brief_requires_inward_fire() -> None:
 
 
 def test_narration_length_within_series_baseline() -> None:
-    """001–025 median ~809 words; drafts must land in ±20% (647–970)."""
+    """Target ~700–850 spoken words; allow 600–900 when source requires shorter/longer."""
     for story_no in [f"{n:03d}" for n in range(26, 36)]:
         words = len(_narration(story_no).split())
-        assert 647 <= words <= 970, f"{story_no} narration words={words}"
+        assert 600 <= words <= 900, f"{story_no} narration words={words}"
 
 
 def test_preferred_packs_026_035_not_generic() -> None:
