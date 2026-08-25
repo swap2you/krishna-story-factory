@@ -9,6 +9,19 @@ export async function fetchStories(request: APIRequestContext) {
   return (await response.json()) as Array<{ story_no: string; title: string; poster_url?: string }>;
 }
 
+export async function fetchPublicStoryMax(request: APIRequestContext): Promise<number> {
+  const response = await request.get(`${apiURL}/version`);
+  expect(response.ok()).toBeTruthy();
+  const payload = (await response.json()) as { public_story_max?: number };
+  const max = Number(payload.public_story_max);
+  expect(Number.isFinite(max) && max >= 1).toBeTruthy();
+  return max;
+}
+
+export function storyNumbers(max: number): string[] {
+  return Array.from({ length: max }, (_, index) => String(index + 1).padStart(3, "0"));
+}
+
 export async function expectNoCriticalAxe(page: Page) {
   // Lazy import so unit tooling without browsers still loads helpers.
   // Wait for network settle so Firefox axe on heavier routes (/faq) is deterministic.

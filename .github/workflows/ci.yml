@@ -192,13 +192,20 @@ jobs:
 
       - uses: ./.github/actions/provision-content
 
+      - name: Resolve public story ceiling from committed pin
+        id: pin
+        shell: bash
+        run: |
+          PUBLIC_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
+          echo "public_max=${PUBLIC_MAX}" >> "$GITHUB_OUTPUT"
+
       - name: Start public production API
         env:
           BHAVA_OUTPUT_ROOT: ${{ github.workspace }}/output
           BHAVA_WEB_ASSETS_ROOT: ${{ github.workspace }}/data/web-assets
           BHAVA_CATALOG_DB: ${{ runner.temp }}/bhava-public.sqlite
           BHAVA_PUBLIC_SITE: "1"
-          BHAVA_PUBLIC_STORY_MAX: "25"
+          BHAVA_PUBLIC_STORY_MAX: ${{ steps.pin.outputs.public_max }}
           BHAVA_ENFORCE_LOOPBACK: "0"
           BHAVA_FACTORY_ACTIONS_ENABLED: "0"
           BHAVA_ALLOWED_HOSTS: 127.0.0.1,localhost
@@ -210,11 +217,14 @@ jobs:
             curl -sf http://127.0.0.1:8000/healthz >/dev/null && break
             sleep 1
           done
-          curl -sf http://127.0.0.1:8000/api/v1/stories | python -c "import json,sys; assert [s['story_no'] for s in json.load(sys.stdin)] == [f'{n:03d}' for n in range(1,26)]"
+          PUBLIC_MAX="${{ steps.pin.outputs.public_max }}"
+          curl -sf http://127.0.0.1:8000/api/v1/stories | PUBLIC_MAX="${PUBLIC_MAX}" python -c "import json,sys,os; max_story=int(os.environ['PUBLIC_MAX']); data=json.load(sys.stdin); assert [s['story_no'] for s in data] == [f'{n:03d}' for n in range(1,max_story+1)]"
 
       - name: Build and start public production web
         env:
           BHAVA_PUBLIC_SITE: "1"
+          BHAVA_PUBLIC_STORY_MAX: ${{ steps.pin.outputs.public_max }}
+          NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX: ${{ steps.pin.outputs.public_max }}
           BHAVA_API_ORIGIN: http://127.0.0.1:8000
           BHAVA_API_URL: http://127.0.0.1:8000/api/v1
           BHAVA_WEB_URL: http://127.0.0.1:3000

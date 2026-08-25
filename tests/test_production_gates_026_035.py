@@ -14,6 +14,8 @@ from bhava_api.catalog.publish_gates import (
     is_publicly_publishable,
 )
 
+pytestmark = pytest.mark.content_release
+
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "output"
 STAGING_NOTE = "Private staging review. Production publication requires owner approval."

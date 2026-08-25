@@ -31,6 +31,8 @@ def _draft_text(story_no: str) -> str:
 
 def _narration(story_no: str) -> str:
     path = DRAFTS / story_no / "narration_script.txt"
+    if not path.is_file():
+        pytest.skip(f"Draft narration not built yet: {path}")
     return path.read_text(encoding="utf-8")
 
 

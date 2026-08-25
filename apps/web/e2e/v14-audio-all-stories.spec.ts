@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { fetchStories } from "./helpers";
+import { fetchPublicStoryMax, fetchStories } from "./helpers";
 
 test.describe("published-story audio advancement", () => {
   test("catalog-driven play advances currentTime for every published story", async ({ page, request }, testInfo) => {
@@ -8,17 +8,20 @@ test.describe("published-story audio advancement", () => {
       testInfo.project.name.includes("mobile") && testInfo.project.name.includes("webkit"),
       "iOS WebKit autoplay policy",
     );
-    // Desktop WebKit is slower for sequential MP3 blob priming across twenty stories.
+    // Desktop WebKit is slower for sequential MP3 blob priming across many stories.
     if (testInfo.project.name === "webkit-desktop") {
       test.setTimeout(10 * 60_000);
     }
+    const max = await fetchPublicStoryMax(request);
     const stories = await fetchStories(request);
-    expect(stories.length).toBe(25);
+    expect(stories.length).toBe(max);
     const storyNos = stories.map((s) => String(s.story_no).padStart(3, "0"));
-    expect(storyNos).toContain("025");
-    expect(storyNos).not.toContain("026");
+    expect(storyNos).toContain(String(max).padStart(3, "0"));
+    expect(storyNos).not.toContain(String(max + 1).padStart(3, "0"));
     // Full-matrix audio coverage would exceed CI budgets; sample edges + mid-band.
-    const sample = ["001", "005", "010", "015", "020", "025"].filter((n) => storyNos.includes(n));
+    const sample = ["001", "005", "010", "015", "020", String(max).padStart(3, "0")].filter((n) =>
+      storyNos.includes(n),
+    );
 
     for (const storyNo of sample) {
       await page.goto(`/stories/${storyNo}`);

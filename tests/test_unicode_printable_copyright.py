@@ -11,6 +11,8 @@ import pytest
 from PIL import Image, ImageDraw
 from pypdf import PdfReader
 
+from tests.support.content_pin import production_public_story_max
+
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = (
     "story.md",
@@ -129,14 +131,22 @@ def test_image_credit_strip_unicode_and_no_duplicate() -> None:
 
 
 @pytest.mark.content_release
-def test_story_026_absent_from_public_content() -> None:
+def test_story_beyond_public_ceiling_absent_from_public_content() -> None:
     import os
 
-    assert list((ROOT / "output").glob("023_*")), "Story 023 must be present in public content 001-025"
-    assert list((ROOT / "output").glob("024_*")), "Story 024 must be present in public content 001-025"
-    assert list((ROOT / "output").glob("025_*")), "Story 025 must be present in public content 001-025"
+    max_story = production_public_story_max()
+    assert list((ROOT / "output").glob("023_*")), "Story 023 must be present in public content"
+    assert list((ROOT / "output").glob("024_*")), "Story 024 must be present in public content"
+    assert list((ROOT / "output").glob("025_*")), "Story 025 must be present in public content"
+    if max_story >= 26:
+        assert list((ROOT / "output").glob("026_*")), "Story 026 must be present when max >= 26"
+    if max_story >= 35:
+        assert list((ROOT / "output").glob("035_*")), "Story 035 must be present when max >= 35"
     if os.getenv("GITHUB_ACTIONS"):
-        assert not list((ROOT / "output").glob("026_*")), "Story 026 must remain excluded from public content"
+        next_private = max_story + 1
+        assert not list((ROOT / "output").glob(f"{next_private:03d}_*")), (
+            f"Story {next_private:03d} must remain excluded from public content"
+        )
 
 
 @pytest.mark.local_runtime

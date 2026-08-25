@@ -32,7 +32,7 @@ EXPECTED_CONTENT_RELEASE = {
     "tests/portal/test_public_rights_contract.py::test_public_reader_rights_section_contract",
     "tests/portal/test_public_rights_contract.py::test_public_web_manifest_rights_contract",
     "tests/portal/test_v11_safety_baseline.py::test_stories_001_007_file_hashes_match_baseline",
-    "tests/test_launch_story_hash_guard.py::test_story_026_absent_from_output",
+    "tests/test_launch_story_hash_guard.py::test_story_beyond_public_ceiling_absent_from_output",
     "tests/test_poster_text_glyphs.py::test_already_credited_poster_is_not_accepted_as_a_master",
     "tests/test_poster_text_glyphs.py::test_band_and_corrected_chapters_are_discovered",
     "tests/test_poster_text_glyphs.py::test_story_007_poster_caption_keeps_its_diacritics",
@@ -41,7 +41,7 @@ EXPECTED_CONTENT_RELEASE = {
     "tests/test_publication_copyright.py::test_retrofitted_packages_have_rights_and_exact_eight",
     "tests/test_unicode_printable_copyright.py::test_public_packages_version_and_exact_eight",
     "tests/test_unicode_printable_copyright.py::test_public_pdf_has_footer_on_all_activity_pages",
-    "tests/test_unicode_printable_copyright.py::test_story_026_absent_from_public_content",
+    "tests/test_unicode_printable_copyright.py::test_story_beyond_public_ceiling_absent_from_public_content",
 } | {
     f"tests/test_launch_story_hash_guard.py::test_launch_story_hashes_unchanged[{n:03d}]"
     for n in range(1, 10)
@@ -66,6 +66,17 @@ EXPECTED_CONTENT_RELEASE = {
         "test_narration_and_narrative_survive_the_correction",
         "test_only_poster_story_and_manifest_changed",
     )
+} | {
+    f"tests/test_production_gates_026_035.py::test_026_035_production_publishable[{n:03d}]"
+    for n in range(26, 36)
+} | {
+    f"tests/test_production_gates_026_035.py::test_026_035_story_md_has_no_staging_process_wording[{n:03d}]"
+    for n in range(26, 36)
+} | {
+    "tests/test_production_gates_026_035.py::test_030_senior_review_not_falsely_complete",
+    "tests/test_production_gates_026_035.py::test_030_poster_child_safety_attestation",
+    "tests/test_production_gates_026_035.py::test_029_poster_hash_matches_disk",
+    "tests/test_production_gates_026_035.py::test_staging_eligibility_still_works_for_private_staging_gate",
 }
 
 # Needs output/_archive/pre-copyright/**: superseded devotional drafts that were
