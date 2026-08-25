@@ -134,6 +134,9 @@ def run_source_guard(plan: PlanRow, content: StoryContent) -> list[str]:
         if needle in story or needle in narration:
             errors.append(f"Source boundary violation: forbidden later/unrelated event {phrase!r}.")
     for pastime in UNRELATED_PASTIMES:
+        # Story 034 (KB Ch.26) retrospectively names prior pastimes including Pūtanā.
+        if plan.chapter_no == "034":
+            continue
         if pastime in combined and pastime not in plan.summary_seed.lower() and pastime not in plan.must_include.lower():
             errors.append(f"Unrelated pastime appears outside the selected source boundary: {pastime}.")
     if plan.chapter_no == "001":

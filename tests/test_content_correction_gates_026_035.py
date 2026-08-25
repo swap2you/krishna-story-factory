@@ -207,7 +207,9 @@ def test_stale_audio_when_script_changes() -> None:
         pytest.skip("No output package for 026")
     narr = _narration("026")
     stale, detail = detect_audio_stale(audio_script=narr, manifest_path=out / "manifest.json")
-    assert stale, detail
+    assert not stale, detail
+    stale2, _ = detect_audio_stale(audio_script=narr + "\nExtra line.", manifest_path=out / "manifest.json")
+    assert stale2
 
 
 def test_private_story_manifest_draft_semantics() -> None:

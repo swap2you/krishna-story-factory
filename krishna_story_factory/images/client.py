@@ -178,6 +178,7 @@ class ImageClient:
         b64 = getattr(first, "b64_json", None)
         if not b64:
             raise ColoringAPIError("COLORING_API_ERROR", "OpenAI image response did not include base64 image data.")
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_bytes(base64.b64decode(b64))
 
 
