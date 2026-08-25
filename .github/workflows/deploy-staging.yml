@@ -439,17 +439,22 @@ jobs:
           ver="$(curl -fsS "${AUTH[@]}" "${BASE}/api/v1/version")"
           echo "$ver"
           echo "$ver" | grep -F "${RELEASE_SHA}" >/dev/null
-          code_catalog="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories")"
-          [[ "$code_catalog" == "200" ]]
+          code_catalog="$(curl -sS -L "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories")"
+          code_api_list="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories")"
+          echo "catalog_page=${code_catalog} catalog_api=${code_api_list}"
+          [[ "$code_catalog" == "200" && "$code_api_list" == "200" ]]
           for n in $(seq 26 35); do
             sn="$(printf '%03d' "$n")"
-            page="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories/${sn}")"
+            page="$(curl -sS -L "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories/${sn}")"
             api="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories/${sn}")"
             audio="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories/${sn}/assets/narration.mp3")"
             echo "${sn} page=${page} api=${api} audio=${audio}"
-            [[ "$page" == "200" && "$api" == "200" && "$audio" == "200" ]]
+            if [[ "$page" != "200" || "$api" != "200" || "$audio" != "200" ]]; then
+              echo "ROUTE_FAIL ${sn}" >&2
+              exit 1
+            fi
           done
-          p036="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories/036")"
+          p036="$(curl -sS -L "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories/036")"
           a036="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories/036")"
           echo "036 page=${p036} api=${a036}"
           [[ "$p036" == "404" && "$a036" == "404" ]]
