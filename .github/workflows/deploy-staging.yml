@@ -287,9 +287,18 @@ jobs:
         run: |
           git fetch origin main
           PROD_SHA="$(git rev-parse origin/main)"
+          if [[ "${PUBLIC_MAX}" == "35" ]]; then
+            STAGING_WEB_VERSION=001-035-staging
+          elif [[ "${PUBLIC_MAX}" == "25" ]]; then
+            STAGING_WEB_VERSION=001-025-staging
+          elif [[ "${PUBLIC_MAX}" == "22" ]]; then
+            STAGING_WEB_VERSION=001-022-staging
+          else
+            STAGING_WEB_VERSION=001-025-staging
+          fi
           docker build -f deploy/ionos/Dockerfile.web \
             --build-arg RELEASE_SHA=${RELEASE_SHA} \
-            --build-arg BHAVA_WEB_VERSION=001-025-staging \
+            --build-arg BHAVA_WEB_VERSION=${STAGING_WEB_VERSION} \
             --build-arg BHAVA_CONTENT_RELEASE=${CONTENT_TAG} \
             --build-arg NEXT_PUBLIC_BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
             -t bhava-web:${RELEASE_SHA} .
@@ -391,7 +400,7 @@ jobs:
                BHAVA_CONTENT_RELEASE=${PROD_TAG} \
                BHAVA_STAGING_CONTENT_RELEASE=${CONTENT_TAG} \
                BHAVA_STAGING_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
-               BHAVA_STAGING_WEB_VERSION=001-025-staging && \
+               BHAVA_STAGING_WEB_VERSION=$(if [[ "${PUBLIC_MAX}" == "35" ]]; then echo 001-035-staging; elif [[ "${PUBLIC_MAX}" == "22" ]]; then echo 001-022-staging; else echo 001-025-staging; fi) && \
              cd /opt/bhava/config && \
              docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production && \
              sleep 8 && \

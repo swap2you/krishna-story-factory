@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from ..config import Settings
 from ..models import Story
 from .filesystem import discover_packages
-from .publish_gates import is_publicly_publishable
+from .publish_gates import is_catalog_indexable, is_publicly_publishable
 
 
 class CatalogReadinessError(RuntimeError):
@@ -26,7 +26,7 @@ class CatalogSnapshot:
 
 
 def count_publishable_packages(output_root=None, public_story_max: int | None = None) -> tuple[int, int]:
-    """Return (discovered_complete_packages, publishable_packages within public max)."""
+    """Return (discovered_complete_packages, production-publishable packages within max)."""
     packages = discover_packages(output_root)
     max_story = public_story_max
     publishable = 0
@@ -41,17 +41,42 @@ def count_publishable_packages(output_root=None, public_story_max: int | None = 
     return len(packages), publishable
 
 
+def count_indexable_packages(
+    output_root=None,
+    *,
+    public_story_max: int | None = None,
+    environment: str = "development",
+    public_site: bool = False,
+) -> tuple[int, int]:
+    """Return (discovered_complete_packages, catalog-indexable packages within max)."""
+    packages = discover_packages(output_root)
+    max_story = public_story_max
+    indexable = 0
+    for package in packages:
+        if not is_catalog_indexable(package, environment=environment, public_site=public_site):
+            continue
+        if max_story is not None:
+            digits = "".join(ch for ch in str(package.manifest.get("chapter_no") or "") if ch.isdigit())
+            if not digits or int(digits) > max_story:
+                continue
+        indexable += 1
+    return len(packages), indexable
+
+
 def catalog_snapshot(session: Session, settings: Settings) -> CatalogSnapshot:
     max_for_count = settings.public_story_max if settings.public_site else None
-    discovered, publishable = count_publishable_packages(
-        settings.output_root, public_story_max=max_for_count
+    discovered, indexable = count_indexable_packages(
+        settings.output_root,
+        public_story_max=max_for_count,
+        environment=settings.environment,
+        public_site=settings.public_site,
     )
     indexed = int(session.scalar(select(func.count()).select_from(Story)) or 0)
     first = session.scalar(select(Story.story_no).order_by(Story.story_no))
     last = session.scalar(select(Story.story_no).order_by(Story.story_no.desc()))
     return CatalogSnapshot(
         discovered_package_count=discovered,
-        publishable_package_count=publishable,
+        publishable_package_count=indexable,
         indexed_story_count=indexed,
         first_story=first,
         last_story=last,
