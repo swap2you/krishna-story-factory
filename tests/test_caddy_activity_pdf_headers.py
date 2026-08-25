@@ -26,7 +26,7 @@ def test_caddyfile_allows_same_origin_activity_pdf_embed_only() -> None:
 def test_caddyfile_keeps_private_story_boundary() -> None:
     text = CADDYFILE.read_text(encoding="utf-8")
     assert "private_story" in text
-    assert "2[6-9]" in text
+    assert "3[6-9]" in text
     # Split matchers (not a nested `or {` block) so stock caddy:2.10-alpine can start.
     assert "respond @private_paths 404" in text
     assert "respond @private_story 404" in text
@@ -41,7 +41,7 @@ def test_caddyfile_production_blocks_private_reader_api() -> None:
     assert "@private_reader_api" in prod
     assert "handle @private_reader_api" in prod
     assert "respond 404" in prod
-    assert "2[6-9]" in prod  # deny starts at Story 026 after 001-025 public release
+    assert "3[6-9]" in prod  # deny starts at Story 036 after 001-035 public release
     matcher = prod.split("@private_reader_api", 1)[1].split("handle @private_reader_api", 1)[0]
     assert "2[1-9]" not in matcher
     assert "2[3-9]" not in matcher

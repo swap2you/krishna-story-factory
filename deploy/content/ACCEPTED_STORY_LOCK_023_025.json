@@ -1,7 +1,7 @@
 {
   "schema": "bhava-accepted-story-lock-v1",
   "note": "Governed Stories 023–025 accepted-package lock for R00. Production public_story_max is 25 after bhava-content-001-025-v1. Story 026+ remains private. Controller authorizes objective acceptance of the exact current artifacts without regeneration.",
-  "public_story_max_production": 25,
+  "public_story_max_production": 35,
   "stories": {
     "023": {
       "slug": "krishna-protects-everyone-from-dhenukasura",

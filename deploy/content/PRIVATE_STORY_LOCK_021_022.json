@@ -1,7 +1,7 @@
 {
   "schema": "bhava-private-story-lock-v1",
   "note": "Governed Stories 021–022 accepted-package lock. Production public_story_max is 25 after bhava-content-001-025-v1. Story 026+ remains private.",
-  "public_story_max_production": 25,
+  "public_story_max_production": 35,
   "stories": {
     "021": {
       "slug": "the-stealing-of-the-boys-and-calves-by-brahma",

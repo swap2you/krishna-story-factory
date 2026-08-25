@@ -211,9 +211,11 @@ jobs:
           prod = json.loads(prod_path.read_text(encoding="utf-8"))
           # develop may already pin the upcoming 001-025 production release while
           # live production remains on an earlier pin until the promote deploy.
-          assert int(prod["public_story_max"]) in (20, 22, 25), prod
+          assert int(prod["public_story_max"]) in (20, 22, 25, 35), prod
           assert str(prod["tag"]).startswith("bhava-content-001-0"), prod
-          if int(prod["public_story_max"]) == 25:
+          if int(prod["public_story_max"]) == 35:
+              assert str(prod["tag"]).startswith("bhava-content-001-035-"), prod
+          elif int(prod["public_story_max"]) == 25:
               assert str(prod["tag"]).startswith("bhava-content-001-025-"), prod
           elif int(prod["public_story_max"]) == 22:
               assert str(prod["tag"]).startswith("bhava-content-001-022-"), prod
@@ -268,9 +270,11 @@ jobs:
           python3 - <<'PY'
           import json
           pin = json.load(open("deploy/content/RELEASE_CONTENT.json", encoding="utf-8"))
-          assert int(pin["public_story_max"]) in (20, 22, 25), pin
+          assert int(pin["public_story_max"]) in (20, 22, 25, 35), pin
           assert pin["tag"].startswith("bhava-content-001-0"), pin
-          if int(pin["public_story_max"]) == 25:
+          if int(pin["public_story_max"]) == 35:
+              assert pin["tag"].startswith("bhava-content-001-035-"), pin
+          elif int(pin["public_story_max"]) == 25:
               assert pin["tag"].startswith("bhava-content-001-025-"), pin
           elif int(pin["public_story_max"]) == 22:
               assert pin["tag"].startswith("bhava-content-001-022-"), pin
@@ -376,7 +380,9 @@ jobs:
           PROD_SHA="$(git rev-parse origin/main)"
           PROD_MAX="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["public_story_max"])')"
           PROD_TAG="$(python -c 'import json; print(json.load(open("deploy/content/RELEASE_CONTENT.json",encoding="utf-8"))["tag"])')"
-          if [[ "${PROD_MAX}" == "25" ]]; then
+          if [[ "${PROD_MAX}" == "35" ]]; then
+            PROD_WEB_VERSION=001-035-v1
+          elif [[ "${PROD_MAX}" == "25" ]]; then
             PROD_WEB_VERSION=001-025-v1
           elif [[ "${PROD_MAX}" == "22" ]]; then
             PROD_WEB_VERSION=001-022-v1

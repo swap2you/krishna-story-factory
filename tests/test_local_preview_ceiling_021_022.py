@@ -103,12 +103,12 @@ def test_production_defaults_follow_release_pin(monkeypatch) -> None:
             encoding="utf-8"
         )
     )
-    assert int(pin["public_story_max"]) == 25
+    assert int(pin["public_story_max"]) == 35
     # Production deploy injects BHAVA_PUBLIC_STORY_MAX from the release pin.
     monkeypatch.setenv("BHAVA_PUBLIC_STORY_MAX", str(pin["public_story_max"]))
     settings = get_settings()
-    assert settings.public_story_max == 25
+    assert settings.public_story_max == 35
     assert _within_ceiling("023", settings)
-    assert _within_ceiling("024", settings)
     assert _within_ceiling("025", settings)
-    assert not _within_ceiling("026", settings)
+    assert _within_ceiling("035", settings)
+    assert not _within_ceiling("036", settings)

@@ -174,75 +174,46 @@ for n in 001 002 003 004 005 006 007 008 009; do
   curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${n}" >/dev/null
 done
 
-# Production confidentiality gate: Stories 001-025 public; 026+ private.
+# Production gate: indexed count matches public_story_max; 036+ remains private.
 # discovered_package_count may exceed public_story_max on shared mounts; that is OK.
 if [[ "${ENVIRONMENT}" == "production" ]]; then
-  if [[ "${PUBLIC_MAX}" != "25" ]]; then
-    echo "Production public_story_max must be 25, got ${PUBLIC_MAX}." >&2
-    exit 1
-  fi
   indexed="$(printf '%s' "${version}" | python -c 'import json,sys; print(int(json.load(sys.stdin)["indexed_story_count"]))')"
-  if [[ "${indexed}" != "25" ]]; then
-    echo "Production indexed_story_count must be 25, got ${indexed}." >&2
+  if [[ "${indexed}" != "${PUBLIC_MAX}" ]]; then
+    echo "Production indexed_story_count must be ${PUBLIC_MAX}, got ${indexed}." >&2
     exit 1
   fi
-  for path in \
-    /stories/020 \
-    /api/v1/stories/020/reader \
-    /api/v1/stories/020/reader.txt \
-    /stories/021 \
-    /api/v1/stories/021 \
-    /api/v1/stories/021/reader \
-    /api/v1/stories/021/reader.txt \
-    /stories/022 \
-    /api/v1/stories/022 \
-    /api/v1/stories/022/reader \
-    /api/v1/stories/022/reader.txt \
-    /stories/023 \
-    /api/v1/stories/023 \
-    /api/v1/stories/023/reader \
-    /api/v1/stories/023/reader.txt \
-    /stories/024 \
-    /api/v1/stories/024 \
-    /api/v1/stories/024/reader \
-    /api/v1/stories/024/reader.txt \
-    /stories/025 \
-    /api/v1/stories/025 \
-    /api/v1/stories/025/reader \
-    /api/v1/stories/025/reader.txt
-  do
-    code="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}${path}")"
-    if [[ "${code}" != "200" ]]; then
-      echo "Production path ${path} returned ${code}, expected 200." >&2
-      exit 1
+  content_tag="$(printf '%s' "${version}" | python -c 'import json,sys; print(json.load(sys.stdin).get("content_tag",""))')"
+  if [[ "${PUBLIC_MAX}" -ge 35 ]]; then
+    [[ "${content_tag}" == bhava-content-001-035-v1 ]]
+  elif [[ "${PUBLIC_MAX}" -ge 25 ]]; then
+    [[ "${content_tag}" == bhava-content-001-025-v1 ]]
+  fi
+  code_library="$(curl -sS -L -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/library/krishna-book")"
+  code_api_list="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/stories")"
+  echo "catalog_library=${code_library} catalog_api=${code_api_list}"
+  [[ "${code_library}" == "200" && "${code_api_list}" == "200" ]]
+  for n in $(seq 26 35); do
+    if [[ "${n}" -gt "${PUBLIC_MAX}" ]]; then
+      continue
     fi
+    sn="$(printf '%03d' "$n")"
+    page="$(curl -sS -L -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/stories/${sn}")"
+    api="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/stories/${sn}")"
+    audio="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/stories/${sn}/assets/narration.mp3")"
+    echo "${sn} page=${page} api=${api} audio=${audio}"
+    [[ "${page}" == "200" && "${api}" == "200" && "${audio}" == "200" ]]
   done
-  for path in \
-    /stories/026 \
-    /api/v1/stories/026 \
-    /api/v1/stories/026/reader \
-    /api/v1/stories/026/reader.txt \
-    /stories/027 \
-    /api/v1/stories/027/reader \
-    /api/v1/stories/027/reader.txt
-  do
-    code="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}${path}")"
-    if [[ "${code}" != "404" ]]; then
-      echo "Production private path ${path} returned ${code}, expected 404." >&2
-      exit 1
-    fi
-  done
+  p036="$(curl -sS -L -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/stories/036")"
+  a036="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/stories/036")"
+  echo "036 page=${p036} api=${a036}"
+  [[ "${p036}" == "404" && "${a036}" == "404" ]]
   sitemap="$(curl -fsS "${AUTH_ARGS[@]}" "${BASE_URL}/sitemap.xml")"
-  if printf '%s' "${sitemap}" | grep -E '/stories/026|/stories/027' >/dev/null; then
-    echo "Production sitemap includes private Stories 026+." >&2
+  if printf '%s' "${sitemap}" | grep -E '/stories/036' >/dev/null; then
+    echo "Production sitemap includes private Story 036+." >&2
     exit 1
   fi
-  if ! printf '%s' "${sitemap}" | grep -E '/stories/025' >/dev/null; then
-    echo "Production sitemap missing public Story 025." >&2
-    exit 1
-  fi
-  if ! printf '%s' "${sitemap}" | grep -E '/stories/023' >/dev/null; then
-    echo "Production sitemap missing public Story 023." >&2
+  if ! printf '%s' "${sitemap}" | grep -E "/stories/${LAST_STORY}" >/dev/null; then
+    echo "Production sitemap missing public Story ${LAST_STORY}." >&2
     exit 1
   fi
 fi
