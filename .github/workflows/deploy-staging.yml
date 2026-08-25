@@ -439,10 +439,11 @@ jobs:
           ver="$(curl -fsS "${AUTH[@]}" "${BASE}/api/v1/version")"
           echo "$ver"
           echo "$ver" | grep -F "${RELEASE_SHA}" >/dev/null
-          code_catalog="$(curl -sS -L "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories")"
+          # Catalog surface is /library/krishna-book + /api/v1/stories (no /stories index page).
+          code_library="$(curl -sS -L "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/library/krishna-book")"
           code_api_list="$(curl -sS "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/api/v1/stories")"
-          echo "catalog_page=${code_catalog} catalog_api=${code_api_list}"
-          [[ "$code_catalog" == "200" && "$code_api_list" == "200" ]]
+          echo "catalog_library=${code_library} catalog_api=${code_api_list}"
+          [[ "$code_library" == "200" && "$code_api_list" == "200" ]]
           for n in $(seq 26 35); do
             sn="$(printf '%03d' "$n")"
             page="$(curl -sS -L "${AUTH[@]}" -o /dev/null -w '%{http_code}' "${BASE}/stories/${sn}")"
