@@ -94,6 +94,7 @@ install -d -m 0750 -o "${DEPLOY_USER}" -g "${DEPLOY_USER}" \
   /opt/bhava/releases/staging \
   /opt/bhava/content \
   /opt/bhava/content/releases \
+  /opt/bhava/content/releases/vani \
   /opt/bhava/backups
 # install -d leaves intermediate parents root-owned; normalize the tree.
 chown -R "${DEPLOY_USER}:${DEPLOY_USER}" /opt/bhava

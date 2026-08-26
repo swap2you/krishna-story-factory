@@ -443,7 +443,7 @@ jobs:
                  /opt/bhava/incoming/bhava-vani-krishna-book-dictations-complete-v1.tar.gz \
                  bhava-vani-krishna-book-dictations-complete-v1 \${VANI_SHA}; \
              else \
-               mkdir -p /opt/bhava/content/vani/current; \
+               mkdir -p /opt/bhava/content/releases/vani/current; \
              fi && \
              bash /opt/bhava/config/scripts/deploy-release.sh staging ${RELEASE_SHA} \
                /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz \
