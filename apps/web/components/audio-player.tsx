@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@bhava/ui";
+import { isAllowlistedAudioUrl } from "@/lib/audio-url";
 
 type Props = {
   src: string;
@@ -73,16 +74,6 @@ function absoluteUrl(src: string): string {
     return new URL(src, window.location.origin).href;
   } catch {
     return src;
-  }
-}
-
-function isAllowlistedAudioUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url, typeof window !== "undefined" ? window.location.origin : "http://127.0.0.1");
-    if (typeof window !== "undefined" && parsed.origin !== window.location.origin) return false;
-    return /narration\.mp3$/i.test(parsed.pathname);
-  } catch {
-    return false;
   }
 }
 
@@ -283,8 +274,8 @@ export function AudioPlayer({
   }, [duration]);
 
   const ensureBlobUrl = useCallback(async (mediaSrc: string): Promise<string> => {
-    if (!isAllowlistedAudioUrl(mediaSrc)) {
-      throw new Error("Audio URL is not an allowlisted story narration endpoint");
+    if (!isAllowlistedAudioUrl(mediaSrc, window.location.origin)) {
+      throw new Error("Audio URL is not an allowlisted Bhāva audio endpoint");
     }
     if (BLOB_UNSUPPORTED.has(mediaSrc)) {
       throw new Error("Blob audio unsupported on this engine");
@@ -319,7 +310,7 @@ export function AudioPlayer({
   const playViaNative = useCallback(async (audio: HTMLAudioElement, mediaSrc: string) => {
     setPath("native_starting");
     setStatus("Loading narration…");
-    if (audio.src.startsWith("blob:") || !/narration\.mp3/i.test(audio.src)) {
+    if (audio.src.startsWith("blob:") || audio.src !== mediaSrc) {
       audio.src = mediaSrc;
     }
     const saved = Number(localStorage.getItem(resumeKey) || "0");
@@ -355,7 +346,7 @@ export function AudioPlayer({
     const mediaSrc = absoluteUrl(src);
     const audio = audioRef.current;
     if (!audio) return;
-    if (!audio.src || (!audio.src.includes("narration.mp3") && !audio.src.startsWith("blob:"))) {
+    if (!audio.src || (!audio.src.startsWith("blob:") && audio.src !== mediaSrc)) {
       audio.src = mediaSrc;
     }
     setPath("idle");
@@ -458,7 +449,7 @@ export function AudioPlayer({
     const mediaSrc = absoluteUrl(activeSrcRef.current || src);
 
     const startNativeInGesture = () => {
-      if (audio.src.startsWith("blob:") || !/narration\.mp3/i.test(audio.src || "")) {
+      if (audio.src.startsWith("blob:") || audio.src !== mediaSrc) {
         audio.src = mediaSrc;
       }
       setStatus(null);

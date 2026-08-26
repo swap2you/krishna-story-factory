@@ -4,11 +4,24 @@ async function selectStoryTab(page: Page, name: RegExp) {
   const tab = page.getByRole("tab", { name });
   await tab.scrollIntoViewIfNeeded();
   await expect(tab).toBeVisible();
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    await tab.click({ force: attempt > 0 });
+  const floatingMini = page.locator(".mini-player--floating");
+  if (await floatingMini.isVisible().catch(() => false)) {
+    const dismiss = floatingMini.getByRole("button", { name: /Hide floating player/i });
+    if (await dismiss.isVisible().catch(() => false)) {
+      await dismiss.click();
+      await expect(floatingMini).toHaveCount(0, { timeout: 5_000 });
+    }
+  }
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    if (attempt > 0) {
+      await tab.focus();
+      await page.keyboard.press("Enter");
+    } else {
+      await tab.click();
+    }
     const selected = await tab.getAttribute("aria-selected");
     if (selected === "true") return;
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(300);
   }
   await expect(tab).toHaveAttribute("aria-selected", "true", { timeout: 10_000 });
 }

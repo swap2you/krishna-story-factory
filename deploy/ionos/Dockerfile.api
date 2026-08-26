@@ -19,6 +19,7 @@ COPY --from=builder /python-packages /usr/local/lib/python3.14/site-packages
 COPY --chown=bhava-api:bhava-api apps/api /app/apps/api
 COPY --chown=bhava-api:bhava-api assets/fonts/noto /app/assets/fonts/noto
 COPY --chown=bhava-api:bhava-api content/knowledge /app/content/knowledge
+COPY --chown=bhava-api:bhava-api deploy/content /app/deploy/content
 USER 10002
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \

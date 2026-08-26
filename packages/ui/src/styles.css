@@ -82,6 +82,8 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   border-radius: 999px;
   background: rgba(255, 252, 246, 0.78);
   margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 50;
 }
 .bhava-tab {
   min-height: 44px;

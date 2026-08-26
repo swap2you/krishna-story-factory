@@ -19,6 +19,7 @@ from .csrf import issue_token
 from .db import Base, SessionLocal, engine
 from .knowledge.routes import router as knowledge_router
 from .routes import media, public as public_routes, reader
+from .vani.routes import router as vani_router
 
 logger = logging.getLogger(__name__)
 
@@ -204,6 +205,7 @@ def create_app() -> FastAPI:
     app.include_router(media.router)
     app.include_router(reader.router)
     app.include_router(knowledge_router)
+    app.include_router(vani_router)
 
     if not public_mode:
         from .routes import draft_scheduler, local_factory
@@ -250,6 +252,18 @@ def create_app() -> FastAPI:
         except Exception:
             payload["indexed_story_count"] = -1
             payload["discovered_package_count"] = -1
+        vani_pin = settings.repository_root / "deploy" / "content" / "RELEASE_VANI_CONTENT.json"
+        try:
+            vani_identity = json.loads(vani_pin.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            vani_identity = {}
+        if isinstance(vani_identity, dict):
+            tag = vani_identity.get("vani_content_tag") or vani_identity.get("tag")
+            sha = vani_identity.get("vani_content_sha256") or vani_identity.get("sha256")
+            if isinstance(tag, str) and tag.strip():
+                payload["vani_content_tag"] = tag.strip()
+            if isinstance(sha, str) and sha.strip():
+                payload["vani_content_sha256"] = sha.strip()
         return payload
 
     return app
