@@ -17,16 +17,31 @@ echo "landing=${landing} catalog=${catalog} api=${api}"
 [[ "$landing" == "200" && "$catalog" == "200" && "$api" == "200" ]]
 
 payload="$(curl -sS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/vani/krishna-book")"
-python -c 'import json,sys; data=json.loads(sys.stdin.read()); tracks=data.get("tracks") or []; assert len(tracks)==91, len(tracks); available=[t for t in tracks if str(t.get("availability","")).lower()=="available"]; print(f"available={len(available)} streamable={sum(1 for t in tracks if t.get(\"stream_allowed\"))}"); assert len(available)>=70; gaps={"30","58","66"};
-for t in tracks:
-  tid=str(t.get("canonical_track_id") or t.get("track_id"));
-  assert (tid not in gaps) or str(t.get("availability")).lower()=="unavailable", t
-print("gap honesty ok")' <<<"$payload"
+track_id="$(PAYLOAD_JSON="${payload}" python - <<'PY'
+import json
+import os
+import sys
 
-track_id="$(python -c 'import json,sys; data=json.loads(sys.stdin.read());
-for t in data.get("tracks") or []:
-  if t.get("stream_allowed") and t.get("audio_url"):
-    print(t.get("track_id") or t.get("canonical_track_id")); break' <<<"$payload")"
+data = json.loads(os.environ["PAYLOAD_JSON"])
+tracks = data.get("tracks") or []
+assert len(tracks) == 91, len(tracks)
+available = [t for t in tracks if str(t.get("availability", "")).lower() == "available"]
+streamable = sum(1 for t in tracks if t.get("stream_allowed"))
+print(f"available={len(available)} streamable={streamable}", file=sys.stderr)
+assert len(available) >= 70
+gaps = {"30", "58", "66"}
+for t in tracks:
+    tid = str(t.get("canonical_track_id") or t.get("track_id") or "")
+    assert (tid not in gaps) or str(t.get("availability")).lower() == "unavailable", t
+print("gap honesty ok", file=sys.stderr)
+
+for t in tracks:
+    if t.get("stream_allowed") and t.get("audio_url"):
+        print(t.get("track_id") or t.get("canonical_track_id") or "")
+        break
+PY
+)"
+
 if [[ -n "${track_id}" ]]; then
   code="$(curl -sS -o /dev/null -w '%{http_code}' -H 'Range: bytes=0-1023' "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/vani/krishna-book/${track_id}/audio")"
   echo "audio_range_${track_id}=${code}"
@@ -35,4 +50,22 @@ if [[ -n "${track_id}" ]]; then
   echo "detail=${detail}"
   [[ "$detail" == "200" ]]
 fi
+
+version="$(curl -sS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/version" || true)"
+if [[ -n "${version}" ]]; then
+  VERSION_JSON="${version}" python - <<'PY'
+import json
+import os
+import sys
+
+data = json.loads(os.environ["VERSION_JSON"])
+tag = data.get("vani_content_tag") or ""
+sha = data.get("vani_content_sha256") or ""
+print(f"vani_content_tag={tag}")
+print(f"vani_content_sha256={sha[:16]}..." if sha else "vani_content_sha256=")
+assert tag.startswith("bhava-vani-"), tag
+assert len(sha) == 64, sha
+PY
+fi
+
 echo "Vāṇī staging smoke passed"
