@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Install Vāṇī dictation content under /opt/bhava/vani/ (separate from story
-# content root — Docker bind-mounts under content/releases can leave root-owned dirs).
+# Install Vāṇī under /opt/bhava/releases/vani (deploy-user writable; avoid
+# creating new children under root-owned /opt/bhava or content/).
 set -euo pipefail
 
 BUNDLE_PATH="${1:?bundle path required}"
 RELEASE_NAME="${2:?release name required}"
 EXPECTED_SHA="${3:?sha256 required}"
 
-VANI_ROOT="${BHAVA_VANI_HOST_ROOT:-/opt/bhava/vani}"
+VANI_ROOT="${BHAVA_VANI_HOST_ROOT:-/opt/bhava/releases/vani}"
 RELEASES="${VANI_ROOT}/releases"
 CURRENT="${VANI_ROOT}/current"
 
@@ -28,8 +28,6 @@ ln -sfn "$DEST" "$CURRENT"
 
 echo "Installed Vāṇī content ${RELEASE_NAME} -> ${CURRENT}"
 
-# Replacing the release directory changes the bind-mount inode. Recreate API
-# containers that mount vani/current so they see the new files.
 if [[ "${BHAVA_RECREATE_CONTENT_MOUNTS:-1}" == "1" && -f /opt/bhava/config/docker-compose.yml && -f /opt/bhava/config/runtime.env ]]; then
   (
     cd /opt/bhava/config
