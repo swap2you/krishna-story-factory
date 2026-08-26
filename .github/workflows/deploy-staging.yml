@@ -433,7 +433,7 @@ jobs:
                BHAVA_STAGING_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
                BHAVA_VANI_HOST_ROOT=/opt/bhava/releases/vani \
                BHAVA_STAGING_WEB_VERSION=$(if [[ "${PUBLIC_MAX}" == "35" ]]; then echo 001-035-staging; elif [[ "${PUBLIC_MAX}" == "22" ]]; then echo 001-022-staging; else echo 001-025-staging; fi) && \
-             BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} bash /opt/bhava/config/scripts/install-content-bundle.sh \
+             BHAVA_RECREATE_CONTENT_MOUNTS=0 BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
              if [[ -f /opt/bhava/incoming/bhava-vani-krishna-book-dictations-complete-v1.tar.gz ]]; then \
                VANI_SHA=\$(awk '{print \$1}' /opt/bhava/incoming/bhava-vani-krishna-book-dictations-complete-v1.tar.gz.sha256); \
