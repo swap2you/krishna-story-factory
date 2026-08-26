@@ -80,6 +80,7 @@ services:
       BHAVA_REPOSITORY_ROOT: /app
       BHAVA_OUTPUT_ROOT: /app/output
       BHAVA_WEB_ASSETS_ROOT: /app/data/web-assets
+      BHAVA_VANI_ROOT: /app/content-local/vani/krishna-book-dictations/v1
       BHAVA_CATALOG_DB: /app/data/catalog/bhava.sqlite
       BHAVA_FACTORY_ACTIONS_ENABLED: "0"
       BHAVA_ENABLE_PRODUCTION_RECOVERY: "0"
@@ -89,6 +90,7 @@ services:
     volumes:
       - ${BHAVA_CONTENT_ROOT}/releases/current/output:/app/output:ro
       - ${BHAVA_CONTENT_ROOT}/releases/current/web-assets:/app/data/web-assets:ro
+      - ${BHAVA_CONTENT_ROOT}/vani/current:/app/content-local/vani/krishna-book-dictations/v1:ro
       - api_prod_catalog:/app/data/catalog
 
   web-staging:
@@ -125,6 +127,7 @@ services:
       BHAVA_REPOSITORY_ROOT: /app
       BHAVA_OUTPUT_ROOT: /app/output
       BHAVA_WEB_ASSETS_ROOT: /app/data/web-assets
+      BHAVA_VANI_ROOT: /app/content-local/vani/krishna-book-dictations/v1
       BHAVA_CATALOG_DB: /app/data/catalog/bhava.sqlite
       BHAVA_FACTORY_ACTIONS_ENABLED: "0"
       BHAVA_ENABLE_PRODUCTION_RECOVERY: "0"
@@ -134,6 +137,7 @@ services:
     volumes:
       - ${BHAVA_CONTENT_ROOT}/releases/current/output:/app/output:ro
       - ${BHAVA_CONTENT_ROOT}/releases/current/web-assets:/app/data/web-assets:ro
+      - ${BHAVA_CONTENT_ROOT}/vani/current:/app/content-local/vani/krishna-book-dictations/v1:ro
       - api_staging_catalog:/app/data/catalog
 
 networks:

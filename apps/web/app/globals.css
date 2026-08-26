@@ -1693,3 +1693,185 @@ main { flex: 1; }
   }
   .knowledge-stanza { break-inside: avoid; }
 }
+
+/* Prabhupāda Vāṇī — extends Bhāva's warm library language. */
+.vani-feature-card {
+  display: grid;
+  grid-template-columns: minmax(220px, .65fr) 1.35fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: stretch;
+  margin-bottom: 3.5rem;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  border: 1px solid rgba(142, 64, 88, .18);
+  border-radius: 1.75rem;
+  background: rgba(255, 250, 240, .82);
+  box-shadow: 0 20px 55px rgba(6, 22, 40, .1);
+}
+.vani-feature-art {
+  min-height: 290px;
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(180deg, rgba(6, 22, 40, .06), rgba(6, 22, 40, .55)),
+    url("/collections/collection-prabhupada-vani-1280w.webp") center/cover;
+}
+.vani-feature-card h2 { margin: .25rem 0 .8rem; color: var(--bhava-midnight); font-size: clamp(2rem, 4vw, 3.2rem); }
+.vani-feature-card p { color: var(--bhava-muted); line-height: 1.65; max-width: 62ch; }
+.vani-feature-meta { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1.25rem 0; }
+.vani-feature-meta span { color: var(--bhava-muted); }
+.vani-feature-meta strong { color: var(--bhava-midnight); font-size: 1.25rem; }
+.vani-governance-heading { margin-top: 1rem; }
+.vani-planned-state { margin-bottom: 3rem; }
+.vani-breadcrumb { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.5rem; color: var(--bhava-muted); font-size: .9rem; }
+.vani-breadcrumb a { color: var(--bhava-midnight); }
+.vani-catalog-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+}
+.vani-catalog-summary > div {
+  min-height: 84px;
+  padding: 1rem;
+  border: 1px solid rgba(6, 22, 40, .1);
+  border-radius: 1rem;
+  background: rgba(255, 250, 240, .65);
+}
+.vani-catalog-summary strong { display: block; color: var(--bhava-midnight); font-family: var(--font-display), serif; font-size: 1.35rem; }
+.vani-catalog-summary span { color: var(--bhava-muted); font-size: .86rem; }
+.vani-continue { display: inline-flex; margin: 0 0 1.5rem; }
+.vani-catalog-tools { display: grid; grid-template-columns: minmax(240px, 1fr) 1.5fr; gap: 1rem; align-items: end; margin: 1.5rem 0 1rem; }
+.vani-search { display: grid; gap: .35rem; font-weight: 700; color: var(--bhava-midnight); }
+.vani-search input {
+  min-height: 48px;
+  padding: .7rem .85rem;
+  border: 1px solid rgba(6, 22, 40, .2);
+  border-radius: .8rem;
+  background: #fffdf8;
+  font: inherit;
+}
+.vani-filters { display: flex; flex-wrap: wrap; gap: .5rem; }
+.vani-filters button,
+.vani-player-panel button,
+.vani-player-panel select,
+.vani-player-panel input,
+.vani-mini-player button {
+  min-height: 44px;
+  min-width: 44px;
+  font: inherit;
+}
+.vani-filters button {
+  padding: .6rem .9rem;
+  border: 1px solid rgba(6, 22, 40, .15);
+  border-radius: 999px;
+  background: rgba(255, 250, 240, .8);
+  color: var(--bhava-midnight);
+  cursor: pointer;
+}
+.vani-filters button[aria-pressed="true"] { color: #fff; background: var(--bhava-midnight); }
+.vani-track-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; }
+.vani-track-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 240px;
+  padding: 1.15rem;
+  border: 1px solid rgba(6, 22, 40, .1);
+  border-radius: 1.1rem;
+  background: rgba(255, 250, 240, .78);
+  box-shadow: 0 10px 30px rgba(6, 22, 40, .06);
+}
+.vani-track-card[data-availability="unavailable"] { background: rgba(244, 236, 222, .62); box-shadow: none; }
+.vani-track-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: .6rem; }
+.vani-chapter { color: var(--bhava-saffron); font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.vani-status { padding: .25rem .5rem; border-radius: 999px; font-size: .7rem; font-weight: 800; }
+.vani-status--available { color: #265d3b; background: rgba(63, 109, 79, .14); }
+.vani-status--unavailable { color: var(--bhava-muted); background: rgba(6, 22, 40, .07); }
+.vani-track-card h2 { margin: .8rem 0 .45rem; color: var(--bhava-midnight); font-size: 1.25rem; }
+.vani-track-card > p { color: var(--bhava-muted); line-height: 1.45; }
+.vani-related-badge { font-size: .78rem; font-weight: 700; }
+.vani-progress { height: 6px; margin-top: auto; overflow: hidden; border-radius: 999px; background: rgba(6, 22, 40, .1); }
+.vani-progress span { display: block; height: 100%; background: var(--bhava-saffron); }
+.vani-card-actions { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-top: .75rem; font-size: .82rem; }
+.vani-card-actions a { font-weight: 800; color: var(--bhava-midnight); }
+.vani-card-actions span { color: #2f6844; }
+.vani-unavailable-note { margin-top: auto; font-size: .84rem; }
+.vani-detail-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr); gap: 1.5rem; align-items: start; }
+.vani-player-panel,
+.vani-provenance {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid rgba(6, 22, 40, .1);
+  border-radius: 1.25rem;
+  background: rgba(255, 250, 240, .82);
+  box-shadow: 0 12px 35px rgba(6, 22, 40, .07);
+}
+.vani-player-controls { display: flex; justify-content: center; gap: .75rem; }
+.vani-player-panel button, .vani-player-panel select {
+  padding: .6rem .8rem;
+  border: 1px solid rgba(6, 22, 40, .15);
+  border-radius: .7rem;
+  background: #fffdf8;
+  color: var(--bhava-midnight);
+  cursor: pointer;
+}
+.vani-play-button { min-width: 100px !important; color: #fff !important; background: var(--bhava-midnight) !important; }
+.vani-seek { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; margin: 1.25rem 0; }
+.vani-seek input { grid-column: 1 / -1; width: 100%; accent-color: var(--bhava-saffron); }
+.vani-player-options { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; }
+.vani-player-options label { display: grid; gap: .25rem; color: var(--bhava-muted); font-size: .8rem; }
+.vani-player-options input[type="range"] { width: 110px; }
+.vani-player-navigation { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.25rem; }
+.vani-player-navigation a { font-weight: 800; color: var(--bhava-midnight); }
+.vani-provenance h2 { margin-top: .25rem; color: var(--bhava-midnight); }
+.vani-provenance dl { margin: 1.2rem 0; }
+.vani-provenance dl div { padding: .65rem 0; border-bottom: 1px solid rgba(6, 22, 40, .1); }
+.vani-provenance dt { color: var(--bhava-muted); font-size: .75rem; font-weight: 800; text-transform: uppercase; }
+.vani-provenance dd { margin: .2rem 0 0; }
+.vani-unavailable { padding: 1.25rem; border-radius: 1rem; background: rgba(6, 22, 40, .06); color: var(--bhava-muted); }
+.vani-mini-player { display: none; }
+
+@media (max-width: 900px) {
+  .vani-track-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vani-catalog-summary { grid-template-columns: repeat(2, 1fr); }
+  .vani-detail-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .vani-feature-card { grid-template-columns: 1fr; }
+  .vani-feature-art { min-height: 210px; }
+  .vani-catalog-tools, .vani-track-grid { grid-template-columns: 1fr; }
+  .vani-mini-player {
+    position: fixed;
+    z-index: 45;
+    left: max(.5rem, env(safe-area-inset-left));
+    right: max(.5rem, env(safe-area-inset-right));
+    bottom: max(.5rem, env(safe-area-inset-bottom));
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .4rem .75rem;
+    align-items: center;
+    padding: .7rem;
+    border: 1px solid rgba(240, 212, 138, .3);
+    border-radius: 1rem;
+    color: #fffaf2;
+    background: rgba(6, 22, 40, .96);
+    box-shadow: 0 12px 40px rgba(3, 13, 24, .35);
+  }
+  .vani-mini-title { min-width: 0; text-decoration: none; }
+  .vani-mini-title span { display: block; color: var(--bhava-gold-soft); font-size: .68rem; text-transform: uppercase; }
+  .vani-mini-title strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vani-mini-time { display: none; }
+  .vani-mini-controls { display: flex; gap: .25rem; }
+  .vani-mini-controls button { padding: .35rem; border: 0; border-radius: .5rem; color: #fff; background: rgba(255,255,255,.1); }
+}
+@media (max-width: 380px) {
+  .vani-catalog-summary { grid-template-columns: 1fr; }
+  .vani-mini-controls button:first-child,
+  .vani-mini-controls button:last-child { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vani-feature-card *, .vani-track-card *, .vani-player-panel *, .vani-mini-player * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@media print {
+  .vani-mini-player, .vani-player-panel { display: none !important; }
+}

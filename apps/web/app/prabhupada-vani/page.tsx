@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import { VaniCollectionCard } from "@/components/vani/vani-collection-card";
+import { loadVaniCollection } from "@/lib/vani";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Prabhupāda Vāṇī",
   description:
-    "Governed study shelf for Śrīla Prabhupāda's instructions — Planned taxonomy only until source-verified records clear rights and review.",
+    "A governed listening and study shelf for Śrīla Prabhupāda's source-verified instructions.",
 };
 
 const CATEGORIES = [
@@ -51,29 +55,50 @@ const CATEGORIES = [
   },
 ];
 
-export default function PrabhupadaVaniPage() {
+export default async function PrabhupadaVaniPage() {
+  const archiveState = await loadVaniCollection();
+  const collection =
+    archiveState.status === "ok" && archiveState.data.tracks.length > 0
+      ? archiveState.data
+      : null;
   return (
     <>
       <PageIntro
         eyebrow="Prabhupāda Vāṇī"
-        title="A trustworthy study surface — not a quote mill."
-        body="This pillar is open as a governed entry. Categories below are Planned taxonomy only. There are no fabricated quotes, AI impersonation, or transcript packs published here."
+        title="Hear the source. Keep the context."
+        body="A calm, governed home for Śrīla Prabhupāda's recorded instructions. Available listening appears with provenance and honest restoration notes; planned shelves remain clearly marked."
       />
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
+          {collection ? (
+            <VaniCollectionCard collection={collection} />
+          ) : (
+            <div className="coming vani-planned-state" role="status">
+              <div>
+                <p className="eyebrow">Krishna Book Dictation Archive</p>
+                <h2>Collection preparation is in progress.</h2>
+                <p>
+                  The archive API has no verified public records right now. The collection will open here
+                  only when source, audio, and rights review permit it—without invented substitutes.
+                </p>
+              </div>
+            </div>
+          )}
+
+          <h2 className="section-heading vani-governance-heading">Trust & stewardship</h2>
           <div className="scope-grid" style={{ marginBottom: "2.5rem" }}>
             <article className="scope-card">
               <h3>What you can trust today</h3>
               <p>
-                This honest entry page, source-governance commitments, and a Planned category map.
-                No lecture transcripts, quote cards, or downloadable quotation packs are published here.
+                Available collections come from source-verified records. Planned shelves remain distinct,
+                and no fabricated quotes, voice clones, or unauthorized transcript packs are published.
               </p>
             </article>
             <article className="scope-card">
               <h3>Planned — said honestly</h3>
               <p>
-                Every category badge below means <strong>Planned</strong>, not available.
-                Curated records open only after exact source attribution, rights clearance, and review.
+                Every category badge below means <strong>Planned</strong>, not available. The Krishna Book
+                archive above is the primary collection only when its API returns reviewed records.
               </p>
             </article>
             <article className="scope-card">
@@ -113,7 +138,7 @@ export default function PrabhupadaVaniPage() {
 
           <h2 className="section-heading">Categories</h2>
           <p className="section-lead">
-            Planned structure for future curated selections. None of these are clickable published records today.
+            Planned structure for future curated selections. These taxonomy cards are not playable records.
           </p>
           <div className="category-grid">
             {CATEGORIES.map((cat) => (
@@ -133,10 +158,9 @@ export default function PrabhupadaVaniPage() {
               <p className="eyebrow">Meanwhile</p>
               <h2>Study what is already reviewed</h2>
               <p>
-                Until Prabhupāda Vāṇī records open, continue with Krishna Book stories in the{" "}
+                Alongside source recordings, continue with Krishna Book stories in the{" "}
                 <Link href="/library/krishna-book">Library</Link> and source-led pages in{" "}
-                <Link href="/knowledge">Knowledge</Link>. Collection model notes live privately under{" "}
-                <code>content/vani/</code> for operators — not as public transcripts.
+                <Link href="/knowledge">Knowledge</Link>.
               </p>
             </div>
           </div>

@@ -344,6 +344,25 @@ jobs:
           print("staging content pin OK", tag, actual, "max", pin["public_story_max"])
           PY
           fi
+          if [[ -f deploy/content/RELEASE_VANI_CONTENT.json ]]; then
+            VANI_TAG="$(python3 -c 'import json; print(json.load(open("deploy/content/RELEASE_VANI_CONTENT.json",encoding="utf-8"))["tag"])')"
+            gh release download "$VANI_TAG" \
+              --repo "${GITHUB_REPOSITORY}" \
+              --pattern "${VANI_TAG}.tar.gz" \
+              --pattern "${VANI_TAG}.tar.gz.sha256" || true
+            if [[ -f "${VANI_TAG}.tar.gz" ]]; then
+              sha256sum --check "${VANI_TAG}.tar.gz.sha256"
+              python3 - <<'PY'
+          import hashlib, json
+          pin = json.load(open("deploy/content/RELEASE_VANI_CONTENT.json", encoding="utf-8"))
+          tag = pin["tag"]
+          expected = pin["sha256"].lower()
+          actual = hashlib.sha256(open(f"{tag}.tar.gz", "rb").read()).hexdigest()
+          assert actual == expected, (actual, expected)
+          print("vani content pin OK", tag, actual)
+          PY
+            fi
+          fi
 
       - name: Configure pinned SSH
         uses: ./.github/actions/configure-pinned-ssh
@@ -365,6 +384,12 @@ jobs:
             "${CONTENT_TAG}.tar.gz" \
             "${CONTENT_TAG}.tar.gz.sha256" \
             "$USER@$HOST:/opt/bhava/incoming/"
+          if [[ -f bhava-vani-krishna-book-dictations-complete-v1.tar.gz ]]; then
+            scp -P "$PORT" \
+              bhava-vani-krishna-book-dictations-complete-v1.tar.gz \
+              bhava-vani-krishna-book-dictations-complete-v1.tar.gz.sha256 \
+              "$USER@$HOST:/opt/bhava/incoming/"
+          fi
 
       - name: Deploy release
         env:
@@ -412,6 +437,14 @@ jobs:
              sleep 8 && \
              BHAVA_PUBLIC_STORY_MAX=${PUBLIC_MAX} bash /opt/bhava/config/scripts/install-content-bundle.sh \
                /opt/bhava/incoming/${CONTENT_TAG}.tar.gz ${CONTENT_TAG} ${CONTENT_SHA} && \
+             if [[ -f /opt/bhava/incoming/bhava-vani-krishna-book-dictations-complete-v1.tar.gz ]]; then \
+               VANI_SHA=\$(awk '{print \$1}' /opt/bhava/incoming/bhava-vani-krishna-book-dictations-complete-v1.tar.gz.sha256); \
+               bash /opt/bhava/config/scripts/install-vani-content-bundle.sh \
+                 /opt/bhava/incoming/bhava-vani-krishna-book-dictations-complete-v1.tar.gz \
+                 bhava-vani-krishna-book-dictations-complete-v1 \${VANI_SHA}; \
+             else \
+               mkdir -p /opt/bhava/content/vani/current; \
+             fi && \
              bash /opt/bhava/config/scripts/deploy-release.sh staging ${RELEASE_SHA} \
                /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz \
                /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz && \
@@ -467,4 +500,12 @@ jobs:
           [[ "$p036" == "404" && "$a036" == "404" ]]
           hdrs="$(curl -sSI "${AUTH[@]}" "${BASE}/stories/026")"
           echo "$hdrs" | grep -Eiq '^x-robots-tag:[[:space:]]*noindex'
+
+      - name: Stage 1 Vāṇī Krishna Book dictation smoke
+        env:
+          STAGING_BASIC_AUTH_USER: ${{ secrets.STAGING_BASIC_AUTH_USER }}
+          STAGING_BASIC_AUTH_PASSWORD: ${{ secrets.STAGING_BASIC_AUTH_PASSWORD }}
+        run: |
+          chmod +x deploy/ionos/scripts/smoke-vani-staging.sh
+          bash deploy/ionos/scripts/smoke-vani-staging.sh https://staging.bhava.me
           echo "STAGE1_ROUTE_MATRIX_PASS"
