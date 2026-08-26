@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# Install Vāṇī under /opt/bhava/releases/vani (deploy-user writable; avoid
-# creating new children under root-owned /opt/bhava or content/).
+# Install Vāṇī under content/releases/vani-kb-dictations (deploy-user writable).
+# Do not use a bare "vani" leaf name — earlier Docker mounts may have left
+# root-owned empty dirs at sibling paths.
 set -euo pipefail
 
 BUNDLE_PATH="${1:?bundle path required}"
 RELEASE_NAME="${2:?release name required}"
 EXPECTED_SHA="${3:?sha256 required}"
 
-VANI_ROOT="${BHAVA_VANI_HOST_ROOT:-/opt/bhava/releases/vani}"
+VANI_ROOT="${BHAVA_VANI_HOST_ROOT:-/opt/bhava/content/releases/vani-kb-dictations}"
 RELEASES="${VANI_ROOT}/releases"
 CURRENT="${VANI_ROOT}/current"
 
@@ -22,7 +23,6 @@ mkdir -p "$DEST"
 tar -xzf "$BUNDLE_PATH" -C "$DEST" --strip-components=1
 test -f "$DEST/manifests/collection.json"
 test -d "$DEST/restored"
-# Docker may have created CURRENT as an empty directory on first mount; replace it.
 rm -rf "$CURRENT"
 ln -sfn "$DEST" "$CURRENT"
 
