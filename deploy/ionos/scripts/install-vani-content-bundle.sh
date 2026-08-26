@@ -22,7 +22,11 @@ rm -rf "$DEST"
 mkdir -p "$DEST"
 tar -xzf "$BUNDLE_PATH" -C "$DEST" --strip-components=1
 test -f "$DEST/manifests/collection.json"
-test -d "$DEST/restored"
+# Stage-1 serve bundle ships originals (restoration_bypassed); restored/ is optional.
+if [[ ! -d "$DEST/original" && ! -d "$DEST/restored" ]]; then
+  echo "Vāṇī bundle missing original/ and restored/" >&2
+  exit 1
+fi
 rm -rf "$CURRENT"
 ln -sfn "$DEST" "$CURRENT"
 
