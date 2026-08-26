@@ -16,13 +16,18 @@ api="$(curl -sS -o /dev/null -w '%{http_code}' "${AUTH_ARGS[@]}" "${BASE_URL}/ap
 echo "landing=${landing} catalog=${catalog} api=${api}"
 [[ "$landing" == "200" && "$catalog" == "200" && "$api" == "200" ]]
 
-payload="$(curl -sS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/vani/krishna-book")"
-track_id="$(PAYLOAD_JSON="${payload}" python - <<'PY'
+payload_file="$(mktemp)"
+version_file="$(mktemp)"
+trap 'rm -f "${payload_file}" "${version_file}"' EXIT
+
+curl -sS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/vani/krishna-book" >"${payload_file}"
+track_id="$(python3 - "${payload_file}" <<'PY'
 import json
-import os
 import sys
 
-data = json.loads(os.environ["PAYLOAD_JSON"])
+path = sys.argv[1]
+with open(path, encoding="utf-8") as handle:
+    data = json.load(handle)
 tracks = data.get("tracks") or []
 assert len(tracks) == 91, len(tracks)
 available = [t for t in tracks if str(t.get("availability", "")).lower() == "available"]
@@ -51,14 +56,13 @@ if [[ -n "${track_id}" ]]; then
   [[ "$detail" == "200" ]]
 fi
 
-version="$(curl -sS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/version" || true)"
-if [[ -n "${version}" ]]; then
-  VERSION_JSON="${version}" python - <<'PY'
+if curl -sS "${AUTH_ARGS[@]}" "${BASE_URL}/api/v1/version" >"${version_file}"; then
+  python3 - "${version_file}" <<'PY'
 import json
-import os
 import sys
 
-data = json.loads(os.environ["VERSION_JSON"])
+with open(sys.argv[1], encoding="utf-8") as handle:
+    data = json.load(handle)
 tag = data.get("vani_content_tag") or ""
 sha = data.get("vani_content_sha256") or ""
 print(f"vani_content_tag={tag}")

@@ -47,12 +47,27 @@ def main() -> int:
 
     originals = list((ARCHIVE / "original").rglob("*.mp3"))
     restored = list((ARCHIVE / "restored").glob("*.mp3"))
+    import os
+    import subprocess
+
+    code_sha = os.environ.get("VANI_HANDOFF_CODE_SHA", "").strip()
+    if not code_sha:
+        try:
+            code_sha = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+            ).strip()
+        except Exception:
+            code_sha = None
+    staging_url = os.environ.get("VANI_HANDOFF_STAGING_URL", "").strip() or None
+    tests_blob = os.environ.get("VANI_HANDOFF_TESTS_JSON", "").strip()
+    routes_blob = os.environ.get("VANI_HANDOFF_ROUTES_JSON", "").strip()
+
     report = {
         "verdict": "READY_FOR_OWNER_PRIVATE_REVIEW — PUBLIC_RIGHTS_GATE_PENDING",
         "generated_at": stamp,
-        "code_sha": None,
-        "staging_workflow_url": None,
-        "production_state": "unchanged",
+        "code_sha": code_sha,
+        "staging_workflow_url": staging_url,
+        "production_state": "unchanged — Stories 001-035 remain live; Vāṇī not promoted to public production",
         "collection": collection,
         "canonical_records": 91,
         "acquired_tracks": sum(1 for r in results if r.get("ok")),
@@ -65,9 +80,9 @@ def main() -> int:
         "restored_count": len(restored),
         "media_bundle": bundle_manifest,
         "release_pin": pin,
-        "tests": {},
-        "route_matrix": {},
-        "rollback_pointer": None,
+        "tests": json.loads(tests_blob) if tests_blob else {"note": "see CI / local pytest suite"},
+        "route_matrix": json.loads(routes_blob) if routes_blob else {},
+        "rollback_pointer": "Revert develop deploy to pre-Vāṇī SHA and remove /opt/bhava/content/releases/vani-kb-dictations; production content pin unchanged",
         "cleanup": "execution scratch under work/tmp retained selectively; content-local is canonical archive",
         "remaining_owner_action": [
             "Review Stage 1 UX/audio quality on staging.bhava.me (authenticated).",
