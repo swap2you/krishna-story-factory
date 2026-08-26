@@ -418,7 +418,7 @@ jobs:
           # may point at staging content briefly; production privacy depends on
           # BHAVA_PROD_PUBLIC_STORY_MAX matching RELEASE_CONTENT.json.
           ssh -p "$PORT" "$USER@$HOST" \
-            "mkdir -p /opt/bhava/config && \
+            "mkdir -p /opt/bhava/config /opt/bhava/vani/releases /opt/bhava/vani/current && \
              tar -xzf /opt/bhava/incoming/bhava-config-${RELEASE_SHA}.tar.gz -C /opt/bhava/config && \
              chmod +x /opt/bhava/config/scripts/*.sh && \
              docker load -i /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz && \
@@ -431,6 +431,7 @@ jobs:
                BHAVA_CONTENT_RELEASE=${PROD_TAG} \
                BHAVA_STAGING_CONTENT_RELEASE=${CONTENT_TAG} \
                BHAVA_STAGING_PUBLIC_STORY_MAX=${PUBLIC_MAX} \
+               BHAVA_VANI_HOST_ROOT=/opt/bhava/vani \
                BHAVA_STAGING_WEB_VERSION=$(if [[ "${PUBLIC_MAX}" == "35" ]]; then echo 001-035-staging; elif [[ "${PUBLIC_MAX}" == "22" ]]; then echo 001-022-staging; else echo 001-025-staging; fi) && \
              cd /opt/bhava/config && \
              docker compose --env-file runtime.env up -d --no-build --force-recreate --no-deps api-production && \
@@ -443,7 +444,7 @@ jobs:
                  /opt/bhava/incoming/bhava-vani-krishna-book-dictations-complete-v1.tar.gz \
                  bhava-vani-krishna-book-dictations-complete-v1 \${VANI_SHA}; \
              else \
-               mkdir -p /opt/bhava/content/releases/vani/current; \
+               mkdir -p /opt/bhava/vani/current; \
              fi && \
              bash /opt/bhava/config/scripts/deploy-release.sh staging ${RELEASE_SHA} \
                /opt/bhava/incoming/bhava-images-${RELEASE_SHA}.tar.gz \

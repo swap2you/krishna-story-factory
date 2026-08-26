@@ -90,7 +90,7 @@ services:
     volumes:
       - ${BHAVA_CONTENT_ROOT}/releases/current/output:/app/output:ro
       - ${BHAVA_CONTENT_ROOT}/releases/current/web-assets:/app/data/web-assets:ro
-      - ${BHAVA_CONTENT_ROOT}/releases/vani/current:/app/content-local/vani/krishna-book-dictations/v1:ro
+      - ${BHAVA_VANI_HOST_ROOT:-/opt/bhava/vani}/current:/app/content-local/vani/krishna-book-dictations/v1:ro
       - api_prod_catalog:/app/data/catalog
 
   web-staging:
@@ -137,7 +137,7 @@ services:
     volumes:
       - ${BHAVA_CONTENT_ROOT}/releases/current/output:/app/output:ro
       - ${BHAVA_CONTENT_ROOT}/releases/current/web-assets:/app/data/web-assets:ro
-      - ${BHAVA_CONTENT_ROOT}/releases/vani/current:/app/content-local/vani/krishna-book-dictations/v1:ro
+      - ${BHAVA_VANI_HOST_ROOT:-/opt/bhava/vani}/current:/app/content-local/vani/krishna-book-dictations/v1:ro
       - api_staging_catalog:/app/data/catalog
 
 networks:
